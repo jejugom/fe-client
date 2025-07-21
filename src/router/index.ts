@@ -11,6 +11,7 @@ import authRoutes from './auth';
 import eventRoutes from './event';
 import jeungyeoRoutes from './jeungyeo';
 import nohooRoutes from './nohoo';
+import profileRoutes from './profile';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,6 +36,7 @@ const router = createRouter({
     ...eventRoutes,
     ...jeungyeoRoutes,
     ...nohooRoutes,
+    ...profileRoutes,
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
