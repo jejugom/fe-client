@@ -73,6 +73,12 @@
       -0.5px -0.5px 2px 0px oklch(0.2959 0.0476 259.03 / 0.25);
   }
 
+  .stroke-secondary {
+    box-shadow:
+      0.5px 0.5px 2px 0px oklch(0.4453 0.09126 84.9532 / 25%),
+      -0.5px -0.5px 2px 0px oklch(0.4453 0.09126 84.9532 / 25%);
+  }
+
   .stroke-surface {
     box-shadow:
       0.5px 0.5px 2px 0px oklch(0.209 0 0 / 0.25),
