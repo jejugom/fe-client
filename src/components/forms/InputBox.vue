@@ -23,7 +23,7 @@
 <script setup lang="ts">
 defineProps<{
   modelValue?: string;
-  type?: 'text' | 'password' | 'number';
+  type?: 'text' | 'password' | 'number' | 'date' | 'time';
   size?: 'small' | 'medium' | 'large';
   placeholder?: string;
 }>();
