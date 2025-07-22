@@ -1,23 +1,20 @@
 import type { RouteRecordRaw } from 'vue-router';
-import ProfilePage from '@/pages/profile/MYL1_ProfilePage.vue';
-import EditAssetPage from '@/pages/profile/MYL2_EditAssetPage.vue';
-import EditBranchPage from '@/pages/profile/MYL2_EditBranchPage.vue';
 
 const profileRoutes: RouteRecordRaw[] = [
   {
     path: '/profile',
     name: 'profile',
-    component: ProfilePage,
+    component: import('@/pages/profile/MYL1_ProfilePage.vue'),
   },
   {
     path: '/asset/edit',
     name: 'edit-asset',
-    component: EditAssetPage,
+    component: import('@/pages/profile/MYL2_EditAssetPage.vue'),
   },
   {
     path: '/profile/branch',
     name: 'edit-branch',
-    component: EditBranchPage,
+    component: import('@/pages/profile/MYL2_EditBranchPage.vue'),
   },
 ];
 
