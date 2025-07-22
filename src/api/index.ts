@@ -52,7 +52,7 @@ instance.interceptors.response.use(
         // refresh도 실패하면 로그아웃
         const { logout } = useAuthStore();
         logout();
-        router.push('/auth/login');
+        router.push({ name: 'home' });
         return Promise.reject(error);
       }
     }

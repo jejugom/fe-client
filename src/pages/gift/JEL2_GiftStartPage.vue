@@ -36,6 +36,6 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 function goToInput() {
-  router.push('/jeungyeo/input');
+  router.push({ name: 'gift-input' }); // 증여 계획 입력 페이지로 이동
 }
 </script>

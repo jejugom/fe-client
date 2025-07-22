@@ -37,7 +37,7 @@
           class="flex items-center rounded-lg border border-yellow-300 bg-yellow-50 p-8"
         >
           <img src="" alt="" class="mr-3 h-8 w-8" />
-          <div @click="goToJeungyeo">
+          <div @click="goToGift">
             <p class="text-xl font-semibold text-gray-800">증여·상속</p>
             <p class="text-lg text-gray-600">세금 절감과 재산 이전 계획</p>
           </div>
@@ -85,7 +85,7 @@
           맞춤형<br />추천
         </div>
       </div>
-      </div>
+    </div>
   </div>
 </template>
 
@@ -99,19 +99,19 @@ import Banner from '@/components/cards/Banner.vue';
 const router = useRouter();
 
 const goToEditAsset = () => {
-  router.push('/asset/edit');
+  router.push({ name: 'asset-edit-page' });
 };
 
 const goToEvent = () => {
-  router.push('/event');
+  router.push({ name: 'event-page' });
 };
 
-const goToJeungyeo = () => {
-  router.push('/jeungyeo');
+const goToGift = () => {
+  router.push({ name: 'gift-page' });
 };
 
 const goToNohoo = () => {
-  router.push('/nohoo');
+  router.push({ name: 'nohoo-page' });
 };
 
 const slides = [

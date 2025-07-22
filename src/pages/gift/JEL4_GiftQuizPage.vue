@@ -95,7 +95,7 @@ function goToNext() {
     step.value++;
   } else {
     console.log('사용자 응답:', answers.value);
-    router.push('/jeungyeo/result'); // 결과 페이지로 이동
+    router.push({ name: 'gift-result', params: { answers: answers.value } }); // 결과 페이지로 이동
   }
 }
 </script>

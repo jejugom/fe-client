@@ -2,7 +2,7 @@
   <div class="space-y-6 bg-white px-4">
     <h2 class="mb-2 text-xl font-semibold text-blue-600">노후 페이지</h2>
     <!-- <AssetSummary userName="홍길동" assetAmount="9,999,999,999,999" /> -->
-    <Top3Products :items="slides" />
+    <Top3ProductsCard :items="slides" />
     <button
       class="mx-auto block w-full rounded-lg bg-blue-100 py-4 text-lg font-semibold text-gray-800 hover:bg-blue-200"
       @click="goToPersonalizedProducts"
@@ -15,18 +15,18 @@
     >
       전체 상품 보러가기
     </button>
-    <InterestRate></InterestRate>
-    <GoldPrice></GoldPrice>
+    <InterestRateCard></InterestRateCard>
+    <GoldPriceCard></GoldPriceCard>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import AssetSummary from '@/components/cards/AssetSummaryCard.vue'; // 상대 경로에 맞게
-import Top3Products from '@/components/cards/Top3ProductsCard.vue';
-import GoldPrice from '@/components/cards/GoldPriceCard.vue';
-import InterestRate from '@/components/cards/InterestRateCard.vue';
+import AssetSummaryCard from '@/components/cards/AssetSummaryCard.vue';
+import Top3ProductsCard from '@/components/cards/Top3ProductsCard.vue';
+import GoldPriceCard from './_components/GoldPriceCard.vue';
+import InterestRateCard from './_components/InterestRateCard.vue';
 
 const router = useRouter();
 
@@ -49,11 +49,11 @@ const slides = [
 ];
 
 const goToAllProducts = () => {
-  router.push('/nohoo/products');
+  router.push({ name: 'all-products' });
 };
 
 const goToPersonalizedProducts = () => {
-  router.push('/nohoo/products/personalized');
+  router.push({ name: 'personalized-products' });
 };
 </script>
 

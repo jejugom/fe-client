@@ -10,7 +10,7 @@
     <!-- 증여 카드 -->
     <div
       class="my-5 mb-4 flex items-start gap-4 rounded-xl border-2 border-blue-200 bg-blue-50 p-8"
-      @click="goToJeungyeoStart"
+      @click="goToGiftStart"
     >
       <img src="" alt="증여 아이콘" class="h-10 w-10" />
       <div>
@@ -57,11 +57,11 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const goToJeungyeoStart = () => {
-  router.push('/jeungyeo/start');
+const goToGiftStart = () => {
+  router.push({ name: 'gift-start' }); // 증여 시작 페이지로 이동
 };
 
 const goToFAQ = () => {
-  router.push('/jeungyeo/faq'); // FAQ 경로 설정 필요
+  router.push({ name: 'gift-faq' }); // FAQ 경로 설정 필요
 };
 </script>

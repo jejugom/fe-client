@@ -193,11 +193,14 @@ const goBack = () => {
 };
 
 const goToFaqDetail = (faqId: number) => {
-  router.push(`/jeungyeo/faq/${faqId}`);
+  router.push({
+    name: 'gift-detail',
+    params: { id: faqId },
+  });
 };
 
 const goToStart = () => {
-  router.push('/jeungyeo/start');
+  router.push({ name: 'gift-start' });
 };
 
 // 컴포넌트 마운트 시 FAQ 데이터 로드

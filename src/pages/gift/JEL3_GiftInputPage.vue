@@ -59,7 +59,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const goToQuiz = () => {
-  router.push('/jeungyeo/quiz');
+  router.push({ name: 'gift-quiz' }); // 증여 계획 계산 페이지로 이동
 };
 </script>
 
