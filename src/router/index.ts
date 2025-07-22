@@ -1,17 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 // 기본페이지
-import HomePage from '@/pages/HomePage.vue';
+import HomePage from '@/pages/HOL1_HomePage.vue';
 // 예외페이지
-import FailPage from '@/pages/etc/FailPage.vue';
-import LoadingPage from '@/pages/etc/LoadingPage.vue';
-import NotFoundPage from '@/pages/etc/404Page.vue';
+import FailPage from '@/pages/etc/ETL1_FailPage.vue';
+import LoadingPage from '@/pages/etc/ETL1_LoadingPage.vue';
+import NotFoundPage from '@/pages/etc/ETL1_404Page.vue';
 // 라우트 모듈
 import authRoutes from './auth';
 import eventRoutes from './event';
-import jeungyeoRoutes from './jeungyeo';
+import giftRoutes from './gift';
 import nohooRoutes from './nohoo';
 import profileRoutes from './profile';
+import assetSetting from './assetSetting';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,9 +33,10 @@ const router = createRouter({
       name: 'loading',
       component: LoadingPage,
     },
+    ...assetSetting,
     ...authRoutes,
     ...eventRoutes,
-    ...jeungyeoRoutes,
+    ...giftRoutes,
     ...nohooRoutes,
     ...profileRoutes,
     {

@@ -1,12 +1,15 @@
 import type { RouteRecordRaw } from 'vue-router';
-import NohooPage from '@/pages/nohoo/NohooPage.vue';
-import AllProducts from '@/pages/products/AllProducts.vue';
-import PersonalizedProducts from '@/pages/products/PersonalizedProducts.vue';
+import NohooPage from '@/pages/nohoo/NOL1_NohooPage.vue';
+import AllProducts from '@/pages/products/NOL2_AllProducts.vue';
+import PersonalizedProducts from '@/pages/nohoo/NOL2_PersonalizedProducts.vue';
+import ProductDetailPage from '@/pages/nohoo/NOL3_ProductDetailPage.vue';
+import RegisterPage from '@/pages/nohoo/NOL4_RegisterPage.vue';
+import RegisterCompletePage from '@/pages/nohoo/NOL5_RegisterCompletePage.vue';
 
 const nohooRoutes: RouteRecordRaw[] = [
   {
     path: '/nohoo',
-    name: 'nohoo-page',
+    name: 'nohoo',
     component: NohooPage,
   },
   {
@@ -18,6 +21,22 @@ const nohooRoutes: RouteRecordRaw[] = [
     path: '/nohoo/products/personalized',
     name: 'personalized-product',
     component: PersonalizedProducts,
+  },
+  {
+    path: '/nohoo/products/:id',
+    name: 'product-detail',
+    component: ProductDetailPage,
+    props: true,
+  },
+  {
+    path: '/nohoo/register',
+    name: 'register',
+    component: RegisterPage,
+  },
+  {
+    path: '/nohoo/register/complete',
+    name: 'register-complete',
+    component: RegisterCompletePage,
   },
 ];
 

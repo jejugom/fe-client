@@ -3,7 +3,7 @@
     :type="type"
     :class="[
       'border-surface-300 rounded-lg border px-3 text-base',
-      size === 'large' && 'h-13 w-82.5',
+      size === 'large' && 'h-13 w-full',
       size === 'medium' && 'h-13 w-68',
       size === 'small' && 'h-10 w-25',
       $attrs.class,

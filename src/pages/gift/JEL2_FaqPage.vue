@@ -95,7 +95,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import Button from '@/stories/Button.vue';
 
 const router = useRouter();
 
@@ -178,6 +177,9 @@ const handleSearch = () => {
 };
 
 const goToFaqDetail = (faqId: number) => {
-  router.push(`/jeungyeo/faq/${faqId}`);
+  router.push({
+    name: 'gift-detail',
+    params: { id: faqId },
+  });
 };
 </script>

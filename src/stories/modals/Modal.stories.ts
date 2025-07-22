@@ -9,8 +9,8 @@ const meta: Meta<typeof Modal> = {
     title: { control: 'text' },
     leftLabel: { control: 'text' },
     rightLabel: { control: 'text' },
-    click1: { action: 'click1' },
-    click2: { action: 'click2' },
+    onClick1: { action: 'click1' },
+    onClick2: { action: 'click2' },
   },
   args: {
     title: '모달 제목',
