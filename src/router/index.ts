@@ -12,6 +12,7 @@ import eventRoutes from './event';
 import giftRoutes from './gift';
 import nohooRoutes from './nohoo';
 import profileRoutes from './profile';
+import assetSetting from './assetSetting';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,7 @@ const router = createRouter({
       name: 'loading',
       component: LoadingPage,
     },
+    ...assetSetting,
     ...authRoutes,
     ...eventRoutes,
     ...giftRoutes,
