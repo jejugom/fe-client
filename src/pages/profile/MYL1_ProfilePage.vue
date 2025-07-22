@@ -67,7 +67,7 @@ const handleMenuClick = (menuId) => {
       router.push('/asset/edit'); // 자산 추가 등록·수정
       break;
     case 'calculation':
-      router.push('/asset/sync'); // 자산 재연동
+      router.push('/asset/start'); // 자산 재연동
       break;
     case 'revenue':
       router.push('profile/branch'); // 내 지점 수정
