@@ -67,10 +67,17 @@ const handleMenuClick = (menuId) => {
       router.push('/asset/edit'); // 자산 추가 등록·수정
       break;
     case 'calculation':
-      router.push('/asset/start'); // 자산 재연동
+      // 재연동 flow임을 표시하는 쿼리 파라미터 추가
+      router.push({
+        path: '/asset/start',
+        query: { from: 'profile' },
+      });
       break;
     case 'revenue':
-      router.push('profile/branch'); // 내 지점 수정
+      router.push({
+        path: '/profile/branch',
+        query: { from: 'profile' },
+      });
       break;
     case 'logout':
       break;

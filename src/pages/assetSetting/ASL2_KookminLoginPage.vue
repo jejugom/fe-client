@@ -42,7 +42,9 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+const route = useRoute();
+
 import Btn from '@/components/buttons/Btn.vue';
 import InputBox from '@/components/forms/InputBox.vue';
 
@@ -61,6 +63,15 @@ const handleAssetSync = () => {
   // 실패하면 에러 메시지를 표시해야 합니다.
 
   // 현재는 임시로 자산 연동 완료 페이지로 이동
-  router.push({ name: 'asset-custom-start' });
+  const isFromProfile = route.query.from === 'profile';
+
+  if (isFromProfile) {
+    // 프로필에서 시작한 경우 -> 프로필 페이지로 돌아가기
+    // TODO : 자산 연동이 완료되었다고 알려주기
+    router.push({ name: 'profile' });
+  } else {
+    // 회원가입 과정인 경우 -> 다음 스텝으로 이동
+    router.push({ name: 'asset-custom-start' });
+  }
 };
 </script>

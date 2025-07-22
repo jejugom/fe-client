@@ -41,11 +41,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import InputBox from '@/components/forms/InputBox.vue';
 import Btn from '@/components/buttons/Btn.vue';
 
 const router = useRouter();
+const route = useRoute(); // useRoute 추가
 const searchQuery = ref('');
 
 const handleSearch = () => {
@@ -56,8 +57,13 @@ const handleSearch = () => {
 const handleComplete = async () => {
   try {
     // TODO: API 호출하여 지점 정보 업데이트
-    // 성공 시 이전 페이지로 이동
-    router.push({ name: 'asset-signup-complete' });
+
+    // 쿼리 파라미터에 따라 다른 페이지로 이동
+    if (route.query.from === 'profile') {
+      router.push({ name: 'profile' });
+    } else {
+      router.push({ name: 'asset-signup-complete' });
+    }
   } catch (error) {
     console.error('지점 업데이트 실패:', error);
   }

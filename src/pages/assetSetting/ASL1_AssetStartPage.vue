@@ -31,12 +31,19 @@
 
 <script setup lang="ts">
 import Btn from '@/components/buttons/Btn.vue';
-
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 
 const goToKookminLogin = () => {
-  router.push({ name: 'asset-kookmin-login' });
+  // 현재 route의 쿼리 파라미터 확인
+  const isFromProfile = route.query.from === 'profile';
+
+  // 쿼리 파라미터가 있다면 다음 페이지로도 전달
+  router.push({
+    name: 'asset-kookmin-login',
+    query: isFromProfile ? { from: 'profile' } : {},
+  });
 };
 </script>
