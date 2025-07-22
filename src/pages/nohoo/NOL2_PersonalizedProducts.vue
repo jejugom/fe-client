@@ -5,7 +5,7 @@
 
     <div>
       <div class="text-primary-300 text-2xl font-bold">
-        든든한 노후를 위한 금융상품 3선
+        든든한 노후를 위한 금융상품
       </div>
 
       <!-- 필터 버튼 -->
@@ -45,7 +45,7 @@ import { ref, computed } from 'vue';
 import AdBanner from '@/assets/images/AdBanner.png';
 import TextBtn from '@/components/buttons/TextBtn.vue';
 import BtnCard from '@/components/cards/BtnCard.vue';
-import { retirementRecommend } from './dummy';
+import { retirementRecommend } from './_dummy';
 
 const sortBy = ref<'default' | 'alphabet'>('default');
 

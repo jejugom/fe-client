@@ -57,7 +57,7 @@ import Top3ProductsCard from '@/components/cards/Top3ProductsCard.vue';
 import GoldPriceCard from './_components/GoldPriceCard.vue';
 import InterestRateCard from './_components/InterestRateCard.vue';
 import Btn from '@/components/buttons/Btn.vue';
-import { retirement } from './dummy';
+import { retirement } from './_dummy';
 
 const router = useRouter();
 
