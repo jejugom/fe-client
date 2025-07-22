@@ -53,7 +53,7 @@ const goToAllProducts = () => {
 };
 
 const goToPersonalizedProducts = () => {
-  router.push({ name: 'personalized-products' });
+  router.push({ name: 'personalized-product' });
 };
 </script>
 
