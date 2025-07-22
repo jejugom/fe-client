@@ -3,14 +3,13 @@
     class="relative flex h-16 items-center justify-center bg-white shadow-xs"
   >
     <!-- 뒤로가기 -->
-    <button
+    <img
       v-if="showBackBtn"
-      class="0 absolute left-5 text-2xl"
+      :src="Arrow"
+      alt="뒤로가기 아이콘"
+      class="absolute left-5 h-6 w-6"
       @click="goBack"
-      aria-label="뒤로가기"
-    >
-      ←
-    </button>
+    />
 
     <!-- 로고 텍스트 -->
     <router-link :to="{ name: 'home' }" class="text-2xl font-bold">
@@ -23,6 +22,7 @@
 <script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router';
 import { computed } from 'vue';
+import Arrow from '@/assets/icons/HeaderBefore.svg';
 
 const router = useRouter();
 const route = useRoute();
