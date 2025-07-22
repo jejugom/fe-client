@@ -27,6 +27,9 @@
   --font-regular: 'Pretendard-Regular';
   --font-semibold: 'Pretendard-SemiBold';
   --font-bold: 'Pretendard-Bold';
+  --font-pretendard:
+    'Pretendard-Regular', 'Pretendard-SemiBold', 'Pretendard-Bold';
+  --font-hakgyo: 'TTHakgyoansimYeohaengR';
 
   --shadow-xs: 0 1px 2px var(--color-surface-200);
   --shadow-up-xs: 0 -1px 2px var(--color-surface-200);
@@ -107,5 +110,13 @@
   src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff')
     format('woff');
   font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'TTHakgyoansimYeohaengR';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimYeohaengR.woff2')
+    format('woff2');
+  font-weight: normal;
   font-style: normal;
 }

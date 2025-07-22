@@ -42,10 +42,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import AdBanner from '@/assets/images/AdBanner.png';
 import TextBtn from '@/components/buttons/TextBtn.vue';
 import BtnCard from '@/components/cards/BtnCard.vue';
 import { retirementRecommend } from './_dummy';
+
+const router = useRouter();
 
 const sortBy = ref<'default' | 'alphabet'>('default');
 
@@ -65,6 +68,6 @@ const sortedProducts = computed(() => {
 // 클릭 시 라우팅 또는 이벤트 처리
 const goToProduct = (productId: string) => {
   console.log('상품 선택됨:', productId);
-  // router.push({ name: 'product-detail', params: { id: productId } });
+  router.push({ name: 'product-detail', params: { id: productId } });
 };
 </script>

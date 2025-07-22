@@ -2,7 +2,7 @@ import type { RouteRecordRaw } from 'vue-router';
 import NohooPage from '@/pages/nohoo/NOL1_NohooPage.vue';
 import AllProducts from '@/pages/products/NOL2_AllProducts.vue';
 import PersonalizedProducts from '@/pages/nohoo/NOL2_PersonalizedProducts.vue';
-import ProductDetailPage from '@/pages/nohoo/NOL3_ProductDetailPage.vue';
+import ProductDetailPage from '@/pages/products/NOL3_ProductDetailPage.vue';
 import RegisterPage from '@/pages/nohoo/NOL4_RegisterPage.vue';
 import RegisterCompletePage from '@/pages/nohoo/NOL5_RegisterCompletePage.vue';
 

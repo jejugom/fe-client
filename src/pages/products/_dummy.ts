@@ -45,3 +45,19 @@ export const productsAll = [
     customerSegmentId: 'A',
   },
 ];
+
+export const productDetail = {
+  productId: 'KB002',
+  productType: '3', // 연금저축
+  productName: 'KB 골드 연금',
+  description: '연 4.0% 복리 연금 상품',
+  enddate: '2025-05-12',
+  segmentId: 'AH',
+  recommendReason: '투자 성향이 안정형이며, 현금자산 비중 높음',
+  requiredDocuments: ['신분증', '가입 신청서'],
+  iconInfo: {
+    연금저축유형: '펀드형',
+    저축금리: '4%',
+    가입방법: '모바일',
+  },
+};

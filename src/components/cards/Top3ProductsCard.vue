@@ -4,7 +4,7 @@
       <template #default="{ item }">
         <div class="flex w-full justify-center">
           <div
-            class="border-surface-200 flex h-32 w-80 flex-col justify-start gap-2 rounded-xl border px-6 py-4"
+            class="border-surface-200 flex h-32 w-4/5 flex-col justify-start gap-2 rounded-xl border px-6 py-4"
           >
             <div class="flex items-center justify-between">
               <p class="text-lg font-semibold">{{ item.prod_name }}</p>
