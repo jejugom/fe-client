@@ -99,19 +99,19 @@ import Banner from '@/components/cards/Banner.vue';
 const router = useRouter();
 
 const goToEditAsset = () => {
-  router.push({ name: 'asset-edit-page' });
+  router.push({ name: 'asset-edit' });
 };
 
 const goToEvent = () => {
-  router.push({ name: 'event-page' });
+  router.push({ name: 'event' });
 };
 
 const goToGift = () => {
-  router.push({ name: 'gift-page' });
+  router.push({ name: 'gift' });
 };
 
 const goToNohoo = () => {
-  router.push({ name: 'nohoo-page' });
+  router.push({ name: 'nohoo' });
 };
 
 const slides = [

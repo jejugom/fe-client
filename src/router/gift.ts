@@ -12,7 +12,7 @@ import RegisterCompletePage from '@/pages/gift/JEL7_RegisterCompletePage.vue';
 const giftRoutes: RouteRecordRaw[] = [
   {
     path: '/gift',
-    name: 'gift-page',
+    name: 'gift',
     component: GiftPage,
   },
   {

@@ -9,7 +9,7 @@ import RegisterCompletePage from '@/pages/nohoo/NOL5_RegisterCompletePage.vue';
 const nohooRoutes: RouteRecordRaw[] = [
   {
     path: '/nohoo',
-    name: 'nohoo-page',
+    name: 'nohoo',
     component: NohooPage,
   },
   {

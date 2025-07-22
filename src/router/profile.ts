@@ -6,7 +6,7 @@ import EditBranchPage from '@/pages/profile/MYL2_EditBranchPage.vue';
 const profileRoutes: RouteRecordRaw[] = [
   {
     path: '/profile',
-    name: 'profile-page',
+    name: 'profile',
     component: ProfilePage,
   },
   {
