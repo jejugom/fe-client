@@ -1,0 +1,62 @@
+<template>
+  <Teleport to="body">
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center"
+      @click.self.stop
+    >
+      <!-- 투명 배경 -->
+      <div class="bg-surface-300 absolute inset-0 opacity-40"></div>
+
+      <!-- 모달 박스 -->
+      <div
+        class="stroke-primary relative z-10 rounded-2xl bg-white px-4 py-8"
+        role="dialog"
+        aria-modal="true"
+      >
+        <!-- 제목 -->
+        <div
+          v-if="title"
+          class="text-primary-300 text-center text-2xl font-bold"
+        >
+          {{ title }}
+        </div>
+
+        <!-- 슬롯 내용 -->
+        <div class="my-8 w-74">
+          <slot />
+        </div>
+
+        <!-- 고정 버튼 -->
+        <BtnSet
+          :label1="leftLabel"
+          :label2="rightLabel"
+          @click1="emit('click1')"
+          @click2="emit('click2')"
+        />
+      </div>
+    </div>
+  </Teleport>
+</template>
+
+<script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue';
+import BtnSet from '@/components/buttons/BtnSet.vue';
+
+defineProps<{
+  title?: string;
+  leftLabel?: string;
+  rightLabel?: string;
+}>();
+
+const emit = defineEmits<{
+  (e: 'click1'): void;
+  (e: 'click2'): void;
+}>();
+
+onMounted(() => {
+  document.body.style.overflow = 'hidden';
+});
+onUnmounted(() => {
+  document.body.style.overflow = '';
+});
+</script>

@@ -85,7 +85,7 @@
           맞춤형<br />추천
         </div>
       </div>
-    </div>
+      </div>
   </div>
 </template>
 
