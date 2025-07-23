@@ -59,5 +59,8 @@ export const productDetail = {
     연금저축유형: '펀드형',
     저축금리: '4%',
     가입방법: '모바일',
+    금리: undefined,
+    담보인정비율: undefined,
+    대출금리: undefined,
   },
 };

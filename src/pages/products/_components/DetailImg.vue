@@ -9,7 +9,7 @@
     >
       <img
         v-if="getIcon(item.label)"
-        :src="getIcon(item.label)"
+        :src="getIcon(item.label) ?? undefined"
         alt="icon"
         class="h-20 w-20"
       />

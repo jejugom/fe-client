@@ -40,5 +40,5 @@ import { appointment } from '@/pages/nohoo/_dummy';
 import ReserveCompleteBox from './_components/ReserveCompleteBox.vue';
 
 // 날짜 + 시간 포맷팅
-const formattedDateTime = `${appointment.date.replaceAll('-', '/')} ${appointment.time}`;
+const formattedDateTime = `${appointment.date.replace(/-/g, '/')} ${appointment.time}`;
 </script>

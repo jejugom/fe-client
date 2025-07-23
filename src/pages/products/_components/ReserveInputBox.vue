@@ -21,8 +21,8 @@ import InputBox from '@/components/forms/InputBox.vue';
 defineProps<{
   title: string;
   explain?: string;
-  modelValue: string | number;
-  type?: string;
+  modelValue: string;
+  type?: 'text' | 'password' | 'number' | 'date' | 'time';
   placeholder?: string;
   readOnly?: boolean;
 }>();

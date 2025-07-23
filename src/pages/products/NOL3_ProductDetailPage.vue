@@ -46,25 +46,31 @@ const detail = productDetail;
 const topInfos =
   detail?.productType === '1'
     ? [
-        { label: '금리', value: detail.iconInfo?.금리 },
-        { label: '가입방법', value: detail.iconInfo?.가입방법 },
+        { label: '금리', value: detail.iconInfo?.금리 ?? '' },
+        { label: '가입방법', value: detail.iconInfo?.가입방법 ?? '' },
       ]
     : detail?.productType === '2'
       ? [
-          { label: '금리', value: detail.iconInfo?.금리 },
-          { label: '가입방법', value: detail.iconInfo?.가입방법 },
+          { label: '금리', value: detail.iconInfo?.금리 ?? '' },
+          { label: '가입방법', value: detail.iconInfo?.가입방법 ?? '' },
         ]
       : detail?.productType === '3'
         ? [
-            { label: '연금저축유형', value: detail.iconInfo?.연금저축유형 },
-            { label: '저축금리', value: detail.iconInfo?.저축금리 },
-            { label: '가입방법', value: detail.iconInfo?.가입방법 },
+            {
+              label: '연금저축유형',
+              value: detail.iconInfo?.연금저축유형 ?? '',
+            },
+            { label: '저축금리', value: detail.iconInfo?.저축금리 ?? '' },
+            { label: '가입방법', value: detail.iconInfo?.가입방법 ?? '' },
           ]
         : detail?.productType === '4'
           ? [
-              { label: '담보인정비율', value: detail.iconInfo?.담보인정비율 },
-              { label: '대출금리', value: detail.iconInfo?.대출금리 },
-              { label: '가입방법', value: detail.iconInfo?.가입방법 },
+              {
+                label: '담보인정비율',
+                value: detail.iconInfo?.담보인정비율 ?? '',
+              },
+              { label: '대출금리', value: detail.iconInfo?.대출금리 ?? '' },
+              { label: '가입방법', value: detail.iconInfo?.가입방법 ?? '' },
             ]
           : [];
 

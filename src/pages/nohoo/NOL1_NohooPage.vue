@@ -69,5 +69,3 @@ const goToPersonalizedProducts = () => {
   router.push({ name: 'personalized-product' });
 };
 </script>
-
-<style scoped></style>
