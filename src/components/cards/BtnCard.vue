@@ -11,11 +11,11 @@
     @click="onClick"
   >
     <!-- 글자부분 -->
-    <div class="flex flex-col">
+    <div class="flex w-4/5 flex-col">
       <!-- 제목 -->
       <div
         :class="[
-          'text-lg font-semibold',
+          'overflow-hidden text-lg font-semibold',
           color === 'primary' && 'text-primary-500',
           color === 'secondary' && 'text-secondary-500',
           color === 'surface' && 'text-surface-500',
@@ -23,7 +23,17 @@
         >{{ title }}</div
       >
       <!-- 내용 -->
-      <div class="mt-2 mb-1">{{ content }}</div>
+      <div
+        class="text-surface-500 mt-2 mb-1 flex flex-wrap gap-1 truncate text-sm"
+      >
+        <span
+          v-for="(item, index) in contentList"
+          :key="index"
+          class="inline-block max-w-full truncate"
+        >
+          {{ item }}
+        </span>
+      </div>
       <!-- 태그 -->
       <div class="flex flex-wrap gap-1 pt-1">
         <span
@@ -70,4 +80,14 @@ const onClick = () => emit('click');
 const parsedTags = computed(
   () => props.tags?.split(',').map((t) => t.trim()) ?? []
 );
+
+// 쉼표 기준 분리 + 3개까지만 노출
+const contentList = computed(() => {
+  return (
+    props.content
+      ?.split(',')
+      .map((s) => s.trim())
+      .slice(0, 2) ?? []
+  );
+});
 </script>
