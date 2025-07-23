@@ -51,10 +51,11 @@
         <!-- 마지막 문제면 완료, 아니면 다음으로 버튼 표시 -->
         <Btn
           @click="handleNextQuestion"
-          color="primary"
+          :color="isAnswerSelected ? 'primary' : 'surface'"
           :label="isLastQuestion ? '완료' : '다음으로'"
           size="medium"
           :disabled="!isAnswerSelected"
+          class="transition-colors duration-500"
         />
       </div>
     </div>

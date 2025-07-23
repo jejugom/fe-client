@@ -6,6 +6,7 @@
     >
       <div class="mb-12 space-y-6 text-center">
         <h1 class="text-primary-300 text-2xl font-bold">
+          <!-- TODO : 사용자의 이름으로 동적으로 넣기 -->
           최승아님, 안녕하세요!
         </h1>
         <div class="space-y-2">
