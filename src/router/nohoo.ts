@@ -1,42 +1,36 @@
 import type { RouteRecordRaw } from 'vue-router';
-import NohooPage from '@/pages/nohoo/NOL1_NohooPage.vue';
-import AllProducts from '@/pages/products/NOL2_AllProducts.vue';
-import PersonalizedProducts from '@/pages/nohoo/NOL2_PersonalizedProducts.vue';
-import ProductDetailPage from '@/pages/products/NOL3_ProductDetailPage.vue';
-import RegisterPage from '@/pages/products/NOL4_RegisterPage.vue';
-import RegisterCompletePage from '@/pages/nohoo/NOL5_RegisterCompletePage.vue';
 
 const nohooRoutes: RouteRecordRaw[] = [
   {
     path: '/nohoo',
     name: 'nohoo',
-    component: NohooPage,
+    component: import('@/pages/nohoo/NOL1_NohooPage.vue'),
   },
   {
     path: '/nohoo/products',
     name: 'all-products',
-    component: AllProducts,
+    component: import('@/pages/products/NOL2_AllProducts.vue'),
   },
   {
     path: '/nohoo/products/personalized',
     name: 'personalized-product',
-    component: PersonalizedProducts,
+    component: import('@/pages/nohoo/NOL2_PersonalizedProducts.vue'),
   },
   {
     path: '/nohoo/products/:id',
     name: 'product-detail',
-    component: ProductDetailPage,
+    component: import('@/pages/nohoo/NOL3_ProductDetailPage.vue'),
     props: true,
   },
   {
     path: '/nohoo/register/:id',
     name: 'register',
-    component: RegisterPage,
+    component: import('@/pages/nohoo/NOL4_RegisterPage.vue'),
   },
   {
     path: '/nohoo/register/complete',
     name: 'register-complete',
-    component: RegisterCompletePage,
+    component: import('@/pages/nohoo/NOL5_RegisterCompletePage.vue'),
   },
 ];
 

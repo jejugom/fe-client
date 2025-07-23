@@ -45,6 +45,16 @@ const router = createRouter({
       component: NotFoundPage,
     },
   ],
+  // 페이지 이동시 항상 최상단으로 이동
+  scrollBehavior(to) {
+    if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth',
+      };
+    }
+    return { top: 0, behavior: 'smooth' };
+  },
 });
 
 export default router;
