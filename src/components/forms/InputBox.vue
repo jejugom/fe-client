@@ -23,7 +23,7 @@
 <script setup lang="ts">
 defineProps<{
   modelValue?: string;
-  type?: 'text' | 'password' | 'number';
+  type?: 'text' | 'password' | 'number' | 'date' | 'time';
   size?: 'small' | 'medium' | 'large';
   placeholder?: string;
 }>();
@@ -32,3 +32,12 @@ defineEmits<{
   (e: 'update:modelValue', value: string): void;
 }>();
 </script>
+
+<style scoped>
+input[type='date'],
+input[type='time'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+}
+</style>

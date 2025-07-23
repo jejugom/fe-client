@@ -116,19 +116,22 @@ const goToNohoo = () => {
 
 const slides = [
   {
-    title: '첫번째 맞춤형 금융상품',
+    prod_name: '첫번째 맞춤형 금융상품',
     description:
       '• 설명1설명1설명1설명1\n• 설명1설명1설명1설명1\n• 설명1설명1설명1설명1',
+    rate: 0,
   },
   {
-    title: '두번째 맞춤형 금융상품',
+    prod_name: '두번째 맞춤형 금융상품',
     description:
       '• 설명2설명2설명2설명2\n• 설명2설명2설명2설명2\n• 설명2설명2설명2설명2',
+    rate: 0,
   },
   {
-    title: '세번째 맞춤형 금융상품',
+    prod_name: '세번째 맞춤형 금융상품',
     description:
       '• 설명3설명3설명3설명3\n• 설명3설명3설명3설명3\n• 설명3설명3설명3설명3',
+    rate: 0,
   },
 ];
 </script>
