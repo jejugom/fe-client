@@ -1,126 +1,81 @@
 <template>
-  <div class="px-5 py-6">
-    <!-- 뒤로가기 버튼 -->
-    <div class="mb-4">
-      <button
-        @click="goBack"
-        class="flex items-center gap-2 text-gray-600 hover:text-gray-800"
-      >
-        <svg
-          class="h-5 w-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-        <span class="text-sm">돌아가기</span>
-      </button>
-    </div>
+  <!-- 전체 화면 구조 -->
+  <div class="flex h-screen flex-col">
+    <div class="flex-1 overflow-y-auto px-4">
+      <!-- 타이틀 -->
+      <h2 class="text-primary-300 mb-2 text-2xl font-bold">상속·증여</h2>
+      <p class="text-primary-300 mb-2 text-xl font-semibold">자주 묻는 질문</p>
+      <div class="h-8"></div>
 
-    <!-- 타이틀 -->
-    <h2 class="text-primary mb-2 text-xl font-semibold">상속·증여</h2>
-    <p class="mb-6 text-sm text-gray-700">자주 묻는 질문</p>
+      <!-- FAQ 상세 내용 -->
+      <div v-if="currentFaq">
+        <!-- 카테고리 태그 -->
+        <div class="mb-4">
+          <span class="text-primary-500 text-lg font-semibold">
+            {{ currentFaq.category === 'gift' ? '증여' : '상속' }}
+          </span>
+        </div>
 
-    <!-- FAQ 상세 내용 -->
-    <div v-if="currentFaq">
-      <!-- 카테고리 태그 -->
-      <div class="mb-4">
-        <span
-          :class="[
-            'inline-block rounded-full px-3 py-1 text-xs font-medium',
-            currentFaq.category === 'gift'
-              ? 'bg-blue-100 text-blue-600'
-              : 'bg-green-100 text-green-600',
-          ]"
-        >
-          {{ currentFaq.category === 'gift' ? '증여' : '상속' }}
-        </span>
-      </div>
+        <!-- 질문 -->
+        <h3 class="text-primary-500 mb-6 text-lg font-semibold">
+          {{ currentFaq.question }}
+        </h3>
 
-      <!-- 질문 -->
-      <h3 class="mb-6 text-lg font-semibold text-gray-800">
-        {{ currentFaq.question }}
-      </h3>
+        <!-- 답변 (우선은 하나의 일괄 답변만)-->
+        <div class="mb-16 space-y-4">
+          <p class="text-surface-500 text-sm">
+            네, 손주에게 돈을 주는 것도 '증여'로 보고 세금이 날 수 있습니다.
+          </p>
 
-      <!-- 답변 (우선은 하나의 일괄 답변만)-->
-      <div class="mb-8 space-y-4">
-        <p class="text-sm leading-relaxed text-gray-700">
-          네, 손주에게 돈을 주는 것도 '증여'로 보고 세금이 날 수 있습니다.
-        </p>
+          <p class="text-surface-500 text-sm">
+            다만, 일정 금액까지는 세금 없이 줄 수 있는 한도가 정해져 있습니다.
+          </p>
 
-        <p class="text-sm leading-relaxed text-gray-700">
-          다만, 일정 금액까지는 세금 없이 줄 수 있는 한도가 정해져 있습니다.
-        </p>
+          <p class="text-surface-500 text-sm">예를 들어,</p>
 
-        <p class="text-sm leading-relaxed text-gray-700">예를 들어,</p>
+          <ul class="text-surface-500 ml-6 list-disc space-y-1 text-sm">
+            <li>손주가 미성년자일 경우: 10년 동안 2,000만 원까지</li>
+            <li>손주가 성인일 경우: 10년 동안 5,000만 원까지</li>
+          </ul>
 
-        <ul class="ml-4 space-y-1 text-sm text-gray-700">
-          <li class="flex items-start gap-2">
-            <span class="mt-1 block h-1 w-1 rounded-full bg-gray-400"></span>
-            <span>손주가 미성년자일 경우: 10년 동안 2,000만 원까지</span>
-          </li>
-          <li class="flex items-start gap-2">
-            <span class="mt-1 block h-1 w-1 rounded-full bg-gray-400"></span>
-            <span>손주가 성인일 경우: 10년 동안 5,000만 원까지</span>
-          </li>
-        </ul>
+          <p class="text-surface-500 text-sm">
+            이 범위 안에서 주시면 세금이 없습니다.<br />
+            하지만 이 금액을 넘으면, 초과한 부분에 대해 증여세를 내야 합니다.
+          </p>
 
-        <p class="text-sm leading-relaxed text-gray-700">
-          이 범위 안에서 주시면 세금이 없습니다.<br />
-          하지만 이 금액을 넘으면, 초과한 부분에 대해 증여세를 내야 합니다.
-        </p>
-
-        <p class="text-sm leading-relaxed text-gray-700">
-          또한 손주가 아닌 자녀를 통해 간접적으로 주는 경우에도 세금이 생길 수
-          있으니<br />
-          10년 단위로 얼마를 주었는지 기록해두는 것이 중요합니다.
-        </p>
-      </div>
-
-      <!-- 관련 도구 추천 -->
-      <div class="mb-8 rounded-lg border border-blue-200 p-4">
-        <h4 class="mb-3 text-base font-semibold text-blue-800">
-          내 경우에는 어떻게 될까?
-        </h4>
-        <button
-          @click="goToStart"
-          class="w-full rounded-md bg-blue-100 py-3 font-semibold text-blue-600 shadow-sm hover:bg-blue-50"
-        >
-          증여 계획 미리 계산해보기
-        </button>
-      </div>
-
-      <!-- 관련 FAQ -->
-      <div class="mb-8">
-        <h4 class="mb-4 text-base font-semibold text-gray-800">관련 질문</h4>
-        <div class="space-y-2">
-          <div
-            v-for="relatedFaq in relatedFaqs"
-            :key="relatedFaq.id"
-            @click="goToFaqDetail(relatedFaq.id)"
-            class="cursor-pointer rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
-          >
-            <p class="text-sm text-gray-700">{{ relatedFaq.question }}</p>
+          <p class="text-surface-500 text-sm">
+            또한 손주가 아닌 자녀를 통해 간접적으로 주는 경우에도 세금이 생길 수
+            있으니<br />
+            10년 단위로 얼마를 주었는지 기록해두는 것이 중요합니다.
+          </p>
+        </div>
+        <!-- 관련 FAQ -->
+        <div class="mb-8">
+          <h4 class="text-surface-500 mb-3 text-lg font-semibold">관련 질문</h4>
+          <div class="space-y-2">
+            <div
+              v-for="relatedFaq in relatedFaqs"
+              :key="relatedFaq.id"
+              @click="goToFaqDetail(relatedFaq.id)"
+              class="border-surface-200 bg-surface-50 cursor-pointer rounded-xl border px-4 py-4"
+            >
+              <p class="text-surface-500 text-sm">{{ relatedFaq.question }}</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- FAQ를 찾을 수 없는 경우 -->
-    <div v-else class="py-8 text-center">
-      <p class="text-sm text-gray-500">요청하신 FAQ를 찾을 수 없습니다.</p>
-      <button
-        @click="goBack"
-        class="mt-4 rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
-      >
-        목록으로 돌아가기
-      </button>
+    <div class="sticky bottom-20 z-10 p-4">
+      <!-- 증여 시뮬레이션으로 이동 -->
+      <p class="text-primary-300 mb-3 text-center text-lg font-semibold">
+        내 경우에는 어떻게 될까?
+      </p>
+      <Btn
+        @click="goToStart"
+        color="primary"
+        label="증여 계획 미리 계산해보기"
+        size="large"
+      />
     </div>
   </div>
 </template>
@@ -128,6 +83,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import Btn from '@/components/buttons/Btn.vue';
 
 // 라우트 파라미터 받기 방법 1: useRoute() 사용
 const router = useRouter();
@@ -163,18 +119,18 @@ const faqData = ref([
   },
 ]);
 
-// 현재 FAQ - 두 가지 방법 중 선택
+// 현재 선택된 FAQ를 계산하는 computed 속성
 const currentFaq = computed(() => {
-  // 방법 1: useRoute() 사용
-  const faqId = parseInt(route.params.id as string);
+  const idParam = route.params.id;
+  const faqId = Number(idParam);
 
-  // 방법 2: props 사용 (위에서 props를 정의했을 경우)
-  // const faqId = parseInt(props.id || '0')
+  // id가 숫자가 아니면 null 반환
+  if (isNaN(faqId)) return null;
 
-  return faqData.value.find((faq) => faq.id === faqId);
+  return faqData.value.find((faq) => faq.id === faqId) || null;
 });
 
-// 관련 FAQ (같은 카테고리의 다른 FAQ들)
+// 관련 FAQ (같은 카테고리의 다른 FAQ들) -> 로직 수정해야함
 const relatedFaqs = computed(() => {
   if (!currentFaq.value) return [];
 
@@ -184,7 +140,7 @@ const relatedFaqs = computed(() => {
         faq.category === currentFaq.value?.category &&
         faq.id !== currentFaq.value?.id
     )
-    .slice(0, 3); // 최대 3개만
+    .slice(0, 2);
 });
 
 // 메서드
