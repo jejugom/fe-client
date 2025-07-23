@@ -1,0 +1,123 @@
+export const retirement = {
+  user_info: {
+    user_name: '김',
+    asset_info: {
+      total: 565000000,
+      real_estate: 1500000000,
+      deposit: 350000000,
+      cash: 15000000,
+      stock_fund: 300000000,
+      business_equity: 0,
+      etc: 0,
+    },
+  },
+
+  prod_top3: [
+    {
+      prod_id: 'KB001',
+      prod_name: 'KB Star 정기예금',
+      description: '6개월 예치, 안정적인 이자 수익',
+      rate: 3.2,
+    },
+    {
+      prod_id: 'KB002',
+      prod_name: 'KB 골드 연금',
+      description: '장기 투자 적합 연금 상품',
+      rate: 4.0,
+    },
+    {
+      product_id: 'KB003',
+      prod_name: 'KB 투자형 펀드',
+      description: '리스크 있지만 수익률 기대',
+      rate: 5.5,
+    },
+  ],
+  금리: [
+    { month: '2024-08', rate: 3.1 },
+    { month: '2024-09', rate: 3.05 },
+    { month: '2024-10', rate: 3.0 },
+    { month: '2024-11', rate: 2.95 },
+    { month: '2024-12', rate: 2.9 },
+    { month: '2025-01', rate: 2.85 },
+    { month: '2025-02', rate: 2.8 },
+    { month: '2025-03', rate: 2.75 },
+    { month: '2025-04', rate: 2.8 },
+    { month: '2025-05', rate: 2.9 },
+    { month: '2025-06', rate: 3.0 },
+    { month: '2025-07', rate: 3.1 },
+  ],
+  금시세: [
+    { month: '2024-08', price: 142300 },
+    { month: '2024-09', price: 143000 },
+    { month: '2024-10', price: 144500 },
+    { month: '2024-11', price: 145200 },
+    { month: '2024-12', price: 146000 },
+    { month: '2025-01', price: 147300 },
+    { month: '2025-02', price: 148000 },
+    { month: '2025-03', price: 148500 },
+    { month: '2025-04', price: 148000 },
+    { month: '2025-05', price: 147200 },
+    { month: '2025-06', price: 147800 },
+    { month: '2025-07', price: 148200 },
+  ],
+};
+
+export const retirementRecommend = [
+  {
+    productId: 'KB002',
+    productName: 'KB 골드 연금',
+    description: '연 4.0% 복리, 장기 투자에 적합한 연금 상품',
+    prft_year: '4.0',
+    endDate: '20300101',
+    productSegmentId: 'A',
+    customerSegmentId: 'A',
+  },
+  {
+    productId: 'KB004',
+    productName: 'KB Star 정기예금 (고객맞춤형)',
+    description: '안정적인 고금리, 만기 조절 가능',
+    prft_year: '3.8',
+    endDate: '20260722',
+    productSegmentId: 'S',
+    customerSegmentId: 'A',
+  },
+  {
+    productId: 'KB005',
+    productName: 'KB 글로벌 채권 펀드',
+    description: '선진국 우량 채권에 분산 투자',
+    prft_year: '5.1',
+    endDate: null,
+    productSegmentId: 'G',
+    customerSegmentId: 'A',
+  },
+  {
+    productId: 'KB006',
+    productName: 'KB 내일로 저축보험',
+    description: '비과세 혜택과 안정적인 노후 준비',
+    prft_year: '3.2',
+    endDate: '20351231',
+    productSegmentId: 'S',
+    customerSegmentId: 'A',
+  },
+  {
+    productId: 'KB007',
+    productName: 'KB 미국 대표주식 ETF',
+    description: 'S&P 500 지수를 추종하는 ETF',
+    prft_year: '9.5',
+    endDate: null,
+    productSegmentId: 'G',
+    customerSegmentId: 'A',
+  },
+];
+
+export const appointment = {
+  bank_code: 'KB-SE-001',
+  bank_name: 'KB 국민은행 세종대점',
+  bank_tel: '02-425-1111',
+  prod_code: 'PR-ETF-001',
+  date: '2025-05-11',
+  time: '12:30',
+  doc_info: {
+    required_documents: ['신분증', '가족관계증명서', '인감도장'],
+  },
+};

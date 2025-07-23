@@ -9,7 +9,10 @@ const meta: Meta<typeof InputBox> = {
     modelValue: { control: 'text' },
     placeholder: { control: 'text' },
     size: { control: 'select', options: ['small', 'medium', 'large'] },
-    type: { control: 'select', options: ['text', 'password', 'number'] },
+    type: {
+      control: 'select',
+      options: ['text', 'password', 'number', 'date', 'time'],
+    },
   },
   args: {
     modelValue: '',

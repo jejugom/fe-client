@@ -12,22 +12,24 @@
 
     <!-- 좌우 이동 버튼 -->
     <button
-      class="absolute top-1/2 -left-2 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-md transition-colors hover:bg-blue-100"
+      class="shadow-up-xs bg-primary-100 absolute top-1/2 left-0.5 z-10 -translate-y-1/2 rounded-full p-2 shadow-xs"
       @click="prevSlide"
     >
-      <
+      <img :src="ArrowPrev" alt="이전" class="h-4 w-4" />
     </button>
     <button
-      class="absolute top-1/2 -right-2 z-10 -translate-y-1/2 rounded-full bg-white p-2 shadow-md transition-colors hover:bg-blue-100"
+      class="bg-primary-100 shadow-up-xs absolute top-1/2 right-0.5 z-10 -translate-y-1/2 rounded-full p-2 shadow-xs"
       @click="nextSlide"
     >
-      >
+      <img :src="ArrowAfter" alt="다음" class="h-4 w-4" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import ArrowAfter from '@/assets/icons/ArrowAfter.svg';
+import ArrowPrev from '@/assets/icons/ArrowPrev.svg';
 
 const props = defineProps<{
   items: any[];

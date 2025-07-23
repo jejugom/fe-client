@@ -1,15 +1,20 @@
 <template>
   <div>
-    <h2 class="mt-3 mb-3 text-lg font-semibold text-gray-800">
-      든든한 노후를 위한 금융상품 3선
-    </h2>
     <Carousel :items="items">
       <template #default="{ item }">
-        <div class="h-full w-full rounded-lg border-2 border-blue-200 p-5">
-          <p class="font-semibold text-gray-800">{{ item.title }}</p>
-          <p class="mt-1 text-sm whitespace-pre-line text-gray-600">
-            {{ item.description }}
-          </p>
+        <div class="flex w-full justify-center">
+          <div
+            class="border-surface-200 flex h-32 w-4/5 flex-col justify-start gap-2 rounded-xl border p-4"
+          >
+            <div class="flex items-center justify-between">
+              <p class="text-lg font-semibold">{{ item.prod_name }}</p>
+              <p class="text-primary-300 font-semibold"> {{ item.rate }}%</p>
+            </div>
+
+            <p class="whitespace-pre-line">
+              {{ item.description }}
+            </p>
+          </div>
         </div>
       </template>
     </Carousel>
@@ -21,8 +26,9 @@ import Carousel from '@/components/carousel/Carousel.vue';
 
 defineProps<{
   items: {
-    title: string;
+    prod_name: string;
     description: string;
+    rate: number;
   }[];
 }>();
 </script>

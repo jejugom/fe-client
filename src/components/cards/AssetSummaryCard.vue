@@ -1,23 +1,66 @@
 <template>
-  <div class="my-5 mb-8 rounded-xl border-2 border-blue-200 bg-blue-50 p-5">
-    <div class="mb-2 text-base font-bold text-blue-500">
-      {{ userName }} 님의 자산 현황
+  <div class="border-primary-300 flex flex-col gap-2 rounded-xl border p-4">
+    <div class="font-semibold">
+      <div class="text-lg">
+        <span class="text-primary-300">{{ userName }}</span> 님의 자산 현황
+      </div>
+      <div>{{ assetAmount?.toLocaleString() }} 원</div>
     </div>
-    <div class="mb-5 text-lg font-bold text-gray-800">
-      {{ assetAmount }} 원
-    </div>
-    <!-- Chart Placeholder -->
-    <div
-      class="flex aspect-square w-full items-center justify-center rounded-md bg-gray-200 p-8 text-center"
-    >
-      자산 현황 파이차트
-    </div>
+    <apexchart type="pie" :options="chartOptions" :series="series"></apexchart>
   </div>
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue';
+
+const props = defineProps({
   userName: String,
   assetAmount: [String, Number],
+  assetInfo: Object,
+});
+
+const series = computed(() => {
+  if (!props.assetInfo) return [];
+  return [
+    props.assetInfo.real_estate,
+    props.assetInfo.deposit,
+    props.assetInfo.cash,
+    props.assetInfo.stock_fund,
+    props.assetInfo.business_equity,
+    props.assetInfo.etc,
+  ];
+});
+
+const chartOptions = computed(() => {
+  const labels = ['부동산', '예적금', '현금', '주식/펀드', '사업지분', '기타'];
+  const values = series.value;
+  const sortedIndices = values
+    .map((val, idx) => ({ val, idx }))
+    .sort((a, b) => b.val - a.val)
+    .slice(0, 3) // 상위 3개만
+    .map((item) => item.idx);
+
+  return {
+    chart: {
+      type: 'pie',
+    },
+    labels,
+    legend: {
+      show: false,
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: (val, { seriesIndex }) => {
+        return sortedIndices.includes(seriesIndex)
+          ? `${labels[seriesIndex]}: ${val.toFixed(1)}%`
+          : '';
+      },
+    },
+    tooltip: {
+      y: {
+        formatter: (val) => `${val.toLocaleString()} 원`,
+      },
+    },
+  };
 });
 </script>
