@@ -132,7 +132,9 @@ const handleNextQuestion = () => {
     // TODO: 여기에 API 호출 로직 추가
     // 성공 시 다음 페이지로 이동
     // 실패 시 에러 메시지 표시
-    router.push({ name: 'asset-signup-complete' });
+
+    // TODO: 다음으로 지점 설정으로 넘어가는데, 뭔가 설명이 필요할 것 같음.
+    router.push({ name: 'edit-branch' });
   } else {
     currentQuestionIndex.value++;
   }
