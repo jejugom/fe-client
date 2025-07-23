@@ -86,7 +86,7 @@
   <!-- 자산 추가 / 수정 모달 -->
   <Modal
     v-if="isModalOpen"
-    title="자산 정보 등록 및 수정"
+    :title="modalTitle"
     leftLabel="취소"
     rightLabel="저장"
     @click1="closeModal"
@@ -186,7 +186,9 @@ import Modal from '@/components/modals/Modal.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import InputBox from '@/components/forms/InputBox.vue'; // InputBox 추가
 
+const modalTitle = ref('자산 정보 등록 및 수정');
 const isModalOpen = ref(false);
+
 const newAsset = ref({
   id: null, // 기존 자산 수정 시 사용될 ID
   name: '',
@@ -269,6 +271,9 @@ const filteredAssets = computed(() => {
 const editAsset = (assetId) => {
   const assetToEdit = assets.value.find((asset) => asset.id === assetId);
   if (assetToEdit) {
+    // 모달 제목 설정
+    modalTitle.value = '자산 수정하기';
+
     // 기존 자산 데이터를 newAsset에 복사하여 모달에 표시
     newAsset.value = { ...assetToEdit };
     isModalOpen.value = true;
@@ -288,6 +293,10 @@ const completeAsset = (assetId) => {
 
 const addNewAsset = () => {
   // 새 자산 추가를 위해 폼 초기화
+
+  // 모달 제목 설정
+  modalTitle.value = '새 자산 등록하기';
+
   newAsset.value = {
     id: null,
     name: '',
