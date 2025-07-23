@@ -1,40 +1,67 @@
 <template>
-  <div class="p-4">
-    <h2 class="mb-3 text-xl font-bold">{{ currentQuestion.title }}</h2>
-    <p class="mb-5 text-sm whitespace-pre-line text-gray-600">{{
-      currentQuestion.description
-    }}</p>
-
-    <div class="mb-6 flex flex-col gap-3">
-      <button
-        v-for="(option, idx) in currentQuestion.options"
-        :key="idx"
-        :class="[
-          'rounded-lg border p-4 text-base font-semibold',
-          selectedAnswer === option.value
-            ? 'border-yellow-400 bg-yellow-100'
-            : 'border-gray-200 bg-white',
-        ]"
-        @click="selectedAnswer = option.value"
+  <div class="flex-1 px-4">
+    <h2 class="text-primary-300 mb-2 text-2xl font-bold"
+      >증여 시뮬레이션 질문</h2
+    >
+    <p class="text-surface-500 mb-8 text-base">
+      증여 계획을 쉽게 정리할 수 있도록 질문을 통해 도와드립니다.
+    </p>
+    <div
+      class="border-surface-200 stroke-primary mb-6 flex flex-col gap-3 rounded-xl border px-8 py-12"
+    >
+      <h2 class="text-primary-500 mb-3 text-center text-lg font-semibold">{{
+        currentQuestion.title
+      }}</h2>
+      <p
+        class="text-surface-300 mb-5 text-center text-sm whitespace-pre-line"
+        >{{ currentQuestion.description }}</p
       >
-        {{ option.label }}
-      </button>
+
+      <div class="flex flex-col gap-3">
+        <Btn
+          v-for="(option, idx) in currentQuestion.options"
+          :key="idx"
+          :label="option.label"
+          size="large"
+          class="rounded-lg p-4 text-lg font-semibold"
+          :class="
+            selectedAnswer === option.value
+              ? 'border-gold bg-secondary-100 border'
+              : 'border-surface-200 border'
+          "
+          @click="selectedAnswer = option.value"
+        />
+      </div>
     </div>
 
-    <button
-      class="w-full rounded-lg bg-blue-400 py-4 text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-      :disabled="!selectedAnswer"
-      @click="goToNext"
-    >
-      다음으로
-    </button>
+    <div class="flex flex-col gap-3">
+      <Btn
+        v-if="step > 0"
+        @click="goToPrev"
+        color="secondary"
+        label="이전 문항으로 돌아가기"
+        size="large"
+      />
+      <Btn
+        :class="[
+          selectedAnswer
+            ? 'bg-primary-100 text-surface-500'
+            : 'border-surface-200 text-surface-500 border bg-transparent',
+        ]"
+        :disabled="!selectedAnswer"
+        @click="goToNext"
+        color="primary"
+        :label="step === questions.length - 1 ? '결과 확인하기' : '다음으로'"
+        size="large"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-
+import Btn from '@/components/buttons/Btn.vue';
 const router = useRouter();
 
 const step = ref(0);
@@ -96,6 +123,13 @@ function goToNext() {
   } else {
     console.log('사용자 응답:', answers.value);
     router.push({ name: 'gift-result', params: { answers: answers.value } }); // 결과 페이지로 이동
+  }
+}
+
+function goToPrev() {
+  if (step.value > 0) {
+    step.value--;
+    selectedAnswer.value = answers.value[step.value] || '';
   }
 }
 </script>
