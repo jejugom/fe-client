@@ -92,14 +92,15 @@
     @click1="closeModal"
     @click2="saveNewAsset"
   >
-    <div class="flex flex-col space-y-4">
+    <div class="flex flex-col items-center space-y-6">
       <!-- 1. 카테고리 선택 -->
-      <div class="text-center">
+      <div class="flex w-68 flex-col items-start">
         <label
           for="assetCategory"
-          class="text-primary-500 mb-2 block font-semibold"
-          >카테고리를 선택하세요</label
+          class="text-primary-500 mb-2 block text-sm font-semibold"
         >
+          카테고리를 선택하세요
+        </label>
         <SelectBox id="assetCategory" v-model="newAsset.type" size="medium">
           <option value="">선택해주세요</option>
           <option value="부동산">부동산</option>
@@ -110,11 +111,14 @@
         </SelectBox>
       </div>
 
-      <!-- 2. 자산 이름 입력 (20자 이내) -->
-      <div class="text-center">
-        <label for="assetName" class="text-primary-500 mb-2 block font-semibold"
-          >자산 이름 (20자 이내)</label
+      <!-- 2. 자산 이름 입력 -->
+      <div class="flex w-68 flex-col items-start">
+        <label
+          for="assetName"
+          class="text-primary-500 mb-2 block text-sm font-semibold"
         >
+          자산 이름 (20자 이내)
+        </label>
         <InputBox
           id="assetName"
           placeholder="자산 이름 입력"
@@ -124,13 +128,17 @@
         />
       </div>
 
-      <!-- 3. (사업체, 지분 고른 경우 보여주기) 사업체 종류 선택-->
-      <div v-if="newAsset.type === '사업체/지분'" class="text-center">
+      <!-- 3. 사업체 종류 선택 (조건부 표시) -->
+      <div
+        v-if="newAsset.type === '사업체/지분'"
+        class="flex w-68 flex-col items-start"
+      >
         <label
           for="companyType"
-          class="text-primary-500 mb-2 block font-semibold"
-          >사업체 종류 선택</label
+          class="text-primary-500 mb-2 block text-sm font-semibold"
         >
+          사업체 종류 선택
+        </label>
         <SelectBox
           id="companyType"
           v-model="newAsset.companyType"
@@ -143,29 +151,30 @@
       </div>
 
       <!-- 4. 금액 입력 -->
-      <div class="text-center">
+      <div class="flex w-68 flex-col items-start">
         <label
           for="assetAmount"
-          class="text-primary-500 mb-2 block font-semibold"
-          >금액 (만원 단위)</label
+          class="text-primary-500 mb-2 block text-sm font-semibold"
         >
-        <div class="relative inline-block">
+          금액 (만원 단위)
+        </label>
+        <div class="relative w-full">
           <InputBox
+            id="assetAmount"
             placeholder="금액을 입력하세요"
             v-model="newAsset.amount"
             size="medium"
             type="text"
           />
           <span
-            class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform"
-            >만원</span
+            class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-sm"
           >
+            만원
+          </span>
         </div>
-        <div class="mt-1 text-right">
-          <p class="text-sm text-red-300"
-            >결과: {{ formatAmount(newAsset.amount) }}</p
-          >
-        </div>
+        <p class="mt-1 w-68 text-right text-sm text-red-300">
+          결과: {{ formatAmount(newAsset.amount) }}
+        </p>
       </div>
     </div>
   </Modal>
@@ -327,10 +336,16 @@ const saveNewAsset = () => {
   } else {
     // 새 자산 추가
     assets.value.push({
-      id: Date.now(), // 간단한 고유 ID 생성
+      id: Date.now(), // 임시로 간단한 고유 ID 생성
       ...assetToSave,
     });
   }
+
+  // TODO : 서버에 자산 정보 저장 로직 추가
+  console.log('저장된 자산:', assetToSave);
+  // axios.post()
+
+  // 모달 닫기
   closeModal();
 };
 </script>
