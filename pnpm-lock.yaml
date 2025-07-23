@@ -26,9 +26,6 @@ importers:
       vue:
         specifier: ^3.5.17
         version: 3.5.17(typescript@5.8.3)
-      vue-apexcharts:
-        specifier: ^1.7.0
-        version: 1.7.0(apexcharts@5.3.0)(vue@3.5.17(typescript@5.8.3))
       vue-awesome-paginate:
         specifier: ^1.2.0
         version: 1.2.0(typescript@5.8.3)
@@ -2364,12 +2361,6 @@ packages:
   vscode-uri@3.1.0:
     resolution: {integrity: sha512-/BpdSx+yCQGnCvecbyXdxHDkuk55/G3xwnC0GqY4gmQ3j+A+g8kzzgB4Nk/SINjqn6+waqw3EgbVF2QKExkRxQ==}
 
-  vue-apexcharts@1.7.0:
-    resolution: {integrity: sha512-QMpvBllJ1XvFsK4dwcbyxKalVpHfJnoqsNWszY55HJk/Sn7WP1f5YUv4JIzugqu4GTQB6gLcCVwwPDQFtwr0oQ==}
-    peerDependencies:
-      apexcharts: '>=4.0.0'
-      vue: ^2.5.17
-
   vue-awesome-paginate@1.2.0:
     resolution: {integrity: sha512-+eYXo666E2n8NhpEPIdJcQEoJBDLo7wMGv45D2+i/VDntz2o422jRNcMQ7VESMgAcKyReWMwb9m99esCjsO/hw==}
 
@@ -4629,11 +4620,6 @@ snapshots:
   void-elements@3.1.0: {}
 
   vscode-uri@3.1.0: {}
-
-  vue-apexcharts@1.7.0(apexcharts@5.3.0)(vue@3.5.17(typescript@5.8.3)):
-    dependencies:
-      apexcharts: 5.3.0
-      vue: 3.5.17(typescript@5.8.3)
 
   vue-awesome-paginate@1.2.0(typescript@5.8.3):
     dependencies:

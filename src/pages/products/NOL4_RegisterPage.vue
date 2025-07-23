@@ -34,16 +34,16 @@
     </div>
 
     <!-- 가입 예약 버튼 -->
-    <div
+    <!-- <div
       class="fixed bottom-[calc(5rem+2rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-    >
-      <Btn
-        color="primary"
-        label="가입 예약하기"
-        size="large"
-        @click="goToRegister"
-      />
-    </div>
+    > -->
+    <Btn
+      color="primary"
+      label="가입 예약하기"
+      size="large"
+      @click="goToRegister"
+    />
+    <!-- </div> -->
 
     <!-- 버튼 높이만큼 공간 확보
     <div class="h-20"></div> -->

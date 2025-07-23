@@ -21,7 +21,7 @@
 
     <!-- 가입 예약 버튼 -->
     <div
-      class="fixed bottom-[calc(5rem+2rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+      class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
     >
       <Btn
         color="primary"
@@ -30,9 +30,6 @@
         @click="goToRegister"
       />
     </div>
-
-    <!-- 버튼 높이만큼 공간 확보
-    <div class="h-20"></div> -->
   </div>
 </template>
 

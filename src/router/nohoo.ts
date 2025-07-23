@@ -19,13 +19,13 @@ const nohooRoutes: RouteRecordRaw[] = [
   {
     path: '/nohoo/products/:id',
     name: 'product-detail',
-    component: import('@/pages/nohoo/NOL3_ProductDetailPage.vue'),
+    component: import('@/pages/products/NOL3_ProductDetailPage.vue'),
     props: true,
   },
   {
     path: '/nohoo/register/:id',
     name: 'register',
-    component: import('@/pages/nohoo/NOL4_RegisterPage.vue'),
+    component: import('@/pages/products/NOL4_RegisterPage.vue'),
   },
   {
     path: '/nohoo/register/complete',

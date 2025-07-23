@@ -32,3 +32,12 @@ defineEmits<{
   (e: 'update:modelValue', value: string): void;
 }>();
 </script>
+
+<style scoped>
+input[type='date'],
+input[type='time'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+}
+</style>
