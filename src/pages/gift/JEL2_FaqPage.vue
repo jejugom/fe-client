@@ -1,94 +1,85 @@
 <template>
-  <div class="flex-1 overflow-y-auto px-4">
-    <!-- 타이틀 -->
-    <h2 class="text-primary-300 mb-2 text-2xl font-bold">상속·증여</h2>
-    <p class="text-primary-300 mb-2 text-xl font-semibold">자주 묻는 질문</p>
-    <div class="h-8"></div>
+  <!-- 타이틀 -->
+  <h2 class="text-primary-300 mb-2 text-2xl font-bold">상속·증여</h2>
+  <p class="text-primary-300 mb-2 text-xl font-semibold">자주 묻는 질문</p>
+  <div class="h-8"></div>
 
-    <!-- 검색 섹션 -->
-    <div class="mb-6">
-      <div class="mb-4 flex items-center gap-2">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="무엇이 궁금하신가요? (예: 상속세)"
-          class="border-surface-200 placeholder-surface-300 focus:border-surface-300 h-16 flex-1 rounded-lg border px-4 py-3 text-base focus:outline-none"
-          @keypress.enter="handleSearch"
-        />
-        <!-- <InputBox
-          v-model="searchQuery"
-          placeholder="무엇이 궁금하신가요? (예: 보험)"
-          size="large"
-          type="text"
-          @keypress.enter="handleSearch"
-        /> -->
-        <button
-          @click="handleSearch"
-          class="h-16 rounded-lg bg-blue-100 px-5 py-3 text-sm font-semibold text-gray-700"
-        >
-          검색
-        </button>
-      </div>
-    </div>
-    <!-- 카테고리 탭 -->
-    <div class="mb-4 flex">
+  <!-- 검색 섹션 -->
+  <div class="mb-6">
+    <div class="mb-4 flex items-center gap-2">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="무엇이 궁금하신가요? (예: 상속세)"
+        class="border-surface-200 placeholder-surface-300 focus:border-surface-300 h-16 flex-1 rounded-lg border px-4 py-3 text-base focus:outline-none"
+        @keypress.enter="handleSearch"
+      />
       <button
-        @click="toggleTab('gift')"
-        :class="[
-          'mr-2 w-1/2 rounded-xl px-4 py-3 text-base font-semibold transition-none',
-          activeTab === 'gift'
-            ? 'bg-primary-100 text-primary-500'
-            : 'border-surface-200 text-surface-500 border',
-        ]"
+        @click="handleSearch"
+        class="h-16 rounded-lg bg-blue-100 px-5 py-3 text-sm font-semibold text-gray-700"
       >
-        증여
-      </button>
-
-      <button
-        @click="toggleTab('inheritance')"
-        :class="[
-          'ml-2 w-1/2 rounded-xl px-4 py-3 text-base font-semibold transition-none',
-          activeTab === 'inheritance'
-            ? 'bg-primary-100 text-primary-500'
-            : 'border-surface-200 text-surface-500 border',
-        ]"
-      >
-        상속
+        검색
       </button>
     </div>
+  </div>
+  <!-- 카테고리 탭 -->
+  <div class="mb-4 flex">
+    <button
+      @click="toggleTab('gift')"
+      :class="[
+        'mr-2 w-1/2 rounded-xl px-4 py-3 text-base font-semibold transition-none',
+        activeTab === 'gift'
+          ? 'bg-primary-100 text-primary-500'
+          : 'border-surface-200 text-surface-500 border',
+      ]"
+    >
+      증여
+    </button>
 
-    <!-- FAQ 목록 -->
-    <div class="space-y-4">
-      <div
-        v-for="faq in filteredFaqs"
-        :key="faq.id"
-        class="border-surface-200 cursor-pointer rounded-xl border p-4 py-5 shadow-sm transition"
-        @click="goToFaqDetail(faq.id)"
-      >
-        <div class="flex items-start gap-4">
-          <!-- 왼쪽 카테고리 파란색 텍스트 -->
-          <span class="text-primary-300 text-base font-semibold">
-            {{ faq.category === 'gift' ? '증여' : '상속' }}
-          </span>
+    <button
+      @click="toggleTab('inheritance')"
+      :class="[
+        'ml-2 w-1/2 rounded-xl px-4 py-3 text-base font-semibold transition-none',
+        activeTab === 'inheritance'
+          ? 'bg-primary-100 text-primary-500'
+          : 'border-surface-200 text-surface-500 border',
+      ]"
+    >
+      상속
+    </button>
+  </div>
 
-          <!-- 오른쪽 질문 텍스트 -->
-          <p class="text-base leading-snug font-medium text-gray-800">
-            {{ faq.question }}
-          </p>
-        </div>
+  <!-- FAQ 목록 -->
+  <div class="space-y-4">
+    <div
+      v-for="faq in filteredFaqs"
+      :key="faq.id"
+      class="border-surface-200 cursor-pointer rounded-xl border p-4 py-5 shadow-sm transition"
+      @click="goToFaqDetail(faq.id)"
+    >
+      <div class="flex items-start gap-4">
+        <!-- 왼쪽 카테고리 파란색 텍스트 -->
+        <span class="text-primary-300 text-base font-semibold">
+          {{ faq.category === 'gift' ? '증여' : '상속' }}
+        </span>
+
+        <!-- 오른쪽 질문 텍스트 -->
+        <p class="text-base leading-snug font-medium text-gray-800">
+          {{ faq.question }}
+        </p>
       </div>
     </div>
+  </div>
 
-    <!-- FAQ가 없을 때 -->
-    <div v-if="filteredFaqs.length === 0" class="py-10 text-center">
-      <p class="text-sm text-gray-500">
-        {{
-          searchQuery
-            ? '검색 결과가 없습니다.'
-            : '해당 카테고리에 FAQ가 없습니다.'
-        }}
-      </p>
-    </div>
+  <!-- FAQ가 없을 때 -->
+  <div v-if="filteredFaqs.length === 0" class="py-10 text-center">
+    <p class="text-sm text-gray-500">
+      {{
+        searchQuery
+          ? '검색 결과가 없습니다.'
+          : '해당 카테고리에 FAQ가 없습니다.'
+      }}
+    </p>
   </div>
 </template>
 

@@ -1,290 +1,284 @@
 <template>
-  <div class="flex-1 overflow-y-auto px-4">
-    <!-- 자산 차트 영역 -->
-    <section>
+  <!-- 자산 차트 영역 -->
+  <section>
+    <div
+      class="text-surface-500 bg-gradient-cross-1 mb-8 flex h-80 items-center justify-center"
+    >
+      Chart
+    </div>
+  </section>
+
+  <!-- 자산 카테고리 선택 -->
+  <section>
+    <h2 class="text-primary-300 mb-2 text-2xl font-bold">
+      증여 자산 카테고리 선택하기
+    </h2>
+    <p class="text-surface-500 mb-4 text-sm">
+      수증자에게 어떤 자산을 나눠주실지 카테고리를 선택하면<br />
+      해당 카테고리의 세부 자산을 선택하실 수 있습니다.
+    </p>
+
+    <div class="mb-8 grid grid-cols-3 gap-8">
+      <!-- 반복 렌더링 -->
       <div
-        class="text-surface-500 bg-gradient-cross-1 mb-8 flex h-80 items-center justify-center"
+        v-for="(assets, category) in allAssets"
+        :key="category"
+        @click="openModal(category)"
+        class="border-primary-300 flex flex-col items-center justify-between rounded-xl border p-4"
       >
-        Chart
-      </div>
-    </section>
-
-    <!-- 자산 카테고리 선택 -->
-    <section>
-      <h2 class="text-primary-300 mb-2 text-2xl font-bold">
-        증여 자산 카테고리 선택하기
-      </h2>
-      <p class="text-surface-500 mb-4 text-sm">
-        수증자에게 어떤 자산을 나눠주실지 카테고리를 선택하면<br />
-        해당 카테고리의 세부 자산을 선택하실 수 있습니다.
-      </p>
-
-      <div class="mb-8 grid grid-cols-3 gap-8">
-        <!-- 반복 렌더링 -->
+        <div class="bg-gradient-cross-1 mb-2 h-12 w-12"></div>
+        <div class="text-primary-500 text-sm font-semibold">{{ category }}</div>
         <div
-          v-for="(assets, category) in allAssets"
-          :key="category"
-          @click="openModal(category)"
-          class="border-primary-300 flex flex-col items-center justify-between rounded-xl border p-4"
+          class="text-primary-500 bg-primary-100 mt-2 w-full rounded-xl py-2 text-center text-sm font-semibold"
         >
-          <div class="bg-gradient-cross-1 mb-2 h-12 w-12"></div>
-          <div class="text-primary-500 text-sm font-semibold">{{
-            category
-          }}</div>
-          <div
-            class="text-primary-500 bg-primary-100 mt-2 w-full rounded-xl py-2 text-center text-sm font-semibold"
-          >
-            {{ assets.filter((a) => a.selected).length }}/{{ assets.length }}
-          </div>
+          {{ assets.filter((a) => a.selected).length }}/{{ assets.length }}
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 자산 선택 모달 -->
-    <Modal
-      v-if="isModalOpen"
-      @click1="closeModal"
-      @click2="closeModal"
-      title="자산 선택"
-      leftLabel="취소"
-      rightLabel="완료"
-    >
-      <!-- 단위 -->
-      <div class="text-surface-300 text-right text-xs">단위: 원</div>
+  <!-- 자산 선택 모달 -->
+  <Modal
+    v-if="isModalOpen"
+    @click1="closeModal"
+    @click2="closeModal"
+    title="자산 선택"
+    leftLabel="취소"
+    rightLabel="완료"
+  >
+    <!-- 단위 -->
+    <div class="text-surface-300 text-right text-xs">단위: 원</div>
 
-      <!-- 자산 리스트 -->
-      <ul class="mt-4 space-y-3">
-        <li
-          v-for="(item, index) in assetList"
-          :key="index"
-          class="border-surface-300 flex items-center justify-between rounded-xl border px-4 py-3"
-          @click="item.selected = !item.selected"
-        >
-          <!-- 자산 정보 -->
-          <div>
-            <p class="text-surface-500 text-base font-semibold">{{
-              item.name
-            }}</p>
-            <p class="text-surface-500 text-base">{{ item.amount }}</p>
-          </div>
-
-          <!-- 체크박스 -->
-          <input
-            type="checkbox"
-            class="accent-primary-300 h-5 w-5"
-            :checked="item.selected"
-          />
-        </li>
-      </ul>
-    </Modal>
-
-    <!-- 수증자 정보 입력 -->
-    <section>
-      <h2 class="text-primary-300 mb-2 text-2xl font-bold"
-        >수증자 정보 입력하기</h2
+    <!-- 자산 리스트 -->
+    <ul class="mt-4 space-y-3">
+      <li
+        v-for="(item, index) in assetList"
+        :key="index"
+        class="border-surface-300 flex items-center justify-between rounded-xl border px-4 py-3"
+        @click="item.selected = !item.selected"
       >
-      <p class="text-surface-500 mb-4 text-sm"
-        >자산을 받으실 분 정보를 입력해 주세요.</p
-      >
-
-      <div class="space-y-3">
-        <!-- 수증자 카드 리스트 -->
-        <div
-          v-for="(recipient, index) in recipients"
-          :key="index"
-          class="border-primary-300 flex h-32 w-full items-center justify-between gap-6 rounded-lg border px-8 py-4"
-        >
-          <!-- 왼쪽 수증자 정보 -->
-          <div class="flex flex-col">
-            <div class="text-primary-500 text-lg font-semibold">{{
-              recipient.name
-            }}</div>
-
-            <div class="text-surface-500 text-sm">
-              <p>{{ recipient.relationship }}</p>
-              <p>{{ recipient.birth }}</p>
-              <p
-                >{{ recipient.maritalStatus }} | {{ recipient.incomeStatus }}</p
-              >
-            </div>
-          </div>
-
-          <!-- 수정/삭제 버튼 그룹 -->
-          <div class="flex gap-2">
-            <!-- 수정 버튼 -->
-            <button
-              @click="editRecipient(index)"
-              class="bg-primary-100 text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg text-center text-lg font-semibold"
-            >
-              수정
-            </button>
-
-            <!-- 삭제 버튼 -->
-            <button
-              @click="confirmDeleteRecipient(index)"
-              class="text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg bg-red-100 text-center text-lg font-semibold"
-            >
-              삭제
-            </button>
-          </div>
+        <!-- 자산 정보 -->
+        <div>
+          <p class="text-surface-500 text-base font-semibold">{{
+            item.name
+          }}</p>
+          <p class="text-surface-500 text-base">{{ item.amount }}</p>
         </div>
 
-        <!-- 추가하기 버튼 -->
-        <Btn
-          color="surface"
-          label="+ 추가하기"
-          size="large"
-          @click="openRecipientModal"
+        <!-- 체크박스 -->
+        <input
+          type="checkbox"
+          class="accent-primary-300 h-5 w-5"
+          :checked="item.selected"
         />
-      </div>
+      </li>
+    </ul>
+  </Modal>
 
-      <!-- 다음 버튼 -->
-      <div class="mt-8 flex flex-col gap-3">
-        <Btn @click="goToQuiz" color="primary" label="다음으로" size="large" />
-      </div>
-    </section>
-    <Modal
-      v-if="isRecipientModalOpen"
-      @click1="cancelRecipientModal"
-      @click2="handleAddRecipient"
-      title="수증자 정보 입력"
-      leftLabel="취소"
-      rightLabel="완료"
+  <!-- 수증자 정보 입력 -->
+  <section>
+    <h2 class="text-primary-300 mb-2 text-2xl font-bold"
+      >수증자 정보 입력하기</h2
     >
-      <div class="space-y-4">
-        <!-- 이름 -->
-        <div>
-          <label class="text-primary-500 text-base font-semibold"
-            >이름을 입력하세요</label
-          >
-          <InputBox
-            placeholder="입력하세요"
-            size="large"
-            type="text"
-            v-model="newRecipient.name"
-          />
-          <p
-            v-if="showErrors && !newRecipient.name.trim()"
-            class="mt-1 text-xs text-red-500"
-          >
-            이름을 입력해주세요
-          </p>
+    <p class="text-surface-500 mb-4 text-sm"
+      >자산을 받으실 분 정보를 입력해 주세요.</p
+    >
+
+    <div class="space-y-3">
+      <!-- 수증자 카드 리스트 -->
+      <div
+        v-for="(recipient, index) in recipients"
+        :key="index"
+        class="border-primary-300 flex h-32 w-full items-center justify-between gap-6 rounded-lg border px-8 py-4"
+      >
+        <!-- 왼쪽 수증자 정보 -->
+        <div class="flex flex-col">
+          <div class="text-primary-500 text-lg font-semibold">{{
+            recipient.name
+          }}</div>
+
+          <div class="text-surface-500 text-sm">
+            <p>{{ recipient.relationship }}</p>
+            <p>{{ recipient.birth }}</p>
+            <p>{{ recipient.maritalStatus }} | {{ recipient.incomeStatus }}</p>
+          </div>
         </div>
 
-        <!-- 관계 -->
-        <div>
-          <label class="text-primary-500 text-base font-semibold"
-            >증여자와의 관계를 입력하세요</label
+        <!-- 수정/삭제 버튼 그룹 -->
+        <div class="flex gap-2">
+          <!-- 수정 버튼 -->
+          <button
+            @click="editRecipient(index)"
+            class="bg-primary-100 text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg text-center text-lg font-semibold"
           >
-          <select
-            v-model="newRecipient.relationship"
-            class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
-          >
-            <option disabled value="">선택하세요</option>
-            <option>자녀</option>
-            <option>배우자</option>
-            <option>손자녀</option>
-            <option>형제자매</option>
-            <option>기타</option>
-          </select>
-          <p
-            v-if="showErrors && !newRecipient.relationship"
-            class="mt-1 text-xs text-red-500"
-          >
-            관계를 선택해주세요
-          </p>
-        </div>
+            수정
+          </button>
 
-        <!-- 생년월일 -->
-        <div>
-          <label class="text-primary-500 text-base font-semibold"
-            >생년월일을 입력하세요</label
+          <!-- 삭제 버튼 -->
+          <button
+            @click="confirmDeleteRecipient(index)"
+            class="text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg bg-red-100 text-center text-lg font-semibold"
           >
-          <input
-            type="date"
-            v-model="newRecipient.birth"
-            class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
-          />
-          <p
-            v-if="showErrors && !newRecipient.birth"
-            class="mt-1 text-xs text-red-500"
-          >
-            생년월일을 입력해주세요
-          </p>
-        </div>
-
-        <!-- 결혼 여부 -->
-        <div>
-          <label class="text-primary-500 text-base font-semibold"
-            >수증자의 결혼 여부를 알려주세요</label
-          >
-          <select
-            v-model="newRecipient.maritalStatus"
-            class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
-          >
-            <option disabled value="">선택하세요</option>
-            <option>미혼</option>
-            <option>결혼</option>
-            <option>기타</option>
-          </select>
-          <p
-            v-if="showErrors && !newRecipient.maritalStatus"
-            class="mt-1 text-xs text-red-500"
-          >
-            결혼 여부를 선택해주세요
-          </p>
-        </div>
-
-        <!-- 소득 여부 -->
-        <div>
-          <label class="text-primary-500 text-base font-semibold"
-            >수증자의 소득 유무를 알려주세요</label
-          >
-          <p class="text-primary-500 text-xs"
-            >총급여 100만 원 초과 시 ‘소득 있음’을 선택하세요.</p
-          >
-
-          <select
-            v-model="newRecipient.incomeStatus"
-            class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
-          >
-            <option disabled value="">선택하세요</option>
-            <option>소득 있음</option>
-            <option>소득 없음</option>
-            <option>소득 모름</option>
-          </select>
-          <p
-            v-if="showErrors && !newRecipient.incomeStatus"
-            class="mt-1 text-xs text-red-500"
-          >
-            소득 여부를 선택해주세요
-          </p>
+            삭제
+          </button>
         </div>
       </div>
-    </Modal>
 
-    <!-- 삭제 확인 모달 -->
-    <Modal
-      v-if="isDeleteModalOpen"
-      @click1="cancelDelete"
-      @click2="confirmDelete"
-      title="수증자 삭제"
-      leftLabel="취소"
-      rightLabel="삭제"
-    >
-      <div class="py-4 text-center">
-        <p class="text-surface-500 text-base">
-          <span class="text-primary-500 font-semibold">{{
-            recipientToDelete?.name
-          }}</span>
-          수증자를 삭제하시겠습니까?
-        </p>
-        <p class="text-surface-400 mt-2 text-sm">
-          삭제된 수증자 정보는 복구할 수 없습니다.
+      <!-- 추가하기 버튼 -->
+      <Btn
+        color="surface"
+        label="+ 추가하기"
+        size="large"
+        @click="openRecipientModal"
+      />
+    </div>
+
+    <!-- 다음 버튼 -->
+    <div class="mt-8 flex flex-col gap-3">
+      <Btn @click="goToQuiz" color="primary" label="다음으로" size="large" />
+    </div>
+  </section>
+  <Modal
+    v-if="isRecipientModalOpen"
+    @click1="cancelRecipientModal"
+    @click2="handleAddRecipient"
+    title="수증자 정보 입력"
+    leftLabel="취소"
+    rightLabel="완료"
+  >
+    <div class="space-y-4">
+      <!-- 이름 -->
+      <div>
+        <label class="text-primary-500 text-base font-semibold"
+          >이름을 입력하세요</label
+        >
+        <InputBox
+          placeholder="입력하세요"
+          size="large"
+          type="text"
+          v-model="newRecipient.name"
+        />
+        <p
+          v-if="showErrors && !newRecipient.name.trim()"
+          class="mt-1 text-xs text-red-500"
+        >
+          이름을 입력해주세요
         </p>
       </div>
-    </Modal>
-  </div>
+
+      <!-- 관계 -->
+      <div>
+        <label class="text-primary-500 text-base font-semibold"
+          >증여자와의 관계를 입력하세요</label
+        >
+        <select
+          v-model="newRecipient.relationship"
+          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
+        >
+          <option disabled value="">선택하세요</option>
+          <option>자녀</option>
+          <option>배우자</option>
+          <option>손자녀</option>
+          <option>형제자매</option>
+          <option>기타</option>
+        </select>
+        <p
+          v-if="showErrors && !newRecipient.relationship"
+          class="mt-1 text-xs text-red-500"
+        >
+          관계를 선택해주세요
+        </p>
+      </div>
+
+      <!-- 생년월일 -->
+      <div>
+        <label class="text-primary-500 text-base font-semibold"
+          >생년월일을 입력하세요</label
+        >
+        <input
+          type="date"
+          v-model="newRecipient.birth"
+          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
+        />
+        <p
+          v-if="showErrors && !newRecipient.birth"
+          class="mt-1 text-xs text-red-500"
+        >
+          생년월일을 입력해주세요
+        </p>
+      </div>
+
+      <!-- 결혼 여부 -->
+      <div>
+        <label class="text-primary-500 text-base font-semibold"
+          >수증자의 결혼 여부를 알려주세요</label
+        >
+        <select
+          v-model="newRecipient.maritalStatus"
+          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
+        >
+          <option disabled value="">선택하세요</option>
+          <option>미혼</option>
+          <option>결혼</option>
+          <option>기타</option>
+        </select>
+        <p
+          v-if="showErrors && !newRecipient.maritalStatus"
+          class="mt-1 text-xs text-red-500"
+        >
+          결혼 여부를 선택해주세요
+        </p>
+      </div>
+
+      <!-- 소득 여부 -->
+      <div>
+        <label class="text-primary-500 text-base font-semibold"
+          >수증자의 소득 유무를 알려주세요</label
+        >
+        <p class="text-primary-500 text-xs"
+          >총급여 100만 원 초과 시 ‘소득 있음’을 선택하세요.</p
+        >
+
+        <select
+          v-model="newRecipient.incomeStatus"
+          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
+        >
+          <option disabled value="">선택하세요</option>
+          <option>소득 있음</option>
+          <option>소득 없음</option>
+          <option>소득 모름</option>
+        </select>
+        <p
+          v-if="showErrors && !newRecipient.incomeStatus"
+          class="mt-1 text-xs text-red-500"
+        >
+          소득 여부를 선택해주세요
+        </p>
+      </div>
+    </div>
+  </Modal>
+
+  <!-- 삭제 확인 모달 -->
+  <Modal
+    v-if="isDeleteModalOpen"
+    @click1="cancelDelete"
+    @click2="confirmDelete"
+    title="수증자 삭제"
+    leftLabel="취소"
+    rightLabel="삭제"
+  >
+    <div class="py-4 text-center">
+      <p class="text-surface-500 text-base">
+        <span class="text-primary-500 font-semibold">{{
+          recipientToDelete?.name
+        }}</span>
+        수증자를 삭제하시겠습니까?
+      </p>
+      <p class="text-surface-400 mt-2 text-sm">
+        삭제된 수증자 정보는 복구할 수 없습니다.
+      </p>
+    </div>
+  </Modal>
 </template>
 
 <script setup lang="ts">

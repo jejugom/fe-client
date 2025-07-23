@@ -1,60 +1,55 @@
 <template>
-  <div class="flex-1 px-4">
-    <h2 class="text-primary-300 mb-2 text-2xl font-bold"
-      >증여 시뮬레이션 질문</h2
-    >
-    <p class="text-surface-500 mb-8 text-base">
-      증여 계획을 쉽게 정리할 수 있도록 질문을 통해 도와드립니다.
-    </p>
-    <div
-      class="border-surface-200 stroke-primary mb-6 flex flex-col gap-3 rounded-xl border px-8 py-12"
-    >
-      <h2 class="text-primary-500 mb-3 text-center text-lg font-semibold">{{
-        currentQuestion.title
-      }}</h2>
-      <p
-        class="text-surface-300 mb-5 text-center text-sm whitespace-pre-line"
-        >{{ currentQuestion.description }}</p
-      >
-
-      <div class="flex flex-col gap-3">
-        <Btn
-          v-for="(option, idx) in currentQuestion.options"
-          :key="idx"
-          :label="option.label"
-          size="large"
-          class="rounded-lg p-4 text-lg font-semibold"
-          :class="
-            selectedAnswer === option.value
-              ? 'border-gold bg-secondary-100 border'
-              : 'border-surface-200 border'
-          "
-          @click="selectedAnswer = option.value"
-        />
-      </div>
-    </div>
+  <h2 class="text-primary-300 mb-2 text-2xl font-bold">증여 시뮬레이션 질문</h2>
+  <p class="text-surface-500 mb-8 text-base">
+    증여 계획을 쉽게 정리할 수 있도록 질문을 통해 도와드립니다.
+  </p>
+  <div
+    class="border-surface-200 stroke-primary mb-6 flex flex-col gap-3 rounded-xl border px-8 py-12"
+  >
+    <h2 class="text-primary-500 mb-3 text-center text-lg font-semibold">{{
+      currentQuestion.title
+    }}</h2>
+    <p class="text-surface-300 mb-5 text-center text-sm whitespace-pre-line">{{
+      currentQuestion.description
+    }}</p>
 
     <div class="flex flex-col gap-3">
       <Btn
-        v-if="step > 0"
-        @click="goToPrev"
-        color="secondary"
-        label="이전 문항으로 돌아가기"
+        v-for="(option, idx) in currentQuestion.options"
+        :key="idx"
+        :label="option.label"
         size="large"
-      />
-      <Btn
-        :class="[
-          selectedAnswer
-            ? 'bg-primary-100 text-surface-500'
-            : 'border-surface-200 text-surface-500 border bg-transparent',
-        ]"
-        :disabled="!selectedAnswer"
-        @click="goToNext"
-        color="primary"
-        :label="step === questions.length - 1 ? '결과 확인하기' : '다음으로'"
-        size="large"
+        class="rounded-lg p-4 text-lg font-semibold"
+        :class="
+          selectedAnswer === option.value
+            ? 'border-gold bg-secondary-100 border'
+            : 'border-surface-200 border'
+        "
+        @click="selectedAnswer = option.value"
       />
     </div>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <Btn
+      v-if="step > 0"
+      @click="goToPrev"
+      color="secondary"
+      label="이전 문항으로 돌아가기"
+      size="large"
+    />
+    <Btn
+      :class="[
+        selectedAnswer
+          ? 'bg-primary-100 text-surface-500'
+          : 'border-surface-200 text-surface-500 border bg-transparent',
+      ]"
+      :disabled="!selectedAnswer"
+      @click="goToNext"
+      color="primary"
+      :label="step === questions.length - 1 ? '결과 확인하기' : '다음으로'"
+      size="large"
+    />
   </div>
 </template>
 
