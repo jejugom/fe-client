@@ -1,11 +1,10 @@
 import type { RouteRecordRaw } from 'vue-router';
-import EventPage from '@/pages/event/EVL1_EventPage.vue';
 
 const eventRoutes: RouteRecordRaw[] = [
   {
     path: '/event',
     name: 'event',
-    component: EventPage,
+    component: import('@/pages/event/EVL1_EventPage.vue'),
   },
 ];
 
