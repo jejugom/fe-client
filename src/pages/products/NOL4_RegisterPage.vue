@@ -18,6 +18,7 @@
         placeholder="지점 선택"
         :readOnly="true"
         v-model="branchValue"
+        @click="showBranchModal = true"
       />
       <ReserveInputBox
         title="방문 날짜"
@@ -48,6 +49,17 @@
     <!-- 버튼 높이만큼 공간 확보
     <div class="h-20"></div> -->
   </div>
+
+  <Modal
+    v-if="showBranchModal"
+    title="가까운 지점 안내"
+    leftLabel="닫기"
+    rightLabel="선택"
+    @click1="showBranchModal = false"
+    @click2="selectBranch"
+  >
+    <BranchSelectModal ref="branchModalRef" />
+  </Modal>
 </template>
 
 <script setup lang="ts">
@@ -57,6 +69,8 @@ import { productDetail } from './_dummy';
 import DetailImg from './_components/DetailImg.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import ReserveInputBox from './_components/ReserveInputBox.vue';
+import Modal from '@/components/modals/Modal.vue';
+import BranchSelectModal from './_components/BranchSelectModal.vue';
 
 const router = useRouter();
 const detail = productDetail;
@@ -102,5 +116,18 @@ const goToRegister = () => {
   router.push({
     name: 'register-complete',
   });
+};
+
+// 모달 관련
+const branchModalRef = ref<InstanceType<typeof BranchSelectModal> | null>(null);
+const showBranchModal = ref(false);
+const selectBranch = () => {
+  const selected = branchModalRef.value?.getSelectedBranch?.();
+  if (selected) {
+    branchValue.value = selected;
+    showBranchModal.value = false;
+  } else {
+    alert('지점을 선택해주세요.');
+  }
 };
 </script>
