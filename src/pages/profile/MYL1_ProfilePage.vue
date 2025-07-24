@@ -37,8 +37,9 @@
     />
   </div>
 
-  <!-- 회원탈퇴 -->
-  <div class="text-right text-xs text-red-300">
+  <!-- 로그아웃 및 회원탈퇴 -->
+  <div class="flex items-center justify-end gap-4 text-xs text-red-300">
+    <div class="cursor-pointer underline" @click="handleLogout">로그아웃</div>
     <p class="cursor-pointer underline" @click="showModal = true">회원탈퇴</p>
   </div>
 
@@ -104,8 +105,8 @@ const confirmWithdrawal = () => {
 const menuItems = ref([
   { id: 'asset', title: '자산 추가 등록·수정' },
   { id: 'calculation', title: '자산 재연동' },
+  { id: 'investment-reset', title: '투자 성향 재설정' },
   { id: 'revenue', title: '내 지점 수정' },
-  { id: 'logout', title: '로그아웃' },
 ]);
 
 const handleMenuClick = (menuId) => {
@@ -127,8 +128,17 @@ const handleMenuClick = (menuId) => {
         query: { from: 'profile' },
       });
       break;
-    case 'logout':
+    case 'investment-reset':
+      router.push({
+        name: 'asset-custom-start',
+        query: { from: 'profile' },
+      });
       break;
   }
+};
+
+const handleLogout = () => {
+  // 로그아웃 로직 추가
+  console.log('로그아웃');
 };
 </script>
