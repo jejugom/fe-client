@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineExpose, defineEmits, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import Btn from '@/components/buttons/Btn.vue';
 

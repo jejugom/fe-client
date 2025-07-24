@@ -21,61 +21,126 @@
         @click="showBranchModal = true"
       />
       <ReserveInputBox
-        title="방문 날짜"
-        type="date"
-        placeholder="날짜를 선택하세요"
-        v-model="dateValue"
-      />
-      <ReserveInputBox
-        title="방문 시각"
-        type="time"
-        placeholder="시각을 선택하세요"
-        v-model="timeValue"
+        title="방문 날짜･시각"
+        :readOnly="true"
+        placeholder="예약 날짜와 시간을 선택하세요"
+        :modelValue="displayDateTime"
+        @click="showDateTimeModal = true"
       />
     </div>
-
-    <!-- 가입 예약 버튼 -->
-    <!-- <div
-      class="fixed bottom-[calc(5rem+2rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-    > -->
     <Btn
       color="primary"
       label="가입 예약하기"
       size="large"
       @click="goToRegister"
+      :disabled="!selectedReservation.date || !selectedReservation.time"
     />
-    <!-- </div> -->
 
-    <!-- 버튼 높이만큼 공간 확보
-    <div class="h-20"></div> -->
+    <Modal
+      v-if="showBranchModal"
+      title="가까운 지점 안내"
+      leftLabel="닫기"
+      rightLabel="선택"
+      @click1="showBranchModal = false"
+      @click2="selectBranch"
+    >
+      <BranchSelectModal ref="branchModalRef" />
+    </Modal>
+
+    <Modal
+      v-if="showDateTimeModal"
+      title="방문 날짜 및 시간 선택"
+      leftLabel="취소"
+      rightLabel="선택 완료"
+      @click1="showDateTimeModal = false"
+      @click2="submitDateTime"
+    >
+      <DateTimeSelectModal
+        ref="dateTimeModalRef"
+        @close="showDateTimeModal = false"
+        @select="handleDateTimeSelect"
+      />
+    </Modal>
   </div>
-
-  <Modal
-    v-if="showBranchModal"
-    title="가까운 지점 안내"
-    leftLabel="닫기"
-    rightLabel="선택"
-    @click1="showBranchModal = false"
-    @click2="selectBranch"
-  >
-    <BranchSelectModal ref="branchModalRef" />
-  </Modal>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { productDetail } from './_dummy';
 import DetailImg from './_components/DetailImg.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import ReserveInputBox from './_components/ReserveInputBox.vue';
 import Modal from '@/components/modals/Modal.vue';
 import BranchSelectModal from './_components/BranchSelectModal.vue';
+import DateTimeSelectModal from './_components/DateTimeSelectModal.vue';
 
 const router = useRouter();
-const detail = productDetail;
+const modelValue = ref(productDetail?.productName || '');
+const branchValue = ref('국민은행 세종대점');
+
+const showBranchModal = ref(false);
+const showDateTimeModal = ref(false);
+
+const branchModalRef = ref<InstanceType<typeof BranchSelectModal> | null>(null);
+const dateTimeModalRef = ref<InstanceType<typeof DateTimeSelectModal> | null>(
+  null
+);
+
+const selectedReservation = ref<{ date: string | null; time: string | null }>({
+  date: null,
+  time: null,
+});
+
+const reservationDisplay = computed(() => {
+  const { date, time } = selectedReservation.value;
+  return date && time ? `${date} ${time}` : '';
+});
+
+const goToRegister = () => {
+  if (selectedReservation.value.date && selectedReservation.value.time) {
+    console.log('예약 완료:', selectedReservation.value);
+    router.push({ name: 'register-complete' });
+  } else {
+    alert('방문 날짜와 시간을 선택해주세요.');
+  }
+};
+
+const selectBranch = () => {
+  const selected = branchModalRef.value?.getSelectedBranch?.();
+  if (selected) {
+    branchValue.value = selected;
+    showBranchModal.value = false;
+  } else {
+    alert('지점을 선택해주세요.');
+  }
+};
+
+const handleDateTimeSelect = (payload: { date: string; time: string }) => {
+  selectedReservation.value = payload;
+};
+
+const submitDateTime = () => {
+  dateTimeModalRef.value?.submitSelection();
+};
+
+const displayDateTime = computed(() => {
+  const { date, time } = selectedReservation.value;
+  if (!date || !time) return '';
+
+  const [year, month, day] = date.split('-').map(Number);
+  const [hour, minute] = time.split(':').map(Number);
+
+  const ampm = hour < 12 ? '오전' : '오후';
+  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+  const formattedHour = displayHour.toString().padStart(1, '0');
+  const formattedMinute = minute.toString().padStart(2, '0');
+
+  return `${year}년 ${String(month).padStart(2, '0')}월 ${String(day).padStart(2, '0')}일 ${ampm} ${formattedHour}시 ${formattedMinute}분`;
+});
 
 // 타입별 상단 정보 정의
+const detail = productDetail;
 const topInfos =
   detail?.productType === '1'
     ? [
@@ -106,28 +171,4 @@ const topInfos =
               { label: '가입방법', value: detail.iconInfo?.가입방법 ?? '' },
             ]
           : [];
-
-const modelValue = ref(detail?.productName || '');
-const branchValue = ref('국민은행 세종대점');
-const dateValue = ref('');
-const timeValue = ref('');
-
-const goToRegister = () => {
-  router.push({
-    name: 'register-complete',
-  });
-};
-
-// 모달 관련
-const branchModalRef = ref<InstanceType<typeof BranchSelectModal> | null>(null);
-const showBranchModal = ref(false);
-const selectBranch = () => {
-  const selected = branchModalRef.value?.getSelectedBranch?.();
-  if (selected) {
-    branchValue.value = selected;
-    showBranchModal.value = false;
-  } else {
-    alert('지점을 선택해주세요.');
-  }
-};
 </script>

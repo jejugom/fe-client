@@ -8,11 +8,13 @@ import VueAwesomePaginate from 'vue-awesome-paginate';
 import App from './App.vue';
 import router from './router';
 import VueApexCharts from 'vue3-apexcharts';
+import VCalendar from 'v-calendar';
 
 const app = createApp(App);
 
 app.use(VueAwesomePaginate);
 app.use(createPinia());
+app.use(VCalendar, {});
 app.use(router);
 app.component('apexchart', VueApexCharts);
 
