@@ -41,6 +41,11 @@
   <div
     class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border flex w-full max-w-150 -translate-x-1/2 flex-col gap-3 px-5"
   >
+    <!-- 마지막 문제일 때 지점 설정 안내 텍스트 -->
+    <p v-if="isLastQuestion" class="text-surface-300 mb-2 text-center text-sm">
+      다음으로 나의 지점 설정을 도와드릴게요.
+    </p>
+
     <!-- 첫 문제가 아닐 때만 이전으로 버튼 표시 -->
     <Btn
       v-if="currentQuestionIndex > 0"
