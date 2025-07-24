@@ -30,15 +30,18 @@
     </div>
   </div>
 
-  <div class="flex flex-col gap-3">
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+  >
     <Btn
       v-if="step > 0"
       @click="goToPrev"
-      color="secondary"
+      color="surface"
       label="이전 문항으로 돌아가기"
       size="large"
     />
     <Btn
+      class="mt-3"
       :class="[
         selectedAnswer
           ? 'bg-primary-100 text-surface-500'
