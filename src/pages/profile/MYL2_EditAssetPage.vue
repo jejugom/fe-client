@@ -92,6 +92,7 @@
           :class="getInputClass('type')"
           @focus="handleFocus('type')"
           @blur="handleBlur('type')"
+          @update:modelValue="clearFieldError('type')"
         >
           <option value="">선택해주세요</option>
           <option value="부동산">부동산</option>
@@ -119,6 +120,7 @@
           :class="getInputClass('name')"
           @focus="handleFocus('name')"
           @blur="handleBlur('name')"
+          @update:modelValue="clearFieldError('name')"
         />
       </div>
 
@@ -140,6 +142,7 @@
           :class="getInputClass('companyType')"
           @focus="handleFocus('companyType')"
           @blur="handleBlur('companyType')"
+          @update:modelValue="clearFieldError('companyType')"
         >
           <option value="">선택해주세요</option>
           <option value="개인 사업자">개인 사업자</option>
@@ -165,6 +168,7 @@
             :class="getInputClass('amount')"
             @focus="handleFocus('amount')"
             @blur="handleBlur('amount')"
+            @update:modelValue="clearFieldError('amount')"
           />
           <span
             class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-sm"
@@ -213,14 +217,17 @@ const focusedField = ref('');
 // 포커스 이벤트 핸들러
 const handleFocus = (fieldName) => {
   focusedField.value = fieldName;
-  // 포커스할 때 해당 필드의 전송 에러 클리어
-  if (validationErrors.value[fieldName]) {
-    validationErrors.value[fieldName] = false;
-  }
 };
 
 const handleBlur = (fieldName) => {
   focusedField.value = '';
+};
+
+// 입력 값 변경 시 에러 상태 클리어
+const clearFieldError = (fieldName) => {
+  if (validationErrors.value[fieldName]) {
+    validationErrors.value[fieldName] = false;
+  }
 };
 
 // 입력 필드의 클래스 결정 함수 (computed로 변경하여 자동 업데이트)
@@ -234,29 +241,14 @@ const getInputClass = computed(() => {
     const isCompanyTypeRequired =
       newAsset.value.type === '사업체/지분' && fieldName === 'companyType';
 
-    // 실시간 유효성 검사 (빈 필드 검사)
-    let isEmpty = false;
-    if (fieldName === 'type' && !fieldValue) {
-      isEmpty = true;
-    } else if (fieldName === 'name' && !fieldValue) {
-      isEmpty = true;
-    } else if (
-      fieldName === 'amount' &&
-      (!fieldValue || fieldValue === '' || isNaN(fieldValue))
-    ) {
-      isEmpty = true;
-    } else if (isCompanyTypeRequired && !fieldValue) {
-      isEmpty = true;
-    }
-
     // 기본 테두리 클래스
     let classes = '!border-1';
 
-    if (hasSubmitError || isEmpty) {
+    // 저장 버튼을 눌렀을 때만 에러 검사
+    if (hasSubmitError) {
       classes += ' !border-red-300';
     } else {
-      // 포커스 상태이거나 유효성 검사 통과 시
-      // 포커스일때 테일윈드 통일성을 위해 secondary 테두리 적용 고려
+      // 기본 surface 색상 유지
       classes += ' !border-surface-300';
     }
 
