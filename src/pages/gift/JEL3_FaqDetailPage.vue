@@ -63,15 +63,19 @@
   </div>
 
   <!-- 하단 설명과 버튼 -->
-  <p class="text-primary-300 mb-3 text-center text-lg font-semibold">
-    내 경우에는 어떻게 될까?
-  </p>
-  <Btn
-    @click="goToStart"
-    color="primary"
-    label="증여 계획 미리 계산해보기"
-    size="large"
-  />
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+  >
+    <p class="text-primary-300 mb-3 text-center text-lg font-semibold">
+      내 경우에는 어떻게 될까?
+    </p>
+    <Btn
+      @click="goToStart"
+      color="primary"
+      label="증여 계획 미리 계산해보기"
+      size="large"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
