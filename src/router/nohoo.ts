@@ -4,33 +4,33 @@ const nohooRoutes: RouteRecordRaw[] = [
   {
     path: '/nohoo',
     name: 'nohoo',
-    component: import('@/pages/nohoo/NOL1_NohooPage.vue'),
+    component: () => import('@/pages/nohoo/NOL1_NohooPage.vue'),
   },
   {
     path: '/nohoo/products',
     name: 'all-products',
-    component: import('@/pages/products/NOL2_AllProducts.vue'),
+    component: () => import('@/pages/products/NOL2_AllProducts.vue'),
   },
   {
     path: '/nohoo/products/personalized',
     name: 'personalized-product',
-    component: import('@/pages/nohoo/NOL2_PersonalizedProducts.vue'),
+    component: () => import('@/pages/nohoo/NOL2_PersonalizedProducts.vue'),
   },
   {
     path: '/nohoo/products/:id',
     name: 'product-detail',
-    component: import('@/pages/products/NOL3_ProductDetailPage.vue'),
+    component: () => import('@/pages/products/NOL3_ProductDetailPage.vue'),
     props: true,
   },
   {
     path: '/nohoo/register/:id',
     name: 'register',
-    component: import('@/pages/products/NOL4_RegisterPage.vue'),
+    component: () => import('@/pages/products/NOL4_RegisterPage.vue'),
   },
   {
     path: '/nohoo/register/complete',
     name: 'register-complete',
-    component: import('@/pages/nohoo/NOL5_RegisterCompletePage.vue'),
+    component: () => import('@/pages/nohoo/NOL5_RegisterCompletePage.vue'),
   },
 ];
 

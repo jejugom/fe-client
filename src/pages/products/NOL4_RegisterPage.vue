@@ -28,14 +28,16 @@
         @click="showDateTimeModal = true"
       />
     </div>
+
     <Btn
-      color="primary"
+      :color="isFormValid ? 'primary' : 'surface'"
       label="가입 예약하기"
       size="large"
       @click="goToRegister"
-      :disabled="!selectedReservation.date || !selectedReservation.time"
+      :disabled="!isFormValid"
     />
 
+    <!-- 모달들 -->
     <Modal
       v-if="showBranchModal"
       title="가까운 지점 안내"
@@ -77,8 +79,7 @@ import DateTimeSelectModal from './_components/DateTimeSelectModal.vue';
 
 const router = useRouter();
 const modelValue = ref(productDetail?.productName || '');
-const branchValue = ref('국민은행 세종대점');
-
+const branchValue = ref('');
 const showBranchModal = ref(false);
 const showDateTimeModal = ref(false);
 
@@ -92,18 +93,55 @@ const selectedReservation = ref<{ date: string | null; time: string | null }>({
   time: null,
 });
 
-const reservationDisplay = computed(() => {
+const invalidFields = ref({
+  model: false,
+  branch: false,
+  datetime: false,
+});
+
+const isFormValid = computed(() => {
+  return (
+    !!modelValue.value &&
+    !!branchValue.value &&
+    !!selectedReservation.value.date &&
+    !!selectedReservation.value.time
+  );
+});
+
+const displayDateTime = computed(() => {
   const { date, time } = selectedReservation.value;
-  return date && time ? `${date} ${time}` : '';
+  if (!date || !time) return '';
+
+  const [year, month, day] = date.split('-').map(Number);
+  const [hour, minute] = time.split(':').map(Number);
+  const ampm = hour < 12 ? '오전' : '오후';
+  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+  const formattedMinute = minute.toString().padStart(2, '0');
+
+  return `${year}년 ${String(month).padStart(2, '0')}월 ${String(day).padStart(2, '0')}일 ${ampm} ${displayHour}시 ${formattedMinute}분`;
 });
 
 const goToRegister = () => {
-  if (selectedReservation.value.date && selectedReservation.value.time) {
-    console.log('예약 완료:', selectedReservation.value);
-    router.push({ name: 'register-complete' });
-  } else {
-    alert('방문 날짜와 시간을 선택해주세요.');
+  if (!isFormValid.value) {
+    alert('모든 값을 입력해주세요.');
+    invalidFields.value = {
+      model: !modelValue.value,
+      branch: !branchValue.value,
+      datetime: !(
+        selectedReservation.value.date && selectedReservation.value.time
+      ),
+    };
+    return;
   }
+
+  console.log('예약 완료:', {
+    상품명: modelValue.value,
+    지점: branchValue.value,
+    날짜: selectedReservation.value.date,
+    시각: selectedReservation.value.time,
+  });
+
+  router.push({ name: 'register-complete' });
 };
 
 const selectBranch = () => {
@@ -124,22 +162,7 @@ const submitDateTime = () => {
   dateTimeModalRef.value?.submitSelection();
 };
 
-const displayDateTime = computed(() => {
-  const { date, time } = selectedReservation.value;
-  if (!date || !time) return '';
-
-  const [year, month, day] = date.split('-').map(Number);
-  const [hour, minute] = time.split(':').map(Number);
-
-  const ampm = hour < 12 ? '오전' : '오후';
-  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-  const formattedHour = displayHour.toString().padStart(1, '0');
-  const formattedMinute = minute.toString().padStart(2, '0');
-
-  return `${year}년 ${String(month).padStart(2, '0')}월 ${String(day).padStart(2, '0')}일 ${ampm} ${formattedHour}시 ${formattedMinute}분`;
-});
-
-// 타입별 상단 정보 정의
+// 상단 정보
 const detail = productDetail;
 const topInfos =
   detail?.productType === '1'
