@@ -36,7 +36,7 @@
     <Btn
       v-if="step > 0"
       @click="goToPrev"
-      color="secondary"
+      color="surface"
       label="이전 문항으로 돌아가기"
       size="large"
     />
