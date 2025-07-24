@@ -1,27 +1,22 @@
 <template>
   <!-- 새로운 자산 등록 Content -->
   <div class="space-y-8">
-    <!-- 새 자산 추가 버튼 -->
-    <Btn
-      @click="addNewAsset"
-      color="primary"
-      label="새로운 자산 등록"
-      size="large"
-    />
-
-    <!-- 자산 유형 필터 섹션 -->
+    <!-- 자산 등록 버튼과 카테고리 필터 섹션 -->
     <div class="flex items-center justify-between">
-      <div></div>
-      <div>
-        <SelectBox v-model="selectedOption" size="medium">
-          <option value="">전체 자산 보기</option>
-          <option value="부동산">부동산</option>
-          <option value="예금/현금">예금/현금</option>
-          <option value="주식/펀드">주식/펀드</option>
-          <option value="사업체/지분">사업체/지분</option>
-          <option value="기타 자산">기타 자산</option>
-        </SelectBox>
-      </div>
+      <Btn
+        @click="addNewAsset"
+        color="primary"
+        label="자산 등록"
+        size="small"
+      />
+      <SelectBox v-model="selectedOption" size="small">
+        <option value="">전체</option>
+        <option value="부동산">부동산</option>
+        <option value="예금/현금">예금/현금</option>
+        <option value="주식/펀드">주식/펀드</option>
+        <option value="사업체/지분">사업체/지분</option>
+        <option value="기타 자산">기타 자산</option>
+      </SelectBox>
     </div>
 
     <!-- 자산 목록 -->
@@ -65,6 +60,11 @@
         </div>
       </div>
     </div>
+
+    <!-- 완료 버튼 -->
+    <div class="mt-8">
+      <Btn @click="goToProfilePage" color="primary" label="완료" size="large" />
+    </div>
   </div>
 
   <!-- 자산 추가 / 수정 모달 -->
@@ -85,7 +85,14 @@
         >
           카테고리를 선택하세요
         </label>
-        <SelectBox id="assetCategory" v-model="newAsset.type" size="medium">
+        <SelectBox
+          id="assetCategory"
+          v-model="newAsset.type"
+          size="medium"
+          :class="getInputClass('type')"
+          @focus="handleFocus('type')"
+          @blur="handleBlur('type')"
+        >
           <option value="">선택해주세요</option>
           <option value="부동산">부동산</option>
           <option value="예금/현금">예금/현금</option>
@@ -109,6 +116,9 @@
           v-model="newAsset.name"
           size="medium"
           type="text"
+          :class="getInputClass('name')"
+          @focus="handleFocus('name')"
+          @blur="handleBlur('name')"
         />
       </div>
 
@@ -127,6 +137,9 @@
           id="companyType"
           v-model="newAsset.companyType"
           size="medium"
+          :class="getInputClass('companyType')"
+          @focus="handleFocus('companyType')"
+          @blur="handleBlur('companyType')"
         >
           <option value="">선택해주세요</option>
           <option value="개인 사업자">개인 사업자</option>
@@ -149,6 +162,9 @@
             v-model="newAsset.amount"
             size="medium"
             type="text"
+            :class="getInputClass('amount')"
+            @focus="handleFocus('amount')"
+            @blur="handleBlur('amount')"
           />
           <span
             class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-sm"
@@ -166,10 +182,13 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import Modal from '@/components/modals/Modal.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import InputBox from '@/components/forms/InputBox.vue'; // InputBox 추가
 import Btn from '@/components/buttons/Btn.vue';
+
+const router = useRouter();
 
 const modalTitle = ref('자산 정보 등록 및 수정');
 const isModalOpen = ref(false);
@@ -180,6 +199,69 @@ const newAsset = ref({
   type: '',
   amount: null, // 만원 단위 숫자로 저장
   companyType: '', // 사업체/지분 선택 시 사용
+});
+
+const validationErrors = ref({
+  type: false,
+  name: false,
+  amount: false,
+  companyType: false,
+});
+
+const focusedField = ref('');
+
+// 포커스 이벤트 핸들러
+const handleFocus = (fieldName) => {
+  focusedField.value = fieldName;
+  // 포커스할 때 해당 필드의 전송 에러 클리어
+  if (validationErrors.value[fieldName]) {
+    validationErrors.value[fieldName] = false;
+  }
+};
+
+const handleBlur = (fieldName) => {
+  focusedField.value = '';
+};
+
+// 입력 필드의 클래스 결정 함수 (computed로 변경하여 자동 업데이트)
+const getInputClass = computed(() => {
+  return (fieldName) => {
+    const fieldValue = newAsset.value[fieldName];
+    const isFocused = focusedField.value === fieldName;
+    const hasSubmitError = validationErrors.value[fieldName];
+
+    // 사업체/지분 선택 시 사업체 종류 필드 추가 검사
+    const isCompanyTypeRequired =
+      newAsset.value.type === '사업체/지분' && fieldName === 'companyType';
+
+    // 실시간 유효성 검사 (빈 필드 검사)
+    let isEmpty = false;
+    if (fieldName === 'type' && !fieldValue) {
+      isEmpty = true;
+    } else if (fieldName === 'name' && !fieldValue) {
+      isEmpty = true;
+    } else if (
+      fieldName === 'amount' &&
+      (!fieldValue || fieldValue === '' || isNaN(fieldValue))
+    ) {
+      isEmpty = true;
+    } else if (isCompanyTypeRequired && !fieldValue) {
+      isEmpty = true;
+    }
+
+    // 기본 테두리 클래스
+    let classes = '!border-1';
+
+    if (hasSubmitError || isEmpty) {
+      classes += ' !border-red-300';
+    } else {
+      // 포커스 상태이거나 유효성 검사 통과 시
+      // 포커스일때 테일윈드 통일성을 위해 secondary 테두리 적용 고려
+      classes += ' !border-surface-300';
+    }
+
+    return classes;
+  };
 });
 
 const selectedOption = ref('');
@@ -261,6 +343,18 @@ const editAsset = (assetId) => {
 
     // 기존 자산 데이터를 newAsset에 복사하여 모달에 표시
     newAsset.value = { ...assetToEdit };
+
+    // 유효성 검사 초기화
+    validationErrors.value = {
+      type: false,
+      name: false,
+      amount: false,
+      companyType: false,
+    };
+
+    // 포커스 상태 초기화
+    focusedField.value = '';
+
     isModalOpen.value = true;
   }
 };
@@ -269,11 +363,6 @@ const deleteAsset = (assetId) => {
   console.log('Delete asset:', assetId);
   // 자산 삭제 로직
   assets.value = assets.value.filter((asset) => asset.id !== assetId);
-};
-
-const completeAsset = (assetId) => {
-  console.log('Complete asset:', assetId);
-  // 자산 완료 로직
 };
 
 const addNewAsset = () => {
@@ -289,28 +378,74 @@ const addNewAsset = () => {
     amount: null,
     companyType: '',
   };
+
+  // 유효성 검사 초기화
+  validationErrors.value = {
+    type: false,
+    name: false,
+    amount: false,
+    companyType: false,
+  };
+
+  // 포커스 상태 초기화
+  focusedField.value = '';
+
   isModalOpen.value = true;
 };
 
 const closeModal = () => {
+  // 유효성 검사 초기화
+  validationErrors.value = {
+    type: false,
+    name: false,
+    amount: false,
+    companyType: false,
+  };
+  // 포커스 상태 초기화
+  focusedField.value = '';
   isModalOpen.value = false;
 };
 
 const saveNewAsset = () => {
+  // 유효성 검사 초기화
+  validationErrors.value = {
+    type: false,
+    name: false,
+    amount: false,
+    companyType: false,
+  };
+
+  const missingFields = [];
+
   // 필수 필드 유효성 검사
+  if (!newAsset.value.type) {
+    validationErrors.value.type = true;
+    missingFields.push('카테고리');
+  }
+
+  if (!newAsset.value.name) {
+    validationErrors.value.name = true;
+    missingFields.push('자산 이름');
+  }
+
   if (
-    !newAsset.value.name ||
-    !newAsset.value.type ||
     newAsset.value.amount === null ||
+    newAsset.value.amount === '' ||
     isNaN(newAsset.value.amount)
   ) {
-    alert('모든 필수 필드를 입력해주세요.');
-    return;
+    validationErrors.value.amount = true;
+    missingFields.push('금액');
   }
 
   // 사업체/지분 선택 시 사업체 종류 유효성 검사
   if (newAsset.value.type === '사업체/지분' && !newAsset.value.companyType) {
-    alert('사업체 종류를 선택해주세요.');
+    validationErrors.value.companyType = true;
+    missingFields.push('사업체 종류');
+  }
+
+  // 비어있는 필드가 있으면 alert로 알려주기
+  if (missingFields.length > 0) {
+    alert(`다음 항목을 입력해주세요: ${missingFields.join(', ')}`);
     return;
   }
 
@@ -341,5 +476,9 @@ const saveNewAsset = () => {
 
   // 모달 닫기
   closeModal();
+};
+
+const goToProfilePage = () => {
+  router.push({ name: 'profile' });
 };
 </script>
