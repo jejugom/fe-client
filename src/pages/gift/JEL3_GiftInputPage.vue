@@ -18,7 +18,7 @@
       해당 카테고리의 세부 자산을 선택하실 수 있습니다.
     </p>
 
-    <div class="mb-8 grid grid-cols-3 gap-8">
+    <div class="mb-8 grid grid-cols-3 gap-x-6 gap-y-4">
       <!-- 반복 렌더링 -->
       <div
         v-for="(assets, category) in allAssets"
