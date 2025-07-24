@@ -40,7 +40,9 @@
   </div>
 
   <!-- 하단 FAQ 안내 -->
-  <div class="mt-8 mb-10">
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+  >
     <p class="text-primary-500 mb-3 text-center text-base">
       혹시 궁금한 점이 있으신가요?<br />
       많이들 물어보시는 내용을 쉽게 정리해두었어요.

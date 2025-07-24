@@ -134,7 +134,7 @@
     </div>
 
     <!-- 다음 버튼 -->
-    <div class="mt-8 flex flex-col gap-3">
+    <div class="bottom-[calc(5rem+1rem)] mt-8 flex flex-col">
       <Btn @click="goToQuiz" color="primary" label="다음으로" size="large" />
     </div>
   </section>
