@@ -1,31 +1,26 @@
 <!-- 자산연동시작 -->
 <template>
-  <div class="flex min-h-screen flex-col items-center justify-center">
-    <div
-      class="border-surface-200 stroke-primary w-full rounded-xl border bg-white p-8"
-    >
-      <div class="my-12 space-y-6 text-center">
-        <h1 class="text-primary-300 text-2xl font-bold">
-          <!-- TODO : 사용자의 이름으로 동적으로 넣기 -->
-          최승아님, 안녕하세요!
-        </h1>
-        <div class="space-y-2">
-          <p>더 정확한 서비스 제공을 위해서</p>
-          <p
-            ><span class="text-primary-300">자산 연동</span>을
-            진행하겠습니다.</p
-          >
-        </div>
+  <div
+    class="border-surface-200 stroke-primary mt-28 w-full rounded-xl border bg-white p-8"
+  >
+    <div class="my-12 space-y-6 text-center">
+      <h1 class="text-primary-300 text-2xl font-bold">
+        <!-- TODO : 사용자의 이름으로 동적으로 넣기 -->
+        최승아님, 안녕하세요!
+      </h1>
+      <div class="space-y-2">
+        <p>더 정확한 서비스 제공을 위해서</p>
+        <p><span class="text-primary-300">자산 연동</span>을 진행하겠습니다.</p>
       </div>
+    </div>
 
-      <div class="flex justify-center">
-        <Btn
-          @click="goToKookminLogin"
-          color="primary"
-          label="시작하기"
-          size="medium"
-        />
-      </div>
+    <div class="flex justify-center">
+      <Btn
+        @click="goToKookminLogin"
+        color="primary"
+        label="시작하기"
+        size="medium"
+      />
     </div>
   </div>
 </template>

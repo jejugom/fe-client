@@ -1,85 +1,69 @@
 <template>
   <!-- 새로운 자산 등록 Content -->
-  <div class="px-5 py-6">
-    <h2 class="mb-2 text-xl font-semibold text-blue-600"
-      >새로운 자산 등록하기</h2
-    >
-    <!-- 드롭다운 -->
-    <div class="mb-6">
-      <div class="relative ml-auto w-1/4">
-        <select
-          v-model="selectedOption"
-          class="w-full appearance-none rounded-lg border border-gray-300 bg-white p-3 text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        >
-          <option value="">선택해주세요</option>
+  <div class="space-y-8">
+    <!-- 새 자산 추가 버튼 -->
+    <Btn
+      @click="addNewAsset"
+      color="primary"
+      label="새로운 자산 등록"
+      size="large"
+    />
+
+    <!-- 자산 유형 필터 섹션 -->
+    <div class="flex items-center justify-between">
+      <div></div>
+      <div>
+        <SelectBox v-model="selectedOption" size="medium">
+          <option value="">전체 자산 보기</option>
           <option value="부동산">부동산</option>
           <option value="예금/현금">예금/현금</option>
           <option value="주식/펀드">주식/펀드</option>
           <option value="사업체/지분">사업체/지분</option>
           <option value="기타 자산">기타 자산</option>
-        </select>
-        <!-- 드롭다운 아이콘 -->
-        <div
-          class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2"
-        >
-          <svg
-            class="h-4 w-4 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            ></path>
-          </svg>
-        </div>
+        </SelectBox>
       </div>
     </div>
 
     <!-- 자산 목록 -->
-    <div class="space-y-4">
+    <!-- TODO : 컴포넌트 추가되면 통일된 스타일을 위해 컴포넌트로 구현 -->
+    <!-- 자산 목록 -->
+    <div class="space-y-3">
       <div
         v-for="asset in filteredAssets"
         :key="asset.id"
-        class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+        class="border-surface-200 flex h-32 w-full items-center justify-between gap-6 rounded-lg border px-8 py-4"
       >
-        <!-- 자산 헤더 -->
-        <div class="flex items-start justify-between">
-          <div class="flex-1">
-            <h3 class="text-base font-semibold text-gray-800">{{
-              asset.name
-            }}</h3>
-            <p class="text-sm text-gray-500">{{ asset.type }}</p>
-            <p class="mt-1 text-sm text-gray-400">{{ asset.displayAmount }}</p>
-          </div>
+        <!-- 왼쪽 자산 정보 -->
+        <div class="flex flex-col">
+          <div class="text-primary-500 text-lg font-semibold">{{
+            asset.name
+          }}</div>
 
-          <!-- 수정/삭제 버튼 - 세로 배열 -->
-          <div class="ml-4 flex flex-col gap-2">
-            <button
-              @click="editAsset(asset.id)"
-              class="min-w-[60px] rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600 transition-colors hover:bg-gray-200"
-            >
-              수정
-            </button>
-            <button
-              @click="deleteAsset(asset.id)"
-              class="min-w-[60px] rounded-full bg-red-100 px-3 py-1 text-sm text-red-600 transition-colors hover:bg-red-200"
-            >
-              삭제
-            </button>
+          <div class="text-surface-500 text-sm">
+            <p>{{ asset.type }}</p>
+            <p>{{ asset.displayAmount }}</p>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- 새 자산 추가 버튼 -->
-    <div class="mt-6 mb-6 rounded-lg bg-gray-100 py-4 text-center">
-      <button @click="addNewAsset" class="text-lg font-semibold text-gray-800">
-        + 자산 추가하기
-      </button>
+        <!-- 수정/삭제 버튼 그룹 -->
+        <div class="flex gap-2">
+          <!-- 수정 버튼 -->
+          <button
+            @click="editAsset(asset.id)"
+            class="bg-primary-100 text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg text-center text-lg font-semibold"
+          >
+            수정
+          </button>
+
+          <!-- 삭제 버튼 -->
+          <button
+            @click="deleteAsset(asset.id)"
+            class="text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg bg-red-100 text-center text-lg font-semibold"
+          >
+            삭제
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -185,6 +169,7 @@ import { ref, computed } from 'vue';
 import Modal from '@/components/modals/Modal.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import InputBox from '@/components/forms/InputBox.vue'; // InputBox 추가
+import Btn from '@/components/buttons/Btn.vue';
 
 const modalTitle = ref('자산 정보 등록 및 수정');
 const isModalOpen = ref(false);

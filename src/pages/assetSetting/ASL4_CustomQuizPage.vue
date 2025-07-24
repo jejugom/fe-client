@@ -13,7 +13,7 @@
           Q{{ currentQuestionIndex + 1 }}.
           {{ questions[currentQuestionIndex].question }}
         </h2>
-        <p class="text-surface-400 text-center text-sm">
+        <p class="text-surface-300 text-center text-sm">
           한 가지만 골라 주세요.
           <br />
           바꾸시려면 다른 걸 눌러보세요.
