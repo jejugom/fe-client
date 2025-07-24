@@ -1,6 +1,6 @@
 <!-- 회원가입완료 -->
 <template>
-  <div class="flex min-h-screen flex-col justify-between px-4 pt-24 pb-8">
+  <div class="px-4 pt-24 pb-8">
     <div class="text-surface-500 space-y-8 text-center">
       <!-- Figma 크기에 맞추니 조금 작은 느낌이라 추후 크기 조정은 디자인 손보면서 -->
       <p class="text-lg font-semibold"> 모든 정보 입력이 완료되었습니다 </p>
@@ -14,10 +14,12 @@
         건강한 골든라이프를 시작해보세요!
       </p>
     </div>
+  </div>
 
-    <div class="mt-auto flex flex-col gap-3">
-      <Btn @click="goToHome" color="secondary" label="시작하기" size="large" />
-    </div>
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+  >
+    <Btn @click="goToHome" color="secondary" label="시작하기" size="large" />
   </div>
 </template>
 

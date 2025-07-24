@@ -11,7 +11,7 @@
   </div>
 
   <!-- 검색 영역 -->
-  <div class="flex min-h-screen flex-col">
+  <div class="flex flex-col">
     <div class="mb-6 flex items-center gap-2">
       <InputBox
         placeholder="지점 입력 (예: 광진구)"
@@ -27,16 +27,18 @@
     <div class="bg-surface-100 mb-8 h-96 w-full rounded-lg">
       <!-- 카카오맵 API 연동 -->
     </div>
+  </div>
 
-    <!-- 하단 버튼 -->
-    <div class="mt-auto flex justify-center">
-      <Btn
-        @click="handleComplete"
-        color="primary"
-        label="완료하기"
-        size="large"
-      />
-    </div>
+  <!-- 하단 버튼 -->
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+  >
+    <Btn
+      @click="handleComplete"
+      color="primary"
+      label="완료하기"
+      size="large"
+    />
   </div>
 </template>
 

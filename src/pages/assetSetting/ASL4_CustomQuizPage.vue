@@ -4,61 +4,61 @@
     자산 관리 계획 도우미
   </h2>
 
-  <div class="flex min-h-screen flex-col">
-    <div
-      class="border-surface-200 stroke-primary mb-6 flex flex-col gap-3 rounded-xl border px-8 py-12"
-    >
-      <div class="space-y-8">
-        <div class="flex flex-col items-center space-y-4">
-          <h2 class="text-xl font-semibold">
-            Q{{ currentQuestionIndex + 1 }}.
-            {{ questions[currentQuestionIndex].question }}
-          </h2>
-          <p class="text-surface-400 text-center text-sm">
-            한 가지만 골라 주세요.
-            <br />
-            바꾸시려면 다른 걸 눌러보세요.
-          </p>
-        </div>
+  <div
+    class="border-surface-200 stroke-primary mb-6 flex flex-col gap-3 rounded-xl border px-8 py-12"
+  >
+    <div class="space-y-8">
+      <div class="flex flex-col items-center space-y-4">
+        <h2 class="text-xl font-semibold">
+          Q{{ currentQuestionIndex + 1 }}.
+          {{ questions[currentQuestionIndex].question }}
+        </h2>
+        <p class="text-surface-400 text-center text-sm">
+          한 가지만 골라 주세요.
+          <br />
+          바꾸시려면 다른 걸 눌러보세요.
+        </p>
+      </div>
 
-        <div class="space-y-4">
-          <button
-            v-for="(option, index) in questions[currentQuestionIndex].options"
-            :key="index"
-            :class="[
-              'w-full rounded-xl border py-4 text-center',
-              selectedAnswers[currentQuestionIndex] === index
-                ? 'border-gold bg-secondary-100'
-                : 'border-surface-200',
-            ]"
-            @click="selectAnswer(index)"
-          >
-            {{ option }}
-          </button>
-        </div>
+      <div class="space-y-4">
+        <button
+          v-for="(option, index) in questions[currentQuestionIndex].options"
+          :key="index"
+          :class="[
+            'w-full rounded-xl border py-4 text-center',
+            selectedAnswers[currentQuestionIndex] === index
+              ? 'border-gold bg-secondary-100'
+              : 'border-surface-200',
+          ]"
+          @click="selectAnswer(index)"
+        >
+          {{ option }}
+        </button>
       </div>
     </div>
+  </div>
 
-    <div class="mt-auto flex flex-col gap-3">
-      <!-- 첫 문제가 아닐 때만 이전으로 버튼 표시 -->
-      <Btn
-        v-if="currentQuestionIndex > 0"
-        @click="handlePrevQuestion"
-        color="surface"
-        label="이전으로"
-        size="large"
-      />
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border flex w-full max-w-150 -translate-x-1/2 flex-col gap-3 px-5"
+  >
+    <!-- 첫 문제가 아닐 때만 이전으로 버튼 표시 -->
+    <Btn
+      v-if="currentQuestionIndex > 0"
+      @click="handlePrevQuestion"
+      color="surface"
+      label="이전으로"
+      size="large"
+    />
 
-      <!-- 마지막 문제면 완료, 아니면 다음으로 버튼 표시 -->
-      <Btn
-        @click="handleNextQuestion"
-        :color="isAnswerSelected ? 'primary' : 'surface'"
-        :label="isLastQuestion ? '완료' : '다음으로'"
-        size="large"
-        :disabled="!isAnswerSelected"
-        class="transition-colors duration-500"
-      />
-    </div>
+    <!-- 마지막 문제면 완료, 아니면 다음으로 버튼 표시 -->
+    <Btn
+      @click="handleNextQuestion"
+      :color="isAnswerSelected ? 'primary' : 'surface'"
+      :label="isLastQuestion ? '완료' : '다음으로'"
+      size="large"
+      :disabled="!isAnswerSelected"
+      class="transition-colors duration-500"
+    />
   </div>
 </template>
 

@@ -9,48 +9,48 @@
     </p>
   </div>
 
-  <div class="flex min-h-screen flex-col">
-    <!-- 중앙 입력 카드 -->
-    <div
-      class="border-surface-200 stroke-primary mb-6 flex flex-col gap-3 rounded-xl border px-8 py-12"
-    >
-      <!-- 입력 필드 -->
-      <div class="space-y-6">
-        <div>
-          <label class="text-surface-500 mb-2 block text-sm">아이디</label>
-          <InputBox
-            v-model="id"
-            placeholder="ID"
-            size="medium"
-            type="text"
-            class="w-full"
-          />
-        </div>
+  <!-- 중앙 입력 카드 -->
+  <div
+    class="border-surface-200 stroke-primary mb-6 flex flex-col gap-3 rounded-xl border px-8 py-12"
+  >
+    <!-- 입력 필드 -->
+    <div class="space-y-6">
+      <div>
+        <label class="text-surface-500 mb-2 block text-sm">아이디</label>
+        <InputBox
+          v-model="id"
+          placeholder="ID"
+          size="medium"
+          type="text"
+          class="w-full"
+        />
+      </div>
 
-        <div>
-          <label class="text-surface-500 mb-2 block text-sm">비밀번호</label>
-          <InputBox
-            v-model="password"
-            placeholder="Password"
-            size="medium"
-            type="password"
-            class="w-full"
-          />
-        </div>
+      <div>
+        <label class="text-surface-500 mb-2 block text-sm">비밀번호</label>
+        <InputBox
+          v-model="password"
+          placeholder="Password"
+          size="medium"
+          type="password"
+          class="w-full"
+        />
       </div>
     </div>
+  </div>
 
-    <div class="mt-auto flex flex-col gap-3">
-      <!-- 하단 고정 버튼 -->
-      <Btn
-        :color="isFormFilled ? 'primary' : 'surface'"
-        :disabled="!isFormFilled"
-        @click="handleAssetSync"
-        label="연동하기"
-        size="large"
-        class="transition-colors duration-500"
-      />
-    </div>
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+  >
+    <!-- 하단 고정 버튼 -->
+    <Btn
+      :color="isFormFilled ? 'primary' : 'surface'"
+      :disabled="!isFormFilled"
+      @click="handleAssetSync"
+      label="연동하기"
+      size="large"
+      class="transition-colors duration-500"
+    />
   </div>
 </template>
 
