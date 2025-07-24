@@ -1,11 +1,13 @@
 <template>
   <button
     type="button"
-    class="border-surface-300 flex h-13 w-74 items-center justify-between gap-1 rounded-lg border px-3 text-left text-base"
+    class="border-surface-300 flex h-15 w-74 items-center justify-between gap-1 rounded-lg border px-3 text-left text-base"
     @click="toggle"
   >
-    <div class="w-40">{{ label }}</div>
-    <div class="w-20">{{ amount }}</div>
+    <div class="flex flex-col">
+      <div class="text-surface-500 text-base">{{ label }}</div>
+      <div class="text-surface-300 text-sm">{{ amount }}</div>
+    </div>
     <img
       :src="isChecked ? Check : CheckNone"
       alt="check icon"

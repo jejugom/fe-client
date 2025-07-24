@@ -18,7 +18,7 @@
       해당 카테고리의 세부 자산을 선택하실 수 있습니다.
     </p>
 
-    <div class="mb-8 grid grid-cols-3 gap-8">
+    <div class="mb-8 grid grid-cols-3 gap-x-6 gap-y-4">
       <!-- 반복 렌더링 -->
       <div
         v-for="(assets, category) in allAssets"
@@ -51,25 +51,11 @@
 
     <!-- 자산 리스트 -->
     <ul class="mt-4 space-y-3">
-      <li
-        v-for="(item, index) in assetList"
-        :key="index"
-        class="border-surface-300 flex items-center justify-between rounded-xl border px-4 py-3"
-        @click="item.selected = !item.selected"
-      >
-        <!-- 자산 정보 -->
-        <div>
-          <p class="text-surface-500 text-base font-semibold">{{
-            item.name
-          }}</p>
-          <p class="text-surface-500 text-base">{{ item.amount }}</p>
-        </div>
-
-        <!-- 체크박스 -->
-        <input
-          type="checkbox"
-          class="accent-primary-300 h-5 w-5"
-          :checked="item.selected"
+      <li v-for="(item, index) in assetList" :key="index">
+        <CheckBox
+          :label="item.name"
+          :amount="item.amount"
+          v-model="item.selected"
         />
       </li>
     </ul>
@@ -134,7 +120,7 @@
     </div>
 
     <!-- 다음 버튼 -->
-    <div class="mt-8 flex flex-col gap-3">
+    <div class="bottom-[calc(5rem+1rem)] mt-8 flex flex-col">
       <Btn @click="goToQuiz" color="primary" label="다음으로" size="large" />
     </div>
   </section>
@@ -287,6 +273,7 @@ import Btn from '@/components/buttons/Btn.vue';
 import Modal from '@/components/modals/Modal.vue';
 import { ref, computed } from 'vue';
 import InputBox from '@/components/forms/InputBox.vue';
+import CheckBox from '@/components/forms/CheckBox.vue';
 
 // 1. 자산 카테고리 선택하기
 // 전체 자산 데이터
