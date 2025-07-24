@@ -1,6 +1,6 @@
 <template>
   <!-- Info Box -->
-  <div class="border-secondary-300 my-5 rounded-lg border bg-yellow-50 p-4">
+  <div class="border-secondary-300 mb-5 rounded-lg border bg-yellow-50 p-4">
     <div class="text-secondary-500 mb-2 text-lg font-semibold">
       예약하신 정보를 확인해보세요.
     </div>
