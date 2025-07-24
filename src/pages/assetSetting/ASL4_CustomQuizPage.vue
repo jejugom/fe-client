@@ -40,6 +40,8 @@
     class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border flex w-full max-w-150 -translate-x-1/2 flex-col gap-3 px-5"
   >
     <!-- 마지막 문제일 때 지점 설정 안내 텍스트 -->
+    <!-- TODO: 프로필에서 넘어온 경우에는 설명 필요없음 -->
+    <!-- TODO: 고정위치이다보니까, 영역 침범이 일어나서 수정 필요 -->
     <p v-if="isLastQuestion" class="text-surface-300 mb-2 text-center text-sm">
       다음으로 나의 지점 설정을 도와드릴게요.
     </p>
@@ -67,10 +69,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 
 const router = useRouter();
+const route = useRoute();
 const currentQuestionIndex = ref(0);
 
 // 질문 목록 정의
@@ -137,8 +140,15 @@ const handleNextQuestion = () => {
     // 성공 시 다음 페이지로 이동
     // 실패 시 에러 메시지 표시
 
-    // TODO: 다음으로 지점 설정으로 넘어가는데, 뭔가 설명이 필요할 것 같음.
-    router.push({ name: 'edit-branch' });
+    // 프로필에서 온 경우 마이페이지로 돌아가기
+    const isFromProfile = route.query.from === 'profile';
+
+    if (isFromProfile) {
+      router.push({ name: 'profile' });
+    } else {
+      // 기본 플로우: 지점 설정으로 이동
+      router.push({ name: 'edit-branch' });
+    }
   } else {
     currentQuestionIndex.value++;
   }

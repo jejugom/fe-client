@@ -130,7 +130,7 @@ const handleMenuClick = (menuId) => {
       break;
     case 'investment-reset':
       router.push({
-        name: 'asset-custom-start',
+        name: 'asset-custom-quiz',
         query: { from: 'profile' },
       });
       break;
