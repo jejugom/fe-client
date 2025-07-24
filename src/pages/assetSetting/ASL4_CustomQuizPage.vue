@@ -1,40 +1,38 @@
 <!-- 투자성향질문 -->
 <template>
-  <h2 class="text-primary-300 mb-8 text-2xl font-bold">
+  <h1 class="text-primary-300 mt-10 ml-5 text-2xl font-bold">
     자산 관리 계획 도우미
-  </h2>
+  </h1>
 
   <div
-    class="border-surface-200 stroke-primary mb-6 flex flex-col gap-3 rounded-xl border px-8 py-12"
+    class="border-surface-200 stroke-primary mx-5 mt-8 flex h-120 flex-col gap-8 rounded-xl border px-8 py-16"
   >
-    <div class="space-y-8">
-      <div class="flex flex-col items-center space-y-4">
-        <h2 class="text-xl font-semibold">
-          Q{{ currentQuestionIndex + 1 }}.
-          {{ questions[currentQuestionIndex].question }}
-        </h2>
-        <p class="text-surface-300 text-center text-sm">
-          한 가지만 골라 주세요.
-          <br />
-          바꾸시려면 다른 걸 눌러보세요.
-        </p>
-      </div>
+    <div class="flex flex-col items-center text-center">
+      <h1 class="text-primary-500 mb-4 text-lg font-semibold">
+        Q{{ currentQuestionIndex + 1 }}.
+        {{ questions[currentQuestionIndex].question }}
+      </h1>
+      <p class="text-surface-300 text-sm">
+        한 가지만 골라 주세요.
+        <br />
+        바꾸시려면 다른 걸 눌러보세요.
+      </p>
+    </div>
 
-      <div class="space-y-4">
-        <button
-          v-for="(option, index) in questions[currentQuestionIndex].options"
-          :key="index"
-          :class="[
-            'w-full rounded-xl border py-4 text-center',
-            selectedAnswers[currentQuestionIndex] === index
-              ? 'border-gold bg-secondary-100'
-              : 'border-surface-200',
-          ]"
-          @click="selectAnswer(index)"
-        >
-          {{ option }}
-        </button>
-      </div>
+    <div class="space-y-4">
+      <button
+        v-for="(option, index) in questions[currentQuestionIndex].options"
+        :key="index"
+        :class="[
+          'w-full rounded-xl border py-4 text-center font-semibold',
+          selectedAnswers[currentQuestionIndex] === index
+            ? 'border-gold bg-secondary-100'
+            : 'border-surface-200',
+        ]"
+        @click="selectAnswer(index)"
+      >
+        {{ option }}
+      </button>
     </div>
   </div>
 

@@ -1,8 +1,8 @@
 <template>
   <!-- 상단 안내 문구 (카드 밖) -->
 
-  <h2 class="text-primary-300 mb-2 text-2xl font-bold">자산 연동</h2>
-  <div class="text-surface-500 mb-8 text-base">
+  <h1 class="text-primary-300 mt-10 ml-5 text-2xl font-bold">자산 연동</h1>
+  <div class="text-surface-500 mt-4 ml-5">
     <p>자산 정보를 불러오기 위해</p>
     <p>
       <span class="text-gold">국민은행</span> 아이디와 비밀번호가 필요합니다.
@@ -11,29 +11,26 @@
 
   <!-- 중앙 입력 카드 -->
   <div
-    class="border-surface-200 stroke-primary mb-6 flex flex-col gap-3 rounded-xl border px-8 py-12"
+    class="border-surface-200 stroke-primary px-auto mt-16 flex flex-col gap-3 rounded-xl border py-8"
   >
     <!-- 입력 필드 -->
-    <div class="space-y-6">
-      <div>
-        <label class="text-surface-500 mb-2 block text-sm">아이디</label>
-        <InputBox
-          v-model="id"
-          placeholder="ID"
-          size="medium"
-          type="text"
-          class="w-full"
-        />
+    <div class="space-y-4">
+      <div class="flex items-center gap-4">
+        <label class="text-surface-500 font-samll w-14 text-right text-sm"
+          >아이디</label
+        >
+        <InputBox v-model="id" placeholder="ID" size="medium" type="text" />
       </div>
 
-      <div>
-        <label class="text-surface-500 mb-2 block text-sm">비밀번호</label>
+      <div class="flex items-center gap-4">
+        <label class="text-surface-500 font-samll w-14 text-right text-sm"
+          >비밀번호</label
+        >
         <InputBox
           v-model="password"
           placeholder="Password"
           size="medium"
           type="password"
-          class="w-full"
         />
       </div>
     </div>
