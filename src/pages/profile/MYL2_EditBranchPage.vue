@@ -1,4 +1,6 @@
 <template>
+  <!-- TODO : wina 지점 API 참고하여 구현 -->
+
   <!-- 현재 위치 표시 -->
   <div class="mb-8">
     <h2 class="text-primary-300 mb-2 text-2xl font-bold">
