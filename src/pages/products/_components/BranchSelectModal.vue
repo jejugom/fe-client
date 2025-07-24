@@ -43,22 +43,28 @@ defineExpose({
 
 const searchPlaces = () => {
   const ps = new kakao.maps.services.Places();
-  ps.keywordSearch(`국민은행 ${searchQuery.value}`, (data, status) => {
-    if (status === kakao.maps.services.Status.OK) {
-      const bounds = new kakao.maps.LatLngBounds();
-      data.forEach((place) => {
-        const pos = new kakao.maps.LatLng(Number(place.y), Number(place.x));
-        const marker = new kakao.maps.Marker({ map, position: pos });
 
-        kakao.maps.event.addListener(marker, 'click', () => {
-          selectedBranch.value = place.place_name;
+  ps.keywordSearch(
+    `국민은행 ${searchQuery.value}`,
+    (data: KakaoPlace[], status: string) => {
+      if (status === kakao.maps.services.Status.OK) {
+        const bounds = new kakao.maps.LatLngBounds();
+
+        data.forEach((place: KakaoPlace) => {
+          const pos = new kakao.maps.LatLng(Number(place.y), Number(place.x));
+          const marker = new kakao.maps.Marker({ map, position: pos });
+
+          kakao.maps.event.addListener(marker, 'click', () => {
+            selectedBranch.value = place.place_name;
+          });
+
+          bounds.extend(pos);
         });
 
-        bounds.extend(pos);
-      });
-      map.setBounds(bounds);
+        map.setBounds(bounds);
+      }
     }
-  });
+  );
 };
 
 onMounted(() => {
@@ -75,7 +81,7 @@ onMounted(() => {
     new kakao.maps.Marker({ map, position: locPosition });
 
     const geocoder = new kakao.maps.services.Geocoder();
-    geocoder.coord2RegionCode(lng, lat, (result, status) => {
+    geocoder.coord2RegionCode(lng, lat, (result: any, status: any) => {
       if (status === kakao.maps.services.Status.OK && result[0]) {
         currentAddress.value = result[0].address_name;
         searchQuery.value = result[0].address_name || '';

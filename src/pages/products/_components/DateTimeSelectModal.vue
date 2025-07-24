@@ -109,17 +109,17 @@ const calendarAttributes = computed(() => [
     key: 'today',
     highlight: {
       color: 'oklch(0.5495 0.1202 251.83)',
-      fillMode: 'light',
+      fillMode: 'light' as const,
     },
-    dates: today,
+    dates: [today],
   },
   {
     key: 'selected',
     highlight: {
       color: 'oklch(0.5495 0.1202 251.83)',
-      fillMode: 'solid',
+      fillMode: 'solid' as const,
     },
-    dates: selectedDate.value,
+    dates: selectedDate.value ? [selectedDate.value] : [],
   },
 ]);
 
