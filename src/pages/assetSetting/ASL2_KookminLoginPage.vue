@@ -1,22 +1,18 @@
 <template>
-  <div
-    class="relative flex min-h-screen flex-col items-center px-4 pt-12 pb-32"
-  >
-    <!-- 상단 안내 문구 (카드 밖) -->
-    <div class="mb-8 max-w-md space-y-4 text-center">
-      <h1 class="text-primary-300 text-2xl font-bold">자산 연동</h1>
-      <div class="space-y-1 text-base">
-        <p>자산 정보를 불러오기 위해</p>
-        <p>
-          <span class="text-gold">국민은행</span> 아이디와 비밀번호가
-          필요합니다.
-        </p>
-      </div>
-    </div>
+  <!-- 상단 안내 문구 (카드 밖) -->
 
+  <h2 class="text-primary-300 mb-2 text-2xl font-bold">자산 연동</h2>
+  <div class="text-surface-500 mb-8 text-base">
+    <p>자산 정보를 불러오기 위해</p>
+    <p>
+      <span class="text-gold">국민은행</span> 아이디와 비밀번호가 필요합니다.
+    </p>
+  </div>
+
+  <div class="flex min-h-screen flex-col">
     <!-- 중앙 입력 카드 -->
     <div
-      class="border-surface-200 w-full max-w-md rounded-3xl border bg-white p-12"
+      class="border-surface-200 stroke-primary mb-6 flex flex-col gap-3 rounded-xl border px-8 py-12"
     >
       <!-- 입력 필드 -->
       <div class="space-y-6">
@@ -44,15 +40,15 @@
       </div>
     </div>
 
-    <!-- 하단 고정 버튼 -->
-    <div class="absolute bottom-8 left-0 w-full px-4">
+    <div class="mt-auto flex flex-col gap-3">
+      <!-- 하단 고정 버튼 -->
       <Btn
         :color="isFormFilled ? 'primary' : 'surface'"
         :disabled="!isFormFilled"
         @click="handleAssetSync"
         label="연동하기"
-        size="medium"
-        class="mx-auto w-full max-w-md transition-colors duration-500"
+        size="large"
+        class="transition-colors duration-500"
       />
     </div>
   </div>

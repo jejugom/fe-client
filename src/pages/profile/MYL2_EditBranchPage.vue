@@ -1,20 +1,17 @@
 <template>
-  <div class="flex min-h-screen flex-col px-4 py-8">
-    <!-- 현재 위치 표시 -->
-    <div class="mb-8">
-      <h1 class="text-primary-300 mb-5 text-left text-2xl font-bold">
-        <!-- TODO: 진입점에 따라 다르게 표시할 필요가 있음 -->
-        <!-- 1. 첫 로그인은 "자산 관리 계획 도우미" -->
-        <!-- 2. 프로필 수정은 "나의 국민은행 지점 설정" -->
-        자산 관리 계획 도우미
-      </h1>
+  <!-- 현재 위치 표시 -->
+  <div class="mb-8">
+    <h2 class="text-primary-300 mb-2 text-2xl font-bold">
+      <!-- TODO: 진입점에 따라 다르게 표시할 필요가 있음 -->
+      <!-- 1. 첫 로그인은 "자산 관리 계획 도우미" -->
+      <!-- 2. 프로필 수정은 "나의 국민은행 지점 설정" -->
+      자산 관리 계획 도우미
+    </h2>
+    <p class="text-surface-500 font-semibold">현재 위치: 서울특별시 광진구</p>
+  </div>
 
-      <h2 class="text-surface-500 font-semibold"
-        >현재 위치: 서울특별시 광진구</h2
-      >
-    </div>
-
-    <!-- 검색 영역 -->
+  <!-- 검색 영역 -->
+  <div class="flex min-h-screen flex-col">
     <div class="mb-6 flex items-center gap-2">
       <InputBox
         placeholder="지점 입력 (예: 광진구)"
@@ -22,12 +19,13 @@
         type="text"
         class="flex-1"
       />
+      <!-- 높이 고려 : Figma 에서는 52px -->
       <Btn @click="handleSearch" color="primary" label="검색" size="small" />
     </div>
 
-    <!-- 지도 영역 -->
+    <!-- TODO : 지도 영역 -->
     <div class="bg-surface-100 mb-8 h-96 w-full rounded-lg">
-      <!-- TODO: 카카오맵 API 연동 -->
+      <!-- 카카오맵 API 연동 -->
     </div>
 
     <!-- 하단 버튼 -->
@@ -36,7 +34,7 @@
         @click="handleComplete"
         color="primary"
         label="완료하기"
-        size="medium"
+        size="large"
       />
     </div>
   </div>

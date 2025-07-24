@@ -1,22 +1,23 @@
 <!-- 회원가입완료 -->
 <template>
-  <div class="flex min-h-screen flex-col items-center justify-center px-4">
-    <div class="mb-16 space-y-8 text-center">
-      <h1 class="text-surface-500 text-2xl font-bold">
-        모든 정보 입력이 완료되었습니다
-      </h1>
+  <div class="flex min-h-screen flex-col justify-between px-4 pt-24 pb-8">
+    <div class="text-surface-500 space-y-8 text-center">
+      <!-- Figma 크기에 맞추니 조금 작은 느낌이라 추후 크기 조정은 디자인 손보면서 -->
+      <p class="text-lg font-semibold"> 모든 정보 입력이 완료되었습니다 </p>
 
-      <div class="space-y-4">
-        <p class="text-primary-300 text-xl font-semibold">
-          당신은 {{ userType }} 입니다!
-        </p>
-        <p class="text-surface-400 text-lg">
-          이제 노후도락과 함께 건강한 골든라이프를 시작해보세요!
-        </p>
-      </div>
+      <p class="text-primary-300 text-xl font-semibold">
+        당신은 <span class="text-gold">{{ userType }}</span> 입니다!
+      </p>
+
+      <p class="text-lg font-semibold">
+        이제 <span class="text-3xl">노후도락</span>과 함께<br />
+        건강한 골든라이프를 시작해보세요!
+      </p>
     </div>
 
-    <Btn @click="goToHome" color="primary" label="시작하기" size="medium" />
+    <div class="mt-auto flex flex-col gap-3">
+      <Btn @click="goToHome" color="secondary" label="시작하기" size="large" />
+    </div>
   </div>
 </template>
 
