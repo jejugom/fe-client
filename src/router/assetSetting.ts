@@ -2,6 +2,11 @@ import type { RouteRecordRaw } from 'vue-router';
 
 const assetSetting: RouteRecordRaw[] = [
   {
+    path: '/asset/tutorial',
+    name: 'asset-tutorial',
+    component: import('@/pages/assetSetting/TutorialPage.vue'),
+  },
+  {
     path: '/asset/start',
     name: 'asset-start',
     component: import('@/pages/assetSetting/ASL1_AssetStartPage.vue'),
