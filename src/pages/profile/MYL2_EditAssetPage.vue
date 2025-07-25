@@ -3,12 +3,6 @@
   <div class="space-y-8">
     <!-- 자산 등록 버튼과 카테고리 필터 섹션 -->
     <div class="flex items-center justify-between">
-      <Btn
-        @click="addNewAsset"
-        color="primary"
-        label="자산 등록"
-        size="small"
-      />
       <SelectBox v-model="selectedOption" size="small">
         <option value="">전체</option>
         <option value="부동산">부동산</option>
@@ -17,52 +11,32 @@
         <option value="사업체/지분">사업체/지분</option>
         <option value="기타 자산">기타 자산</option>
       </SelectBox>
+      <Btn
+        @click="addNewAsset"
+        color="primary"
+        label="자산 등록"
+        size="small"
+        class="h-10"
+      />
     </div>
 
     <!-- 자산 목록 -->
     <!-- TODO : 컴포넌트 추가되면 통일된 스타일을 위해 컴포넌트로 구현 -->
     <!-- 자산 목록 -->
-    <div class="space-y-3">
-      <div
+    <div class="flex flex-col gap-4">
+      <MultiBtnCard
         v-for="asset in filteredAssets"
         :key="asset.id"
-        class="border-surface-200 flex h-32 w-full items-center justify-between gap-6 rounded-lg border px-8 py-4"
-      >
-        <!-- 왼쪽 자산 정보 -->
-        <div class="flex flex-col">
-          <div class="text-primary-500 text-lg font-semibold">{{
-            asset.name
-          }}</div>
-
-          <div class="text-surface-500 text-sm">
-            <p>{{ asset.type }}</p>
-            <p>{{ asset.displayAmount }}</p>
-          </div>
-        </div>
-
-        <!-- 수정/삭제 버튼 그룹 -->
-        <div class="flex gap-2">
-          <!-- 수정 버튼 -->
-          <button
-            @click="editAsset(asset.id)"
-            class="bg-primary-100 text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg text-center text-lg font-semibold"
-          >
-            수정
-          </button>
-
-          <!-- 삭제 버튼 -->
-          <button
-            @click="deleteAsset(asset.id)"
-            class="text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg bg-red-100 text-center text-lg font-semibold"
-          >
-            삭제
-          </button>
-        </div>
-      </div>
+        btnText1="수정"
+        btnText2="삭제"
+        :content="asset.type"
+        :tags="asset.displayAmount"
+        :title="asset.name"
+      />
     </div>
 
     <!-- 완료 버튼 -->
-    <div class="mt-8">
+    <div class="mt-16">
       <Btn @click="goToProfilePage" color="primary" label="완료" size="large" />
     </div>
   </div>
@@ -78,10 +52,10 @@
   >
     <div class="flex flex-col items-center space-y-6">
       <!-- 1. 카테고리 선택 -->
-      <div class="flex w-68 flex-col items-start">
+      <div class="flex flex-col items-start">
         <label
           for="assetCategory"
-          class="text-primary-500 mb-2 block text-sm font-semibold"
+          class="text-primary-500 mb-1 block font-semibold"
         >
           카테고리를 선택하세요
         </label>
@@ -104,10 +78,10 @@
       </div>
 
       <!-- 2. 자산 이름 입력 -->
-      <div class="flex w-68 flex-col items-start">
+      <div class="flex flex-col items-start">
         <label
           for="assetName"
-          class="text-primary-500 mb-2 block text-sm font-semibold"
+          class="text-primary-500 mb-1 block font-semibold"
         >
           자산 이름 (20자 이내)
         </label>
@@ -127,11 +101,11 @@
       <!-- 3. 사업체 종류 선택 (조건부 표시) -->
       <div
         v-if="newAsset.type === '사업체/지분'"
-        class="flex w-68 flex-col items-start"
+        class="flex flex-col items-start"
       >
         <label
           for="companyType"
-          class="text-primary-500 mb-2 block text-sm font-semibold"
+          class="text-primary-500 mb-1 block font-semibold"
         >
           사업체 종류 선택
         </label>
@@ -151,10 +125,10 @@
       </div>
 
       <!-- 4. 금액 입력 -->
-      <div class="flex w-68 flex-col items-start">
+      <div class="flex flex-col items-start">
         <label
           for="assetAmount"
-          class="text-primary-500 mb-2 block text-sm font-semibold"
+          class="text-primary-500 mb-1 block font-semibold"
         >
           금액 (만원 단위)
         </label>
@@ -191,6 +165,7 @@ import Modal from '@/components/modals/Modal.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import InputBox from '@/components/forms/InputBox.vue'; // InputBox 추가
 import Btn from '@/components/buttons/Btn.vue';
+import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
 
 const router = useRouter();
 
@@ -310,9 +285,9 @@ const formatAmount = (amountInManwon) => {
   if (amount >= 10000) {
     const eok = Math.floor(amount / 10000);
     const manwon = amount % 10000;
-    return `${eok}억 ${manwon > 0 ? manwon + '만원' : ''}`;
+    return `${eok.toLocaleString()}억 ${manwon > 0 ? manwon.toLocaleString() + '만원' : ''}`;
   }
-  return `${amount}만원`;
+  return `${amount.toLocaleString()}만원`;
 };
 
 // 선택된 카테고리에 따라 자산 필터링 및 금액 포맷팅

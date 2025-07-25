@@ -1,18 +1,16 @@
 <!-- 투자성향질문 -->
 <template>
-  <h1 class="text-primary-300 mt-10 ml-5 text-2xl font-bold">
-    자산 관리 계획 도우미
-  </h1>
+  <h1 class="text-primary-300 text-2xl font-bold"> 자산 관리 계획 도우미 </h1>
 
   <div
-    class="border-surface-200 stroke-primary mx-5 mt-8 flex h-120 flex-col gap-8 rounded-xl border px-8 py-16"
+    class="stroke-primary mt-8 flex h-120 flex-col gap-8 rounded-xl px-8 py-16"
   >
     <div class="flex flex-col items-center text-center">
       <h1 class="text-primary-500 mb-4 text-lg font-semibold">
         Q{{ currentQuestionIndex + 1 }}.
         {{ questions[currentQuestionIndex].question }}
       </h1>
-      <p class="text-surface-300 text-sm">
+      <p class="text-surface-300">
         한 가지만 골라 주세요.
         <br />
         바꾸시려면 다른 걸 눌러보세요.
@@ -20,19 +18,19 @@
     </div>
 
     <div class="space-y-4">
-      <button
+      <Btn
         v-for="(option, index) in questions[currentQuestionIndex].options"
         :key="index"
-        :class="[
-          'w-full rounded-xl border py-4 text-center font-semibold',
+        :label="option"
+        :color="
           selectedAnswers[currentQuestionIndex] === index
-            ? 'border-gold bg-secondary-100'
-            : 'border-surface-200',
-        ]"
+            ? 'secondary-stroke'
+            : 'surface'
+        "
+        size="medium"
+        class="w-full"
         @click="selectAnswer(index)"
-      >
-        {{ option }}
-      </button>
+      />
     </div>
   </div>
 
@@ -62,7 +60,6 @@
       :label="isLastQuestion ? '완료' : '다음으로'"
       size="large"
       :disabled="!isAnswerSelected"
-      class="transition-colors duration-500"
     />
   </div>
 </template>
