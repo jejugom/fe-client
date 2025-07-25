@@ -15,12 +15,25 @@
       은행에서 친절하게 도와드립니다.
     </p>
 
-    <Btn color="primary" label="내점 예약하기" size="large" />
+    <Btn
+      color="primary"
+      label="내점 예약하기"
+      size="large"
+      @click="goToRegister"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import Btn from '@/components/buttons/Btn.vue';
-</script>
+import { useRouter } from 'vue-router';
 
-<style scoped></style>
+const router = useRouter();
+
+const goToRegister = () => {
+  router.push({
+    name: 'register',
+    params: { id: 'gift' },
+  });
+};
+</script>
