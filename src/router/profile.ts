@@ -4,17 +4,17 @@ const profileRoutes: RouteRecordRaw[] = [
   {
     path: '/profile',
     name: 'profile',
-    component: import('@/pages/profile/MYL1_ProfilePage.vue'),
+    component: () => import('@/pages/profile/MYL1_ProfilePage.vue'),
   },
   {
     path: '/asset/edit',
     name: 'edit-asset',
-    component: import('@/pages/profile/MYL2_EditAssetPage.vue'),
+    component: () => import('@/pages/profile/MYL2_EditAssetPage.vue'),
   },
   {
     path: '/profile/branch',
     name: 'edit-branch',
-    component: import('@/pages/profile/MYL2_EditBranchPage.vue'),
+    component: () => import('@/pages/profile/MYL2_EditBranchPage.vue'),
   },
 ];
 
