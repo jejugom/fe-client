@@ -14,6 +14,7 @@
   <div class="stroke-primary px-auto mt-16 flex flex-col gap-3 rounded-xl py-8">
     <!-- 입력 필드 -->
     <div class="space-y-4">
+      <!-- 승아코멘트: 컴포넌트화 필요 -->
       <div class="flex items-center gap-2">
         <label class="text-surface-500 w-14 text-right">아이디</label>
         <InputBox v-model="id" placeholder="ID" size="medium" type="text" />

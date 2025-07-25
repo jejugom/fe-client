@@ -1,38 +1,35 @@
 <template>
   <h2 class="text-primary-300 mb-2 text-2xl font-bold">증여 시뮬레이션 질문</h2>
-  <p class="text-surface-500 mb-8 text-base">
+  <p class="mb-8 text-base">
     증여 계획을 쉽게 정리할 수 있도록 질문을 통해 도와드립니다.
   </p>
-  <div
-    class="border-surface-200 stroke-primary mb-6 flex flex-col gap-3 rounded-xl border px-8 py-12"
-  >
-    <h2 class="text-primary-500 mb-3 text-center text-lg font-semibold">{{
-      currentQuestion.title
-    }}</h2>
-    <p class="text-surface-300 mb-5 text-center text-sm whitespace-pre-line">{{
-      currentQuestion.description
-    }}</p>
-
+  <!-- 승아코멘트: 컴포넌트화 필요 -->
+  <div class="stroke-primary mb-16 flex flex-col gap-8 rounded-xl px-8 py-12">
+    <div>
+      <h2 class="text-primary-500 mb-3 text-center text-lg font-semibold">{{
+        currentQuestion.title
+      }}</h2>
+      <p class="text-surface-300 mb-5 text-center whitespace-pre-line">{{
+        currentQuestion.description
+      }}</p>
+    </div>
     <div class="flex flex-col gap-3">
       <Btn
         v-for="(option, idx) in currentQuestion.options"
         :key="idx"
         :label="option.label"
-        size="large"
-        class="rounded-lg p-4 text-lg font-semibold"
-        :class="
-          selectedAnswer === option.value
-            ? 'border-gold bg-secondary-100 border'
-            : 'border-surface-200 border'
+        :color="
+          selectedAnswer === option.value ? 'secondary-stroke' : 'surface'
         "
+        size="medium"
+        class="w-full"
         @click="selectedAnswer = option.value"
       />
     </div>
   </div>
 
-  <div
-    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-  >
+  <div>
+    <!-- 승아코멘트: 컴포넌트화 필요(자산연동에도 똑같이 있기에 한명이 맡아서 한 후에 사용하는 방식으로 하면 좋을 듯) -->
     <Btn
       v-if="step > 0"
       @click="goToPrev"
@@ -45,7 +42,7 @@
       :class="[
         selectedAnswer
           ? 'bg-primary-100 text-surface-500'
-          : 'border-surface-200 text-surface-500 border bg-transparent',
+          : 'border-surface-200 border bg-transparent',
       ]"
       :disabled="!selectedAnswer"
       @click="goToNext"

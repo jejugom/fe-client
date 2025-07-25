@@ -1,8 +1,8 @@
 <template>
   <!-- 타이틀 -->
   <h2 class="text-primary-300 mb-2 text-2xl font-bold">상속·증여</h2>
-  <p class="text-primary-300 mb-2 text-xl font-semibold">자주 묻는 질문</p>
-  <div class="h-8"></div>
+  <p class="text-primary-300 mb-8 text-xl font-semibold">자주 묻는 질문</p>
+  <!-- 승아 코멘트: 해당 부분 답변은 모두 하나의 파일은 빼고 거기서 답만 가져와서 볼 수 있는 페이지로 볼 수 있는 페이지로 변경 필요 -->
 
   <!-- FAQ 상세 내용 -->
   <div v-if="currentFaq">
@@ -20,36 +20,35 @@
 
     <!-- 답변 (우선은 하나의 일괄 답변만)-->
     <div class="mb-16 space-y-4">
-      <p class="text-surface-500 text-sm">
-        네, 손주에게 돈을 주는 것도 '증여'로 보고 세금이 날 수 있습니다.
-      </p>
+      <p> 네, 손주에게 돈을 주는 것도 '증여'로 보고 세금이 날 수 있습니다. </p>
 
-      <p class="text-surface-500 text-sm">
+      <p>
         다만, 일정 금액까지는 세금 없이 줄 수 있는 한도가 정해져 있습니다.
       </p>
 
-      <p class="text-surface-500 text-sm">예를 들어,</p>
+      <p>예를 들어,</p>
 
-      <ul class="text-surface-500 ml-6 list-disc space-y-1 text-sm">
+      <ul class="ml-6 list-disc space-y-1 text-sm">
         <li>손주가 미성년자일 경우: 10년 동안 2,000만 원까지</li>
         <li>손주가 성인일 경우: 10년 동안 5,000만 원까지</li>
       </ul>
 
-      <p class="text-surface-500 text-sm">
+      <p>
         이 범위 안에서 주시면 세금이 없습니다.<br />
         하지만 이 금액을 넘으면, 초과한 부분에 대해 증여세를 내야 합니다.
       </p>
 
-      <p class="text-surface-500 text-sm">
+      <p>
         또한 손주가 아닌 자녀를 통해 간접적으로 주는 경우에도 세금이 생길 수
         있으니<br />
         10년 단위로 얼마를 주었는지 기록해두는 것이 중요합니다.
       </p>
     </div>
     <!-- 관련 FAQ -->
-    <div class="mb-8">
-      <h4 class="text-surface-500 mb-3 text-lg font-semibold">관련 질문</h4>
+    <div class="mb-16">
+      <h4 class="mb-3 text-lg font-semibold">관련 질문</h4>
       <div class="space-y-2">
+        <!-- 컴포넌트화 필요 -->
         <div
           v-for="relatedFaq in relatedFaqs"
           :key="relatedFaq.id"
@@ -63,10 +62,8 @@
   </div>
 
   <!-- 하단 설명과 버튼 -->
-  <div
-    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-  >
-    <p class="text-primary-300 mb-3 text-center text-lg font-semibold">
+  <div>
+    <p class="text-primary-300 mb-4 text-center text-lg font-semibold">
       내 경우에는 어떻게 될까?
     </p>
     <Btn

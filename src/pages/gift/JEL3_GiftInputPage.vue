@@ -1,9 +1,8 @@
 <template>
   <!-- 자산 차트 영역 -->
   <section>
-    <div
-      class="text-surface-500 bg-gradient-cross-1 mb-8 flex h-80 items-center justify-center"
-    >
+    <!-- 승아코멘트: 차트 import해서 시각화 필요(컴포넌트 작성돼있음) -->
+    <div class="bg-gradient-cross-1 mb-8 flex h-80 items-center justify-center">
       Chart
     </div>
   </section>
@@ -13,30 +12,26 @@
     <h2 class="text-primary-300 mb-2 text-2xl font-bold">
       증여 자산 카테고리 선택하기
     </h2>
-    <p class="text-surface-500 mb-4 text-sm">
+    <p class="mb-8 text-sm">
       수증자에게 어떤 자산을 나눠주실지 카테고리를 선택하면<br />
       해당 카테고리의 세부 자산을 선택하실 수 있습니다.
     </p>
 
-    <div class="mb-8 grid grid-cols-3 gap-x-6 gap-y-4">
+    <div class="mb-16 grid grid-cols-3 gap-x-6 gap-y-4">
       <!-- 반복 렌더링 -->
-      <div
+      <CategoryCard
         v-for="(assets, category) in allAssets"
         :key="category"
+        :category="category"
+        :selectedCount="assets.filter((a) => a.selected).length"
+        :totalCount="assets.length"
         @click="openModal(category)"
-        class="border-primary-300 flex flex-col items-center justify-between rounded-xl border p-4"
-      >
-        <div class="bg-gradient-cross-1 mb-2 h-12 w-12"></div>
-        <div class="text-primary-500 text-sm font-semibold">{{ category }}</div>
-        <div
-          class="text-primary-500 bg-primary-100 mt-2 w-full rounded-xl py-2 text-center text-sm font-semibold"
-        >
-          {{ assets.filter((a) => a.selected).length }}/{{ assets.length }}
-        </div>
-      </div>
+      />
     </div>
   </section>
 
+  <!-- 승아코멘트: 모달 모두 컴포넌트로 빼서 관리해야 함 -->
+  <!-- 승아코멘트: 각 input창 별로 컴포넌트화 필요! src/pages/products/_components/ReserveInputBox.vue 참고-->
   <!-- 자산 선택 모달 -->
   <Modal
     v-if="isModalOpen"
@@ -66,56 +61,20 @@
     <h2 class="text-primary-300 mb-2 text-2xl font-bold"
       >수증자 정보 입력하기</h2
     >
-    <p class="text-surface-500 mb-4 text-sm"
-      >자산을 받으실 분 정보를 입력해 주세요.</p
-    >
+    <p class="mb-4 text-sm">자산을 받으실 분 정보를 입력해 주세요.</p>
 
     <div class="space-y-3">
       <!-- 수증자 카드 리스트 -->
-      <div
+      <MultiBtnCard
         v-for="(recipient, index) in recipients"
         :key="index"
-        class="border-primary-300 flex h-32 w-full items-center justify-between gap-6 rounded-lg border px-8 py-4"
-      >
-        <!-- 왼쪽 수증자 정보 -->
-        <div class="flex flex-col">
-          <div class="text-primary-500 text-lg font-semibold">{{
-            recipient.name
-          }}</div>
-
-          <div class="text-surface-500 text-sm">
-            <p>{{ recipient.relationship }}</p>
-            <p>{{ recipient.birth }}</p>
-            <p>{{ recipient.maritalStatus }} | {{ recipient.incomeStatus }}</p>
-          </div>
-        </div>
-
-        <!-- 수정/삭제 버튼 그룹 -->
-        <div class="flex gap-2">
-          <!-- 수정 버튼 -->
-          <button
-            @click="editRecipient(index)"
-            class="bg-primary-100 text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg text-center text-lg font-semibold"
-          >
-            수정
-          </button>
-
-          <!-- 삭제 버튼 -->
-          <button
-            @click="confirmDeleteRecipient(index)"
-            class="text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg bg-red-100 text-center text-lg font-semibold"
-          >
-            삭제
-          </button>
-        </div>
-      </div>
-
-      <!-- 추가하기 버튼 -->
-      <Btn
-        color="surface"
-        label="+ 추가하기"
-        size="large"
-        @click="openRecipientModal"
+        :title="recipient.name"
+        :content="`${recipient.relationship} / ${recipient.birth}`"
+        :tags="`${recipient.maritalStatus} | ${recipient.incomeStatus}`"
+        btnText1="수정"
+        btnText2="삭제"
+        @click:edit="editRecipient(index)"
+        @click:delete="confirmDeleteRecipient(index)"
       />
     </div>
 
@@ -124,6 +83,7 @@
       <Btn @click="goToQuiz" color="primary" label="다음으로" size="large" />
     </div>
   </section>
+  <!-- 승아코멘트: 모달컴포넌트화 필요 -->
   <Modal
     v-if="isRecipientModalOpen"
     @click1="cancelRecipientModal"
@@ -135,14 +95,15 @@
     <div class="space-y-4">
       <!-- 이름 -->
       <div>
-        <label class="text-primary-500 text-base font-semibold"
+        <label class="text-primary-500 mb-1 text-base font-semibold"
           >이름을 입력하세요</label
         >
         <InputBox
           placeholder="입력하세요"
-          size="large"
+          size="medium"
           type="text"
           v-model="newRecipient.name"
+          class="w-full"
         />
         <p
           v-if="showErrors && !newRecipient.name.trim()"
@@ -154,12 +115,13 @@
 
       <!-- 관계 -->
       <div>
-        <label class="text-primary-500 text-base font-semibold"
+        <label class="text-primary-500 mb-1 text-base font-semibold"
           >증여자와의 관계를 입력하세요</label
         >
-        <select
+        <SelectBox
           v-model="newRecipient.relationship"
-          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
+          size="medium"
+          class="w-full"
         >
           <option disabled value="">선택하세요</option>
           <option>자녀</option>
@@ -167,7 +129,7 @@
           <option>손자녀</option>
           <option>형제자매</option>
           <option>기타</option>
-        </select>
+        </SelectBox>
         <p
           v-if="showErrors && !newRecipient.relationship"
           class="mt-1 text-xs text-red-500"
@@ -178,13 +140,14 @@
 
       <!-- 생년월일 -->
       <div>
-        <label class="text-primary-500 text-base font-semibold"
+        <label class="text-primary-500 mb-1 text-base font-semibold"
           >생년월일을 입력하세요</label
         >
-        <input
+        <InputBox
+          size="medium"
           type="date"
           v-model="newRecipient.birth"
-          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
+          class="w-full"
         />
         <p
           v-if="showErrors && !newRecipient.birth"
@@ -199,15 +162,17 @@
         <label class="text-primary-500 text-base font-semibold"
           >수증자의 결혼 여부를 알려주세요</label
         >
-        <select
+
+        <SelectBox
           v-model="newRecipient.maritalStatus"
-          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
+          size="medium"
+          class="w-full"
         >
           <option disabled value="">선택하세요</option>
           <option>미혼</option>
           <option>결혼</option>
           <option>기타</option>
-        </select>
+        </SelectBox>
         <p
           v-if="showErrors && !newRecipient.maritalStatus"
           class="mt-1 text-xs text-red-500"
@@ -221,19 +186,20 @@
         <label class="text-primary-500 text-base font-semibold"
           >수증자의 소득 유무를 알려주세요</label
         >
-        <p class="text-primary-500 text-xs"
+        <p class="text-primary-500 mb-1"
           >총급여 100만 원 초과 시 ‘소득 있음’을 선택하세요.</p
         >
 
-        <select
+        <SelectBox
           v-model="newRecipient.incomeStatus"
-          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
+          size="large"
+          class="w-full"
         >
           <option disabled value="">선택하세요</option>
           <option>소득 있음</option>
           <option>소득 없음</option>
           <option>소득 모름</option>
-        </select>
+        </SelectBox>
         <p
           v-if="showErrors && !newRecipient.incomeStatus"
           class="mt-1 text-xs text-red-500"
@@ -245,6 +211,7 @@
   </Modal>
 
   <!-- 삭제 확인 모달 -->
+  <!-- 승아코멘트: 컴포넌트화 필요 -->
   <Modal
     v-if="isDeleteModalOpen"
     @click1="cancelDelete"
@@ -254,7 +221,7 @@
     rightLabel="삭제"
   >
     <div class="py-4 text-center">
-      <p class="text-surface-500 text-base">
+      <p class="text-base">
         <span class="text-primary-500 font-semibold">{{
           recipientToDelete?.name
         }}</span>
@@ -274,6 +241,9 @@ import Modal from '@/components/modals/Modal.vue';
 import { ref, computed } from 'vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import CheckBox from '@/components/forms/CheckBox.vue';
+import CategoryCard from './_components/CategoryCard.vue';
+import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
+import SelectBox from '@/components/forms/SelectBox.vue';
 
 // 1. 자산 카테고리 선택하기
 // 전체 자산 데이터

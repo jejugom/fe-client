@@ -2,6 +2,7 @@
 <template>
   <h1 class="text-primary-300 text-2xl font-bold"> 자산 관리 계획 도우미 </h1>
 
+  <!-- 승아코멘트: 컴포넌트화 필요 -->
   <div
     class="stroke-primary mt-8 flex h-120 flex-col gap-8 rounded-xl px-8 py-16"
   >
@@ -34,6 +35,7 @@
     </div>
   </div>
 
+  <!-- 승아 코멘트: 컴포넌트화 필요->전체 컴포넌트로 작성해도 좋을 듯 -->
   <div
     class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border flex w-full max-w-150 -translate-x-1/2 flex-col gap-3 px-5"
   >

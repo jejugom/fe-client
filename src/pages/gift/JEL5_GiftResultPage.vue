@@ -4,20 +4,18 @@
   <div
     class="bg-gradient-cross-1 mb-4 flex h-80 w-full items-center justify-center"
   >
-    <span class="text-surface-500">예시 이미지</span>
+    <span class="text-white">예시 이미지</span>
   </div>
-  <div class="flex flex-col gap-3">
-    <Btn color="secondary" label="결과 공유하기" size="large" />
-    <div
-      class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-    >
-      <p class="text-primary-300 mb-3 text-center text-base font-semibold">
-        더 자세한 설명이 필요하시면<br />
-        은행에서 친절하게 도와드립니다.
-      </p>
+  <Btn color="secondary" label="결과 공유하기" size="large" />
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+  >
+    <p class="text-primary-300 mb-4 text-center text-base font-semibold">
+      더 자세한 설명이 필요하시면<br />
+      은행에서 친절하게 도와드립니다.
+    </p>
 
-      <Btn color="primary" label="내점 예약하기" size="large" />
-    </div>
+    <Btn color="primary" label="내점 예약하기" size="large" />
   </div>
 </template>
 
