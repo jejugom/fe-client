@@ -37,16 +37,16 @@ const giftRoutes: RouteRecordRaw[] = [
     name: 'gift-result',
     component: () => import('@/pages/gift/JEL5_GiftResultPage.vue'),
   },
-  {
-    path: '/gift/register',
-    name: 'gift-register',
-    component: () => import('@/pages/gift/JEL6_RegisterPage.vue'),
-  },
-  {
-    path: '/gift/register/complete',
-    name: 'gift-register-complete',
-    component: () => import('@/pages/gift/JEL7_RegisterCompletePage.vue'),
-  },
+  // {
+  //   path: '/gift/register',
+  //   name: 'gift-register',
+  //   component: () => import('@/pages/gift/JEL6_RegisterPage.vue'),
+  // },
+  // {
+  //   path: '/gift/register/complete',
+  //   name: 'gift-register-complete',
+  //   component: () => import('@/pages/gift/JEL7_RegisterCompletePage.vue'),
+  // },
 ];
 
 export default giftRoutes;

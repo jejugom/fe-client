@@ -11,7 +11,8 @@ const meta: Meta<typeof MultiBtnCard> = {
     tags: { control: 'text' },
     btnText1: { control: 'text' },
     btnText2: { control: 'text' },
-    onClick: { action: 'clicked' },
+    'onClick:edit': { action: 'edit clicked' },
+    'onClick:delete': { action: 'delete clicked' },
   },
   args: {
     title: '적금통장',
@@ -19,6 +20,8 @@ const meta: Meta<typeof MultiBtnCard> = {
     tags: '3,000만원',
     btnText1: '수정',
     btnText2: '삭제',
+    'onClick:edit': () => console.log('edit clicked'),
+    'onClick:delete': () => console.log('delete clicked'),
   },
 };
 
