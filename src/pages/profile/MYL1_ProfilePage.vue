@@ -1,6 +1,6 @@
 <template>
   <!-- Info Box -->
-  <div class="border-secondary-300 mb-5 rounded-lg border bg-yellow-50 p-4">
+  <div class="border-secondary-300 mb-8 rounded-lg border p-4">
     <div class="text-secondary-500 mb-2 text-lg font-semibold">
       예약하신 정보를 확인해보세요.
     </div>
@@ -25,9 +25,8 @@
   />
 
   <!-- Menu Section -->
-  <div class="my-4">
+  <div class="mt-16 flex flex-col gap-4">
     <Btn
-      class="my-2"
       color="secondary"
       :label="menu.title"
       size="large"
@@ -38,7 +37,7 @@
   </div>
 
   <!-- 로그아웃 및 회원탈퇴 -->
-  <div class="flex items-center justify-end gap-4 text-xs text-red-300">
+  <div class="mt-4 flex items-center justify-end gap-4 text-xs text-red-300">
     <div class="cursor-pointer underline" @click="handleLogout">로그아웃</div>
     <p class="cursor-pointer underline" @click="showModal = true">회원탈퇴</p>
   </div>

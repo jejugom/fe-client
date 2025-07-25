@@ -1,4 +1,4 @@
-import './assets/main.css';
+import './main.css';
 import 'vue-awesome-paginate/dist/style.css';
 
 import { createApp } from 'vue';

@@ -10,11 +10,11 @@
     @click="onClick"
   >
     <!-- 아이콘 부분 -->
-    <div class="flex h-12 w-12 items-center justify-center">
+    <div class="flex h-16 w-16 items-center justify-center">
       <slot name="icon" />
     </div>
     <!-- 글자 부분 -->
-    <div class="text-primary-300 flex flex-col gap-2">
+    <div class="text-primary-300 flex flex-col gap-1">
       <div>{{ content1 }}</div>
       <div class="text-primary-500 text-2xl font-bold">{{ title }}</div>
       <div>{{ content2 }}</div>
