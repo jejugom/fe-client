@@ -1,75 +1,29 @@
 <!-- 투자성향질문 -->
 <template>
-  <h1 class="text-primary-300 text-2xl font-bold"> 자산 관리 계획 도우미 </h1>
+  <QuizHeader />
+  
+  <QuizContent
+    :question="questions[currentQuestionIndex]"
+    :current-question-index="currentQuestionIndex"
+    :selected-answer="selectedAnswers[currentQuestionIndex]"
+    @select-answer="selectAnswer"
+  />
 
-  <!-- 승아코멘트: 컴포넌트화 필요 -->
-  <div
-    class="stroke-primary mt-8 flex h-120 flex-col gap-8 rounded-xl px-8 py-16"
-  >
-    <div class="flex flex-col items-center text-center">
-      <h1 class="text-primary-500 mb-4 text-lg font-semibold">
-        Q{{ currentQuestionIndex + 1 }}.
-        {{ questions[currentQuestionIndex].question }}
-      </h1>
-      <p class="text-surface-300">
-        한 가지만 골라 주세요.
-        <br />
-        바꾸시려면 다른 걸 눌러보세요.
-      </p>
-    </div>
-
-    <div class="space-y-4">
-      <Btn
-        v-for="(option, index) in questions[currentQuestionIndex].options"
-        :key="index"
-        :label="option"
-        :color="
-          selectedAnswers[currentQuestionIndex] === index
-            ? 'secondary-stroke'
-            : 'surface'
-        "
-        size="medium"
-        class="w-full"
-        @click="selectAnswer(index)"
-      />
-    </div>
-  </div>
-
-  <!-- 승아 코멘트: 컴포넌트화 필요->전체 컴포넌트로 작성해도 좋을 듯 -->
-  <div
-    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border flex w-full max-w-150 -translate-x-1/2 flex-col gap-3 px-5"
-  >
-    <!-- 마지막 문제일 때 지점 설정 안내 텍스트 -->
-    <!-- TODO: 프로필에서 넘어온 경우에는 설명 필요없음 -->
-    <!-- TODO: 고정위치이다보니까, 영역 침범이 일어나서 수정 필요 -->
-    <p v-if="isLastQuestion" class="text-surface-300 mb-2 text-center text-sm">
-      다음으로 나의 지점 설정을 도와드릴게요.
-    </p>
-
-    <!-- 첫 문제가 아닐 때만 이전으로 버튼 표시 -->
-    <Btn
-      v-if="currentQuestionIndex > 0"
-      @click="handlePrevQuestion"
-      color="surface"
-      label="이전으로"
-      size="large"
-    />
-
-    <!-- 마지막 문제면 완료, 아니면 다음으로 버튼 표시 -->
-    <Btn
-      @click="handleNextQuestion"
-      :color="isAnswerSelected ? 'primary' : 'surface'"
-      :label="isLastQuestion ? '완료' : '다음으로'"
-      size="large"
-      :disabled="!isAnswerSelected"
-    />
-  </div>
+  <QuizNavigation
+    :current-question-index="currentQuestionIndex"
+    :is-last-question="isLastQuestion"
+    :is-answer-selected="isAnswerSelected"
+    @prev-question="handlePrevQuestion"
+    @next-question="handleNextQuestion"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import Btn from '@/components/buttons/Btn.vue';
+import QuizHeader from './_components/QuizHeader.vue';
+import QuizContent from './_components/QuizContent.vue';
+import QuizNavigation from './_components/QuizNavigation.vue';
 
 const router = useRouter();
 const route = useRoute();
