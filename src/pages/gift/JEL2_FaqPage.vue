@@ -1,29 +1,24 @@
 <template>
   <!-- 타이틀 -->
-  <h2 class="text-primary-300 mb-2 text-2xl font-bold">상속·증여</h2>
-  <p class="text-primary-300 mb-2 text-xl font-semibold">자주 묻는 질문</p>
-  <div class="h-8"></div>
+  <h2 class="text-primary-300 mb-4 text-2xl font-bold">상속·증여</h2>
+  <p class="text-primary-300 mb-8 text-xl font-semibold">자주 묻는 질문</p>
 
   <!-- 검색 섹션 -->
   <div class="mb-6">
     <div class="mb-4 flex items-center gap-2">
-      <input
-        v-model="searchQuery"
-        type="text"
+      <InputBox
         placeholder="무엇이 궁금하신가요? (예: 상속세)"
-        class="border-surface-200 placeholder-surface-300 focus:border-surface-300 h-16 flex-1 rounded-lg border px-4 py-3 text-base focus:outline-none"
+        size="large"
+        type="text"
+        v-model="searchQuery"
         @keypress.enter="handleSearch"
       />
-      <button
-        @click="handleSearch"
-        class="h-16 rounded-lg bg-blue-100 px-5 py-3 text-sm font-semibold text-gray-700"
-      >
-        검색
-      </button>
+      <Btn color="primary" label="검색" size="square" @click="handleSearch" />
     </div>
   </div>
   <!-- 카테고리 탭 -->
   <div class="mb-4 flex">
+    <!-- 승아코멘트: 컴포넌트화 필요 -->
     <button
       @click="toggleTab('gift')"
       :class="[
@@ -48,27 +43,15 @@
       상속
     </button>
   </div>
-
   <!-- FAQ 목록 -->
   <div class="space-y-4">
-    <div
+    <FaqCard
       v-for="faq in filteredFaqs"
       :key="faq.id"
-      class="border-surface-200 cursor-pointer rounded-xl border p-4 py-5 shadow-sm transition"
-      @click="goToFaqDetail(faq.id)"
-    >
-      <div class="flex items-start gap-4">
-        <!-- 왼쪽 카테고리 파란색 텍스트 -->
-        <span class="text-primary-300 text-base font-semibold">
-          {{ faq.category === 'gift' ? '증여' : '상속' }}
-        </span>
-
-        <!-- 오른쪽 질문 텍스트 -->
-        <p class="text-base leading-snug font-medium text-gray-800">
-          {{ faq.question }}
-        </p>
-      </div>
-    </div>
+      :id="faq.id"
+      :category="faq.category"
+      :question="faq.question"
+    />
   </div>
 
   <!-- FAQ가 없을 때 -->
@@ -86,6 +69,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import Btn from '@/components/buttons/Btn.vue';
+import InputBox from '@/components/forms/InputBox.vue';
+import FaqCard from './_components/FaqCard.vue';
 
 const router = useRouter();
 
@@ -98,6 +84,7 @@ function toggleTab(tab: 'gift' | 'inheritance') {
 }
 
 // FAQ 데이터
+// 승아코멘트: 다른 파일에 두고 import해서 사용해도 좋을 듯
 const faqData = ref([
   {
     id: 1,

@@ -30,7 +30,7 @@ const nohooRoutes: RouteRecordRaw[] = [
   {
     path: '/nohoo/register/complete',
     name: 'register-complete',
-    component: () => import('@/pages/nohoo/NOL5_RegisterCompletePage.vue'),
+    component: () => import('@/pages/products/NOL5_RegisterCompletePage.vue'),
   },
 ];
 
