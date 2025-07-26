@@ -35,11 +35,24 @@
         type="text"
         v-model="searchKeyword"
       />
-      <Btn color="primary" label="검색" size="square" @click="searchPlaces" />
+      <div class="flex items-center gap-1">
+        <Btn color="primary" label="검색" size="square" @click="searchPlaces" />
+        <Btn
+          color="secondary"
+          label="초기화"
+          size="square"
+          @click="searchReset"
+      /></div>
     </div>
 
     <!-- 리스트 -->
     <div class="flex flex-col gap-4">
+      <div
+        v-if="filteredProducts.length === 0"
+        class="text-surface-400 text-center text-base"
+      >
+        조건에 맞는 상품이 없습니다.
+      </div>
       <BtnCard
         v-for="product in filteredProducts"
         :key="product.id"
@@ -54,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import TabBtnGroup from './_components/TabBtnGroup.vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import Btn from '@/components/buttons/Btn.vue';
@@ -65,12 +78,22 @@ import InterestRateCard from './_components/InterestRateCard.vue';
 import { retirement } from './_dummy';
 
 const selectedTab = ref('맞춤');
-
 const searchKeyword = ref('');
 const searchQuery = ref('');
 
+// 탭이 바뀌면 검색어 초기화
+watch(selectedTab, () => {
+  searchKeyword.value = '';
+  searchQuery.value = '';
+});
+
 const searchPlaces = () => {
   searchQuery.value = searchKeyword.value.trim();
+};
+
+const searchReset = () => {
+  searchKeyword.value = '';
+  searchQuery.value = '';
 };
 
 // 예시 상품 데이터
@@ -100,16 +123,18 @@ const products = ref([
 
 // 필터링된 상품 목록
 const filteredProducts = computed(() => {
-  return products.value.filter((product) => {
-    const matchesCategory =
-      selectedTab.value === '맞춤' || product.category === selectedTab.value;
-
-    // 검색 쿼리는 searchQuery 기준으로만
-    const matchesKeyword =
-      searchQuery.value === '' ||
-      product.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-
-    return matchesCategory && matchesKeyword;
+  // 1. 먼저 카테고리 필터링
+  const categoryFiltered = products.value.filter((product) => {
+    return (
+      selectedTab.value === '맞춤' || product.category === selectedTab.value
+    );
   });
+
+  // 2. 그 후 검색어 필터링
+  if (searchQuery.value.trim() === '') return categoryFiltered;
+
+  return categoryFiltered.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
 });
 </script>
