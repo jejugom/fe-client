@@ -124,7 +124,6 @@ const handleMenuClick = (menuId) => {
     case 'revenue':
       router.push({
         name: 'edit-branch',
-        query: { from: 'profile' },
       });
       break;
     case 'investment-reset':
