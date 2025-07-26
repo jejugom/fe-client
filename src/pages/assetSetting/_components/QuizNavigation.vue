@@ -33,24 +33,31 @@
 <script setup lang="ts">
 import Btn from '@/components/buttons/Btn.vue';
 
+// 프로퍼티 타입 정의
 interface Props {
   currentQuestionIndex: number;
   isLastQuestion: boolean;
   isAnswerSelected: boolean;
 }
 
+// 이벤트 타입 정의
 interface Emits {
   (e: 'prev-question'): void;
   (e: 'next-question'): void;
 }
 
+// 프로퍼티 정의
 defineProps<Props>();
+
+// 이벤트 정의
 const emit = defineEmits<Emits>();
 
+// 이전 질문 이동
 const handlePrevQuestion = () => {
   emit('prev-question');
 };
 
+// 다음 질문 이동
 const handleNextQuestion = () => {
   emit('next-question');
 };

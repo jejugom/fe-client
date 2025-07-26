@@ -13,23 +13,10 @@
   <!-- 중앙 입력 카드 -->
   <div class="stroke-primary px-auto mt-16 flex flex-col gap-3 rounded-xl py-8">
     <!-- 입력 필드 -->
-    <div class="space-y-4">
-      <!-- 승아코멘트: 컴포넌트화 필요 -->
-      <div class="flex items-center gap-2">
-        <label class="text-surface-500 w-14 text-right">아이디</label>
-        <InputBox v-model="id" placeholder="ID" size="medium" type="text" />
-      </div>
-
-      <div class="flex items-center gap-2">
-        <label class="text-surface-500 w-14 text-right">비밀번호</label>
-        <InputBox
-          v-model="password"
-          placeholder="Password"
-          size="medium"
-          type="password"
-        />
-      </div>
-    </div>
+    <LoginForm 
+      :credentials="credentials"
+      @update:credentials="credentials = $event"
+    />
   </div>
 
   <div
@@ -53,17 +40,19 @@ import { useRouter, useRoute } from 'vue-router';
 import { computed } from 'vue';
 
 import Btn from '@/components/buttons/Btn.vue';
-import InputBox from '@/components/forms/InputBox.vue';
+import LoginForm from './_components/LoginForm.vue';
 
 const route = useRoute();
 const router = useRouter();
 
-const id = ref('');
-const password = ref('');
+const credentials = ref({
+  id: '',
+  password: ''
+});
 
 // 모든 값이 채워졌는지 여부
 const isFormFilled = computed(
-  () => id.value.trim() !== '' && password.value.trim() !== ''
+  () => credentials.value.id.trim() !== '' && credentials.value.password.trim() !== ''
 );
 
 const handleAssetSync = () => {
@@ -79,8 +68,8 @@ const handleAssetSync = () => {
   // 실패하면 에러 메시지를 표시해야 합니다.
 
   // 현재 임시로 ID, Password 콘솔 출력
-  console.log('입력한 ID:', id.value);
-  console.log('입력한 Password:', password.value);
+  console.log('입력한 ID:', credentials.value.id);
+  console.log('입력한 Password:', credentials.value.password);
 
   // 현재 route의 쿼리 파라미터 확인
   const isFromProfile = route.query.from === 'profile';

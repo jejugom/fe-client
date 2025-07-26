@@ -1,7 +1,7 @@
 <!-- 투자성향질문 -->
 <template>
-  <QuizHeader />
-  
+  <h1 class="text-primary-300 text-2xl font-bold"> 자산 관리 계획 도우미 </h1>
+
   <QuizContent
     :question="questions[currentQuestionIndex]"
     :current-question-index="currentQuestionIndex"
@@ -21,12 +21,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import QuizHeader from './_components/QuizHeader.vue';
 import QuizContent from './_components/QuizContent.vue';
 import QuizNavigation from './_components/QuizNavigation.vue';
 
 const router = useRouter();
 const route = useRoute();
+
+// 현재 질문 인덱스
 const currentQuestionIndex = ref(0);
 
 // 질문 목록 정의
@@ -53,6 +54,7 @@ const questions = [
   },
 ];
 
+// 마지막 질문 여부 실시간 계산
 const isLastQuestion = computed(() => {
   return currentQuestionIndex.value === questions.length - 1;
 });
@@ -66,6 +68,8 @@ interface QuizAnswers {
 const selectedAnswers = ref<(number | null)[]>(
   new Array(questions.length).fill(null)
 );
+
+// 최종 답변 저장 - axios post 요청 시 사용
 const finalAnswers = ref<QuizAnswers>({} as QuizAnswers);
 
 // 버튼 비활성화 조건을 수정
@@ -73,20 +77,24 @@ const isAnswerSelected = computed(() => {
   return selectedAnswers.value[currentQuestionIndex.value] !== null;
 });
 
+// 이전 질문 이동
 const handlePrevQuestion = () => {
   if (currentQuestionIndex.value > 0) {
     currentQuestionIndex.value--;
   }
 };
 
+// 다음 질문 이동
 const handleNextQuestion = () => {
   const questionNumber = `q${currentQuestionIndex.value + 1}`;
   const currentAnswer = selectedAnswers.value[currentQuestionIndex.value];
 
+  // 현재 질문에 답변이 선택되어 있는 경우 최종 답변에 저장
   if (currentAnswer !== null) {
     finalAnswers.value[questionNumber] = currentAnswer;
   }
 
+  // 마지막 질문인 경우
   if (isLastQuestion.value) {
     console.log('최종 답변:', finalAnswers.value);
     // TODO: 여기에 API 호출 로직 추가
@@ -102,11 +110,15 @@ const handleNextQuestion = () => {
       // 기본 플로우: 지점 설정으로 이동
       router.push({ name: 'edit-branch' });
     }
-  } else {
+  }
+  // 마지막 질문이 아닌 경우
+  else {
+    // 다음 질문으로 이동
     currentQuestionIndex.value++;
   }
 };
 
+// 답변 선택 시 현재 질문 인덱스에 해당하는 배열 값 업데이트
 const selectAnswer = (index: number) => {
   const newAnswers = [...selectedAnswers.value];
   newAnswers[currentQuestionIndex.value] = index;
