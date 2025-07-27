@@ -59,10 +59,9 @@ const selectedBranch = ref('');
 const errorMessage = ref('');
 const markers = ref<kakao.maps.Marker[]>([]);
 let map: kakao.maps.Map;
-let currentCenter: kakao.maps.LatLng;
 
 // 이벤트 전달용
-const emit = defineEmits<{
+defineEmits<{
   (e: 'select', branch: string): void;
 }>();
 
@@ -81,6 +80,14 @@ const searchPlaces = () => {
   clearMarkers();
   selectedBranch.value = '';
   errorMessage.value = '';
+
+  if (
+    searchQuery.value.trim().length > 0 &&
+    searchQuery.value.trim().length < 2
+  ) {
+    errorMessage.value = '두 글자 이상 입력해주세요.';
+    return;
+  }
 
   const ps = new kakao.maps.services.Places();
   const keyword = searchQuery.value.trim()
@@ -207,39 +214,48 @@ const searchCurrentMap = () => {
 };
 
 onMounted(() => {
-  navigator.geolocation.getCurrentPosition((position) => {
-    const lat = position.coords.latitude;
-    const lng = position.coords.longitude;
-    const locPosition = new kakao.maps.LatLng(lat, lng);
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const locPosition = new kakao.maps.LatLng(lat, lng);
 
-    // 지도 초기화
-    map = new kakao.maps.Map(document.getElementById('map') as HTMLElement, {
-      center: locPosition,
-      level: 3,
-    });
+      // 지도 초기화
+      map = new kakao.maps.Map(document.getElementById('map') as HTMLElement, {
+        center: locPosition,
+        level: 3,
+      });
 
-    currentCenter = locPosition;
+      currentCenter = locPosition;
 
-    // 현재 위치 마커 표시
-    const marker = new kakao.maps.Marker({
-      map,
-      position: locPosition,
-    });
-    markers.value.push(marker);
+      // 현재 위치 마커 표시
+      const marker = new kakao.maps.Marker({
+        map,
+        position: locPosition,
+      });
+      markers.value.push(marker);
 
-    // 지도 중심 변경 감지
-    kakao.maps.event.addListener(map, 'dragend', () => {
-      currentCenter = map.getCenter();
-    });
+      // 지도 중심 변경 감지
+      kakao.maps.event.addListener(map, 'dragend', () => {
+        currentCenter = map.getCenter();
+      });
 
-    const geocoder = new kakao.maps.services.Geocoder();
-    geocoder.coord2RegionCode(lng, lat, (result, status) => {
-      if (status === kakao.maps.services.Status.OK && result[0]) {
-        currentAddress.value = result[0].address_name;
-        searchQuery.value = result[0].region_2depth_name || '';
-        searchPlaces();
-      }
-    });
-  });
+      const geocoder = new kakao.maps.services.Geocoder();
+      geocoder.coord2RegionCode(lng, lat, (result, status) => {
+        if (status === kakao.maps.services.Status.OK && result[0]) {
+          currentAddress.value = result[0].address_name;
+          searchQuery.value = result[0].region_2depth_name || '';
+          searchPlaces();
+        } else {
+          errorMessage.value = '현재 위치를 가져올 수 없습니다.';
+        }
+      });
+    },
+    (error) => {
+      console.error('위치 정보를 가져올 수 없습니다:', error);
+      errorMessage.value =
+        '현재 위치를 가져올 수 없습니다. 위치 권한을 허용해주세요.';
+    }
+  );
 });
 </script>

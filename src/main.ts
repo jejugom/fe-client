@@ -44,7 +44,7 @@ function loadKakaoMapApi() {
         });
       } else {
         console.error(
-          '❌ 카카오 지도 초기화 실패: kakao 객체를 찾을 수 없습니다.\n' +
+          '카카오 지도 초기화 실패: kakao 객체를 찾을 수 없습니다.\n' +
             '가능한 원인:\n' +
             '1. JavaScript API 키로 넣은게 아닐 수 있음\n' +
             '2. 네트워크 연결 문제'
@@ -55,7 +55,7 @@ function loadKakaoMapApi() {
 
     script.onerror = () => {
       console.error(
-        '❌ 카카오 지도 스크립트 로드 실패\n' +
+        '카카오 지도 스크립트 로드 실패\n' +
           '확인해볼 사항:\n' +
           '1. API 키 유효성: ' +
           (kakaoAppKey ? '설정됨' : '미설정') +
