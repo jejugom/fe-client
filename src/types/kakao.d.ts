@@ -1,72 +1,74 @@
-export {};
-
-declare global {
-  interface Window {
-    kakao: typeof kakao;
+declare namespace kakao.maps {
+  class LatLng {
+    constructor(latitude: number, longitude: number);
   }
 
-  namespace kakao {
-    namespace maps {
-      function load(callback: () => void): void;
-      class LatLng {
-        constructor(lat: number, lng: number);
-      }
+  class LatLngBounds {
+    extend(latlng: LatLng): void;
+    contain(latlng: LatLng): boolean;
+  }
 
-      class LatLngBounds {
-        extend(latlng: LatLng): void;
-      }
+  class Point {
+    constructor(x: number, y: number);
+  }
 
-      class Map {
-        constructor(
-          container: HTMLElement,
-          options: {
-            center: LatLng;
-            level: number;
-          }
-        );
-        setBounds(bounds: LatLngBounds): void;
-      }
+  class Size {
+    constructor(width: number, height: number);
+  }
 
-      class Marker {
-        constructor(options: { map: Map; position: LatLng });
-      }
+  interface MarkerImageOptions {
+    alt?: string;
+    coords?: string;
+    offset?: Point;
+    shape?: string;
+    spriteOrigin?: Point;
+    spriteSize?: Size;
+  }
 
-      namespace services {
-        class Places {
-          keywordSearch(
-            keyword: string,
-            callback: (data: KakaoPlace[], status: string) => void
-          ): void;
-        }
+  class MarkerImage {
+    constructor(src: string, size: Size, options?: MarkerImageOptions);
+  }
 
-        class Geocoder {
-          coord2RegionCode(
-            x: number,
-            y: number,
-            callback: (result: any, status: string) => void
-          ): void;
-        }
+  class Marker {
+    constructor(options: { map: Map; position: LatLng; image?: MarkerImage });
+    setMap(map: Map | null): void;
+  }
 
-        enum Status {
-          OK = 'OK',
-          ERROR = 'ERROR',
-        }
-      }
+  class Map {
+    constructor(
+      container: HTMLElement,
+      options: { center: LatLng; level: number }
+    );
+    getBounds(): LatLngBounds;
+    getCenter(): LatLng;
+    setBounds(bounds: LatLngBounds): void;
+  }
 
-      namespace event {
-        function addListener(
-          target: any,
-          type: string,
-          handler: () => void
-        ): void;
-      }
+  namespace event {
+    function addListener(target: any, type: string, handler: () => void): void;
+  }
+
+  namespace services {
+    class Places {
+      keywordSearch(
+        keyword: string,
+        callback: (data: any[], status: string) => void,
+        options?: { bounds?: LatLngBounds; location?: LatLng; radius?: number }
+      ): void;
     }
-  }
 
-  interface KakaoPlace {
-    x: string;
-    y: string;
-    place_name: string;
-    [key: string]: any;
+    class Geocoder {
+      coord2RegionCode(
+        longitude: number,
+        latitude: number,
+        callback: (result: any[], status: string) => void
+      ): void;
+    }
+
+    enum Status {
+      OK = 'OK',
+      ERROR = 'ERROR',
+      ZERO_RESULT = 'ZERO_RESULT',
+    }
   }
 }

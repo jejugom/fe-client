@@ -91,9 +91,9 @@ const searchPlaces = () => {
     ? {} // 사용자가 입력했으면 전체 영역 검색
     : { bounds: map.getBounds() }; // 빈 입력이면 현재 지도 범위만
 
-  ps.keywordSearch(
+  (ps.keywordSearch as any)(
     keyword,
-    (data, status) => {
+    (data: any[], status: kakao.maps.services.Status) => {
       if (status === kakao.maps.services.Status.OK && data.length > 0) {
         // 필터링 적용 (ATM/지급기 제거)
         const filtered = data.filter((place: any) => {
@@ -161,9 +161,9 @@ const searchCurrentMap = () => {
   errorMessage.value = '';
   selectedBranch.value = '';
 
-  ps.keywordSearch(
+  (ps.keywordSearch as any)(
     '국민은행',
-    (data, status) => {
+    (data: any[], status: kakao.maps.services.Status) => {
       if (status === kakao.maps.services.Status.OK && data.length > 0) {
         const filtered = data.filter((place: any) => {
           const name = place.place_name;
