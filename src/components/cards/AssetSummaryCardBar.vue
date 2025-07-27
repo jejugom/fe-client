@@ -61,9 +61,9 @@ const chartOptions = computed(() => ({
   dataLabels: {
     enabled: true,
     formatter: (val) => `${val.toFixed(0)}%`,
-    offsetX: 0, // 라벨 위치 보정
+    offsetX: 0,
     style: {
-      fontSize: '12px',
+      fontSize: '10px',
     },
   },
   tooltip: {
@@ -81,32 +81,43 @@ const chartOptions = computed(() => ({
 
       return `
       <div class="apex-tooltip-custom">
-        <span style="font-weight:bold;">${label}</span><br/>
-        ${value.toLocaleString()} 원
+        <div class="bg-primary-300 text-white font-semibold p-1">
+          ${label}
+          </div>
+          <div class="p-1">
+            ${value.toLocaleString()} 원
+          </div>
       </div>
-    `;
+      `;
     },
   },
   xaxis: {
+    min: 0,
+    max: 100,
     labels: {
       show: false,
-      style: {
-        fontSize: '0px',
-      },
-      padding: 0,
     },
+    axisTicks: { show: false },
+    axisBorder: { show: false },
   },
   yaxis: {
-    labels: { show: false },
+    show: false,
   },
   grid: {
     show: false,
+    padding: {
+      left: 0,
+      right: 20,
+    },
   },
-  colors: ['#cfe2ff', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6', '#34495e'],
+  colors: ['#5B9BD5', '#70AD47', '#ED7D31', '#7030A0', '#7F7F7F', '#264478'],
   legend: {
     position: 'top',
-    onItemClick: { toggleDataSeries: false },
-    onItemHover: { highlightDataSeries: false },
+    horizontalAlign: 'center',
+    fontSize: '10px',
+    itemMargin: {
+      horizontal: 6,
+    },
   },
 }));
 </script>
