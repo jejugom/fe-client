@@ -59,6 +59,7 @@ const selectedBranch = ref('');
 const errorMessage = ref('');
 const markers = ref<kakao.maps.Marker[]>([]);
 let map: kakao.maps.Map;
+let currentCenter: kakao.maps.LatLng;
 
 // 이벤트 전달용
 defineEmits<{
