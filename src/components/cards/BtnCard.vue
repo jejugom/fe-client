@@ -11,7 +11,7 @@
     @click="onClick"
   >
     <!-- 글자부분 -->
-    <div class="flex w-4/5 flex-col">
+    <div class="flex w-7/10 flex-col">
       <!-- 제목 -->
       <div
         :class="[

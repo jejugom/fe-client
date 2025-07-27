@@ -18,7 +18,7 @@
   </div>
 
   <!-- 자산현황 파이차트 컴포넌트-->
-  <AssetSummaryCard
+  <AssetSummaryCardPie
     :userName="retirement.user_info.user_name"
     :assetAmount="retirement.user_info.asset_info.total"
     :assetInfo="retirement.user_info.asset_info"
@@ -78,7 +78,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import AssetSummaryCard from '@/components/cards/AssetSummaryCard.vue';
+import AssetSummaryCardPie from '@/components/cards/AssetSummaryCardPie.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { retirement } from '../nohoo/_dummy';
 import Modal from '@/components/modals/Modal.vue';
