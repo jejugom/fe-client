@@ -239,6 +239,7 @@ onMounted(() => {
       // 지도 중심 변경 감지
       kakao.maps.event.addListener(map, 'dragend', () => {
         currentCenter = map.getCenter();
+        mapMoved.value = true; // 지도 이동 시 표시
       });
 
       const geocoder = new kakao.maps.services.Geocoder();

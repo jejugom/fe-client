@@ -146,10 +146,7 @@ const formattedDate = (date: Date) => {
 };
 
 // 예약 가능 여부 확인
-const checkReservationAvailability = async (
-  date: string,
-  time: string
-): Promise<boolean> => {
+const checkReservationAvailability = (date: string, time: string): boolean => {
   const reserved = reservationData.reserved_slots[date] || [];
   return !reserved.includes(time);
 };
