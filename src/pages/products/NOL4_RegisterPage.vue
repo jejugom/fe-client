@@ -85,10 +85,10 @@ const getTitle = () => {
   return route.params.id === 'gift' ? '상담내용' : '상품';
 };
 
-// guno: 임시
+// guno: 임시로 증여에서 넘어온 것은 증여 시뮬레이션 결과라고 표시
 const modelValue = ref(
   route.params.id === 'gift'
-    ? '증여 시뮬레이션'
+    ? '증여 시뮬레이션 결과'
     : productDetail?.productName || ''
 );
 
@@ -154,7 +154,12 @@ const goToRegister = () => {
     시각: selectedReservation.value.time,
   });
 
-  router.push({ name: 'register-complete' });
+  router.push({ 
+    name: 'register-complete',
+    params: { 
+      type: route.params.id === 'gift' ? 'gift' : 'product'
+    }
+  });
 };
 
 const selectBranch = () => {

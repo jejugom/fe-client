@@ -73,3 +73,28 @@ export const reservationData = {
     '2025-07-30': ['10:00', '11:30', '15:00'],
   } as Record<string, string[]>,
 };
+
+export const appointment = {
+  product: {
+    bank_code: 'KB-SE-001',
+    bank_name: 'KB 국민은행 세종대점',
+    bank_tel: '02-425-1111',
+    prod_code: 'KB 골드 연금',
+    date: '2025-05-11',
+    time: '12:30',
+    doc_info: {
+      required_documents: ['신분증', '가족관계증명서', '인감도장'],
+    },
+  },
+  gift: {
+    bank_code: 'KB-SE-001',
+    bank_name: 'KB 국민은행 세종대점',
+    bank_tel: '02-425-1111',
+    prod_code: '증여 시뮬레이션 결과',
+    date: '2025-05-11',
+    time: '14:00',
+    doc_info: {
+      required_documents: ['신분증'],
+    },
+  },
+};

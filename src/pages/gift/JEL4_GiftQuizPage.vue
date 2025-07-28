@@ -117,7 +117,9 @@ function goToNext() {
     step.value++;
   } else {
     console.log('사용자 응답:', answers.value);
-    router.push({ name: 'gift-result', params: { answers: answers.value } }); // 결과 페이지로 이동
+    // TODO: 퀴즈 결과를 API로 전송하여 증여 시뮬레이션 결과 받아오기
+    // API 호출: axios.post('/api/gift/simulation', { answers: answers.value })
+    router.push({ name: 'gift-result' }); // 결과 페이지로 이동
   }
 }
 
