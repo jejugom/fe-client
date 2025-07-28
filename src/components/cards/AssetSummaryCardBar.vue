@@ -67,28 +67,11 @@ const chartOptions = computed(() => ({
     },
   },
   tooltip: {
-    custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-      const labels = [
-        '부동산',
-        '예적금',
-        '현금',
-        '주식/펀드',
-        '사업지분',
-        '기타',
-      ];
-      const value = series[seriesIndex][dataPointIndex];
-      const label = labels[seriesIndex];
-
-      return `
-      <div class="apex-tooltip-custom">
-        <div class="bg-primary-300 text-white font-semibold p-1">
-          ${label}
-          </div>
-          <div class="p-1">
-            ${value.toLocaleString()} 원
-          </div>
-      </div>
-      `;
+    x: {
+      show: false,
+    },
+    y: {
+      formatter: (val) => `${val.toLocaleString()} 원`,
     },
   },
   xaxis: {

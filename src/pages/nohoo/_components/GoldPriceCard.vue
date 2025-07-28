@@ -1,6 +1,8 @@
 <template>
-  <div class="border-primary-300 flex flex-col gap-2 rounded-xl border p-4">
-    <div class="flex items-center justify-between font-semibold">
+  <div
+    class="border-primary-300 flex flex-col gap-2 rounded-xl border pt-4 pr-4"
+  >
+    <div class="ml-4 flex items-center justify-between font-semibold">
       <span class="text-lg">
         {{ Math.round(currentPrice).toLocaleString() }}
         <span class="font-regular text-surface-300 text-sm"> (원/돈)</span>

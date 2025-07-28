@@ -1,7 +1,9 @@
 <template>
-  <div class="border-primary-300 flex flex-col gap-2 rounded-xl border p-4">
+  <div
+    class="border-primary-300 flex flex-col gap-2 rounded-xl border pt-4 pr-4"
+  >
     <!-- 상단: 금리 & 영향력 -->
-    <div class="flex items-center justify-between font-semibold">
+    <div class="ml-4 flex items-center justify-between font-semibold">
       <span class="text-lg">{{ currentRate.toFixed(2) }} % </span>
       <span
         :class="rateDiff > 0 ? 'text-red-300' : 'text-blue-300'"
@@ -78,7 +80,8 @@ const chartOptions = computed(() => ({
       const date = new Date(timestamp);
       const yy = String(date.getFullYear()).slice(2);
       const mm = String(date.getMonth() + 1).padStart(2, '0');
-      return `${yy}/${mm}`;
+      const dd = String(date.getDate()).padStart(2, '0');
+      return `${yy}-${mm}-${dd}`;
     },
     style: {
       fontSize: '10px',
@@ -86,22 +89,48 @@ const chartOptions = computed(() => ({
   },
   tooltip: {
     enabled: true,
+    x: {
+      formatter: function (value: number) {
+        const date = new Date(value);
+        const yy = String(date.getFullYear()).slice(2);
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yy}년 ${mm}월 ${dd}일`;
+      },
+    },
     y: {
       formatter: (val: number) => `${val.toFixed(2)} %`,
     },
   },
   xaxis: {
     type: 'datetime',
-    tickPlacement: 'on',
-    tickPositions: tickPositions.value,
+    tickAmount: 'dataPoints', // 데이터 개수 기반으로 눈금 생성
+    labels: {
+      formatter: function (value: number) {
+        const date = new Date(value);
+        const year = date.getFullYear();
+        const month = date.getMonth(); // 0-indexed
+
+        // 무조건 1월인 경우에만 표시
+        if (month === 0) {
+          return `${year}`;
+        }
+
+        // 그 외는 빈 문자열 (레이블 생략)
+        return '';
+      },
+      style: {
+        fontSize: '0.625rem',
+      },
+    },
     axisBorder: { show: true },
     axisTicks: { show: true },
   },
   yaxis: {
-    show: false,
+    show: true,
   },
   grid: {
-    padding: { top: 0, bottom: 0, left: 0, right: 0 },
+    // padding: { top: 0, bottom: 0, left: 0, right: 0 },
   },
 }));
 </script>
