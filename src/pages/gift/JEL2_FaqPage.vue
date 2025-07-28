@@ -61,7 +61,8 @@ import Btn from '@/components/buttons/Btn.vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import FaqCard from './_components/FaqCard.vue';
 import FaqTab from './_components/FaqTab.vue';
-import { faqDummyData, FaqItem } from './_faqDummy';
+import { faqDummyData } from './_faqDummy';
+import type { FaqItem } from './_faqDummy';
 
 const faqData = ref<FaqItem[]>(faqDummyData);
 
