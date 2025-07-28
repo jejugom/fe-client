@@ -1,6 +1,4 @@
 <template>
-  <!-- 전체 화면 구조 -->
-
   <!-- 제목 -->
   <h2 class="text-primary-300 mb-2 text-2xl font-bold">상속·증여</h2>
   <p class="text-surface-500 mb-8 text-base">
@@ -14,8 +12,8 @@
   >
     <span class="text-surface-500">예시 이미지</span>
   </div>
-  <!-- 하단 고정 안내 + 버튼 -->
 
+  <!-- 하단 고정 안내 + 버튼 -->
   <div>
     <p class="text-primary-300 mb-4 text-center text-base font-semibold">
       얼마를, 누구에게, 언제 주면 좋을지<br />
@@ -37,6 +35,6 @@ import Btn from '@/components/buttons/Btn.vue';
 const router = useRouter();
 
 function goToInput() {
-  router.push({ name: 'gift-input' }); // 증여 계획 입력 페이지로 이동
+  router.push({ name: 'gift-input' });
 }
 </script>
