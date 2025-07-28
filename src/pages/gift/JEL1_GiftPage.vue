@@ -6,43 +6,24 @@
     준비할 수 있도록 도와드립니다.
   </p>
 
-  <!-- 증여 카드 -->
-  <div
-    class="border-primary-300 mb-4 flex items-start gap-8 rounded-xl border-1 px-8 py-4"
+  <!-- 승아코멘트: 컴포넌트화 필요 - ✅ -->
+  <GiftStartCard
+    :imgSrc="Gift1"
+    altText="증여 아이콘"
+    title="증여"
+    description="자녀나 손주에게 재산을 미리 물려주고 싶을 때, 세금 걱정 없이 증여 계획을 세워보세요."
     @click="goToGiftStart"
-  >
-    <div class="aspect-square w-24 flex-shrink-0 overflow-hidden rounded-lg">
-      <img src="" alt="증여 아이콘" class="h-full w-full object-cover" />
-    </div>
-    <div>
-      <p class="text-primary-500 text-lg font-semibold">증여</p>
-      <p class="text-surface-500 mt-1 text-sm">
-        자녀나 손주에게 재산을 미리 물려주고 싶을 때, 세금 걱정 없이 증여 계획을
-        세워보세요.
-      </p>
-    </div>
-  </div>
+  />
 
-  <!-- 상속 카드 -->
-  <div
-    class="border-primary-300 mb-4 flex items-start gap-8 rounded-xl border-1 px-8 py-4"
-  >
-    <div class="aspect-square w-24 flex-shrink-0 overflow-hidden rounded-lg">
-      <img src="" alt="상속 아이콘" class="h-full w-full object-cover" />
-    </div>
-    <div>
-      <p class="text-primary-500 text-lg font-semibold">상속</p>
-      <p class="text-surface-500 mt-1 text-sm">
-        내 자산이 가족에게 잘 전달될 수 있도록, 쉽고 정리된 상속 계획을
-        도와드립니다.
-      </p>
-    </div>
-  </div>
+  <GiftStartCard
+    :imgSrc="Gift2"
+    altText="상속 아이콘"
+    title="상속"
+    description="내 자산이 가족에게 잘 전달될 수 있도록, 쉽고 정리된 상속 계획을 도와드립니다."
+  />
 
   <!-- 하단 FAQ 안내 -->
-  <div
-    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-  >
+  <div>
     <p class="text-primary-500 mb-3 text-center text-base">
       혹시 궁금한 점이 있으신가요?<br />
       많이들 물어보시는 내용을 쉽게 정리해두었어요.
@@ -54,6 +35,9 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
+import GiftStartCard from './_components/GiftStartCard.vue';
+import Gift1 from '@/assets/images/Gift1.svg';
+import Gift2 from '@/assets/images/Gift2.svg';
 
 const router = useRouter();
 

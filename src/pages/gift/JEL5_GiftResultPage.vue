@@ -16,24 +16,39 @@
         size="large"
         @click="shareResult"
       />
-
-      <div
-        class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-      >
-        <p class="text-primary-300 mb-3 text-center text-base font-semibold">
-          더 자세한 설명이 필요하시면<br />
-          은행에서 친절하게 도와드립니다.
-        </p>
-
-        <Btn color="primary" label="내점 예약하기" size="large" />
-      </div>
     </div>
+
+    <div
+      class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+    >
+      <p class="text-primary-300 mb-3 text-center text-base font-semibold">
+        더 자세한 설명이 필요하시면<br />
+        은행에서 친절하게 도와드립니다.
+      </p>
+    </div>
+
+    <Btn
+      color="primary"
+      label="내점 예약하기"
+      size="large"
+      @click="goToRegister"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const goToRegister = () => {
+  router.push({
+    name: 'register',
+    params: { id: 'gift' },
+  });
+};
 import GiftSimulationResult from './_components/GiftSimulationResult.vue';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';

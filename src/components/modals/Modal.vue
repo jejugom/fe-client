@@ -26,13 +26,15 @@
           <slot />
         </div>
 
-        <!-- 고정 버튼 -->
-        <BtnSet
-          :label1="leftLabel"
-          :label2="rightLabel"
-          @click1="emit('click1')"
-          @click2="emit('click2')"
-        />
+        <!-- 고정 버튼 (중앙 정렬 추가) -->
+        <div class="flex justify-center">
+          <BtnSet
+            :label1="leftLabel"
+            :label2="rightLabel"
+            @click1="emit('click1')"
+            @click2="emit('click2')"
+          />
+        </div>
       </div>
     </div>
   </Teleport>

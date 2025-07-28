@@ -4,7 +4,7 @@ const eventRoutes: RouteRecordRaw[] = [
   {
     path: '/event',
     name: 'event',
-    component: import('@/pages/event/EVL1_EventPage.vue'),
+    component: () => import('@/pages/event/EVL1_EventPage.vue'),
   },
 ];
 

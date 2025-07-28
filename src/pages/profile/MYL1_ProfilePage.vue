@@ -1,6 +1,6 @@
 <template>
   <!-- Info Box -->
-  <div class="border-secondary-300 mb-5 rounded-lg border bg-yellow-50 p-4">
+  <div class="border-secondary-300 mb-8 rounded-lg border p-4">
     <div class="text-secondary-500 mb-2 text-lg font-semibold">
       예약하신 정보를 확인해보세요.
     </div>
@@ -18,16 +18,15 @@
   </div>
 
   <!-- 자산현황 파이차트 컴포넌트-->
-  <AssetSummaryCard
+  <AssetSummaryCardPie
     :userName="retirement.user_info.user_name"
     :assetAmount="retirement.user_info.asset_info.total"
     :assetInfo="retirement.user_info.asset_info"
   />
 
   <!-- Menu Section -->
-  <div class="my-4">
+  <div class="mt-16 flex flex-col gap-4">
     <Btn
-      class="my-2"
       color="secondary"
       :label="menu.title"
       size="large"
@@ -37,8 +36,9 @@
     />
   </div>
 
-  <!-- 회원탈퇴 -->
-  <div class="text-right text-xs text-red-300">
+  <!-- 로그아웃 및 회원탈퇴 -->
+  <div class="mt-4 flex items-center justify-end gap-4 text-xs text-red-300">
+    <div class="cursor-pointer underline" @click="handleLogout">로그아웃</div>
     <p class="cursor-pointer underline" @click="showModal = true">회원탈퇴</p>
   </div>
 
@@ -78,7 +78,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import AssetSummaryCard from '@/components/cards/AssetSummaryCard.vue';
+import AssetSummaryCardPie from '@/components/cards/AssetSummaryCardPie.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { retirement } from '../nohoo/_dummy';
 import Modal from '@/components/modals/Modal.vue';
@@ -104,8 +104,8 @@ const confirmWithdrawal = () => {
 const menuItems = ref([
   { id: 'asset', title: '자산 추가 등록·수정' },
   { id: 'calculation', title: '자산 재연동' },
+  { id: 'investment-reset', title: '투자 성향 재설정' },
   { id: 'revenue', title: '내 지점 수정' },
-  { id: 'logout', title: '로그아웃' },
 ]);
 
 const handleMenuClick = (menuId) => {
@@ -114,13 +114,29 @@ const handleMenuClick = (menuId) => {
       router.push({ name: 'edit-asset' }); // 자산 추가 등록·수정
       break;
     case 'calculation':
-      router.push('/asset/sync'); // 자산 재연동
+      // 재연동 flow임을 표시하는 쿼리 파라미터 추가
+      // name: 'asset-start'로 통일
+      router.push({
+        name: 'asset-start',
+        query: { from: 'profile' },
+      });
       break;
     case 'revenue':
-      router.push({ name: 'edit-branch' }); // 내 지점 수정
+      router.push({
+        name: 'edit-branch',
+      });
       break;
-    case 'logout':
+    case 'investment-reset':
+      router.push({
+        name: 'asset-custom-quiz',
+        query: { from: 'profile' },
+      });
       break;
   }
+};
+
+const handleLogout = () => {
+  // 로그아웃 로직 추가
+  console.log('로그아웃');
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="stroke-secondary flex flex-col gap-8 rounded-xl bg-white px-6 py-8"
+    class="stroke-secondary flex flex-col items-center justify-center gap-8 rounded-xl bg-white px-6 py-8"
   >
     <div class="text-center text-lg font-semibold"
       >예약 정보는 문자로 보내드렸습니다.<br />방문 날,

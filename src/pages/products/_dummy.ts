@@ -64,3 +64,12 @@ export const productDetail = {
     대출금리: undefined,
   },
 };
+
+export const reservationData = {
+  branch_code: '0004',
+  reserved_slots: {
+    '2025-07-27': ['10:00', '11:00', '14:00'],
+    '2025-07-29': ['09:30'],
+    '2025-07-30': ['10:00', '11:30', '15:00'],
+  } as Record<string, string[]>,
+};

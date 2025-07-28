@@ -13,8 +13,7 @@
 
     <!-- 로고 텍스트 -->
     <router-link :to="{ name: 'home' }" class="text-2xl font-bold">
-      <span class="text-primary-300">노후</span>
-      <span class="text-secondary-300">도락</span>
+      <img :src="Logo" alt="노후도락 로고" class="h-6 w-auto" />
     </router-link>
   </header>
 </template>
@@ -23,6 +22,7 @@
 import { useRouter, useRoute } from 'vue-router';
 import { computed } from 'vue';
 import Arrow from '@/assets/icons/HeaderBefore.svg';
+import Logo from '@/assets/logos/typo.svg';
 
 const router = useRouter();
 const route = useRoute();

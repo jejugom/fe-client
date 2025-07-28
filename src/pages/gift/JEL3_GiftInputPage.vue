@@ -1,11 +1,12 @@
 <template>
   <!-- 자산 차트 영역 -->
-  <section>
-    <div
-      class="text-surface-500 bg-gradient-cross-1 mb-8 flex h-80 items-center justify-center"
-    >
-      Chart
-    </div>
+  <section class="mb-8">
+    <!-- 자산현황 파이차트 컴포넌트-->
+    <AssetSummaryCard
+      :userName="retirement.user_info.user_name"
+      :assetAmount="retirement.user_info.asset_info.total"
+      :assetInfo="retirement.user_info.asset_info"
+    />
   </section>
 
   <!-- 자산 카테고리 선택 -->
@@ -13,109 +14,74 @@
     <h2 class="text-primary-300 mb-2 text-2xl font-bold">
       증여 자산 카테고리 선택하기
     </h2>
-    <p class="text-surface-500 mb-4 text-sm">
+    <p class="mb-8 text-sm">
       수증자에게 어떤 자산을 나눠주실지 카테고리를 선택하면<br />
       해당 카테고리의 세부 자산을 선택하실 수 있습니다.
     </p>
 
-    <div class="mb-8 grid grid-cols-3 gap-x-6 gap-y-4">
+    <div class="mb-16 grid grid-cols-3 gap-x-6 gap-y-4">
       <!-- 반복 렌더링 -->
-      <div
+      <CategoryCard
         v-for="(assets, category) in allAssets"
         :key="category"
+        :category="category"
+        :selectedCount="assets.filter((a) => a.selected).length"
+        :totalCount="assets.length"
         @click="openModal(category)"
-        class="border-primary-300 flex flex-col items-center justify-between rounded-xl border p-4"
-      >
-        <div class="bg-gradient-cross-1 mb-2 h-12 w-12"></div>
-        <div class="text-primary-500 text-sm font-semibold">{{ category }}</div>
-        <div
-          class="text-primary-500 bg-primary-100 mt-2 w-full rounded-xl py-2 text-center text-sm font-semibold"
-        >
-          {{ assets.filter((a) => a.selected).length }}/{{ assets.length }}
-        </div>
-      </div>
+      />
     </div>
   </section>
 
-  <!-- 자산 선택 모달 -->
-  <Modal
+  <AssetSelectionModal
     v-if="isModalOpen"
-    @click1="closeModal"
-    @click2="closeModal"
-    title="자산 선택"
-    leftLabel="취소"
-    rightLabel="완료"
-  >
-    <!-- 단위 -->
-    <div class="text-surface-300 text-right text-xs">단위: 원</div>
-
-    <!-- 자산 리스트 -->
-    <ul class="mt-4 space-y-3">
-      <li v-for="(item, index) in assetList" :key="index">
-        <CheckBox
-          :label="item.name"
-          :amount="item.amount"
-          v-model="item.selected"
-        />
-      </li>
-    </ul>
-  </Modal>
+    :asset-list="assetList"
+    @close="closeModal"
+    @confirm="closeModal"
+  />
 
   <!-- 수증자 정보 입력 -->
   <section>
     <h2 class="text-primary-300 mb-2 text-2xl font-bold"
       >수증자 정보 입력하기</h2
     >
-    <p class="text-surface-500 mb-4 text-sm"
-      >자산을 받으실 분 정보를 입력해 주세요.</p
-    >
+    <p class="mb-4 text-sm">자산을 받으실 분 정보를 입력해 주세요.</p>
 
     <div class="space-y-3">
       <!-- 수증자 카드 리스트 -->
-      <div
+      <MultiBtnCard
         v-for="(recipient, index) in recipients"
         :key="index"
-        class="border-primary-300 flex h-32 w-full items-center justify-between gap-6 rounded-lg border px-8 py-4"
-      >
-        <!-- 왼쪽 수증자 정보 -->
-        <div class="flex flex-col">
-          <div class="text-primary-500 text-lg font-semibold">{{
-            recipient.name
-          }}</div>
+        :title="recipient.name"
+        :content="`${recipient.relationship} / ${recipient.birth}`"
+        :tags="`${recipient.maritalStatus} | ${recipient.incomeStatus}`"
+        btnText1="수정"
+        btnText2="삭제"
+        @click:edit="editRecipient(index)"
+        @click:delete="confirmDeleteRecipient(index)"
+      />
 
-          <div class="text-surface-500 text-sm">
-            <p>{{ recipient.relationship }}</p>
-            <p>{{ recipient.birth }}</p>
-            <p>{{ recipient.maritalStatus }} | {{ recipient.incomeStatus }}</p>
-          </div>
-        </div>
+      <!-- 수증자 정보 입력 모달 -->
+      <RecipientFormModal
+        v-if="isRecipientModalOpen"
+        :recipient="newRecipient"
+        :is-editing="isEditing"
+        @cancel="cancelRecipientModal"
+        @confirm="handleRecipientConfirm"
+      />
+      <!-- 삭제 확인 모달 -->
+      <DeleteConfirmModal
+        v-if="isDeleteModalOpen"
+        :recipient-name="recipientToDelete?.name || ''"
+        @cancel="cancelDelete"
+        @confirm="confirmDelete"
+      />
 
-        <!-- 수정/삭제 버튼 그룹 -->
-        <div class="flex gap-2">
-          <!-- 수정 버튼 -->
-          <button
-            @click="editRecipient(index)"
-            class="bg-primary-100 text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg text-center text-lg font-semibold"
-          >
-            수정
-          </button>
-
-          <!-- 삭제 버튼 -->
-          <button
-            @click="confirmDeleteRecipient(index)"
-            class="text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg bg-red-100 text-center text-lg font-semibold"
-          >
-            삭제
-          </button>
-        </div>
-      </div>
-
-      <!-- 추가하기 버튼 -->
+      <!-- 수증자 추가하기 버튼 -->
       <Btn
-        color="surface"
-        label="+ 추가하기"
-        size="large"
         @click="openRecipientModal"
+        color="surface"
+        label="+ 수증자 추가하기"
+        size="large"
       />
     </div>
 
@@ -124,200 +90,55 @@
       <Btn @click="goToQuiz" color="primary" label="다음으로" size="large" />
     </div>
   </section>
-  <Modal
-    v-if="isRecipientModalOpen"
-    @click1="cancelRecipientModal"
-    @click2="handleAddRecipient"
-    title="수증자 정보 입력"
-    leftLabel="취소"
-    rightLabel="완료"
-  >
-    <div class="space-y-4">
-      <!-- 이름 -->
-      <div>
-        <label class="text-primary-500 text-base font-semibold"
-          >이름을 입력하세요</label
-        >
-        <InputBox
-          placeholder="입력하세요"
-          size="large"
-          type="text"
-          v-model="newRecipient.name"
-        />
-        <p
-          v-if="showErrors && !newRecipient.name.trim()"
-          class="mt-1 text-xs text-red-500"
-        >
-          이름을 입력해주세요
-        </p>
-      </div>
-
-      <!-- 관계 -->
-      <div>
-        <label class="text-primary-500 text-base font-semibold"
-          >증여자와의 관계를 입력하세요</label
-        >
-        <select
-          v-model="newRecipient.relationship"
-          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
-        >
-          <option disabled value="">선택하세요</option>
-          <option>자녀</option>
-          <option>배우자</option>
-          <option>손자녀</option>
-          <option>형제자매</option>
-          <option>기타</option>
-        </select>
-        <p
-          v-if="showErrors && !newRecipient.relationship"
-          class="mt-1 text-xs text-red-500"
-        >
-          관계를 선택해주세요
-        </p>
-      </div>
-
-      <!-- 생년월일 -->
-      <div>
-        <label class="text-primary-500 text-base font-semibold"
-          >생년월일을 입력하세요</label
-        >
-        <input
-          type="date"
-          v-model="newRecipient.birth"
-          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
-        />
-        <p
-          v-if="showErrors && !newRecipient.birth"
-          class="mt-1 text-xs text-red-500"
-        >
-          생년월일을 입력해주세요
-        </p>
-      </div>
-
-      <!-- 결혼 여부 -->
-      <div>
-        <label class="text-primary-500 text-base font-semibold"
-          >수증자의 결혼 여부를 알려주세요</label
-        >
-        <select
-          v-model="newRecipient.maritalStatus"
-          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
-        >
-          <option disabled value="">선택하세요</option>
-          <option>미혼</option>
-          <option>결혼</option>
-          <option>기타</option>
-        </select>
-        <p
-          v-if="showErrors && !newRecipient.maritalStatus"
-          class="mt-1 text-xs text-red-500"
-        >
-          결혼 여부를 선택해주세요
-        </p>
-      </div>
-
-      <!-- 소득 여부 -->
-      <div>
-        <label class="text-primary-500 text-base font-semibold"
-          >수증자의 소득 유무를 알려주세요</label
-        >
-        <p class="text-primary-500 text-xs"
-          >총급여 100만 원 초과 시 ‘소득 있음’을 선택하세요.</p
-        >
-
-        <select
-          v-model="newRecipient.incomeStatus"
-          class="border-surface-300 h-12 w-full rounded-lg border px-4 text-base"
-        >
-          <option disabled value="">선택하세요</option>
-          <option>소득 있음</option>
-          <option>소득 없음</option>
-          <option>소득 모름</option>
-        </select>
-        <p
-          v-if="showErrors && !newRecipient.incomeStatus"
-          class="mt-1 text-xs text-red-500"
-        >
-          소득 여부를 선택해주세요
-        </p>
-      </div>
-    </div>
-  </Modal>
-
-  <!-- 삭제 확인 모달 -->
-  <Modal
-    v-if="isDeleteModalOpen"
-    @click1="cancelDelete"
-    @click2="confirmDelete"
-    title="수증자 삭제"
-    leftLabel="취소"
-    rightLabel="삭제"
-  >
-    <div class="py-4 text-center">
-      <p class="text-surface-500 text-base">
-        <span class="text-primary-500 font-semibold">{{
-          recipientToDelete?.name
-        }}</span>
-        수증자를 삭제하시겠습니까?
-      </p>
-      <p class="text-surface-400 mt-2 text-sm">
-        삭제된 수증자 정보는 복구할 수 없습니다.
-      </p>
-    </div>
-  </Modal>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
-import Modal from '@/components/modals/Modal.vue';
-import { ref, computed } from 'vue';
-import InputBox from '@/components/forms/InputBox.vue';
-import CheckBox from '@/components/forms/CheckBox.vue';
+import CategoryCard from './_components/CategoryCard.vue';
+import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
+import AssetSummaryCard from '@/components/cards/AssetSummaryCard.vue';
+import AssetSelectionModal from './_components/AssetSelectionModal.vue';
+import RecipientFormModal from './_components/RecipientFormModal.vue';
+import DeleteConfirmModal from './_components/DeleteConfirmModal.vue';
+import { retirement } from '../nohoo/_dummy';
+import { dummyAssets, dummyRecipients, emptyRecipient } from './_inputDummy';
 
-// 1. 자산 카테고리 선택하기
-// 전체 자산 데이터
-const allAssets = ref<
-  Record<string, { name: string; amount: string; selected: boolean }[]>
->({
-  부동산: [
-    { name: '부동산 이름1', amount: '10억 5천만', selected: true },
-    { name: '부동산 이름2', amount: '6억 8천만', selected: false },
-    { name: '부동산 이름3', amount: '2억', selected: false },
-  ],
-  예ㆍ적금: [
-    { name: '예ㆍ적금1', amount: '5천만', selected: true },
-    { name: '예ㆍ적금2', amount: '3천만', selected: true },
-  ],
-  현금: [
-    { name: '현금 자산1', amount: '1억', selected: true },
-    { name: '현금 자산2', amount: '3천만', selected: true },
-  ],
-  주식ㆍ펀드: [
-    { name: '삼성전자 주식', amount: '2천만', selected: false },
-    { name: '펀드 상품1', amount: '1천만', selected: true },
-  ],
-  사업체ㆍ지분: [],
-  기타: [
-    { name: '기타 자산1', amount: '5백만', selected: false },
-    { name: '기타 자산2', amount: '1백만', selected: false },
-  ],
-});
+interface Asset {
+  name: string;
+  amount: string;
+  selected: boolean;
+}
 
-const assetList = ref<any[]>([]); // 모달에서 보여줄 자산 목록
+interface Recipient {
+  name: string;
+  relationship: string;
+  birth: string;
+  maritalStatus: string;
+  incomeStatus: string;
+}
 
-// 모달
+const router = useRouter();
+
+// 자산 관리
+const allAssets = ref<Record<string, Asset[]>>(
+  JSON.parse(JSON.stringify(dummyAssets))
+);
+const assetList = ref<Asset[]>([]);
 const selectedCategory = ref<string | null>(null);
+
+// 모달 상태 관리
 const isModalOpen = ref(false);
+const isRecipientModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
 
-// 모달 열기
-
+// 자산 모달 관리
 const openModal = (category: string) => {
   selectedCategory.value = category;
   isModalOpen.value = true;
-
   assetList.value =
-    allAssets.value[category]?.map((item: any) => ({ ...item })) || [];
+    allAssets.value[category]?.map((item) => ({ ...item })) || [];
 };
 
 const closeModal = () => {
@@ -329,54 +150,36 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 
-// 2. 수증자 정보 입력하기
-// 수증자 데이터
-const recipients = ref([
-  {
-    name: '홍길동',
-    relationship: '자녀',
-    birth: '2001-04-18',
-    maritalStatus: '미혼',
-    incomeStatus: '소득 있음',
-  },
-  {
-    name: '최두식',
-    relationship: '배우자',
-    birth: '2001-04-18',
-    maritalStatus: '결혼',
-    incomeStatus: '소득 모름',
-  },
-]);
-// 수증자 추가하기 모달
-const isRecipientModalOpen = ref(false);
-
-// 새 수증자 입력용 변수
-const newRecipient = ref({
-  name: '',
-  relationship: '',
-  birth: '',
-  maritalStatus: '',
-  incomeStatus: '',
-});
-
-// 모달 열기
-const openRecipientModal = () => {
-  // 초기화
-  newRecipient.value = {
-    name: '',
-    relationship: '',
-    birth: '',
-    maritalStatus: '',
-    incomeStatus: '',
-  };
-  isRecipientModalOpen.value = true;
-};
-
-// 수증자 수정하기
+// 수증자 관리
+const recipients = ref<Recipient[]>([...dummyRecipients]);
+const newRecipient = ref<Recipient>({ ...emptyRecipient });
 const isEditing = ref(false);
 const selectedRecipientIndex = ref<number | null>(null);
 
-// 수증자 수정 모달 열기
+// 수증자 모달 관리
+const openRecipientModal = () => {
+  newRecipient.value = { ...emptyRecipient };
+  isRecipientModalOpen.value = true;
+  isEditing.value = false;
+  selectedRecipientIndex.value = null;
+};
+
+const cancelRecipientModal = () => {
+  isRecipientModalOpen.value = false;
+  isEditing.value = false;
+  selectedRecipientIndex.value = null;
+};
+
+const handleRecipientConfirm = (recipientData: Recipient) => {
+  if (isEditing.value && selectedRecipientIndex.value !== null) {
+    recipients.value[selectedRecipientIndex.value] = { ...recipientData };
+  } else {
+    recipients.value.push({ ...recipientData });
+  }
+  cancelRecipientModal();
+};
+
+// 수증자 수정
 const editRecipient = (index: number) => {
   const recipient = recipients.value[index];
   newRecipient.value = { ...recipient };
@@ -385,9 +188,8 @@ const editRecipient = (index: number) => {
   isRecipientModalOpen.value = true;
 };
 
-// 수증자 삭제하기
-const isDeleteModalOpen = ref(false);
-const recipientToDelete = ref<any>(null);
+// 수증자 삭제 관리
+const recipientToDelete = ref<Recipient | null>(null);
 const deleteIndex = ref<number | null>(null);
 
 const confirmDeleteRecipient = (index: number) => {
@@ -400,9 +202,7 @@ const confirmDelete = () => {
   if (deleteIndex.value !== null) {
     recipients.value.splice(deleteIndex.value, 1);
   }
-  isDeleteModalOpen.value = false;
-  recipientToDelete.value = null;
-  deleteIndex.value = null;
+  cancelDelete();
 };
 
 const cancelDelete = () => {
@@ -411,56 +211,8 @@ const cancelDelete = () => {
   deleteIndex.value = null;
 };
 
-// 완료 버튼 클릭 핸들러
-const handleAddRecipient = () => {
-  if (!isFormValid.value) {
-    showErrors.value = true;
-    return;
-  }
-  addRecipient();
-};
-
-// 완료 버튼 클릭 - 추가 또는 수정
-const addRecipient = () => {
-  if (isEditing.value && selectedRecipientIndex.value !== null) {
-    recipients.value[selectedRecipientIndex.value] = { ...newRecipient.value };
-  } else {
-    recipients.value.push({ ...newRecipient.value });
-  }
-
-  isRecipientModalOpen.value = false;
-  isEditing.value = false;
-  selectedRecipientIndex.value = null;
-  showErrors.value = false; // 에러 표시 초기화
-};
-
-// 에러 표시 여부
-const showErrors = ref(false);
-
-// 취소
-const cancelRecipientModal = () => {
-  isRecipientModalOpen.value = false;
-  isEditing.value = false;
-  selectedRecipientIndex.value = null;
-  showErrors.value = false; // 에러 표시 초기화
-};
-
-// 폼 유효성 검사
-const isFormValid = computed(() => {
-  return (
-    newRecipient.value.name.trim() !== '' &&
-    newRecipient.value.relationship !== '' &&
-    newRecipient.value.birth !== '' &&
-    newRecipient.value.maritalStatus !== '' &&
-    newRecipient.value.incomeStatus !== ''
-  );
-});
-
-const router = useRouter();
-
+//
 const goToQuiz = () => {
-  router.push({ name: 'gift-quiz' }); // 증여 계획 계산 페이지로 이동
+  router.push({ name: 'gift-quiz' });
 };
 </script>
-
-<style scoped></style>

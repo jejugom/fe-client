@@ -4,18 +4,13 @@
 
     <!-- 예약 정보 -->
 
-    <div class="grid grid-cols-[5rem_1fr] gap-y-4">
-      <div class="text-primary-300 font-semibold">상품명</div>
-      <div>{{ appointment.prod_code }}</div>
-
-      <div class="text-primary-300 font-semibold">지점명</div>
-      <div>{{ appointment.bank_name }}</div>
-
-      <div class="text-primary-300 font-semibold">날짜/시간</div>
-      <div>{{ formattedDateTime }}</div>
-
-      <div class="text-primary-300 font-semibold">지점 전화</div>
-      <div>{{ appointment.bank_tel }}</div>
+    <div class="flex flex-col gap-4">
+      <InfoRow
+        v-for="(item, index) in infoRows"
+        :key="index"
+        :label="item.label"
+        :value="item.value"
+      />
     </div>
 
     <!-- 필요 서류 -->
@@ -38,7 +33,15 @@
 <script setup lang="ts">
 import { appointment } from '@/pages/nohoo/_dummy';
 import ReserveCompleteBox from './_components/ReserveCompleteBox.vue';
+import InfoRow from './_components/InfoRow.vue';
 
 // 날짜 + 시간 포맷팅
 const formattedDateTime = `${appointment.date.replace(/-/g, '/')} ${appointment.time}`;
+
+const infoRows = [
+  { label: '상품명', value: appointment.prod_code },
+  { label: '지점명', value: appointment.bank_name },
+  { label: '날짜/시간', value: formattedDateTime },
+  { label: '지점 전화', value: appointment.bank_tel },
+];
 </script>
