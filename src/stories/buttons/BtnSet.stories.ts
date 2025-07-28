@@ -8,6 +8,12 @@ const meta: Meta<typeof BtnSet> = {
   argTypes: {
     label1: { control: 'text' },
     label2: { control: 'text' },
+    type: {
+      control: { type: 'radio' },
+      options: ['type1', 'type2'],
+      description: '버튼 스타일 유형',
+      defaultValue: 'type1',
+    },
   },
 };
 
@@ -17,8 +23,9 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     label1: '취소',
-    label2: '확인',
-    onClick1: () => alert('취소 클릭됨'),
-    onClick2: () => alert('확인 클릭됨'),
+    label2: '완료',
+    type: 'type1',
+    onClick1: () => alert('취소'),
+    onClick2: () => alert('완료'),
   },
 };

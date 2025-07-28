@@ -11,6 +11,7 @@
       label2="홈 페이지로"
       :onClick1="goBack"
       :onClick2="goHome"
+      type="type1"
     />
   </div>
 </template>

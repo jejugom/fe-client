@@ -11,27 +11,22 @@
   </div>
 
   <!-- 중앙 입력 카드 -->
-  <div class="stroke-primary px-auto mt-16 flex flex-col gap-3 rounded-xl py-8">
+  <div
+    class="stroke-primary px-auto my-16 flex flex-col items-center justify-center gap-3 rounded-xl py-8"
+  >
     <!-- 입력 필드 -->
-    <LoginForm 
+    <LoginForm
       :credentials="credentials"
       @update:credentials="credentials = $event"
     />
   </div>
 
-  <div
-    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-  >
-    <!-- 하단 고정 버튼 -->
-    <Btn
-      :color="isFormFilled ? 'primary' : 'surface'"
-      :disabled="!isFormFilled"
-      @click="handleAssetSync"
-      label="연동하기"
-      size="large"
-      class="transition-colors duration-500"
-    />
-  </div>
+  <BtnSet
+    label1="이전으로"
+    label2="다음으로"
+    type="type2"
+    @click2="handleAssetSync"
+  />
 </template>
 
 <script setup lang="ts">
@@ -39,7 +34,7 @@ import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { computed } from 'vue';
 
-import Btn from '@/components/buttons/Btn.vue';
+import BtnSet from '@/components/buttons/BtnSet.vue';
 import LoginForm from './_components/LoginForm.vue';
 
 const route = useRoute();
@@ -47,12 +42,14 @@ const router = useRouter();
 
 const credentials = ref({
   id: '',
-  password: ''
+  password: '',
 });
 
 // 모든 값이 채워졌는지 여부
 const isFormFilled = computed(
-  () => credentials.value.id.trim() !== '' && credentials.value.password.trim() !== ''
+  () =>
+    credentials.value.id.trim() !== '' &&
+    credentials.value.password.trim() !== ''
 );
 
 const handleAssetSync = () => {

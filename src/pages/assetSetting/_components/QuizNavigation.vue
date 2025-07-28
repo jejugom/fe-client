@@ -10,29 +10,20 @@
       다음으로 나의 지점 설정을 도와드릴게요.
     </p>
 
-    <!-- 첫 문제가 아닐 때만 이전으로 버튼 표시 -->
-    <Btn
-      v-if="currentQuestionIndex > 0"
-      @click="handlePrevQuestion"
-      color="surface"
-      label="이전으로"
-      size="large"
-    />
-
-    <!-- 마지막 문제면 완료, 아니면 다음으로 버튼 표시 -->
-    <Btn
-      @click="handleNextQuestion"
-      :color="isAnswerSelected ? 'primary' : 'surface'"
-      :label="isLastQuestion ? '완료' : '다음으로'"
-      size="large"
-      :disabled="!isAnswerSelected"
+    <!-- 이전/다음 버튼 -->
+    <BtnSet
+      :label1="currentQuestionIndex > 0 ? '이전으로' : ''"
+      @click1="handlePrevQuestion"
+      :label2="isLastQuestion ? '완료' : '다음으로'"
+      @click2="handleNextQuestion"
+      type="type2"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import Btn from '@/components/buttons/Btn.vue';
-
+import BtnSet from '@/components/buttons/BtnSet.vue';
 // 프로퍼티 타입 정의
 interface Props {
   currentQuestionIndex: number;

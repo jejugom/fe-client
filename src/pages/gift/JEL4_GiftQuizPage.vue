@@ -9,38 +9,21 @@
     @select="(val: string) => (selectedAnswer = val)"
   />
 
-  <div>
-    <!-- 승아코멘트: 컴포넌트화 필요(자산연동에도 똑같이 있기에 한명이 맡아서 한 후에 사용하는 방식으로 하면 좋을 듯) -->
-    <Btn
-      v-if="step > 0"
-      @click="goToPrev"
-      color="surface"
-      label="이전 문항으로 돌아가기"
-      size="large"
-    />
-    <Btn
-      class="mt-3"
-      :class="[
-        selectedAnswer
-          ? 'bg-primary-100 text-surface-500'
-          : 'border-surface-200 border bg-transparent',
-      ]"
-      :disabled="!selectedAnswer"
-      @click="goToNext"
-      color="primary"
-      :label="step === questions.length - 1 ? '결과 확인하기' : '다음으로'"
-      size="large"
-    />
-  </div>
+  <BtnSet
+    :label1="step > 0 ? '이전으로' : ''"
+    @click1="goToPrev"
+    :label2="step === questions.length - 1 ? '완료' : '다음으로'"
+    @click2="goToNext"
+    type="type2"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import Btn from '@/components/buttons/Btn.vue';
 import GiftQuizBox from './_components/GiftQuizBox.vue';
 import { giftQuizQuestions as questions } from './_quizDummy';
-
+import BtnSet from '@/components/buttons/BtnSet.vue';
 const router = useRouter();
 
 const step = ref(0);
