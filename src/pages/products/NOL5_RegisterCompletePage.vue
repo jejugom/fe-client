@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-col gap-8 text-base">
-    <div class="text-primary-300 text-2xl font-bold">방문 예약 완료</div>
+    <div class="text-primary-300 text-2xl font-bold"
+      >은행 방문 예약이 완료되었어요</div
+    >
 
     <!-- 예약 정보 -->
 
@@ -15,7 +17,9 @@
 
     <!-- 필요 서류 -->
     <div>
-      <span class="text-primary-300 font-semibold">방문 시 지참할 서류</span>
+      <span class="text-primary-300 font-semibold"
+        >은행 방문 시, 아래 서류를 챙겨주세요</span
+      >
       <ul class="mt-4 list-disc pl-5">
         <li
           v-for="(doc, index) in appointment.doc_info.required_documents"

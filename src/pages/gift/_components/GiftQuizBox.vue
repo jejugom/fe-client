@@ -1,7 +1,7 @@
 <template>
   <div class="stroke-primary mb-16 flex flex-col gap-8 rounded-xl px-8 py-12">
     <div>
-      <h2 class="text-primary-500 mb-3 text-center text-lg font-semibold">
+      <h2 class="text-primary-500 mb-3 text-center text-xl font-bold">
         {{ question.title }}
       </h2>
       <p class="text-surface-300 mb-5 text-center whitespace-pre-line">

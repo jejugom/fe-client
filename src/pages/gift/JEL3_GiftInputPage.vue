@@ -2,7 +2,7 @@
   <!-- 자산 차트 영역 -->
   <section class="mb-8">
     <!-- 자산현황 파이차트 컴포넌트-->
-    <AssetSummaryCard
+    <AssetSummaryCardPie
       :userName="retirement.user_info.user_name"
       :assetAmount="retirement.user_info.asset_info.total"
       :assetInfo="retirement.user_info.asset_info"
@@ -12,11 +12,11 @@
   <!-- 자산 카테고리 선택 -->
   <section>
     <h2 class="text-primary-300 mb-2 text-2xl font-bold">
-      증여 자산 카테고리 선택하기
+      증여 자산 종류 선택하기
     </h2>
     <p class="mb-8 text-sm">
-      수증자에게 어떤 자산을 나눠주실지 카테고리를 선택하면<br />
-      해당 카테고리의 세부 자산을 선택하실 수 있습니다.
+      어떤 자산을 누구에게 줄지<br />
+      먼저 나눌 자산 종류부터 골라주세요.
     </p>
 
     <div class="mb-16 grid grid-cols-3 gap-x-6 gap-y-4">
@@ -42,9 +42,11 @@
   <!-- 수증자 정보 입력 -->
   <section>
     <h2 class="text-primary-300 mb-2 text-2xl font-bold"
-      >수증자 정보 입력하기</h2
+      >자산을 받으실 분 정보를 입력하기</h2
     >
-    <p class="mb-4 text-sm">자산을 받으실 분 정보를 입력해 주세요.</p>
+    <p class="mb-4 text-sm"
+      >누구에게 주실지 알려주세요.<br />받으실 분의 정보가 필요해요.</p
+    >
 
     <div class="space-y-3">
       <!-- 수증자 카드 리스트 -->
@@ -80,14 +82,23 @@
       <Btn
         @click="openRecipientModal"
         color="surface"
-        label="+ 수증자 추가하기"
+        label="+ 자산 받을 사람 추가하기"
         size="large"
       />
     </div>
 
     <!-- 다음 버튼 -->
-    <div class="bottom-[calc(5rem+1rem)] mt-8 flex flex-col">
-      <Btn @click="goToQuiz" color="primary" label="다음으로" size="large" />
+    <div class="mt-16 flex flex-col">
+      <p class="text-primary-300 mb-2 text-center font-semibold">
+        간단한 질문을 통해<br />
+        더 나은 절세 방법을 찾아드릴게요.
+      </p>
+      <Btn
+        @click="goToQuiz"
+        color="primary"
+        label="다음 단계로 이동하기"
+        size="large"
+      />
     </div>
   </section>
 </template>
@@ -98,12 +109,12 @@ import { ref } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
 import CategoryCard from './_components/CategoryCard.vue';
 import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
-import AssetSummaryCard from '@/components/cards/AssetSummaryCard.vue';
 import AssetSelectionModal from './_components/AssetSelectionModal.vue';
 import RecipientFormModal from './_components/RecipientFormModal.vue';
 import DeleteConfirmModal from './_components/DeleteConfirmModal.vue';
 import { retirement } from '../nohoo/_dummy';
 import { dummyAssets, dummyRecipients, emptyRecipient } from './_inputDummy';
+import AssetSummaryCardPie from '@/components/cards/AssetSummaryCardPie.vue';
 
 interface Asset {
   name: string;

@@ -1,6 +1,6 @@
 <template>
   <!-- 인사 및 자산 표시 -->
-  <div class="border-primary-300 mb-2 rounded-xl border bg-white px-8 py-4">
+  <div class="border-primary-300 mb-2 rounded-xl border bg-white p-4">
     <div class="text-primary-300 mb-4 text-lg font-semibold">
       {{ userName }}님 <span class="text-surface-500">안녕하세요!</span>
     </div>
@@ -23,7 +23,9 @@
 
   <!-- 맞춤형 서비스 카드 -->
   <section class="mb-16">
-    <h2 class="text-primary-300 mb-4 text-2xl font-bold">맞춤형 서비스</h2>
+    <h2 class="text-primary-300 mb-4 text-2xl font-bold"
+      >지금 필요한 것만, 딱 맞게 준비해요</h2
+    >
     <div class="space-y-4">
       <IconCard
         v-for="(card, index) in serviceCards"
@@ -45,7 +47,7 @@
   <!-- 금융상품 캐러셀 -->
   <section class="mb-16">
     <h2 class="text-primary-300 mb-4 text-2xl font-bold">
-      든든한 노후를 위한 금융상품 3선
+      내가 쓸 돈, 미리 챙겨두는 3가지 방법
     </h2>
     <Top3Products :items="slides" />
   </section>
@@ -57,11 +59,11 @@
   <section class="border-secondary-300 rounded-xl border p-4 text-center">
     <div class="mb-4 p-4">
       <p class="text-primary-300 mb-4 text-2xl font-semibold"
-        >노후도락과 함께 관리해요</p
+        >노후도락과 함께 챙겨드립니다</p
       >
       <p class="text-surface-400 text-base">
-        자산관리부터 맞춤형 상품까지<br />
-        당신만을 위한 금융 솔루션
+        자산은 얼마나 있는지, 어떤 상품이 나에게 좋은지<br />
+        이제 복잡하지 않게 하나씩 알려드릴게요
       </p>
     </div>
 
@@ -69,7 +71,7 @@
       <div
         v-for="(feature, index) in features"
         :key="index"
-        class="flex h-38 w-20 flex-col items-center justify-center"
+        class="flex h-38 w-28 flex-col items-center justify-center"
       >
         <img :src="feature.src" class="mb-2 h-16 w-16" />
         <div class="flex flex-col items-center text-center">
@@ -114,22 +116,22 @@ const formatCurrency = (value: number): string => {
 const serviceCards = [
   {
     title: '노후준비',
-    content1: '든든한 미래를 위한',
-    content2: '연금부터 투자까지 맞춤 설계',
+    content1: '내가 쓸 돈, 내가 준비해요',
+    content2: '연금부터 여유자금까지 차근차근 모아드려요',
     onClick: 'goToNohoo',
     src: Home1,
   },
   {
     title: '증여·상속',
-    content1: '가족을 위한 준비',
-    content2: '세금 절감과 재산 이전 계획',
+    content1: '내가 원할 때, 원하는 만큼',
+    content2: '가족에게 남기는 마음을 함께 설계해요',
     src: Home2,
     onClick: 'goToGift',
   },
   {
     title: '건강관리',
-    content1: '건강한 노후를 위한',
-    content2: '의료비 준비부터 건강보험까지',
+    content1: '아프면 돈이 더 들어요',
+    content2: '지금부터 차근차근 챙겨요',
     onClick: 'goToEvent',
     src: Home3,
   },
@@ -177,23 +179,23 @@ const slides = [
 const features = [
   {
     image: '',
-    keyword: '간편',
-    suffix: '한',
-    description: '모바일 사용',
+    keyword: '',
+    suffix: '누르기만',
+    description: '하면 끝!',
     src: Home4,
   },
   {
     image: '',
-    keyword: '안전',
-    suffix: '한',
-    description: '금융 정보',
+    keyword: '',
+    suffix: '믿을 수 있는',
+    description: '정보만',
     src: Home5,
   },
   {
     image: '',
-    keyword: '맞춤',
-    suffix: '형',
-    description: '추천',
+    keyword: '',
+    suffix: '나한테',
+    description: '딱 맞는 상품',
     src: Home6,
   },
 ];

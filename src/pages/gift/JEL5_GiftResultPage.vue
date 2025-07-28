@@ -6,18 +6,18 @@
   >
     <span class="text-white">예시 이미지</span>
   </div>
-  <Btn color="secondary" label="결과 공유하기" size="large" />
+  <Btn color="secondary" label="가족과 결과 함께 보기" size="large" />
   <div
     class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
   >
-    <p class="text-primary-300 mb-4 text-center text-base font-semibold">
-      더 자세한 설명이 필요하시면<br />
-      은행에서 친절하게 도와드립니다.
+    <p class="text-primary-300 mb-2 text-center font-semibold">
+      궁금한 점이 생기셨다면,<br />
+      은행 창구에서 자세히 알려드릴게요
     </p>
 
     <Btn
       color="primary"
-      label="내점 예약하기"
+      label="은행 방문 예약하기"
       size="large"
       @click="goToRegister"
     />

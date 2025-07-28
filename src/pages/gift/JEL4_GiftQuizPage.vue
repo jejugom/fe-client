@@ -1,7 +1,9 @@
 <template>
-  <h2 class="text-primary-300 mb-2 text-2xl font-bold">증여 시뮬레이션 질문</h2>
+  <h2 class="text-primary-300 mb-2 text-2xl font-bold"
+    >증여가 어렵게 느껴지셨나요?</h2
+  >
   <p class="mb-8 text-base">
-    증여 계획을 쉽게 정리할 수 있도록 질문을 통해 도와드립니다.
+    간단한 질문에 답하면, 상황에 맞는 계획을 쉽게 알려드려요.
   </p>
   <GiftQuizBox
     :question="currentQuestion"
@@ -23,7 +25,10 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
-import Btn from '@/components/buttons/Btn.vue';
+import { giftQuizQuestions } from './_quizDummy';
+import BtnSet from '@/components/buttons/BtnSet.vue';
+import GiftQuizBox from './_components/GiftQuizBox.vue';
+
 const router = useRouter();
 
 const step = ref(0);
@@ -31,6 +36,7 @@ const selectedAnswer = ref('');
 const answers = ref<string[]>([]);
 const navigationRef = ref<HTMLElement | null>(null);
 
+const questions = giftQuizQuestions;
 const currentQuestion = computed(() => questions[step.value]);
 
 // 결과 페이지로 이동

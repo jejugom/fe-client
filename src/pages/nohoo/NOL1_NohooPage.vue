@@ -15,7 +15,14 @@
         v-if="filteredProducts.length === 0"
         class="text-surface-400 text-center text-base"
       >
-        조건에 맞는 상품이 없습니다.
+        찾으신 조건으로는 상품이 아직 준비 중이에요!<br />조건을 조금
+        바꿔보시겠어요?
+      </div>
+      <div
+        v-if="selectedTab === '맞춤'"
+        class="text-primary-300 text-2xl font-semibold"
+      >
+        최승아님께 딱 맞는 상품만 보여드릴게요
       </div>
       <BtnCard
         v-for="product in filteredProducts"

@@ -1,32 +1,36 @@
 <template>
-  <h2 class="text-primary-300 mb-2 text-2xl font-bold">상속·증여</h2>
+  <h2 class="text-primary-300 mb-2 text-2xl font-bold"
+    >자녀에게 미리 마음을 전하고 싶다면</h2
+  >
   <p class="text-surface-500 mb-6 text-base">
-    자녀에게 마음을 전하고 싶은 분들을 위해<br />
-    증여·상속을 쉽고 안전하게<br />
-    준비할 수 있도록 도와드립니다.
+    자녀나 손주에게 마음을 전하고 싶으신가요? <br />
+    복잡하고 어려운 상속·증여, <br />
+    쉽고 안전하게 준비하실 수 있도록 도와드릴게요.
   </p>
 
-  <!-- 승아코멘트: 컴포넌트화 필요 - ✅ -->
-  <GiftStartCard
-    :imgSrc="Gift1"
-    altText="증여 아이콘"
-    title="증여"
-    description="자녀나 손주에게 재산을 미리 물려주고 싶을 때, 세금 걱정 없이 증여 계획을 세워보세요."
-    @click="goToGiftStart"
-  />
+  <div class="mb-16">
+    <GiftStartCard
+      :imgSrc="Gift1"
+      altText="증여 아이콘"
+      title="증여"
+      description="자녀나 손주에게 미리 재산을 전하고 싶으신가요? 세금 걱정 없이 증여 계획을 도와드려요."
+      @click="goToGiftStart"
+    />
 
-  <GiftStartCard
-    :imgSrc="Gift2"
-    altText="상속 아이콘"
-    title="상속"
-    description="내 자산이 가족에게 잘 전달될 수 있도록, 쉽고 정리된 상속 계획을 도와드립니다."
-  />
-
+    <GiftStartCard
+      :imgSrc="Gift2"
+      altText="상속 아이콘"
+      title="상속"
+      description="가족에게 자산이 잘 전달될 수 있도록 상속 계획도 미리미리 준비하실 수 있어요."
+    />
+  </div>
   <!-- 하단 FAQ 안내 -->
-  <div>
-    <p class="text-primary-500 mb-3 text-center text-base">
-      혹시 궁금한 점이 있으신가요?<br />
-      많이들 물어보시는 내용을 쉽게 정리해두었어요.
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+  >
+    <p class="text-primary-300 mb-2 text-center font-semibold">
+      궁금하신 점이 있으신가요?<br />자주 하시는 질문을 보기 쉽게
+      정리해두었어요.
     </p>
     <Btn color="primary" label="자주 묻는 질문" size="large" @click="goToFAQ" />
   </div>

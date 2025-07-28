@@ -2,9 +2,9 @@
   <div class="flex flex-col items-center justify-center gap-8">
     <div class="text-8xl">😔</div>
     <div class="text-center text-lg font-semibold"
-      >작업을 처리하는 데 문제가 발생했어요.<br />
-      불편을 드려 죄송합니다.<br />
-      걱정 마세요, 문제가 곧 해결될거예요.</div
+      >작업 중 문제가 생겼습니다.<br />
+      정보를 불러오는 데 시간이 걸리고 있어요.<br />
+      불편하시더라도 잠시 후 다시 시도해주세요.</div
     >
     <BtnSet
       label1="이전 페이지로"

@@ -4,7 +4,10 @@
     <!-- fixed 가 아닌, 아래에 붙는 형식으로 수정 -->
     <!-- 마지막 문제일 때 지점 설정 안내 텍스트 -->
     <!-- TODO: 프로필에서 넘어온 경우에는 설명 필요없음 -->
-    <p v-if="isLastQuestion" class="text-surface-300 mb-2 text-center text-sm">
+    <p
+      v-if="isLastQuestion"
+      class="text-primary-300 mb-2 text-center font-semibold"
+    >
       다음으로 나의 지점 설정을 도와드릴게요.
     </p>
     <!-- 이전/다음 버튼 -->

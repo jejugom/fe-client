@@ -40,8 +40,8 @@
 
   <!-- 하단 설명과 버튼 -->
   <div>
-    <p class="text-primary-300 mb-4 text-center text-lg font-semibold">
-      내 경우에는 어떻게 될까?
+    <p class="text-primary-300 mb-2 text-center font-semibold">
+      나는 세금 얼마나 나올까?
     </p>
     <Btn
       @click="goToStart"

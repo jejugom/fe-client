@@ -1,6 +1,11 @@
 <!-- 투자성향질문 -->
 <template>
-  <h1 class="text-primary-300 text-2xl font-bold"> 자산 관리 계획 도우미 </h1>
+  <h1 class="text-primary-300 mb-2 text-2xl font-bold"
+    >자산 관리, 어떻게 시작할까요?</h1
+  >
+  <div class="text-base">
+    몇가지 쉬운 질문에 답해주시면 고객님께 알맞은 서비스만 골라드릴게요
+  </div>
 
   <QuizContent
     :question="questions[currentQuestionIndex]"
