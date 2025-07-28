@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between font-semibold">
       <span class="text-lg">
         {{ currentPrice.toLocaleString() }}
-        <span class="font-regular text-surface-300 text-sm"> (원/toz)</span>
+        <span class="font-regular text-surface-300 text-sm"> (원/돈)</span>
       </span>
       <span :class="priceDiff > 0 ? 'text-red-300' : 'text-blue-300'">
         {{ priceDiff > 0 ? '▲' : '▼' }}
@@ -20,30 +20,44 @@
 import { ref, onMounted, computed } from 'vue';
 import { fetchGoldPrice } from '@/api/gold';
 import type { GoldPrice } from '@/api/gold';
+import { fetchExchangeRate } from '@/api/exchange';
 
-// 1. 금 시세 상태
 const goldPrices = ref<GoldPrice[]>([]);
+const exchangeRate = ref(1); // 기본값: USD 그대로
+const tozDon = 3.75 / 31.1035; // 1 온스 = 31.1035g, 1 온스 = 3.75돈
 
-// 2. 데이터 불러오기
+// 1. 데이터 불러오기
+
 onMounted(async () => {
   try {
-    goldPrices.value = await fetchGoldPrice();
+    const [goldData, rate] = await Promise.all([
+      fetchGoldPrice(),
+      fetchExchangeRate(),
+    ]);
+    goldPrices.value = goldData;
+    exchangeRate.value = rate;
   } catch (e) {
-    console.error('금 시세 불러오기 실패:', e);
+    console.error('시세 로딩 실패:', e);
   }
 });
+
+// 2. 변환 함수 (USD/toz → KRW/돈)
+const toDonKRW = (usdToz: number): number =>
+  usdToz * tozDon * exchangeRate.value;
 
 // 3. 최근 시세 비교용
 const latest = computed(() => goldPrices.value.at(-1));
 const previous = computed(() => goldPrices.value.at(-2));
 
-const currentPrice = computed(() => latest.value?.price ?? 0);
 const priceDiff = computed(() =>
-  latest.value && previous.value ? latest.value.price - previous.value.price : 0
+  latest.value && previous.value
+    ? toDonKRW(latest.value.price - previous.value.price)
+    : 0
 );
+
 const priceRate = computed(() =>
   latest.value && previous.value
-    ? (priceDiff.value / previous.value.price) * 100
+    ? (priceDiff.value / toDonKRW(previous.value.price)) * 100
     : 0
 );
 
@@ -51,7 +65,14 @@ const priceRate = computed(() =>
 const formattedDates = computed(
   () => goldPrices.value.map((item) => item.date.slice(2)) // 예: "25-07-28"
 );
-const prices = computed(() => goldPrices.value.map((item) => item.price));
+
+const prices = computed(() =>
+  goldPrices.value.map((item) => toDonKRW(item.price))
+);
+
+const currentPrice = computed(() =>
+  latest.value ? toDonKRW(latest.value.price) : 0
+);
 
 const maxIndex = computed(() =>
   prices.value.indexOf(Math.max(...prices.value))
@@ -112,7 +133,7 @@ const chartOptions = computed(() => ({
   tooltip: {
     enabled: true,
     y: {
-      formatter: (val: number) => `${val.toLocaleString()} USD`,
+      formatter: (val: number) => `${Math.round(val).toLocaleString()} 원`,
     },
   },
   xaxis: {
