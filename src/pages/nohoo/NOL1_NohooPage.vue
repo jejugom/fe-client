@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-8">
     <!-- 탭 -->
     <TabBtnGroup
-      :tabs="['맞춤', '예금', '적금', '주택담보']"
+      :tabs="['맞춤', '예금', '적금', '주택담보', '금']"
       v-model:selectedTab="selectedTab"
     />
 
@@ -25,6 +25,16 @@
         <InterestRateCard :interestRateData="graphStore.interestRate"
       /></div>
       <Banner v-if="selectedTab === '주택담보'" />
+
+      <div v-if="selectedTab === '금'">
+        <div
+          class="text-primary-300 mb-4 flex items-center justify-between text-2xl font-bold"
+        >
+          오늘의 금 시세
+          <span class="text-surface-300 font-regular text-sm">한국거래소</span>
+        </div>
+        <GoldPriceCard />
+      </div>
     </div>
 
     <!-- 검색 -->
@@ -81,6 +91,7 @@ import { useGraphStore } from '@/stores/interestRate';
 
 const router = useRouter();
 import { retirement } from './_dummy';
+import GoldPriceCard from './_components/GoldPriceCard.vue';
 
 const selectedTab = ref('맞춤');
 const searchKeyword = ref('');
