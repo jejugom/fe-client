@@ -91,32 +91,29 @@
 
 @font-face {
   font-family: 'Pretendard-Regular';
-  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff')
-    format('woff');
+  src: url('./styles/fonts/pretendard/Pretendard-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Pretendard-SemiBold';
-  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff')
-    format('woff');
+  src: url('./styles/fonts/pretendard/Pretendard-SemiBold.woff2')
+    format('woff2');
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Pretendard-Bold';
-  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff')
-    format('woff');
+  src: url('./styles/fonts/pretendard/Pretendard-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'TTHakgyoansimYeohaengR';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimYeohaengR.woff2')
-    format('woff2');
+  src: url('./styles/fonts/hakgyo/HakgyoansimYeohaengR.ttf') format('ttf');
   font-weight: normal;
   font-style: normal;
 }
