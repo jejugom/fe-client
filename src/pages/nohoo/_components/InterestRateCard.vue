@@ -42,19 +42,20 @@ const lineColor = computed(
 );
 
 // 데이터 series
-const formattedDates = props.interestRateData.map((item) => {
-  const [year, month] = item.month.split('-');
-  // return `${year.slice(2)}/${month}`;
-  return `${month}`;
-});
-const rates = props.interestRateData.map((item) => item.rate);
-const maxIndex = rates.indexOf(Math.max(...rates));
-const minIndex = rates.indexOf(Math.min(...rates));
-const lastIndex = rates.length - 1;
+const tickPositions = computed(() => [
+  new Date('2022-01-01').getTime(),
+  new Date('2023-01-01').getTime(),
+  new Date('2024-01-01').getTime(),
+  new Date('2025-01-01').getTime(),
+]);
+
 const series = computed(() => [
   {
     name: '기준금리',
-    data: rates,
+    data: props.interestRateData.map((item) => [
+      new Date(item.month).getTime(),
+      item.rate,
+    ]),
   },
 ]);
 
@@ -66,28 +67,21 @@ const chartOptions = computed(() => ({
     toolbar: { show: false },
   },
   stroke: {
+    curve: 'stepline',
     width: 3,
     colors: [lineColor.value],
   },
   dataLabels: {
     enabled: true,
-    formatter: (val: number, { dataPointIndex }: any) => {
-      if (
-        dataPointIndex === maxIndex ||
-        dataPointIndex === minIndex ||
-        dataPointIndex === lastIndex
-      ) {
-        return `${formattedDates[dataPointIndex]}`;
-      }
-      return '';
+    formatter: (val: number, { dataPointIndex, w }: any) => {
+      const timestamp = w.config.series[0].data[dataPointIndex][0];
+      const date = new Date(timestamp);
+      const yy = String(date.getFullYear()).slice(2);
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      return `${yy}/${mm}`;
     },
     style: {
-      fontSize: '0.625rem',
-    },
-    background: {
-      enabled: true,
-      borderRadius: 4,
-      dropShadow: { enabled: false },
+      fontSize: '10px',
     },
   },
   tooltip: {
@@ -97,14 +91,11 @@ const chartOptions = computed(() => ({
     },
   },
   xaxis: {
-    categories: formattedDates,
-    labels: {
-      show: true,
-    },
+    type: 'datetime',
+    tickPlacement: 'on',
+    tickPositions: tickPositions.value,
     axisBorder: { show: true },
     axisTicks: { show: true },
-    tooltip: { enabled: false },
-    floating: false,
   },
   yaxis: {
     show: false,

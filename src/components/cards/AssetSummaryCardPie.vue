@@ -46,6 +46,7 @@ const chartOptions = computed(() => {
       type: 'pie',
     },
     labels,
+    colors: ['#5B9BD5', '#70AD47', '#ED7D31', '#7030A0', '#7F7F7F', '#264478'],
     legend: {
       show: false,
     },

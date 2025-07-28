@@ -9,7 +9,7 @@
     <!-- 조건부 컴포넌트 -->
     <div>
       <div v-if="selectedTab === '맞춤'">
-        <AssetSummaryCard
+        <AssetSummaryCardBar
           :userName="retirement.user_info.user_name"
           :assetAmount="retirement.user_info.asset_info.total"
           :assetInfo="retirement.user_info.asset_info"
@@ -22,7 +22,7 @@
           >
           <span class="text-surface-300">출처: 한국은행</span>
         </div>
-        <InterestRateCard :interestRateData="retirement['금리']"
+        <InterestRateCard :interestRateData="graphStore.interestRate"
       /></div>
       <Banner v-if="selectedTab === '주택담보'" />
     </div>
@@ -61,6 +61,7 @@
         :content="product.description"
         :tags="product.tags.join(' · ')"
         :title="product.name"
+        @click="goToDetail(product.id)"
       />
     </div>
   </div>
@@ -72,14 +73,19 @@ import TabBtnGroup from './_components/TabBtnGroup.vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import BtnCard from '@/components/cards/BtnCard.vue';
-import AssetSummaryCard from '@/components/cards/AssetSummaryCard.vue';
+import AssetSummaryCardBar from '@/components/cards/AssetSummaryCardBar.vue';
 import Banner from '@/components/cards/Banner.vue';
 import InterestRateCard from './_components/InterestRateCard.vue';
+import { useRouter } from 'vue-router';
+import { useGraphStore } from '@/stores/interestRate';
+
+const router = useRouter();
 import { retirement } from './_dummy';
 
 const selectedTab = ref('맞춤');
 const searchKeyword = ref('');
 const searchQuery = ref('');
+const graphStore = useGraphStore();
 
 // 탭이 바뀌면 검색어 초기화
 watch(selectedTab, () => {
@@ -137,4 +143,9 @@ const filteredProducts = computed(() => {
     product.name.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
+
+const goToDetail = (productId: number) => {
+  if (!productId) return;
+  router.push({ name: 'product-detail', params: { id: productId } });
+};
 </script>
