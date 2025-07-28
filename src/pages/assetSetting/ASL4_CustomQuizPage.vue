@@ -7,9 +7,11 @@
     :current-question-index="currentQuestionIndex"
     :selected-answer="selectedAnswers[currentQuestionIndex]"
     @select-answer="selectAnswer"
+    class="mb-16"
   />
 
   <QuizNavigation
+    ref="navigationRef"
     :current-question-index="currentQuestionIndex"
     :is-last-question="isLastQuestion"
     :is-answer-selected="isAnswerSelected"
@@ -19,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import QuizContent from './_components/QuizContent.vue';
 import QuizNavigation from './_components/QuizNavigation.vue';
@@ -78,20 +80,24 @@ const isAnswerSelected = computed(() => {
 });
 
 // 이전 질문 이동
-const handlePrevQuestion = () => {
+const handlePrevQuestion = async () => {
   if (currentQuestionIndex.value > 0) {
     currentQuestionIndex.value--;
+    await scrollToTop();
   }
 };
 
 // 다음 질문 이동
-const handleNextQuestion = () => {
+const handleNextQuestion = async () => {
   const questionNumber = `q${currentQuestionIndex.value + 1}`;
   const currentAnswer = selectedAnswers.value[currentQuestionIndex.value];
 
   // 현재 질문에 답변이 선택되어 있는 경우 최종 답변에 저장
   if (currentAnswer !== null) {
     finalAnswers.value[questionNumber] = currentAnswer;
+  } else {
+    scrollToTop();
+    return;
   }
 
   // 마지막 질문인 경우
@@ -115,6 +121,25 @@ const handleNextQuestion = () => {
   else {
     // 다음 질문으로 이동
     currentQuestionIndex.value++;
+    await scrollToTop();
+  }
+};
+
+// 자동 스크롤 로직
+const navigationRef = ref<any>(null);
+const scrollToTop = async () => {
+  await nextTick();
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  });
+};
+
+const scrollToNavigation = async () => {
+  await nextTick();
+  const target = navigationRef.value?.rootRef;
+  if (target?.scrollIntoView) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 };
 
@@ -123,5 +148,6 @@ const selectAnswer = (index: number) => {
   const newAnswers = [...selectedAnswers.value];
   newAnswers[currentQuestionIndex.value] = index;
   selectedAnswers.value = newAnswers;
+  scrollToNavigation();
 };
 </script>
