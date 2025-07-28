@@ -58,7 +58,7 @@ watch(selectedTab, () => {
 
 const allProducts = computed(() => {
   let idCounter = 1;
-  const flatList = [];
+  const flatList: any[] = [];
 
   // 예금
   productData.timeDeposits.forEach((item) => {
