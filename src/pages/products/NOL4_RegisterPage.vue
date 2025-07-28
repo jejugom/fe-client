@@ -5,7 +5,7 @@
 
     <div class="flex flex-col gap-4">
       <ReserveInputBox
-        title="상품 및 상담"
+        :title="getTitle()"
         type="text"
         placeholder="지점 선택"
         :readOnly="true"
@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { ref, computed } from 'vue';
 import { productDetail } from './_dummy';
 import DetailImg from './_components/DetailImg.vue';
@@ -78,7 +78,20 @@ import BranchSelectModal from './_components/BranchSelectModal.vue';
 import DateTimeSelectModal from './_components/DateTimeSelectModal.vue';
 
 const router = useRouter();
-const modelValue = ref(productDetail?.productName || '');
+const route = useRoute();
+
+// 라우터 파라미터에 따라 title 설정
+const getTitle = () => {
+  return route.params.id === 'gift' ? '상담내용' : '상품';
+};
+
+// guno: 임시
+const modelValue = ref(
+  route.params.id === 'gift'
+    ? '증여 시뮬레이션'
+    : productDetail?.productName || ''
+);
+
 const branchValue = ref('');
 const showBranchModal = ref(false);
 const showDateTimeModal = ref(false);
