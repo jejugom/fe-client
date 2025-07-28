@@ -2,7 +2,7 @@
   <!-- 자산 차트 영역 -->
   <section class="mb-8">
     <!-- 자산현황 파이차트 컴포넌트-->
-    <AssetSummaryCard
+    <AssetSummaryCardBar
       :userName="retirement.user_info.user_name"
       :assetAmount="retirement.user_info.asset_info.total"
       :assetInfo="retirement.user_info.asset_info"
@@ -98,7 +98,7 @@ import { ref } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
 import CategoryCard from './_components/CategoryCard.vue';
 import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
-import AssetSummaryCard from '@/components/cards/AssetSummaryCard.vue';
+import AssetSummaryCardBar from '@/components/cards/AssetSummaryCardBar.vue';
 import AssetSelectionModal from './_components/AssetSelectionModal.vue';
 import RecipientFormModal from './_components/RecipientFormModal.vue';
 import DeleteConfirmModal from './_components/DeleteConfirmModal.vue';
