@@ -2,26 +2,32 @@
 
 @theme {
   --color-*: initial;
-  --color-primary-100: oklch(0.9556 0.0114 252.09);
-  --color-primary-300: oklch(0.5495 0.1202 251.83);
-  --color-primary-500: oklch(0.3068 0.0586 251.07);
-  --color-secondary-100: oklch(0.9798 0.0248 89.21);
-  --color-secondary-300: oklch(0.8346 0.17177 82.5648);
-  --color-secondary-500: oklch(0.4453 0.09126 84.9532);
-  --color-white: oklch(1 0 0);
-  --color-surface-100: oklch(0.9791 0 0);
-  --color-surface-200: oklch(0.9006 0 0);
-  --color-surface-300: oklch(0.5278 0 0);
-  --color-surface-400: oklch(0.4239 0 0);
-  --color-surface-500: oklch(0.209 0 0);
-  --color-red-100: oklch(0.9505 0.0185 17.48);
-  --color-red-300: oklch(0.568 0.2002 26.41);
-  --color-red-500: oklch(0.3112 0.1006 25.21);
-  --color-blue-100: oklch(0.9517 0.0148 251.16);
-  --color-blue-300: oklch(0.5134 0.1603 255.67);
-  --color-blue-500: oklch(0.2859 0.0806 255.24);
-  --color-gold: oklch(0.7504 0.1264 86.5);
-  --color-silver: oklch(0.8234 0 0);
+  --color-primary-100: #ebf1f8;
+  --color-primary-300: #3674b5;
+  --color-primary-500: #17314c;
+
+  --color-secondary-100: #fff8e6;
+  --color-secondary-300: #ffbc00;
+  --color-secondary-500: #6b4f00;
+
+  --color-white: #ffffff;
+
+  --color-surface-100: #f8f8f8;
+  --color-surface-200: #dedede;
+  --color-surface-300: #6b6b6b;
+  --color-surface-400: #4e4e4e;
+  --color-surface-500: #181818;
+
+  --color-red-100: #fbeaea;
+  --color-red-300: #d32f2f;
+  --color-red-500: #591414;
+
+  --color-blue-100: #e8f0f9;
+  --color-blue-300: #1565c0;
+  --color-blue-500: #092a51;
+
+  --color-gold: #d1a843;
+  --color-silver: #c5c5c5;
 
   --font-*: initial;
   --font-regular: 'Pretendard-Regular';
