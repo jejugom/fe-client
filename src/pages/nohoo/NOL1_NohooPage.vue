@@ -7,53 +7,7 @@
     />
 
     <!-- 조건부 컴포넌트 -->
-    <div>
-      <div v-if="selectedTab === '맞춤'">
-        <AssetSummaryCardBar
-          :userName="retirement.user_info.user_name"
-          :assetAmount="retirement.user_info.asset_info.total"
-          :assetInfo="retirement.user_info.asset_info"
-        />
-      </div>
-      <div v-if="selectedTab === '예금' || selectedTab === '적금'">
-        <div class="mb-2 flex items-end justify-between">
-          <span class="text-primary-300 text-2xl font-bold"
-            >금리 흐름을 확인하고<br />예금 똑똑하게 시작하세요</span
-          >
-          <span class="text-surface-300">출처: 한국은행</span>
-        </div>
-        <InterestRateCard :interestRateData="graphStore.interestRate"
-      /></div>
-      <Banner v-if="selectedTab === '주택담보'" />
-
-      <div v-if="selectedTab === '금'">
-        <div
-          class="text-primary-300 mb-4 flex items-center justify-between text-2xl font-bold"
-        >
-          오늘의 금 시세
-          <span class="text-surface-300 font-regular text-sm">한국거래소</span>
-        </div>
-        <GoldPriceCard />
-      </div>
-    </div>
-
-    <!-- 검색 -->
-    <div class="flex w-full items-center gap-2">
-      <InputBox
-        placeholder="찾으시는 상품을 검색해보세요."
-        size="large"
-        type="text"
-        v-model="searchKeyword"
-      />
-      <div class="flex items-center gap-1">
-        <Btn color="primary" label="검색" size="square" @click="searchPlaces" />
-        <Btn
-          color="secondary"
-          label="초기화"
-          size="square"
-          @click="searchReset"
-      /></div>
-    </div>
+    <AdBox :selectedTab="selectedTab" />
 
     <!-- 리스트 -->
     <div class="flex flex-col gap-4">
@@ -80,38 +34,21 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import TabBtnGroup from './_components/TabBtnGroup.vue';
-import InputBox from '@/components/forms/InputBox.vue';
-import Btn from '@/components/buttons/Btn.vue';
 import BtnCard from '@/components/cards/BtnCard.vue';
-import AssetSummaryCardBar from '@/components/cards/AssetSummaryCardBar.vue';
-import Banner from '@/components/cards/Banner.vue';
-import InterestRateCard from './_components/InterestRateCard.vue';
 import { useRouter } from 'vue-router';
-import { useGraphStore } from '@/stores/interestRate';
 
 const router = useRouter();
-import { retirement } from './_dummy';
-import GoldPriceCard from './_components/GoldPriceCard.vue';
+import AdBox from './_components/AdBox.vue';
 
 const selectedTab = ref('맞춤');
 const searchKeyword = ref('');
 const searchQuery = ref('');
-const graphStore = useGraphStore();
 
 // 탭이 바뀌면 검색어 초기화
 watch(selectedTab, () => {
   searchKeyword.value = '';
   searchQuery.value = '';
 });
-
-const searchPlaces = () => {
-  searchQuery.value = searchKeyword.value.trim();
-};
-
-const searchReset = () => {
-  searchKeyword.value = '';
-  searchQuery.value = '';
-};
 
 // 예시 상품 데이터
 const products = ref([

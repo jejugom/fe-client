@@ -23,9 +23,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
-import GiftQuizBox from './_components/GiftQuizBox.vue';
-import { giftQuizQuestions as questions } from './_quizDummy';
-import BtnSet from '@/components/buttons/BtnSet.vue';
+import Btn from '@/components/buttons/Btn.vue';
 const router = useRouter();
 
 const step = ref(0);

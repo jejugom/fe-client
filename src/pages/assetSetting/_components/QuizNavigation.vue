@@ -25,7 +25,6 @@ const rootRef = ref<HTMLElement | null>(null);
 defineExpose({
   rootRef,
 });
-
 // 프로퍼티 타입 정의
 interface Props {
   currentQuestionIndex: number;
