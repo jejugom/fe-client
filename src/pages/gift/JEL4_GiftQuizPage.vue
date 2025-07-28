@@ -3,30 +3,11 @@
   <p class="mb-8 text-base">
     증여 계획을 쉽게 정리할 수 있도록 질문을 통해 도와드립니다.
   </p>
-  <!-- 승아코멘트: 컴포넌트화 필요 -->
-  <div class="stroke-primary mb-16 flex flex-col gap-8 rounded-xl px-8 py-12">
-    <div>
-      <h2 class="text-primary-500 mb-3 text-center text-lg font-semibold">{{
-        currentQuestion.title
-      }}</h2>
-      <p class="text-surface-300 mb-5 text-center whitespace-pre-line">{{
-        currentQuestion.description
-      }}</p>
-    </div>
-    <div class="flex flex-col gap-3">
-      <Btn
-        v-for="(option, idx) in currentQuestion.options"
-        :key="idx"
-        :label="option.label"
-        :color="
-          selectedAnswer === option.value ? 'secondary-stroke' : 'surface'
-        "
-        size="medium"
-        class="w-full"
-        @click="selectedAnswer = option.value"
-      />
-    </div>
-  </div>
+  <GiftQuizBox
+    :question="currentQuestion"
+    :selectedValue="selectedAnswer"
+    @select="(val: string) => (selectedAnswer = val)"
+  />
 
   <div>
     <!-- 승아코멘트: 컴포넌트화 필요(자산연동에도 똑같이 있기에 한명이 맡아서 한 후에 사용하는 방식으로 하면 좋을 듯) -->
@@ -57,58 +38,18 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
+import GiftQuizBox from './_components/GiftQuizBox.vue';
+import { giftQuizQuestions as questions } from './_quizDummy';
+
 const router = useRouter();
 
 const step = ref(0);
 const selectedAnswer = ref('');
 const answers = ref<string[]>([]);
 
-const questions = [
-  {
-    title: 'Q1. 세금은 누가 부담하시나요?',
-    description:
-      '세금을 누가 낼지에 따라 최종 증여액과\n세금 계산 방식이 달라집니다.',
-    options: [
-      { label: '내가 대신 내줄 계획', value: '1' },
-      { label: '자녀/배우자가 내게 할 예정', value: '2' },
-      { label: '아직 고민 중', value: '3' },
-    ],
-  },
-  {
-    title: 'Q2. 자산을 나눠주는 방식을 어떻게 고려하고 계신가요?',
-    description:
-      '증여 시기와 수증자 수를 나누면\n절세 전략을 세우는 데 도움이 됩니다.',
-    options: [
-      { label: '한 번에 증여', value: '1' },
-      { label: '시간을 나눠서 증여', value: '2' },
-      { label: '수증자에게 나눠서 증여', value: '3' },
-      { label: '아직 정하지 못함', value: '4' },
-    ],
-  },
-  {
-    title: 'Q3. 첫 증여는 언제쯤 시작할 계획이신가요?',
-    description:
-      '증여 시점에 따라 공제 여부와\n세법 적용이 달라질 수 있습니다.',
-    options: [
-      { label: '올해(2025년)', value: '1' },
-      { label: '내년(2026년)', value: '2' },
-      { label: '5년 이내 시작(~2029년)', value: '3' },
-      { label: '당장 급하지 않음', value: '4' },
-    ],
-  },
-  {
-    title: 'Q4. 얼마씩 나눠주실 생각이신가요?',
-    description: '자산 분배 방식에 따라\n자녀별 세금과 전략이 달라집니다.',
-    options: [
-      { label: '동등하게 나눌 예정', value: '1' },
-      { label: '각각 다르게 줄 예정', value: '2' },
-      { label: '아직 정하지 못함', value: '3' },
-    ],
-  },
-];
-
 const currentQuestion = computed(() => questions[step.value]);
 
+// 결과 페이지로 이동
 function goToNext() {
   answers.value[step.value] = selectedAnswer.value;
   selectedAnswer.value = '';
