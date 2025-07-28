@@ -1,7 +1,7 @@
 <template>
   <div
     class="border-surface-200 flex h-15 w-full items-center gap-4 rounded-xl border bg-white px-3 py-5"
-    @click="handleClick"
+    @click="$emit('click')"
   >
     <!-- 카테고리 -->
     <div class="text-primary-300 w-8 text-center text-base font-semibold">
@@ -24,9 +24,9 @@ const props = defineProps<{
   question: string;
 }>();
 
-const router = useRouter();
+defineEmits<{
+  (e: 'click'): void;
+}>();
 
-const handleClick = () => {
-  router.push({ name: 'faq-detail', params: { id: props.id } });
-};
+const router = useRouter();
 </script>
