@@ -92,7 +92,7 @@
 import { useRouter } from 'vue-router';
 import Top3Products from '@/components/cards/Top3ProductsCard.vue';
 import Btn from '@/components/buttons/Btn.vue';
-import { retirement } from './nohoo/_dummy';
+import { api_retirement } from './nohoo/_dummy';
 import IconCard from '@/components/cards/IconCard.vue';
 import AdBanner from '@/assets/images/AdBanner.png';
 import Home1 from '@/assets/images/Home1.svg';
@@ -104,8 +104,11 @@ import Home6 from '@/assets/images/Home6.svg';
 
 const router = useRouter();
 
-const userName = retirement.user_info.user_name;
-const totalAsset = retirement.user_info.asset_info.total;
+const userName = api_retirement.user_info[0].user_name.userName;
+const totalAsset = api_retirement.user_info[0].asset_status.reduce(
+  (sum, asset) => sum + asset.amount,
+  0
+);
 
 // 금액 포맷 함수
 const formatCurrency = (value: number): string => {

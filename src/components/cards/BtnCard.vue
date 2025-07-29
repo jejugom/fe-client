@@ -92,6 +92,10 @@ const contentList = computed(() => {
 
 // 태그 쉼표 분리
 const parsedTags = computed(() => {
-  return props.tags?.split(',').map((t) => t.trim()) ?? [];
+  return Array.isArray(props.tags)
+    ? props.tags
+    : typeof props.tags === 'string'
+      ? props.tags.split('·').map((t) => t.trim())
+      : [];
 });
 </script>

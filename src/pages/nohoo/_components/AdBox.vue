@@ -2,9 +2,9 @@
   <div>
     <div v-if="selectedTab === '맞춤'">
       <AssetSummaryCardBar
-        :userName="retirement.user_info.user_name"
-        :assetAmount="retirement.user_info.asset_info.total"
-        :assetInfo="retirement.user_info.asset_info"
+        :userName="userName"
+        :assetAmount="assetAmount"
+        :assetInfo="assetInfo"
       />
     </div>
 
@@ -39,11 +39,20 @@ import Banner from '@/components/cards/Banner.vue';
 import InterestRateCard from './InterestRateCard.vue';
 import GoldPriceCard from './GoldPriceCard.vue';
 import { useGraphStore } from '@/stores/interestRate';
-import { retirement } from '../_dummy';
 import Gold from '@/assets/images/goldBanner.png';
 
 defineProps<{
   selectedTab: string;
+  userName: string;
+  assetAmount: number;
+  assetInfo: {
+    assetId: number;
+    email: string;
+    assetCategoryCode: string;
+    amount: number;
+    assetName: string;
+    businessType: string | null;
+  }[];
 }>();
 
 const graphStore = useGraphStore();

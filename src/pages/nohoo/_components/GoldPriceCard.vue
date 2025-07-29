@@ -42,12 +42,12 @@ onMounted(async () => {
 
     // 3개월 데이터 필터링
     const today = new Date();
-    const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(today.getMonth() - 3);
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setDate(today.getDate() - 30);
 
     const filteredData = goldData.filter((item) => {
       const itemDate = new Date(item.date);
-      return itemDate >= threeMonthsAgo && itemDate <= today;
+      return itemDate >= oneMonthAgo && itemDate <= today;
     });
 
     goldPrices.value = filteredData;
@@ -78,8 +78,8 @@ const priceRate = computed(() =>
 );
 
 // 차트 데이터 가공
-const formattedDates = computed(
-  () => goldPrices.value.map((item) => item.date) // 예: "25-07-28"
+const formattedDates = computed(() =>
+  goldPrices.value.map((item) => new Date(item.date).toISOString())
 );
 
 const prices = computed(() =>
@@ -102,7 +102,10 @@ const lastIndex = computed(() => prices.value.length - 1);
 const series = computed(() => [
   {
     name: '금 시세',
-    data: prices.value,
+    data: goldPrices.value.map((item) => ({
+      x: new Date(item.date).toISOString(), // 날짜
+      y: toDonKRW(item.price), // 원/돈 단위 환산 가격
+    })),
   },
 ]);
 
@@ -152,10 +155,10 @@ const chartOptions = computed(() => ({
     x: {
       formatter: (value: string | number) => {
         const date = new Date(value);
-        const year = date.getFullYear().toString().slice(2);
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        return `${year}/${month}/${day}`;
+        const yy = String(date.getFullYear()).slice(2);
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+        return `${yy}/${mm}/${dd}`;
       },
     },
     y: {
@@ -163,26 +166,21 @@ const chartOptions = computed(() => ({
     },
   },
   xaxis: {
-    categories: formattedDates.value,
-    axisBorder: { show: true },
-    axisTicks: { show: true },
-    tooltip: { enabled: false },
+    type: 'datetime',
     labels: {
-      formatter: (value: string, timestamp: number, opts: any) => {
-        if (typeof value !== 'string') return '';
-        const date = new Date(value);
-        const year = date.getFullYear().toString().slice(2);
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        if (
-          opts.i === 0 ||
-          new Date(formattedDates.value[opts.i - 1]).getMonth() !==
-            date.getMonth()
-        ) {
-          return `${year}/${month}`;
-        }
-        return '';
+      datetimeFormatter: {
+        month: 'yy/MM',
+        day: 'MM/dd',
+      },
+      style: {
+        fontSize: '11px',
       },
     },
+    tooltip: {
+      enabled: false,
+    },
+    axisTicks: { show: true },
+    axisBorder: { show: true },
   },
   yaxis: {
     show: true,
@@ -191,7 +189,7 @@ const chartOptions = computed(() => ({
     },
   },
   grid: {
-    padding: { top: 0, bottom: 0, left: 0, right: 0 },
+    // padding: { top: 0, bottom: 0, left: 0, right: 0 },
   },
 }));
 </script>
