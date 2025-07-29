@@ -5,7 +5,7 @@
 
     <div class="flex flex-col gap-4">
       <ReserveInputBox
-        title="상품 및 상담 정보"
+        :title="getTitle()"
         type="text"
         placeholder="지점 선택"
         :readOnly="true"
@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { ref, computed } from 'vue';
 import { productDetail } from './_dummy';
 import DetailImg from './_components/DetailImg.vue';
@@ -81,7 +81,20 @@ import BranchSelectModal from './_components/BranchSelectModal.vue';
 import DateTimeSelectModal from './_components/DateTimeSelectModal.vue';
 
 const router = useRouter();
-const modelValue = ref(productDetail?.productName || '');
+const route = useRoute();
+
+// 라우터 파라미터에 따라 title 설정
+const getTitle = () => {
+  return route.params.id === 'gift' ? '상담내용' : '상품';
+};
+
+// guno: 임시로 증여에서 넘어온 것은 증여 시뮬레이션 결과라고 표시
+const modelValue = ref(
+  route.params.id === 'gift'
+    ? '증여 시뮬레이션 결과'
+    : productDetail?.productName || ''
+);
+
 const branchValue = ref('');
 const showBranchModal = ref(false);
 const showDateTimeModal = ref(false);
@@ -144,7 +157,12 @@ const goToRegister = () => {
     시각: selectedReservation.value.time,
   });
 
-  router.push({ name: 'register-complete' });
+  router.push({
+    name: 'register-complete',
+    params: {
+      type: route.params.id === 'gift' ? 'gift' : 'product',
+    },
+  });
 };
 
 const selectBranch = () => {

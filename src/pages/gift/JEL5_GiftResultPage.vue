@@ -1,10 +1,9 @@
 <template>
   <h2 class="text-primary-300 mb-8 text-2xl font-bold">증여 시뮬레이션 결과</h2>
 
-  <div
-    class="bg-gradient-cross-1 mb-4 flex h-80 w-full items-center justify-center"
-  >
-    <span class="text-white">예시 이미지</span>
+  <div ref="pdfRef" class="mb-4 h-100 overflow-y-scroll">
+    <GiftSimulationResult />
+    <!-- <GiftSimulationResult /> -->
   </div>
   <Btn color="secondary" label="가족과 결과 함께 보기" size="large" />
   <div
@@ -12,7 +11,7 @@
   >
     <p class="text-primary-300 mb-2 text-center font-semibold">
       궁금한 점이 생기셨다면,<br />
-      은행 창구에서 자세히 알려드릴게요
+      은행에서 자세히 알려드릴게요
     </p>
 
     <Btn
@@ -25,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { useRouter } from 'vue-router';
 
@@ -35,5 +35,118 @@ const goToRegister = () => {
     name: 'register',
     params: { id: 'gift' },
   });
+};
+
+import GiftSimulationResult from './_components/GiftSimulationResult.vue';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
+const pdfRef = ref<HTMLElement | null>(null);
+
+const shareResult = async () => {
+  if (!pdfRef.value) return;
+
+  try {
+    // 화면을 이미지로 캡쳐 (html2canvas 사용)
+    const canvas = await html2canvas(pdfRef.value, {
+      scale: 2,
+      useCORS: true,
+    });
+
+    // pdf 생성 (jsPDF 사용)
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4',
+    });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const pxPerMm = 5.3;
+
+    const originalWidthMm = canvas.width / pxPerMm;
+    const originalHeightMm = canvas.height / pxPerMm;
+    const margin = 10;
+    const maxWidthMm = pageWidth - margin;
+    const maxHeightMm = pageHeight - margin;
+
+    const scale = Math.min(
+      maxWidthMm / originalWidthMm,
+      maxHeightMm / originalHeightMm
+    );
+    const finalWidthMm = originalWidthMm * scale;
+    const finalHeightMm = originalHeightMm * scale;
+    const startX = (pageWidth - finalWidthMm) / 2;
+    const startY = (pageHeight - finalHeightMm) / 2;
+
+    // 페이지에 이미지 삽입 함수
+    const addPageImage = (image: string, y: number) => {
+      pdf.addImage(image, 'PNG', startX, y, finalWidthMm, finalHeightMm);
+    };
+
+    // canvas를 PNG 이미지로 변환
+    const imgData = canvas.toDataURL('image/png');
+
+    // 이미지 크기가 페이지 크기보다 작으면 한 페이지에 삽입
+    if (finalHeightMm <= maxHeightMm) {
+      pdf.setFontSize(10);
+      addPageImage(imgData, startY);
+
+      // 여러 페이지로 나눠야할 경우
+    } else {
+      let currentY = 0;
+      let pageIndex = 0;
+      const totalHeightPx = canvas.height;
+      const sliceHeightPx = (maxHeightMm / finalHeightMm) * canvas.height;
+
+      while (currentY < totalHeightPx) {
+        const pageCanvas = document.createElement('canvas');
+        const pageCtx = pageCanvas.getContext('2d');
+        if (!pageCtx) throw new Error('Canvas context 생성 실패');
+
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sliceHeightPx;
+
+        pageCtx.drawImage(
+          canvas,
+          0,
+          currentY,
+          canvas.width,
+          sliceHeightPx,
+          0,
+          0,
+          canvas.width,
+          sliceHeightPx
+        );
+
+        const pageImgData = pageCanvas.toDataURL('image/png');
+        if (pageIndex > 0) pdf.addPage();
+        pdf.setFontSize(10);
+        addPageImage(pageImgData, startY);
+
+        currentY += sliceHeightPx;
+        pageIndex++;
+      }
+    }
+
+    // PDF Blob으로 변환하고 공유
+    const pdfBlob = pdf.output('blob');
+    const file = new File([pdfBlob], 'gift-simulation.pdf', {
+      type: 'application/pdf',
+    });
+
+    // web share API를 사용하여 공유
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({
+        title: '증여 시뮬레이션 결과',
+        text: '시뮬레이션 결과 PDF를 확인해보세요.',
+        files: [file],
+      });
+    } else {
+      alert('이 브라우저에서는 공유 기능을 사용할 수 없습니다.');
+    }
+  } catch (error) {
+    console.error('공유 실패:', error);
+    alert('공유에 실패했습니다.');
+  }
 };
 </script>
