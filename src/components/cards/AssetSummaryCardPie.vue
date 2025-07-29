@@ -3,7 +3,8 @@
     <div class="font-semibold">
       <div class="text-lg">
         <span class="text-gold">안정적인 주식형</span> 자산가<br />
-        <span class="text-primary-300">{{ userName }}</span> 님의 자산 현황
+        <span class="text-primary-300">{{ userName }}</span> 님이 갖고 계신
+        자산입니다
       </div>
       <div>{{ assetAmount?.toLocaleString() }} 원</div>
     </div>

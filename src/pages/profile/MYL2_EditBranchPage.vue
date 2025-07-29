@@ -21,7 +21,7 @@
         class="flex-1"
         v-model="searchQuery"
       />
-      <Btn @click="searchPlaces" color="primary" label="검색" size="small" />
+      <Btn @click="searchPlaces" color="primary" label="검색" size="square" />
     </div>
 
     <!-- 선택된 지점 표시 -->
@@ -40,17 +40,12 @@
   </div>
 
   <!-- 하단 버튼 -->
-  <div
-    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-  >
-    <Btn
-      @click="handleComplete"
-      color="primary"
-      label="완료하기"
-      size="large"
-      :disabled="!selectedBranch"
-    />
-  </div>
+  <BtnSet
+    label1="건너뛰기"
+    label2="설정하기"
+    @click2="handleComplete"
+    type="type2"
+  />
 </template>
 
 <script setup lang="ts">
@@ -58,6 +53,7 @@ import { onMounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import InputBox from '@/components/forms/InputBox.vue';
 import Btn from '@/components/buttons/Btn.vue';
+import BtnSet from '@/components/buttons/BtnSet.vue';
 
 interface KakaoPlace {
   place_name: string;

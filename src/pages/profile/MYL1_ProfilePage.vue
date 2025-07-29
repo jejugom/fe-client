@@ -2,17 +2,17 @@
   <!-- Info Box -->
   <div class="border-secondary-300 mb-8 rounded-lg border p-4">
     <div class="text-secondary-500 mb-2 text-lg font-semibold">
-      예약하신 정보를 확인해보세요.
+      예약하신 방문 내용을 확인하세요
     </div>
     <div class="space-y-1">
       <div class="text-surface-500 text-sm">
-        <span class="font-semibold">일자:</span> 2025년 07월 16일 오후 1시
+        <span class="font-semibold">방문 날짜 :</span> 2025년 07월 16일 오후 1시
       </div>
       <div class="text-surface-500 text-sm">
-        <span class="font-semibold">지점:</span> 국민은행 제주대리점
+        <span class="font-semibold">방문 장소:</span> 국민은행 제주대리점
       </div>
       <div class="text-surface-500 text-sm">
-        <span class="font-semibold">상품:</span> 증여 상품
+        <span class="font-semibold">상담 내용:</span> 증여 상품
       </div>
     </div>
   </div>
@@ -38,6 +38,7 @@
 
   <!-- 로그아웃 및 회원탈퇴 -->
   <div class="mt-4 flex items-center justify-end gap-4 text-xs text-red-300">
+    <div class="text-surface-500 cursor-pointer" @click="">사용방법 보기</div>
     <div class="cursor-pointer underline" @click="handleLogout">로그아웃</div>
     <p class="cursor-pointer underline" @click="showModal = true">회원탈퇴</p>
   </div>
@@ -102,10 +103,10 @@ const confirmWithdrawal = () => {
 };
 
 const menuItems = ref([
-  { id: 'asset', title: '자산 추가 등록·수정' },
-  { id: 'calculation', title: '자산 재연동' },
-  { id: 'investment-reset', title: '투자 성향 재설정' },
-  { id: 'revenue', title: '내 지점 수정' },
+  { id: 'asset', title: '내 자산 확인하고 고치기' },
+  { id: 'calculation', title: '자산 다시 연결하기' },
+  { id: 'investment-reset', title: '내 투자 성향 다시 선택하기' },
+  { id: 'revenue', title: '내 은행 지점 바꾸기' },
 ]);
 
 const handleMenuClick = (menuId) => {

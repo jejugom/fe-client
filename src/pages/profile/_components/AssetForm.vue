@@ -6,7 +6,7 @@
         for="assetCategory"
         class="text-primary-500 mb-1 block font-semibold"
       >
-        카테고리를 선택하세요
+        어떤 자산인지 골라주세요
       </label>
       <SelectBox
         id="assetCategory"
@@ -31,7 +31,7 @@
     <!-- 2. 자산 이름 입력 -->
     <div class="flex flex-col items-start">
       <label for="assetName" class="text-primary-500 mb-1 block font-semibold">
-        자산 이름 (20자 이내)
+        자산 이름을 써주세요 (예: 금)
       </label>
       <InputBox
         id="assetName"
@@ -52,7 +52,7 @@
         for="companyType"
         class="text-primary-500 mb-1 block font-semibold"
       >
-        사업체 종류 선택
+        사업체 종류를 선택해주세요
       </label>
       <SelectBox
         id="companyType"
@@ -75,7 +75,7 @@
         for="assetAmount"
         class="text-primary-500 mb-1 block font-semibold"
       >
-        금액 (만원 단위)
+        금액을 입력하세요
       </label>
       <div class="relative w-full">
         <!--guno: type="number" 로 구현하면 스피너(오른쪽 토글)가 발생하여 사용성에 문제있음 -->
@@ -97,8 +97,8 @@
           만원
         </span>
       </div>
-      <p class="mt-1 w-68 text-right text-sm text-red-300">
-        결과: {{ formatAmount(asset.amount) }}
+      <p class="mt-1 w-68 text-right text-sm text-blue-300">
+        {{ formatAmount(asset.amount) }}
       </p>
     </div>
   </div>

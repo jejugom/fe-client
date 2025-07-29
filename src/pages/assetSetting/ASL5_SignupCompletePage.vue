@@ -5,25 +5,26 @@
       class="stroke-primary px-auto my-auto flex w-full flex-col items-center justify-center gap-16 rounded-xl bg-white py-15"
     >
       <div class="text-center">
-        <!-- Figma 크기에 맞추니 조금 작은 느낌이라 추후 크기 조정은 디자인 손보면서 -->
-        <p class="text-surface-500 mb-8 text-sm font-semibold"
-          >모든 정보 입력이 완료되었습니다</p
+        <p class="text-surface-500 mb-8 font-semibold"
+          >자산 정보 입력이 모두 완료됐습니다</p
         >
 
-        <p class="text-surface-500 mb-8 text-xl font-semibold">
-          당신은
-          <span class="text-secondary-300 font-hakgyo">{{ userType }}</span>
+        <p class="text-surface-500 mb-8 flex items-end text-xl font-semibold">
+          고객님은
+          <span class="text-secondary-300 font-hakgyo mx-1">{{
+            userType
+          }}</span>
           입니다!
         </p>
 
         <div class="text-surface-500 space-y-2 text-lg font-semibold">
           <p class="flex items-end justify-center gap-1"
-            >이제
+            >앞으로는
             <span class="text-primary-300 font-hakgyo text-3xl">
               <img :src="Logo" alt="노후도락 로고" class="h-8 w-auto" /></span
             >과 함께</p
           >
-          <p>건강한 골든라이프를 시작해보세요!</p>
+          <p>든든하고 건강한 골든라이프 시작해봐요!</p>
         </div>
       </div>
 

@@ -4,12 +4,12 @@
     @click1="$emit('cancel')"
     @click2="handleSubmit"
     :title="isEditing ? '수증자 정보 수정' : '수증자 정보 입력'"
-    leftLabel="취소"
-    rightLabel="완료"
+    leftLabel="그만두기"
+    rightLabel="저장하기"
   >
     <div class="space-y-4">
       <!-- 이름 -->
-      <FormField label="이름을 입력하세요">
+      <FormField label="이름을 입력해 주세요">
         <InputBox
           placeholder="입력하세요"
           size="medium"
@@ -20,7 +20,7 @@
       </FormField>
 
       <!-- 관계 -->
-      <FormField label="증여자와의 관계를 입력하세요">
+      <FormField label="어떤 관계인가요? (자녀, 손주 등)">
         <SelectBox v-model="formData.relationship" size="medium" class="w-full">
           <option disabled value="">선택하세요</option>
           <option
@@ -34,7 +34,7 @@
       </FormField>
 
       <!-- 생년월일 -->
-      <FormField label="생년월일을 입력하세요">
+      <FormField label="생년월일은 언제인가요?">
         <InputBox
           size="medium"
           type="date"
@@ -44,7 +44,7 @@
       </FormField>
 
       <!-- 결혼 여부 -->
-      <FormField label="수증자의 결혼 여부를 알려주세요">
+      <FormField label="결혼하셨나요?">
         <SelectBox
           v-model="formData.maritalStatus"
           size="medium"
@@ -63,7 +63,7 @@
 
       <!-- 소득 여부 -->
       <FormField
-        label="수증자의 소득 유무를 알려주세요"
+        label="1년에 버시는 수입이 100만 원을 넘으시나요?"
         description="총급여 100만 원 초과 시 '소득 있음'을 선택하세요."
       >
         <SelectBox v-model="formData.incomeStatus" size="large" class="w-full">

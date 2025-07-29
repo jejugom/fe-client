@@ -5,12 +5,12 @@
 
     <!-- 추천 이유 -->
     <div class="stroke-secondary flex flex-col gap-2 rounded-xl px-6 py-4">
-      <span class="text-secondary-500 text-lg font-semibold">추천이유</span>
+      <span class="text-secondary-500 text-lg font-semibold">추천 이유</span>
       <span>{{ detail?.recommendReason }}</span>
     </div>
 
     <!-- 상품 설명 -->
-    <div>
+    <div class="mb-8">
       <p class="text-primary-300 mb-4 text-2xl font-bold">
         {{ detail?.productName }}
       </p>
@@ -20,12 +20,13 @@
     </div>
 
     <!-- 가입 예약 버튼 -->
-    <div
-      class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-    >
+    <div>
+      <p class="text-primary-300 mb-2 text-center font-semibold">
+        은행에서 상담받고 가입하실 수 있어요
+      </p>
       <Btn
         color="primary"
-        label="가입 예약하기"
+        label="상담 예약하기"
         size="large"
         @click="goToRegister"
       />

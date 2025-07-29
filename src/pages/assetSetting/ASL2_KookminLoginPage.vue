@@ -1,17 +1,24 @@
 <template>
   <!-- 상단 안내 문구 (카드 밖) -->
 
-  <h1 class="text-primary-300 text-2xl font-bold">자산 연동</h1>
+  <h1 class="text-primary-300 text-2xl font-bold"
+    >내 계좌를 불러오려면 로그인이 필요해요</h1
+  >
   <div class="text-surface-500 mt-4">
-    <p>자산 정보를 불러오기 위해</p>
     <p>
-      <span class="text-gold font-semibold">국민은행</span> 아이디와 비밀번호가
-      필요합니다.
-    </p>
+      <span class="text-gold font-semibold">국민은행</span>에 있는 내 자산을
+      불러오기 위해
+      <span class="text-gold font-semibold">국민은행</span> 홈페이지에
+      로그인해요.<br />
+      입력하신 정보는 오직 자산 확인 용도로만 사용돼요.<br />
+      안전하니 걱정 마시고 진행하셔도 됩니다.</p
+    >
   </div>
 
   <!-- 중앙 입력 카드 -->
-  <div class="stroke-primary px-auto mt-16 flex flex-col gap-3 rounded-xl py-8">
+  <div
+    class="stroke-primary px-auto my-16 flex flex-col items-center justify-center gap-3 rounded-xl py-8"
+  >
     <!-- 입력 필드 -->
     <LoginForm
       :credentials="credentials"
@@ -19,20 +26,12 @@
     />
   </div>
 
-  <div
-    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-  >
-    <!-- 하단 고정 버튼 -->
-    <Btn
-      :color="isFormFilled ? 'primary' : 'surface'"
-      :disabled="!isFormFilled"
-      @click="handleAssetSync"
-      label="연동하기"
-      size="large"
-      :transition="true"
-    />
-    <!-- guno: 천천히 바뀌도록 하려면 :transition="true" 적용-->
-  </div>
+  <BtnSet
+    label1="이전으로"
+    label2="다음으로"
+    type="type2"
+    @click2="handleAssetSync"
+  />
 </template>
 
 <script setup lang="ts">
@@ -40,7 +39,7 @@ import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { computed } from 'vue';
 
-import Btn from '@/components/buttons/Btn.vue';
+import BtnSet from '@/components/buttons/BtnSet.vue';
 import LoginForm from './_components/LoginForm.vue';
 
 const route = useRoute();

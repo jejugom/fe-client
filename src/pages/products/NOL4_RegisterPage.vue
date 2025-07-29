@@ -28,15 +28,18 @@
         @click="showDateTimeModal = true"
       />
     </div>
-
-    <Btn
-      :color="isFormValid ? 'primary' : 'surface'"
-      label="가입 예약하기"
-      size="large"
-      @click="goToRegister"
-      :disabled="!isFormValid"
-    />
-
+    <div>
+      <p class="text-primary-300 mb-2 text-center font-semibold">
+        위 내용을 모두 확인하셨다면 지금 바로 버튼을 눌러주세요!
+      </p>
+      <Btn
+        :color="isFormValid ? 'primary' : 'surface'"
+        label="예약 완료하기"
+        size="large"
+        @click="goToRegister"
+        :disabled="!isFormValid"
+      />
+    </div>
     <!-- 모달들 -->
     <Modal
       v-if="showBranchModal"
@@ -154,11 +157,11 @@ const goToRegister = () => {
     시각: selectedReservation.value.time,
   });
 
-  router.push({ 
+  router.push({
     name: 'register-complete',
-    params: { 
-      type: route.params.id === 'gift' ? 'gift' : 'product'
-    }
+    params: {
+      type: route.params.id === 'gift' ? 'gift' : 'product',
+    },
   });
 };
 

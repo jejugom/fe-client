@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'flex h-31.5 w-full items-center justify-between gap-6 rounded-lg border px-8 py-4',
+      'flex h-31.5 w-full items-center justify-between gap-6 rounded-lg border px-4 py-4',
       color === 'primary' && 'border-primary-300',
       color === 'secondary' && 'border-gold',
       color === 'surface' && 'border-surface-300',
@@ -15,25 +15,28 @@
       <!-- 제목 -->
       <div
         :class="[
-          'overflow-hidden text-lg font-semibold',
+          'truncate overflow-hidden text-lg font-semibold',
           color === 'primary' && 'text-primary-500',
           color === 'secondary' && 'text-secondary-500',
           color === 'surface' && 'text-surface-500',
         ]"
         >{{ title }}</div
       >
+
       <!-- 내용 -->
-      <div
-        class="text-surface-500 mt-2 mb-1 flex flex-wrap gap-1 truncate text-sm"
+      <ul
+        class="text-surface-500 mt-2 mb-1 list-disc overflow-hidden pl-5 text-sm"
+        v-if="contentList.length"
       >
-        <span
+        <li
           v-for="(item, index) in contentList"
           :key="index"
-          class="inline-block max-w-full truncate"
+          class="leading-snug"
         >
           {{ item }}
-        </span>
-      </div>
+        </li>
+      </ul>
+
       <!-- 태그 -->
       <div class="flex flex-wrap gap-1 pt-1">
         <span
@@ -41,7 +44,7 @@
           :key="tag"
           class="text-surface-300 text-sm"
         >
-          #{{ tag }}
+          {{ tag }}
         </span>
       </div>
     </div>
@@ -76,18 +79,19 @@ const emit = defineEmits<{
 
 const onClick = () => emit('click');
 
-// 태그 파싱
-const parsedTags = computed(
-  () => props.tags?.split(',').map((t) => t.trim()) ?? []
-);
-
-// 쉼표 기준 분리 + 3개까지만 노출
+// content 쉼표 분리 (최대 2개)
 const contentList = computed(() => {
   return (
     props.content
       ?.split(',')
-      .map((s) => s.trim())
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0)
       .slice(0, 2) ?? []
   );
+});
+
+// 태그 쉼표 분리
+const parsedTags = computed(() => {
+  return props.tags?.split(',').map((t) => t.trim()) ?? [];
 });
 </script>

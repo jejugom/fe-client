@@ -2,49 +2,12 @@
   <div class="flex flex-col gap-8">
     <!-- 탭 -->
     <TabBtnGroup
-      :tabs="['맞춤', '예금', '적금', '주택담보']"
+      :tabs="['맞춤', '예금', '적금', '주택담보', '금']"
       v-model:selectedTab="selectedTab"
     />
 
     <!-- 조건부 컴포넌트 -->
-    <div>
-      <div v-if="selectedTab === '맞춤'">
-        <AssetSummaryCardBar
-          :userName="retirement.user_info.user_name"
-          :assetAmount="retirement.user_info.asset_info.total"
-          :assetInfo="retirement.user_info.asset_info"
-        />
-      </div>
-      <div v-if="selectedTab === '예금' || selectedTab === '적금'">
-        <div class="mb-2 flex items-end justify-between">
-          <span class="text-primary-300 text-2xl font-bold"
-            >금리 흐름을 확인하고<br />예금 똑똑하게 시작하세요</span
-          >
-          <span class="text-surface-300">출처: 한국은행</span>
-        </div>
-        <InterestRateCard :interestRateData="graphStore.interestRate"
-      /></div>
-      <Banner v-if="selectedTab === '주택담보'" />
-    </div>
-
-    <!-- 검색 (주석 처리) -->
-    <!-- <div class="flex w-full items-center gap-2">
-      <InputBox
-        placeholder="찾으시는 상품을 검색해보세요."
-        size="large"
-        type="text"
-        v-model="searchKeyword"
-      />
-      <div class="flex items-center gap-1">
-        <Btn color="primary" label="검색" size="square" @click="searchPlaces" />
-        <Btn
-          color="secondary"
-          label="초기화"
-          size="square"
-          @click="searchReset"
-      /></div>
-    </div> -->
-
+    <AdBox :selectedTab="selectedTab" />
     <!-- 필터링 -->
     <div v-if="selectedTab !== '맞춤'" class="flex justify-end">
       <SelectBox size="small" v-model="sortOption">
@@ -66,7 +29,14 @@
         v-if="filteredProducts.length === 0"
         class="text-surface-400 text-center text-base"
       >
-        조건에 맞는 상품이 없습니다.
+        찾으신 조건으로는 상품이 아직 준비 중이에요!<br />조건을 조금
+        바꿔보시겠어요?
+      </div>
+      <div
+        v-if="selectedTab === '맞춤'"
+        class="text-primary-300 text-2xl font-semibold"
+      >
+        최승아님께 딱 맞는 상품만 보여드릴게요
       </div>
       <BtnCard
         v-for="product in filteredProducts"
@@ -85,20 +55,15 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import TabBtnGroup from './_components/TabBtnGroup.vue';
-import SelectBox from '@/components/forms/SelectBox.vue';
 import BtnCard from '@/components/cards/BtnCard.vue';
-import AssetSummaryCardBar from '@/components/cards/AssetSummaryCardBar.vue';
-import Banner from '@/components/cards/Banner.vue';
-import InterestRateCard from './_components/InterestRateCard.vue';
+import AdBox from './_components/AdBox.vue';
 import { useRouter } from 'vue-router';
-import { useGraphStore } from '@/stores/interestRate';
-
-const router = useRouter();
-import { retirement, productsApiData } from './_dummy';
+import { productsApiData } from './_dummy';
+import SelectBox from '@/components/forms/SelectBox.vue';
 
 const selectedTab = ref('맞춤');
 const sortOption = ref('name');
-const graphStore = useGraphStore();
+const router = useRouter();
 
 // 탭이 바뀌면 정렬 옵션 초기화
 watch(selectedTab, () => {

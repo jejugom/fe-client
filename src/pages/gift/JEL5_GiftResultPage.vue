@@ -1,36 +1,25 @@
 <template>
-  <div>
-    <h2 class="text-primary-300 mb-8 text-2xl font-bold"
-      >증여 시뮬레이션 결과</h2
-    >
+  <h2 class="text-primary-300 mb-8 text-2xl font-bold">증여 시뮬레이션 결과</h2>
 
-    <div ref="pdfRef" class="mb-4">
-      <GiftSimulationResult />
-      <!-- <GiftSimulationResult /> -->
-    </div>
+  <div ref="pdfRef" class="mb-4 h-100 overflow-y-scroll">
+    <GiftSimulationResult />
+    <!-- <GiftSimulationResult /> -->
+  </div>
+  <Btn color="secondary" label="가족과 결과 함께 보기" size="large" />
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+  >
+    <p class="text-primary-300 mb-2 text-center font-semibold">
+      궁금한 점이 생기셨다면,<br />
+      은행에서 자세히 알려드릴게요
+    </p>
 
-    <div class="flex flex-col">
-      <Btn
-        color="secondary"
-        label="결과 공유하기"
-        size="large"
-        @click="shareResult"
-      />
-
-      <div class="mt-8 mb-3 px-4">
-        <p class="text-primary-300 text-center text-sm leading-relaxed">
-          궁금한 점이 있으시거나 더 자세한 상담을 원하시면<br />
-          가까운 영업점에서 전문가가 친절하게 안내해드립니다.
-        </p>
-      </div>
-
-      <Btn
-        color="primary"
-        label="내점 예약하기"
-        size="large"
-        @click="goToRegister"
-      />
-    </div>
+    <Btn
+      color="primary"
+      label="은행 방문 예약하기"
+      size="large"
+      @click="goToRegister"
+    />
   </div>
 </template>
 

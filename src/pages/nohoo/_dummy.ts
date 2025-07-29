@@ -368,3 +368,43 @@ export const appointment = {
     required_documents: ['신분증', '가족관계증명서', '인감도장'],
   },
 };
+
+// _dummy.ts
+
+export const productData = {
+  timeDeposits: [
+    {
+      fin_prdt_cd: 'DP010300100335',
+      fin_prdt_nm: 'KB Star 정기예금',
+      prdt_feature: '#간편가입 디지털 전용, 편리한 온라인 예금',
+      optionList: [
+        { save_trm: '1', intr_rate: 1.8, intr_rate2: 2.45 },
+        { save_trm: '12', intr_rate: 2.1, intr_rate2: 2.7 },
+      ],
+    },
+  ],
+  savingDeposits: [
+    {
+      fin_prdt_cd: 'DP010200100051',
+      fin_prdt_nm: 'KB국민프리미엄적금(정액)',
+      prdt_feature: '#우대금리 단체/병역명문가 우대금리 제공하는 적립식 상품',
+      optionList: [{ save_trm: '12', intr_rate: 2.5, intr_rate2: 3.4 }],
+    },
+  ],
+  mortgageLoan: [
+    {
+      fin_prdt_cd: 'LN200300000002',
+      fin_prdt_nm: 'KB주택담보대출변동 (일반자금)',
+      prdt_feature: '혼합금리와 변동금리 중 선택이 가능한 주택담보대출',
+      optionListList: [
+        {
+          mrtg_type_nm: '아파트',
+          rpay_type_nm: '분할상환방식',
+          lend_rate_type_nm: '변동금리',
+          lend_rate_min: '4.17',
+          lend_rate_max: '5.07',
+        },
+      ],
+    },
+  ],
+};

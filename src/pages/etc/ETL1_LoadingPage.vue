@@ -5,7 +5,7 @@
     ></div>
 
     <div class="text-center text-lg font-bold">
-      잠시만 기다려주세요. <br />
+      곧 준비됩니다. <br />
       <span class="text-gold">
         행복한 미래를<br />안전하게 설계 중입니다...
       </span>
