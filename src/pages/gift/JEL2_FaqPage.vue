@@ -39,12 +39,12 @@
   <!-- FAQ 목록 -->
   <div class="space-y-4">
     <FaqCard
-      @click="goToFaqDetail(faq.id)"
+      @click="goToFaqDetail(faq.faqId)"
       v-for="faq in filteredFaqs"
-      :key="faq.id"
-      :id="faq.id"
+      :key="faq.faqId"
+      :id="faq.faqId"
       :category="faq.category"
-      :question="faq.question"
+      :question="faq.title"
     />
   </div>
 
@@ -63,10 +63,10 @@ import Btn from '@/components/buttons/Btn.vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import FaqCard from './_components/FaqCard.vue';
 import FaqTab from './_components/FaqTab.vue';
-import { faqDummyData } from './_faqDummy';
-import type { FaqItem } from './_faqDummy';
+import { api_data } from '@/api/gift/faq';
+import type { Faq } from '@/api/gift/faq';
 
-const faqData = ref<FaqItem[]>(faqDummyData);
+const faqData = ref<Faq[]>(api_data);
 
 const router = useRouter();
 
@@ -79,17 +79,23 @@ function toggleTab(tab: 'gift' | 'inheritance') {
   activeTab.value = activeTab.value === tab ? 'all' : tab;
 }
 
-// 검색 & 필터링
+const categoryMap = {
+  gift: '증',
+  inheritance: '상',
+};
+
+// 검색 필터링
 const filteredFaqs = computed(() => {
   let faqs = faqData.value;
 
   if (activeTab.value !== 'all') {
-    faqs = faqs.filter((faq) => faq.category === activeTab.value);
+    const mappedCategory = categoryMap[activeTab.value];
+    faqs = faqs.filter((faq) => faq.category === mappedCategory);
   }
 
   if (searchQuery.value.trim()) {
     const q = searchQuery.value.toLowerCase();
-    faqs = faqs.filter((faq) => faq.question.toLowerCase().includes(q));
+    faqs = faqs.filter((faq) => faq.title.toLowerCase().includes(q));
   }
 
   return faqs;
