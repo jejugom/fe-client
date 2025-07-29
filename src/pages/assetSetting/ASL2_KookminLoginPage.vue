@@ -13,7 +13,7 @@
   <!-- 중앙 입력 카드 -->
   <div class="stroke-primary px-auto mt-16 flex flex-col gap-3 rounded-xl py-8">
     <!-- 입력 필드 -->
-    <LoginForm 
+    <LoginForm
       :credentials="credentials"
       @update:credentials="credentials = $event"
     />
@@ -29,8 +29,9 @@
       @click="handleAssetSync"
       label="연동하기"
       size="large"
-      class="transition-colors duration-500"
+      :transition="true"
     />
+    <!-- guno: 천천히 바뀌도록 하려면 :transition="true" 적용-->
   </div>
 </template>
 
@@ -47,12 +48,14 @@ const router = useRouter();
 
 const credentials = ref({
   id: '',
-  password: ''
+  password: '',
 });
 
 // 모든 값이 채워졌는지 여부
 const isFormFilled = computed(
-  () => credentials.value.id.trim() !== '' && credentials.value.password.trim() !== ''
+  () =>
+    credentials.value.id.trim() !== '' &&
+    credentials.value.password.trim() !== ''
 );
 
 const handleAssetSync = () => {
