@@ -16,33 +16,20 @@
   </div>
 </template>
 
-<script setup>
-import { computed } from 'vue';
+<script setup lang="ts">
+import { computed, defineProps } from 'vue';
 
-const props = defineProps({
-  userName: String,
-  assetAmount: [String, Number],
-  assetInfo: Object,
-});
-
-const assetLabels = [
-  '부동산',
-  '예적금',
-  '현금',
-  '주식/펀드',
-  '사업지분',
-  '기타',
-];
+const props = defineProps<{
+  userName: string;
+  assetAmount: number;
+  assetInfo: { category: string; amount: number }[];
+}>();
 
 const series = computed(() => {
-  if (!props.assetInfo) return [];
-  return assetLabels.map((label, index) => {
-    const key = Object.keys(props.assetInfo)[index];
-    return {
-      name: label,
-      data: [props.assetInfo[key]],
-    };
-  });
+  return props.assetInfo.map((item) => ({
+    name: item.category,
+    data: [item.amount],
+  }));
 });
 
 const chartOptions = computed(() => ({
@@ -60,7 +47,7 @@ const chartOptions = computed(() => ({
   },
   dataLabels: {
     enabled: true,
-    formatter: (val) => `${val.toFixed(0)}%`,
+    formatter: (val: number) => `${val.toFixed(0)}%`,
     offsetX: 0,
     style: {
       fontSize: '10px',
@@ -71,7 +58,7 @@ const chartOptions = computed(() => ({
       show: false,
     },
     y: {
-      formatter: (val) => `${val.toLocaleString()} 원`,
+      formatter: (val: number) => `${val.toLocaleString()} 원`,
     },
   },
   xaxis: {

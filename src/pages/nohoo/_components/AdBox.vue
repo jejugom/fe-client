@@ -4,7 +4,7 @@
       <AssetSummaryCardBar
         :userName="userName"
         :assetAmount="assetAmount"
-        :assetInfo="assetInfo"
+        :assetInfo="assetSummary"
       />
     </div>
 
@@ -53,6 +53,7 @@ defineProps<{
     assetName: string;
     businessType: string | null;
   }[];
+  assetSummary: { category: string; amount: number }[];
 }>();
 
 const graphStore = useGraphStore();

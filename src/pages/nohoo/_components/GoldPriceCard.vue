@@ -20,9 +20,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { fetchGoldPrice } from '@/api/gold';
-import type { GoldPrice } from '@/api/gold';
-import { fetchExchangeRate } from '@/api/exchange';
+import { fetchGoldPrice } from '@/api/nohoo/gold';
+import type { GoldPrice } from '@/api/nohoo/gold';
+import { fetchExchangeRate } from '@/api/nohoo/exchange';
 
 const goldPrices = ref<GoldPrice[]>([]);
 const exchangeRate = ref(1); // 기본값: USD 그대로

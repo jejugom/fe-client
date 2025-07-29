@@ -1,3 +1,60 @@
+export interface UserInfo {
+  user_name: {
+    email: string;
+    userName: string;
+  };
+  asset_status: AssetStatus[];
+}
+
+export interface AssetStatus {
+  assetId: number;
+  email: string;
+  assetCategoryCode: string;
+  amount: number;
+  assetName: string;
+  businessType: string | null;
+}
+
+export interface CustomRecommendProduct {
+  fin_prdt_cd: string;
+  score: number;
+}
+
+export interface TimeDeposit {
+  fin_prdt_cd: string;
+  fin_prdt_nm: string;
+  prdt_feature: string;
+  optionList: Option[];
+}
+
+export interface Option {
+  save_trm: string;
+  intr_rate: number;
+  intr_rate2: number;
+}
+
+export interface SavingDeposit {
+  fin_prdt_cd: string;
+  fin_prdt_nm: string;
+  prdt_feature: string;
+  optionList: Option[];
+}
+
+export interface MortgageLoan {
+  fin_prdt_cd: string;
+  fin_prdt_nm: string;
+  prdt_feature: string;
+  optionListList: OptionList[];
+}
+
+export interface OptionList {
+  mrtg_type_nm: string;
+  rpay_type_nm: string;
+  lend_rate_type_nm: string;
+  lend_rate_min: string;
+  lend_rate_max: string;
+}
+
 export const api_data = {
   user_info: [
     {

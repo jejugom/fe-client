@@ -12,6 +12,7 @@
       :userName="userName"
       :assetInfo="assetInfo"
       :assetAmount="totalAsset"
+      :assetSummary="assetSummary"
     />
     <!-- 필터링 -->
     <div v-if="selectedTab !== '맞춤'" class="flex justify-end">
@@ -41,7 +42,7 @@
         v-if="selectedTab === '맞춤'"
         class="text-primary-300 text-2xl font-semibold"
       >
-        최승아님께 딱 맞는 상품만 보여드릴게요
+        {{ userName }}님께 딱 맞는 상품만 보여드릴게요
       </div>
       <BtnCard
         v-for="product in selectedTab === '맞춤'
@@ -67,12 +68,30 @@ import AdBox from './_components/AdBox.vue';
 import { useRouter } from 'vue-router';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import { useProductStore } from '@/stores/product';
-import { api_data } from '@/api/nohoo';
+import { api_data } from '@/api/nohoo/nohoo';
 
 const userInfo = api_data.user_info[0];
 const userName = userInfo.user_name.userName;
 const assetInfo = userInfo.asset_status;
+const assetStatus = userInfo.asset_status;
 const totalAsset = assetInfo.reduce((sum, item) => sum + item.amount, 0);
+
+// 자산 데이터를 카테고리별로 그룹화
+const ASSET_CATEGORY_MAP: Record<string, string> = {
+  '1': '부동산',
+  '2': '예금/적금',
+  '3': '현금',
+  '4': '주식/펀드',
+  '5': '사업체/지분',
+  '6': '기타 자산',
+};
+
+const assetSummary = computed(() => {
+  return assetStatus.map((item) => ({
+    category: ASSET_CATEGORY_MAP[item.assetCategoryCode] ?? '기타',
+    amount: item.amount,
+  }));
+});
 
 const productStore = useProductStore();
 onMounted(() => {
