@@ -67,9 +67,9 @@ import AdBox from './_components/AdBox.vue';
 import { useRouter } from 'vue-router';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import { useProductStore } from '@/stores/product';
-import { api_retirement } from './_dummy';
+import { api_data } from '@/api/nohoo';
 
-const userInfo = api_retirement.user_info[0];
+const userInfo = api_data.user_info[0];
 const userName = userInfo.user_name.userName;
 const assetInfo = userInfo.asset_status;
 const totalAsset = assetInfo.reduce((sum, item) => sum + item.amount, 0);
@@ -78,15 +78,15 @@ const productStore = useProductStore();
 onMounted(() => {
   // 전체 상품을 store에 저장
   productStore.setAllProducts({
-    timeDeposits: api_retirement.timeDeposits,
-    savingDeposits: api_retirement.savingDeposits,
-    mortgageLoan: api_retirement.mortgageLoan,
+    timeDeposits: api_data.timeDeposits,
+    savingDeposits: api_data.savingDeposits,
+    mortgageLoan: api_data.mortgageLoan,
   });
 });
 // 추천 상품 목록
 const recommendedProducts = computed(() => {
   return productStore
-    .getProductsByRecommendIds(api_retirement.customRecommend_prdt)
+    .getProductsByRecommendIds(api_data.customRecommend_prdt)
     .map((product) => {
       let tags: string[] = [];
 

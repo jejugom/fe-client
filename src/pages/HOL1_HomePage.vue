@@ -92,7 +92,7 @@
 import { useRouter } from 'vue-router';
 import Top3Products from '@/components/cards/Top3ProductsCard.vue';
 import Btn from '@/components/buttons/Btn.vue';
-import { api_retirement } from './nohoo/_dummy';
+import { api_data } from '@/api/home';
 import IconCard from '@/components/cards/IconCard.vue';
 import AdBanner from '@/assets/images/AdBanner.png';
 import Home1 from '@/assets/images/Home1.svg';
@@ -104,11 +104,8 @@ import Home6 from '@/assets/images/Home6.svg';
 
 const router = useRouter();
 
-const userName = api_retirement.user_info[0].user_name.userName;
-const totalAsset = api_retirement.user_info[0].asset_status.reduce(
-  (sum, asset) => sum + asset.amount,
-  0
-);
+const userName = api_data.userSummary.name;
+const totalAsset = api_data.userSummary.asset;
 
 // 금액 포맷 함수
 const formatCurrency = (value: number): string => {
@@ -157,26 +154,11 @@ const goToEditAsset = () => {
 };
 
 // 맞춤형 금융상품
-const slides = [
-  {
-    prod_name: '첫번째 맞춤형 금융상품',
-    description:
-      '• 설명1설명1설명1설명1\n• 설명1설명1설명1설명1\n• 설명1설명1설명1설명1',
-    rate: 0,
-  },
-  {
-    prod_name: '두번째 맞춤형 금융상품',
-    description:
-      '• 설명2설명2설명2설명2\n• 설명2설명2설명2설명2\n• 설명2설명2설명2설명2',
-    rate: 0,
-  },
-  {
-    prod_name: '세번째 맞춤형 금융상품',
-    description:
-      '• 설명3설명3설명3설명3\n• 설명3설명3설명3설명3\n• 설명3설명3설명3설명3',
-    rate: 0,
-  },
-];
+const slides = api_data.recommandTop3.map((product) => ({
+  prod_name: product.fin_prdt_nm,
+  description: product.prdt_feature,
+  rate: product.intr_rate,
+}));
 
 // 하단 노후도락 설명
 const features = [

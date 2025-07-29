@@ -1,4 +1,4 @@
-export const api_retirement = {
+export const api_data = {
   user_info: [
     {
       user_name: {
