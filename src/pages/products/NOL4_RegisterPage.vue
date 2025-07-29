@@ -72,7 +72,7 @@
 <script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router';
 import { ref, computed } from 'vue';
-import { productDetail } from './_dummy';
+import { api_data } from '@/api/products/register';
 import DetailImg from './_components/DetailImg.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import ReserveInputBox from './_components/ReserveInputBox.vue';
