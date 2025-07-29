@@ -45,7 +45,7 @@ import { ref, computed, onMounted, defineExpose } from 'vue';
 import { Calendar as VCalendar } from 'v-calendar';
 import 'v-calendar/style.css';
 import Btn from '@/components/buttons/Btn.vue';
-import { reservationData } from '../_dummy';
+import { api_data } from '@/api/products/register';
 
 // 컴포넌트 외부로 이벤트 전달
 const emit = defineEmits<{
@@ -86,7 +86,7 @@ const businessHours = [
 ];
 
 // 예약된 시간 데이터
-const reservedSlots = reservationData.reserved_slots;
+const reservedSlots = api_data.reserved_slots;
 
 // 선택된 날짜의 예약 가능 시간 계산
 const availableTimes = computed(() => {
@@ -147,7 +147,7 @@ const formattedDate = (date: Date) => {
 
 // 예약 가능 여부 확인
 const checkReservationAvailability = (date: string, time: string): boolean => {
-  const reserved = reservationData.reserved_slots[date] || [];
+  const reserved = api_data.reserved_slots[date] || [];
   return !reserved.includes(time);
 };
 

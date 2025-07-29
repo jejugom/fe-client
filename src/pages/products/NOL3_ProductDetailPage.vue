@@ -40,9 +40,11 @@ import { api_data } from '@/api/products/productDetail';
 import type { ProductDetail } from '@/api/products/productDetail';
 import DetailImg from './_components/DetailImg.vue';
 import Btn from '@/components/buttons/Btn.vue';
+import { useRegisterStore } from '@/stores/register';
 
 const router = useRouter();
 const detail: ProductDetail = api_data;
+const registerStore = useRegisterStore();
 
 // 상단 대표 정보 생성
 const topInfos = (() => {
@@ -67,6 +69,7 @@ const topInfos = (() => {
 })();
 
 const goToRegister = () => {
+  registerStore.setProductName(detail.finPrdtNm);
   router.push({
     name: 'register',
     params: { id: detail.finPrdtCd },
