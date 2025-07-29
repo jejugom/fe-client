@@ -6,13 +6,13 @@
     <!-- 추천 이유 -->
     <div class="stroke-secondary flex flex-col gap-2 rounded-xl px-6 py-4">
       <span class="text-secondary-500 text-lg font-semibold">추천 이유</span>
-      <span>{{ detail.recReason }}</span>
+      <span>{{ detail.rec_reason }}</span>
     </div>
 
     <!-- 상품 설명 -->
     <div class="mb-8">
       <p class="text-primary-300 mb-4 text-2xl font-bold">
-        {{ detail.finPrdtNm }}
+        {{ detail.fin_prdt_nm }}
       </p>
       <p class="indent-4 leading-relaxed whitespace-pre-line">
         {{ detail.description }}
@@ -48,8 +48,8 @@ const registerStore = useRegisterStore();
 
 // 상단 대표 정보 생성
 const topInfos = (() => {
-  const icon = detail.iconInfo || {};
-  switch (detail.finPrdtCategory) {
+  const icon = detail.icon_info || {};
+  switch (detail.fin_prdt_category) {
     case '1':
     case '2':
       return [
@@ -69,10 +69,10 @@ const topInfos = (() => {
 })();
 
 const goToRegister = () => {
-  registerStore.setProductName(detail.finPrdtNm);
+  registerStore.setProductName(detail.fin_prdt_nm);
   router.push({
     name: 'register',
-    params: { id: detail.finPrdtCd },
+    params: { id: detail.fin_prdt_cd },
   });
 };
 </script>

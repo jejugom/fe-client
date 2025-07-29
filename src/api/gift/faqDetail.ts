@@ -1,4 +1,5 @@
 export interface FaqDetail {
+  faqId: number;
   category: string;
   title: string;
   content: string;
@@ -7,6 +8,7 @@ export interface FaqDetail {
 
 export const api_data: FaqDetail[] = [
   {
+    faqId: 1,
     category: '증여',
     title: '손주들에게 돈을 줘도 세금이 나오나요?',
     content: '네, 손주들에게 돈을 줘도 세금이 ~~~...',

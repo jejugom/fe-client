@@ -82,6 +82,9 @@ export const api_data = {
     fin_prdt_cd: `DP01030010033${i}`,
     fin_prdt_nm: `KB Star 정기예금 ${i + 1}호`,
     prdt_feature: '간편가입 디지털 전용, 편리한 온라인 예금',
+    fin_prdt_category: '예금',
+    description: '편리한 KB 정기예금 상품입니다.',
+    rec_reason: '고금리, 간편가입 가능',
     optionList: [
       {
         save_trm: '6',

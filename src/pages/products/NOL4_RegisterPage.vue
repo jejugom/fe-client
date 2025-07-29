@@ -138,8 +138,8 @@ watch(
   () => route.params.id,
   (id) => {
     if (typeof id === 'string') {
-      const match = api_data.finPrdtCd === id ? api_data : null;
-      if (match) registerStore.setProductName(match.finPrdtNm);
+      const match = api_data.fin_prdt_cd === id ? api_data : null;
+      if (match) registerStore.setProductName(match.fin_prdt_nm);
     }
   },
   { immediate: true }

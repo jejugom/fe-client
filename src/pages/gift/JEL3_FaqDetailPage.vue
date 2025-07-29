@@ -28,8 +28,8 @@
       <div class="space-y-2">
         <div
           v-for="related in relatedFaqs"
-          :key="related.id"
-          @click="goToFaqDetail(related.id)"
+          :key="related.faqId"
+          @click="goToFaqDetail(related.faqId)"
           class="border-surface-200 bg-surface-50 cursor-pointer rounded-xl border px-4 py-4"
         >
           <p class="text-surface-500 text-sm">{{ related.title }}</p>
@@ -64,7 +64,7 @@ const route = useRoute();
 // 현재 선택된 FAQ를 계산하는 computed 속성
 const currentFaq = computed(() => {
   const id = Number(route.params.id);
-  return api_data.find((faq) => faq.id === id) || null;
+  return api_data.find((faq) => faq.faqId === id) || null;
 });
 
 const relatedFaqs = computed(() => {
@@ -73,7 +73,7 @@ const relatedFaqs = computed(() => {
     .filter(
       (faq) =>
         faq.category === currentFaq.value?.category &&
-        faq.id !== currentFaq.value?.id
+        faq.faqId !== currentFaq.value?.faqId
     )
     .slice(0, 2);
 });

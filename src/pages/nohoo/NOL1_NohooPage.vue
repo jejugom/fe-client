@@ -97,9 +97,9 @@ const productStore = useProductStore();
 onMounted(() => {
   // 전체 상품을 store에 저장
   productStore.setAllProducts({
-    timeDeposits: api_data.timeDeposits,
-    savingDeposits: api_data.savingDeposits,
-    mortgageLoan: api_data.mortgageLoan,
+    timeDeposits: api_data.timeDeposits.map((p) => ({ ...p, fin_prdt_category: '1', description: '', rec_reason: '' })),
+    savingDeposits: api_data.savingDeposits.map((p) => ({ ...p, fin_prdt_category: '2', description: '', rec_reason: '' })),
+    mortgageLoan: api_data.mortgageLoan.map((p) => ({ ...p, fin_prdt_category: '3', description: '', rec_reason: '' })),
   });
 });
 // 추천 상품 목록
@@ -191,7 +191,7 @@ const filteredProducts = computed(() => {
               `최저금리 ${option.lend_rate_min}%`,
             ]
           : [],
-        maxRate: option ? parseFloat(option.lend_rate_min) : Infinity,
+        maxRate: option ? parseFloat(String(option.lend_rate_min)) : Infinity,
       };
     });
   }
