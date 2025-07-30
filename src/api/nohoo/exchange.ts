@@ -1,4 +1,3 @@
-// src/api/exchange.ts
 import axios from 'axios';
 
 const API_KEY = import.meta.env.VITE_ALPHA_VANTAGE_KEY;

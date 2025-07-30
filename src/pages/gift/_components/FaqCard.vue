@@ -5,7 +5,7 @@
   >
     <!-- 카테고리 -->
     <div class="text-primary-300 w-8 text-center text-base font-semibold">
-      {{ category === 'gift' ? '증여' : '상속' }}
+      {{ categoryLabel }}
     </div>
 
     <!-- 질문 텍스트 -->
@@ -16,11 +16,11 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { computed, defineProps, defineEmits } from 'vue';
 
 const props = defineProps<{
   id: number;
-  category: string;
+  category: string; // '상' | '증'
   question: string;
 }>();
 
@@ -28,5 +28,7 @@ defineEmits<{
   (e: 'click'): void;
 }>();
 
-const router = useRouter();
+const categoryLabel = computed(() =>
+  props.category === '증' ? '증여' : '상속'
+);
 </script>

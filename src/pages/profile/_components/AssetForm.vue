@@ -108,7 +108,7 @@
 import { computed } from 'vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import InputBox from '@/components/forms/InputBox.vue';
-import { ASSET_CATEGORY_MAP } from '../_dummy';
+import { ASSET_CATEGORY_MAP } from '@/api/profile/editAsset';
 
 interface Asset {
   id: number | null;

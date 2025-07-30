@@ -76,7 +76,7 @@ import {
   transformApiResponseToAssets,
   transformAssetsToApiRequest,
   ASSET_CATEGORY_MAP,
-} from './_dummy';
+} from '@/api/profile/editAsset';
 
 const router = useRouter();
 

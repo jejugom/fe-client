@@ -13,6 +13,7 @@ import giftRoutes from './gift';
 import nohooRoutes from './nohoo';
 import profileRoutes from './profile';
 import assetSetting from './assetSetting';
+import productRoutes from './product';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,7 @@ const router = createRouter({
     ...eventRoutes,
     ...giftRoutes,
     ...nohooRoutes,
+    ...productRoutes,
     ...profileRoutes,
     {
       path: '/:pathMatch(.*)*',

@@ -1,15 +1,14 @@
 <template>
   <div class="flex flex-col gap-8">
     <!-- 상단 대표 정보 -->
-    <DetailImg :items="topInfos" />
-
+    <!-- 입력폼 -->
     <div class="flex flex-col gap-4">
       <ReserveInputBox
-        :title="getTitle()"
+        title="상품명"
         type="text"
-        placeholder="지점 선택"
+        placeholder="상품 선택"
         :readOnly="true"
-        v-model="modelValue"
+        v-model="productName"
       />
       <ReserveInputBox
         title="방문할 지점"
@@ -28,6 +27,8 @@
         @click="showDateTimeModal = true"
       />
     </div>
+
+    <!-- 예약 완료 버튼 -->
     <div>
       <p class="text-primary-300 mb-2 text-center font-semibold">
         위 내용을 모두 확인하셨다면 지금 바로 버튼을 눌러주세요!
@@ -70,32 +71,39 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router';
-import { ref, computed } from 'vue';
-import { productDetail } from './_dummy';
+import { useRoute, useRouter } from 'vue-router';
+import { computed, ref, watch } from 'vue';
 import DetailImg from './_components/DetailImg.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import ReserveInputBox from './_components/ReserveInputBox.vue';
 import Modal from '@/components/modals/Modal.vue';
 import BranchSelectModal from './_components/BranchSelectModal.vue';
 import DateTimeSelectModal from './_components/DateTimeSelectModal.vue';
+import { useRegisterStore } from '@/stores/register';
+import { api_data } from '@/api/products/productDetail';
 
 const router = useRouter();
 const route = useRoute();
+const registerStore = useRegisterStore();
 
-// 라우터 파라미터에 따라 title 설정
-const getTitle = () => {
-  return route.params.id === 'gift' ? '상담내용' : '상품';
-};
+const productName = computed({
+  get: () => registerStore.productName,
+  set: (val: string) => registerStore.setProductName(val),
+});
 
 // guno: 임시로 증여에서 넘어온 것은 증여 시뮬레이션 결과라고 표시
-const modelValue = ref(
-  route.params.id === 'gift'
-    ? '증여 시뮬레이션 결과'
-    : productDetail?.productName || ''
-);
+// const modelValue = ref(
+//   route.params.id === 'gift'
+//     ? '증여 시뮬레이션 결과'
+//     : productDetail?.productName || ''
+// );
 
-const branchValue = ref('');
+const branchValue = ref(registerStore.branch);
+const selectedReservation = ref({
+  date: registerStore.date,
+  time: registerStore.time,
+});
+
 const showBranchModal = ref(false);
 const showDateTimeModal = ref(false);
 
@@ -104,115 +112,70 @@ const dateTimeModalRef = ref<InstanceType<typeof DateTimeSelectModal> | null>(
   null
 );
 
-const selectedReservation = ref<{ date: string | null; time: string | null }>({
-  date: null,
-  time: null,
-});
-
-const invalidFields = ref({
-  model: false,
-  branch: false,
-  datetime: false,
-});
-
-const isFormValid = computed(() => {
-  return (
-    !!modelValue.value &&
-    !!branchValue.value &&
-    !!selectedReservation.value.date &&
-    !!selectedReservation.value.time
-  );
-});
-
+// 날짜 & 시간 텍스트 변환
 const displayDateTime = computed(() => {
   const { date, time } = selectedReservation.value;
   if (!date || !time) return '';
 
-  const [year, month, day] = date.split('-').map(Number);
-  const [hour, minute] = time.split(':').map(Number);
-  const ampm = hour < 12 ? '오전' : '오후';
-  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
-  const formattedMinute = minute.toString().padStart(2, '0');
-
-  return `${year}년 ${String(month).padStart(2, '0')}월 ${String(day).padStart(2, '0')}일 ${ampm} ${displayHour}시 ${formattedMinute}분`;
+  const [year, month, day] = date.split('-');
+  const [hour, minute] = time.split(':');
+  const h = parseInt(hour);
+  const ampm = h < 12 ? '오전' : '오후';
+  const hh = h % 12 === 0 ? 12 : h % 12;
+  return `${year}년 ${month}월 ${day}일 ${ampm} ${hh}시 ${minute}분`;
 });
 
-const goToRegister = () => {
-  if (!isFormValid.value) {
-    alert('모든 값을 입력해주세요.');
-    invalidFields.value = {
-      model: !modelValue.value,
-      branch: !branchValue.value,
-      datetime: !(
-        selectedReservation.value.date && selectedReservation.value.time
-      ),
-    };
-    return;
-  }
+const isFormValid = computed(
+  () =>
+    productName.value &&
+    branchValue.value &&
+    selectedReservation.value.date &&
+    selectedReservation.value.time
+);
 
-  console.log('예약 완료:', {
-    상품명: modelValue.value,
-    지점: branchValue.value,
-    날짜: selectedReservation.value.date,
-    시각: selectedReservation.value.time,
-  });
+// 상품명 쿼리 기반 설정
+watch(
+  () => route.params.id,
+  (id) => {
+    if (typeof id === 'string') {
+      const match = api_data.fin_prdt_cd === id ? api_data : null;
+      if (match) registerStore.setProductName(match.fin_prdt_nm);
+    }
+  },
+  { immediate: true }
+);
 
-  router.push({
-    name: 'register-complete',
-    params: {
-      type: route.params.id === 'gift' ? 'gift' : 'product',
-    },
-  });
-};
-
+// 지점 선택 완료
 const selectBranch = () => {
   const selected = branchModalRef.value?.getSelectedBranch?.();
   if (selected) {
     branchValue.value = selected;
+    registerStore.setBranch(selected);
     showBranchModal.value = false;
-  } else {
-    alert('지점을 선택해주세요.');
   }
 };
 
+// 날짜 시간 선택 처리
 const handleDateTimeSelect = (payload: { date: string; time: string }) => {
   selectedReservation.value = payload;
+  registerStore.setDate(payload.date);
+  registerStore.setTime(payload.time);
 };
-
 const submitDateTime = () => {
   dateTimeModalRef.value?.submitSelection();
 };
 
-// 상단 정보
-const detail = productDetail;
-const topInfos =
-  detail?.productType === '1'
-    ? [
-        { label: '금리', value: detail.iconInfo?.금리 ?? '' },
-        { label: '가입방법', value: detail.iconInfo?.가입방법 ?? '' },
-      ]
-    : detail?.productType === '2'
-      ? [
-          { label: '금리', value: detail.iconInfo?.금리 ?? '' },
-          { label: '가입방법', value: detail.iconInfo?.가입방법 ?? '' },
-        ]
-      : detail?.productType === '3'
-        ? [
-            {
-              label: '연금저축유형',
-              value: detail.iconInfo?.연금저축유형 ?? '',
-            },
-            { label: '저축금리', value: detail.iconInfo?.저축금리 ?? '' },
-            { label: '가입방법', value: detail.iconInfo?.가입방법 ?? '' },
-          ]
-        : detail?.productType === '4'
-          ? [
-              {
-                label: '담보인정비율',
-                value: detail.iconInfo?.담보인정비율 ?? '',
-              },
-              { label: '대출금리', value: detail.iconInfo?.대출금리 ?? '' },
-              { label: '가입방법', value: detail.iconInfo?.가입방법 ?? '' },
-            ]
-          : [];
+// 예약 완료 처리
+const goToRegister = () => {
+  if (!isFormValid.value) {
+    alert('모든 값을 입력해주세요.');
+    return;
+  }
+  console.log('예약 완료:', registerStore.getSummary());
+
+  router.push({
+    name: 'register-complete',
+    params: { type: route.params.id === 'gift' ? 'gift' : 'product' },
+  });
+};
 </script>

@@ -2,11 +2,11 @@
   <!-- 자산 차트 영역 -->
   <section class="mb-8">
     <!-- 자산현황 파이차트 컴포넌트-->
-    <AssetSummaryCardPie
+    <!-- <AssetSummaryCardPie
       :userName="retirement.user_info.user_name"
       :assetAmount="retirement.user_info.asset_info.total"
       :assetInfo="retirement.user_info.asset_info"
-    />
+    /> -->
   </section>
 
   <!-- 자산 카테고리 선택 -->
@@ -112,7 +112,6 @@ import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
 import AssetSelectionModal from './_components/AssetSelectionModal.vue';
 import RecipientFormModal from './_components/RecipientFormModal.vue';
 import DeleteConfirmModal from './_components/DeleteConfirmModal.vue';
-import { retirement } from '../nohoo/_dummy';
 import { dummyAssets, dummyRecipients, emptyRecipient } from './_inputDummy';
 import AssetSummaryCardPie from '@/components/cards/AssetSummaryCardPie.vue';
 

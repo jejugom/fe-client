@@ -13,13 +13,13 @@
 
     <!-- 질문 -->
     <h3 class="text-primary-500 mb-6 text-lg font-semibold">
-      {{ currentFaq.question }}
+      {{ currentFaq.title }}
     </h3>
 
     <!-- 답변 -->
     <div
       class="text-surface-600 mb-16 space-y-4 text-sm leading-relaxed"
-      v-html="currentFaq.answer"
+      v-html="currentFaq.content"
     />
 
     <!-- 관련 질문 -->
@@ -28,11 +28,11 @@
       <div class="space-y-2">
         <div
           v-for="related in relatedFaqs"
-          :key="related.id"
-          @click="goToFaqDetail(related.id)"
+          :key="related.faqId"
+          @click="goToFaqDetail(related.faqId)"
           class="border-surface-200 bg-surface-50 cursor-pointer rounded-xl border px-4 py-4"
         >
-          <p class="text-surface-500 text-sm">{{ related.question }}</p>
+          <p class="text-surface-500 text-sm">{{ related.title }}</p>
         </div>
       </div>
     </div>
@@ -56,7 +56,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
-import { faqDummyData } from './_faqDummy';
+import { api_data } from '@/api/gift/faqDetail';
 
 const router = useRouter();
 const route = useRoute();
@@ -64,16 +64,16 @@ const route = useRoute();
 // 현재 선택된 FAQ를 계산하는 computed 속성
 const currentFaq = computed(() => {
   const id = Number(route.params.id);
-  return faqDummyData.find((faq) => faq.id === id) || null;
+  return api_data.find((faq) => faq.faqId === id) || null;
 });
 
 const relatedFaqs = computed(() => {
   if (!currentFaq.value) return [];
-  return faqDummyData
+  return api_data
     .filter(
       (faq) =>
         faq.category === currentFaq.value?.category &&
-        faq.id !== currentFaq.value?.id
+        faq.faqId !== currentFaq.value?.faqId
     )
     .slice(0, 2);
 });
