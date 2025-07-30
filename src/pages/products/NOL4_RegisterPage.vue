@@ -75,7 +75,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { computed, ref, watch } from 'vue';
-import axios from 'axios';
 import DetailImg from './_components/DetailImg.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import ReserveInputBox from './_components/ReserveInputBox.vue';
@@ -84,6 +83,7 @@ import BranchSelectModal from './_components/BranchSelectModal.vue';
 import DateTimeSelectModal from './_components/DateTimeSelectModal.vue';
 import { useRegisterStore } from '@/stores/register';
 import { api_data } from '@/api/products/productDetail';
+import { smsApi, type SmsData } from '@/api/products/register';
 
 const router = useRouter();
 const route = useRoute();
@@ -187,10 +187,8 @@ const goToRegister = async () => {
   // --- SMS 전송 로직 추가 ---
 
   // SMS 전송을 위한 예약 정보
-  const smsData = {
+  const smsData: SmsData = {
     phoneNumber: '01099255708', // 실제로는 사용자 입력값 사용
-
-    // registerStore.getSummary() 와 같은 내용이 들어옴.
     productName: productName.value,
     branchName: branchValue.value,
     reservationDate: selectedReservation.value.date,
@@ -203,9 +201,10 @@ const goToRegister = async () => {
   try {
     // 임시로 test 요청만 보냅니다. - 추후 삭제
     // !! 백엔드 서버 켜야해서 주석 처리 해놓겠습니다 !!
-    // const response = await axios.get('http://localhost:8080/api/sms/test');
-    // if (response.data === 'SMS API 연결 성공!') {
-    //   console.log('SMS API 테스트: ', response.data);
+    // const testResult = await smsApi.test();
+    // if (testResult) {
+    //   console.log('SMS API 테스트 결과: ', testResult);
+    // }
 
     router.push({
       name: 'register-complete',
@@ -213,25 +212,21 @@ const goToRegister = async () => {
 
     console.log('예약 완료:', registerStore.getSummary());
     // } else {
-    //   alert('SMS API 테스트 실패: ' + response.data);
+    //   alert('SMS API 테스트 실패: ' + testResult);
     // }
 
-    // axios POST 요청 - 구현 완료 - 추후 이 코드로 교체
-    // const response = await axios.post(
-    //   // uri 주소는 추후 개선
-    //   'http://localhost:8080/api/sms/send',
-    //   smsData
-    // );
-    // if (response.data.success) {
-    //   console.log('SMS 전송 성공:', response.data);
+    // SMS 전송 API - 구현 완료 - 추후 이 코드로 교체
+    // const result = await smsApi.send(smsData);
+    // if (result.success) {
+    //   console.log('SMS 전송 성공:', result);
     //   router.push({ name: 'register-complete' });
     // } else {
-    //   alert('SMS 전송 실패: ' + response.data.message);
+    //   alert('SMS 전송 실패: ' + result.message);
     //   // 오류 페이지 라우터 푸시
-    // } end of code
+    // }
   } catch (error) {
-    console.error('SMS 전송 실패:', error);
-    alert('SMS 전송에 실패했습니다.');
+    console.error('SMS API 오류:', error);
+    alert('SMS API 요청에 실패했습니다.');
     // 오류 페이지 라우터 푸시
   }
 };
