@@ -69,6 +69,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import { ref, computed } from 'vue';
+import axios from 'axios';
 import { productDetail } from './_dummy';
 import DetailImg from './_components/DetailImg.vue';
 import Btn from '@/components/buttons/Btn.vue';
@@ -121,7 +122,8 @@ const displayDateTime = computed(() => {
   return `${year}년 ${String(month).padStart(2, '0')}월 ${String(day).padStart(2, '0')}일 ${ampm} ${displayHour}시 ${formattedMinute}분`;
 });
 
-const goToRegister = () => {
+// axios post 로 인해 async 처리
+const goToRegister = async () => {
   if (!isFormValid.value) {
     alert('모든 값을 입력해주세요.');
     invalidFields.value = {
@@ -134,14 +136,47 @@ const goToRegister = () => {
     return;
   }
 
-  console.log('예약 완료:', {
-    상품명: modelValue.value,
-    지점: branchValue.value,
-    날짜: selectedReservation.value.date,
-    시각: selectedReservation.value.time,
-  });
+  // SMS 전송을 위한 예약 정보
+  const smsData = {
+    phoneNumber: '01099255708', // 실제로는 사용자 입력값 사용
+    productName: modelValue.value,
+    branchName: branchValue.value,
+    reservationDate: selectedReservation.value.date,
+    reservationTime: selectedReservation.value.time,
+    // userName은 생략 - 백엔드에서 못받은 경우 "고객님"으로 처리
+    // 추후 프론트에서 보내줄지, 백엔드에서 로그인 정보 토대로 확인 가능한지 파악 후 수정
+    // branchAddress: 지점 주소 보내주는 것 프론트에서 보내줄지 백엔드에서 보내줄지 확인 후 수정
+  };
 
-  router.push({ name: 'register-complete' });
+  try {
+    // 임시로 test 요청만 보냅니다. - 추후 삭제
+    const response = await axios.get('http://localhost:8080/api/sms/test');
+    if (response.data === 'SMS API 연결 성공!') {
+      console.log(smsData);
+      console.log('SMS API 테스트 성공:', response.data);
+      router.push({ name: 'register-complete' });
+    } else {
+      alert('SMS API 테스트 실패: ' + response.data);
+    }
+
+    // axios POST 요청 - 구현 완료 - 추후 이 코드로 교체
+    // const response = await axios.post(
+    //   // uri 주소는 추후 개선
+    //   'http://localhost:8080/api/sms/send',
+    //   smsData
+    // );
+    // if (response.data.success) {
+    //   console.log('SMS 전송 성공:', response.data);
+    //   router.push({ name: 'register-complete' });
+    // } else {
+    //   alert('SMS 전송 실패: ' + response.data.message);
+    //   // 오류 페이지 라우터 푸시
+    // } end of code
+  } catch (error) {
+    console.error('SMS 전송 실패:', error);
+    alert('SMS 전송에 실패했습니다.');
+    // 오류 페이지 라우터 푸시
+  }
 };
 
 const selectBranch = () => {
