@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-col gap-8">
     <!-- 상단 대표 정보 -->
+    <DetailImg :items="detailItems"></DetailImg>
+
     <!-- 입력폼 -->
     <div class="flex flex-col gap-4">
       <ReserveInputBox
@@ -87,17 +89,19 @@ const router = useRouter();
 const route = useRoute();
 const registerStore = useRegisterStore();
 
+// guno: DetailImg 컴포넌트용 임시 데이터 - 추후 수정 필요
+// 선택한 상품에 맞는 결과로 수정해야 함
+const detailItems = ref([
+  { label: '최고금리', value: '3.5%' },
+  { label: '가입방법', value: '은행 방문' },
+  { label: '연금저축유형', value: '--형' },
+  { label: '담보인정비율', value: '100%' },
+]);
+
 const productName = computed({
   get: () => registerStore.productName,
   set: (val: string) => registerStore.setProductName(val),
 });
-
-// guno: 임시로 증여에서 넘어온 것은 증여 시뮬레이션 결과라고 표시
-// const modelValue = ref(
-//   route.params.id === 'gift'
-//     ? '증여 시뮬레이션 결과'
-//     : productDetail?.productName || ''
-// );
 
 const branchValue = ref(registerStore.branch);
 const selectedReservation = ref({
@@ -139,25 +143,54 @@ watch(
   () => route.params.id,
   (id) => {
     if (typeof id === 'string') {
-      const match = api_data.fin_prdt_cd === id ? api_data : null;
-      if (match) registerStore.setProductName(match.fin_prdt_nm);
+      if (id === 'gift') {
+        // guno: 증여 시뮬레이션에서 온 경우 '증여 시뮬레이션 결과'
+        registerStore.setProductName('증여 시뮬레이션 결과');
+      } else {
+        const match = api_data.fin_prdt_cd === id ? api_data : null;
+        if (match) registerStore.setProductName(match.fin_prdt_nm);
+      }
     }
   },
   { immediate: true }
 );
-
 // 지점 선택 완료
 
-// axios post 로 인해 async 처리
+const selectBranch = () => {
+  const selected = branchModalRef.value?.getSelectedBranch?.();
+  if (selected) {
+    branchValue.value = selected;
+    registerStore.setBranch(selected);
+    showBranchModal.value = false;
+  }
+};
+
+// 날짜 시간 선택 처리
+const handleDateTimeSelect = (payload: { date: string; time: string }) => {
+  selectedReservation.value = payload;
+  registerStore.setDate(payload.date);
+  registerStore.setTime(payload.time);
+};
+
+const submitDateTime = () => {
+  dateTimeModalRef.value?.submitSelection();
+};
+
+// 예약 완료 처리
+// guno: axios post 로 인해 async 처리
 const goToRegister = async () => {
   if (!isFormValid.value) {
     alert('모든 값을 입력해주세요.');
     return;
   }
 
+  // --- SMS 전송 로직 추가 ---
+
   // SMS 전송을 위한 예약 정보
   const smsData = {
     phoneNumber: '01099255708', // 실제로는 사용자 입력값 사용
+
+    // registerStore.getSummary() 와 같은 내용이 들어옴.
     productName: productName.value,
     branchName: branchValue.value,
     reservationDate: selectedReservation.value.date,
@@ -169,14 +202,19 @@ const goToRegister = async () => {
 
   try {
     // 임시로 test 요청만 보냅니다. - 추후 삭제
-    const response = await axios.get('http://localhost:8080/api/sms/test');
-    if (response.data === 'SMS API 연결 성공!') {
-      console.log(smsData);
-      console.log('SMS API 테스트 성공:', response.data);
-      router.push({ name: 'register-complete' });
-    } else {
-      alert('SMS API 테스트 실패: ' + response.data);
-    }
+    // !! 백엔드 서버 켜야해서 주석 처리 해놓겠습니다 !!
+    // const response = await axios.get('http://localhost:8080/api/sms/test');
+    // if (response.data === 'SMS API 연결 성공!') {
+    //   console.log('SMS API 테스트: ', response.data);
+
+    router.push({
+      name: 'register-complete',
+    });
+
+    console.log('예약 완료:', registerStore.getSummary());
+    // } else {
+    //   alert('SMS API 테스트 실패: ' + response.data);
+    // }
 
     // axios POST 요청 - 구현 완료 - 추후 이 코드로 교체
     // const response = await axios.post(
@@ -196,38 +234,5 @@ const goToRegister = async () => {
     alert('SMS 전송에 실패했습니다.');
     // 오류 페이지 라우터 푸시
   }
-};
-
-const selectBranch = () => {
-  const selected = branchModalRef.value?.getSelectedBranch?.();
-  if (selected) {
-    branchValue.value = selected;
-    registerStore.setBranch(selected);
-    showBranchModal.value = false;
-  }
-};
-
-// 날짜 시간 선택 처리
-const handleDateTimeSelect = (payload: { date: string; time: string }) => {
-  selectedReservation.value = payload;
-  registerStore.setDate(payload.date);
-  registerStore.setTime(payload.time);
-};
-const submitDateTime = () => {
-  dateTimeModalRef.value?.submitSelection();
-};
-
-// 예약 완료 처리
-const goToRegister = () => {
-  if (!isFormValid.value) {
-    alert('모든 값을 입력해주세요.');
-    return;
-  }
-  console.log('예약 완료:', registerStore.getSummary());
-
-  router.push({
-    name: 'register-complete',
-    params: { type: route.params.id === 'gift' ? 'gift' : 'product' },
-  });
 };
 </script>
