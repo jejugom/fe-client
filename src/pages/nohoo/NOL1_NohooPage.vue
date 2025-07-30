@@ -97,9 +97,24 @@ const productStore = useProductStore();
 onMounted(() => {
   // 전체 상품을 store에 저장
   productStore.setAllProducts({
-    timeDeposits: api_data.timeDeposits.map((p) => ({ ...p, fin_prdt_category: '1', description: '', rec_reason: '' })),
-    savingDeposits: api_data.savingDeposits.map((p) => ({ ...p, fin_prdt_category: '2', description: '', rec_reason: '' })),
-    mortgageLoan: api_data.mortgageLoan.map((p) => ({ ...p, fin_prdt_category: '3', description: '', rec_reason: '' })),
+    timeDeposits: api_data.timeDeposits.map((p) => ({
+      ...p,
+      fin_prdt_category: '1',
+      description: '',
+      rec_reason: '',
+    })),
+    savingDeposits: api_data.savingDeposits.map((p) => ({
+      ...p,
+      fin_prdt_category: '2',
+      description: '',
+      rec_reason: '',
+    })),
+    mortgageLoan: api_data.mortgageLoan.map((p) => ({
+      ...p,
+      fin_prdt_category: '3',
+      description: '',
+      rec_reason: '',
+    })),
   });
 });
 // 추천 상품 목록
@@ -164,7 +179,7 @@ const filteredProducts = computed(() => {
         : 0,
     }));
   } else if (selectedTab.value === '적금') {
-    products = productStore.allProducts.timeDeposits.map((product) => ({
+    products = productStore.allProducts.savingDeposits.map((product) => ({
       ...product,
       tags: [
         ...(product.optionList?.map((opt) => `${opt.save_trm}개월`) || []),

@@ -9,8 +9,8 @@
     </Carousel>
 
     <!-- 예약이 1개뿐일 때는 일반 렌더링 -->
-    <div v-else class="border-secondary-300 mb-4 rounded-lg border p-4">
-      <RegisterCard :booking="item" />
+    <div v-else>
+      <RegisterCard :booking="bookingItems[0]" />
     </div>
 
     <!-- 자산현황 파이차트 컴포넌트-->
@@ -150,19 +150,4 @@ const bookingItems = computed(() => {
     Boolean
   ); // null/undefined 방지
 });
-
-const formatDateTime = (date, time) => {
-  const dateObj = new Date(`${date}T${time}`);
-  if (isNaN(dateObj.getTime())) return '날짜 정보 없음';
-
-  const year = dateObj.getFullYear();
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const day = String(dateObj.getDate()).padStart(2, '0');
-  const hour = dateObj.getHours();
-  const minute = String(dateObj.getMinutes()).padStart(2, '0');
-  const ampm = hour >= 12 ? '오후' : '오전';
-  const hour12 = hour % 12 === 0 ? 12 : hour % 12;
-
-  return `${year}년 ${month}월 ${day}일 ${ampm} ${hour12}시 ${minute}분`;
-};
 </script>
