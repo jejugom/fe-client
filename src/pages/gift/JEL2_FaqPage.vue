@@ -1,13 +1,15 @@
 <template>
   <!-- 타이틀 -->
   <h2 class="text-primary-300 mb-4 text-2xl font-bold">상속·증여</h2>
-  <p class="text-primary-300 mb-8 text-xl font-semibold">자주 묻는 질문</p>
+  <p class="text-primary-300 mb-8 text-xl font-semibold"
+    >많이 물어보신 질문이에요
+  </p>
 
   <!-- 검색 섹션 -->
   <div class="mb-6">
     <div class="mb-4 flex items-center gap-2">
       <InputBox
-        placeholder="무엇이 궁금하신가요? (예: 상속세)"
+        placeholder="궁금한 점을 검색해보세요 (예: 세금, 보험)"
         size="large"
         type="text"
         v-model="searchQuery"

@@ -3,9 +3,9 @@
     <div class="font-semibold">
       <div class="text-lg">
         <span class="text-gold">안정적인 주식형</span> 자산가<br />
-        <span class="text-primary-300">{{ userName }}</span> 님의 자산 현황
+        지금까지 모은 자산은 이렇게 구성돼 있어요
       </div>
-      <div>{{ assetAmount?.toLocaleString() }} 원</div>
+      <div>총 {{ assetAmount?.toLocaleString() }} 원</div>
     </div>
     <apexchart
       type="bar"
@@ -67,28 +67,11 @@ const chartOptions = computed(() => ({
     },
   },
   tooltip: {
-    custom: function ({ series, seriesIndex, dataPointIndex, w }) {
-      const labels = [
-        '부동산',
-        '예적금',
-        '현금',
-        '주식/펀드',
-        '사업지분',
-        '기타',
-      ];
-      const value = series[seriesIndex][dataPointIndex];
-      const label = labels[seriesIndex];
-
-      return `
-      <div class="apex-tooltip-custom">
-        <div class="bg-primary-300 text-white font-semibold p-1">
-          ${label}
-          </div>
-          <div class="p-1">
-            ${value.toLocaleString()} 원
-          </div>
-      </div>
-      `;
+    x: {
+      show: false,
+    },
+    y: {
+      formatter: (val) => `${val.toLocaleString()} 원`,
     },
   },
   xaxis: {

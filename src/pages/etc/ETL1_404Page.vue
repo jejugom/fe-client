@@ -3,7 +3,7 @@
     <div class="text-gold font-hakgyo text-5xl">404</div>
 
     <div class="text-center text-lg font-bold">
-      입력하신 주소가 잘못되었거나,<br />이동된 페이지일 수 있어요. <br />
+      정보를 찾지 못했어요.<br />걱정 마세요! <br />
       <span class="text-gold">노후도락 항상 곁에 있습니다.</span>
     </div>
     <Btn

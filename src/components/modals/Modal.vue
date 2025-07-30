@@ -33,6 +33,7 @@
             :label2="rightLabel"
             @click1="emit('click1')"
             @click2="emit('click2')"
+            type="type1"
           />
         </div>
       </div>

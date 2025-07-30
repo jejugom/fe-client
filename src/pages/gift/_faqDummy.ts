@@ -9,7 +9,7 @@ export const faqDummyData: FaqItem[] = [
   {
     id: 1,
     category: 'gift',
-    question: '손주에게 돈을 줄 때 세금이 나오나요?',
+    question: '손주에게 용돈을 줘도 세금을 내야 하나요?',
     answer: `
         <p>네, 손주에게 돈을 주는 것도 '증여'로 보고 세금이 날 수 있습니다.</p>
   
@@ -36,33 +36,33 @@ export const faqDummyData: FaqItem[] = [
   {
     id: 2,
     category: 'gift',
-    question: '몇 년마다 나눠서 세금을 줄일 수 있나요?',
+    question: '몇 년마다 나눠서 세금을 아낄 수 있나요?',
     answer:
       '10년마다 증여세 공제가 가능하므로 분산해서 증여하면 절세 효과가 있습니다.',
   },
   {
     id: 3,
     category: 'gift',
-    question: '집이나 땅을 자녀에게 줄 때 어떤 절차가 필요하나요?',
+    question: '집이나 땅을 자녀에게 줄 때 어떤 절차가 있나요?',
     answer:
       '공증, 등기이전, 감정평가 등의 절차가 필요하며 증여세 신고도 필수입니다.',
   },
   {
     id: 4,
     category: 'inheritance',
-    question: '상속세는 언제 내야 하나요?',
+    question: '상속세는 언제쯤 내야 하나요?',
     answer: '상속 개시일로부터 6개월 이내에 상속세를 신고하고 납부해야 합니다.',
   },
   {
     id: 5,
     category: 'inheritance',
-    question: '배우자와 자녀가 상속을 받을 때 비율이 어떻게 되나요?',
+    question: '배우자와 자녀가 상속을 받을 때 몫이 어떻게 나뉘나요?',
     answer: '법정상속비율에 따라 배우자와 자녀가 1.5:1의 비율로 상속받습니다.',
   },
   {
     id: 6,
     category: 'inheritance',
-    question: '미리 상속 계획을 세우면 어떤 점이 좋은가요?',
+    question: '미리 상속 준비하면 어떤 점이 좋은가요?',
     answer: '세금 부담을 줄이고 가족 간 분쟁을 예방할 수 있는 장점이 있습니다.',
   },
 ];

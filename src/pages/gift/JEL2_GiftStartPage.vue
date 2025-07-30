@@ -2,7 +2,7 @@
   <!-- 제목 -->
   <h2 class="text-primary-300 mb-2 text-2xl font-bold">상속·증여</h2>
   <p class="text-surface-500 mb-8 text-base">
-    자녀나 손주에게 재산을 나눠주기 전,<br />
+    자녀나 손주에게 재산을 전하고 싶으신가요? <br />
     세금이 얼마나 나올지 미리 확인해보세요.
   </p>
 
@@ -14,10 +14,11 @@
   </div>
 
   <!-- 하단 고정 안내 + 버튼 -->
-  <div>
-    <p class="text-primary-300 mb-4 text-center text-base font-semibold">
-      얼마를, 누구에게, 언제 주면 좋을지<br />
-      세금까지 포함해 쉽게 계산해드립니다.
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+  >
+    <p class="text-primary-300 mb-2 text-center font-semibold">
+      언제, 누구에게 얼마나 주면<br />세금이 가장 적게 나올지 미리 알 수 있어요.
     </p>
     <Btn
       color="primary"

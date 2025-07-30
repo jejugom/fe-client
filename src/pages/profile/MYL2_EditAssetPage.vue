@@ -16,7 +16,7 @@
       <Btn
         @click="addNewAsset"
         color="primary"
-        label="자산 등록"
+        label="자산 추가"
         size="small"
         class="h-10"
       />
@@ -47,8 +47,8 @@
   <Modal
     v-if="isModalOpen"
     :title="modalTitle"
-    leftLabel="취소"
-    rightLabel="저장"
+    leftLabel="그만두기"
+    rightLabel="저장하기"
     @click1="closeModal"
     @click2="saveNewAsset"
   >
@@ -182,7 +182,7 @@ const editAsset = (assetId) => {
     // 모달 제목 설정
     modalTitle.value = '자산 수정하기';
 
-    // 기존 자산 데이터를 폼에 복사 
+    // 기존 자산 데이터를 폼에 복사
     // amount를 문자열로 변환: InputBox 컴포넌트가 string 타입의 modelValue를 요구하므로
     // 숫자형 데이터(4000)를 문자열("4000")로 변환하여 타입 오류 방지
     newAsset.value = {

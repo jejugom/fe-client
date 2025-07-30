@@ -1,35 +1,22 @@
 <template>
-  <div>
-    <h2 class="text-primary-300 mb-8 text-2xl font-bold"
-      >증여 시뮬레이션 결과</h2
-    >
+  <h2 class="text-primary-300 mb-8 text-2xl font-bold">증여 시뮬레이션 결과</h2>
 
-    <div ref="pdfRef" class="mb-4">
-      <GiftSimulationResult />
-      <!-- <GiftSimulationResult /> -->
-    </div>
-
-    <div class="flex flex-col gap-3">
-      <Btn
-        color="secondary"
-        label="결과 공유하기"
-        size="large"
-        @click="shareResult"
-      />
-    </div>
-
-    <div
-      class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-    >
-      <p class="text-primary-300 mb-3 text-center text-base font-semibold">
-        더 자세한 설명이 필요하시면<br />
-        은행에서 친절하게 도와드립니다.
-      </p>
-    </div>
+  <div ref="pdfRef" class="mb-4 h-100 overflow-y-scroll">
+    <GiftSimulationResult />
+    <!-- <GiftSimulationResult /> -->
+  </div>
+  <Btn color="secondary" label="가족과 결과 함께 보기" size="large" />
+  <div
+    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
+  >
+    <p class="text-primary-300 mb-2 text-center font-semibold">
+      궁금한 점이 생기셨다면,<br />
+      은행에서 자세히 알려드릴게요
+    </p>
 
     <Btn
       color="primary"
-      label="내점 예약하기"
+      label="은행 방문 예약하기"
       size="large"
       @click="goToRegister"
     />
@@ -49,6 +36,7 @@ const goToRegister = () => {
     params: { id: 'gift' },
   });
 };
+
 import GiftSimulationResult from './_components/GiftSimulationResult.vue';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
