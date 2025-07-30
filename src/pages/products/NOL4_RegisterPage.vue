@@ -80,16 +80,14 @@ import Modal from '@/components/modals/Modal.vue';
 import BranchSelectModal from './_components/BranchSelectModal.vue';
 import DateTimeSelectModal from './_components/DateTimeSelectModal.vue';
 import { useRegisterStore } from '@/stores/register';
-import { api_data } from '@/api/products/productDetail';
+import { branchList } from '@/data/branchList';
+import { fetchReservedSlots } from '@/api/products/register';
 
 const router = useRouter();
 const route = useRoute();
 const registerStore = useRegisterStore();
 
-const productName = computed({
-  get: () => registerStore.productName,
-  set: (val: string) => registerStore.setProductName(val),
-});
+const productName = computed(() => registerStore.productName);
 
 // guno: 임시로 증여에서 넘어온 것은 증여 시뮬레이션 결과라고 표시
 // const modelValue = ref(
@@ -125,33 +123,37 @@ const displayDateTime = computed(() => {
   return `${year}년 ${month}월 ${day}일 ${ampm} ${hh}시 ${minute}분`;
 });
 
-const isFormValid = computed(
-  () =>
+const isFormValid = computed(() => {
+  return (
     productName.value &&
     branchValue.value &&
     selectedReservation.value.date &&
     selectedReservation.value.time
-);
-
-// 상품명 쿼리 기반 설정
-watch(
-  () => route.params.id,
-  (id) => {
-    if (typeof id === 'string') {
-      const match = api_data.fin_prdt_cd === id ? api_data : null;
-      if (match) registerStore.setProductName(match.fin_prdt_nm);
-    }
-  },
-  { immediate: true }
-);
+  );
+});
 
 // 지점 선택 완료
-const selectBranch = () => {
+const token = import.meta.env.VITE_ACCESS_TOKEN;
+console.log('Access Token:', token);
+
+const selectBranch = async () => {
   const selected = branchModalRef.value?.getSelectedBranch?.();
   if (selected) {
-    branchValue.value = selected;
-    registerStore.setBranch(selected);
-    showBranchModal.value = false;
+    const found = branchList.find((b) => b.name === selected); // 먼저 찾기
+
+    if (found) {
+      branchValue.value = selected;
+      registerStore.setBranch(selected);
+      registerStore.setBranchId(found.id); // 그 다음 id 설정
+      showBranchModal.value = false;
+
+      try {
+        const slots = await fetchReservedSlots(found.id, token);
+        registerStore.setReservedSlots(slots);
+      } catch (e) {
+        console.error('예약 슬롯 조회 실패', e);
+      }
+    }
   }
 };
 

@@ -45,7 +45,9 @@ import { ref, computed, onMounted, defineExpose } from 'vue';
 import { Calendar as VCalendar } from 'v-calendar';
 import 'v-calendar/style.css';
 import Btn from '@/components/buttons/Btn.vue';
-import { api_data } from '@/api/products/register';
+import { useRegisterStore } from '@/stores/register';
+
+const registerStore = useRegisterStore();
 
 // 컴포넌트 외부로 이벤트 전달
 const emit = defineEmits<{
@@ -86,14 +88,14 @@ const businessHours = [
 ];
 
 // 예약된 시간 데이터
-const reservedSlots = api_data.reserved_slots;
+const reservedSlots = computed(() => registerStore.reservedSlots);
 
 // 선택된 날짜의 예약 가능 시간 계산
 const availableTimes = computed(() => {
   if (!selectedDate.value) return [];
 
   const dateStr = formattedDate(selectedDate.value);
-  const reserved = reservedSlots[dateStr] || [];
+  const reserved = reservedSlots.value[dateStr] || [];
 
   const now = new Date();
   const isToday = selectedDate.value.toDateString() === now.toDateString();
@@ -145,12 +147,6 @@ const formattedDate = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
-// 예약 가능 여부 확인
-const checkReservationAvailability = (date: string, time: string): boolean => {
-  const reserved = api_data.reserved_slots[date] || [];
-  return !reserved.includes(time);
-};
-
 // 선택된 날짜와 시간 제출
 const submitSelection = async () => {
   if (!selectedDate.value || !selectedTime.value) {
@@ -162,7 +158,9 @@ const submitSelection = async () => {
   const time = selectedTime.value;
 
   // 예약 가능 여부 확인
-  const isStillAvailable = await checkReservationAvailability(selected, time);
+  const reserved = reservedSlots.value[selected] || [];
+  const isStillAvailable = !reserved.includes(time);
+
   if (!isStillAvailable) {
     alert('이미 예약된 시간입니다. 다른 시간을 선택해주세요.');
     return;

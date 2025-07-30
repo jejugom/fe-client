@@ -46,6 +46,7 @@
     font-size: var(--text-sm);
     color: var(--color-surface-500);
     font-family: var(--font-regular);
+    transition: transform 300ms ease-in-out;
   }
 }
 
