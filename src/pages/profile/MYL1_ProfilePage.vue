@@ -1,48 +1,44 @@
 <template>
-  <!-- Info Box -->
-  <div class="border-secondary-300 mb-8 rounded-lg border p-4">
-    <div class="text-secondary-500 mb-2 text-lg font-semibold">
-      예약하신 방문 내용을 확인하세요
-    </div>
-    <div class="space-y-1">
-      <div class="text-surface-500 text-sm">
-        <span class="font-semibold">방문 날짜 :</span> 2025년 07월 16일 오후 1시
-      </div>
-      <div class="text-surface-500 text-sm">
-        <span class="font-semibold">방문 장소:</span> 국민은행 제주대리점
-      </div>
-      <div class="text-surface-500 text-sm">
-        <span class="font-semibold">상담 내용:</span> 증여 상품
-      </div>
-    </div>
-  </div>
+  <div class="space-y-16">
+    <!-- Info Box -->
+    <!-- 예약 내역이 2개 이상일 때는 슬라이드로 보여주기 -->
+    <Carousel v-if="bookingItems.length > 1" :items="bookingItems">
+      <template #default="{ item }">
+        <RegisterCard :booking="item" />
+      </template>
+    </Carousel>
 
-  <!-- 자산현황 파이차트 컴포넌트-->
-  <AssetSummaryCardPie
-    :userName="retirement.user_info.user_name"
-    :assetAmount="retirement.user_info.asset_info.total"
-    :assetInfo="retirement.user_info.asset_info"
-  />
+    <!-- 예약이 1개뿐일 때는 일반 렌더링 -->
+    <div v-else>
+      <RegisterCard :booking="bookingItems[0]" />
+    </div>
 
-  <!-- Menu Section -->
-  <div class="mt-16 flex flex-col gap-4">
-    <Btn
-      color="secondary"
-      :label="menu.title"
-      size="large"
-      v-for="menu in menuItems"
-      :key="menu.id"
-      @click="handleMenuClick(menu.id)"
+    <!-- 자산현황 파이차트 컴포넌트-->
+    <AssetSummaryCardPie
+      :userName="userName"
+      :assetAmount="assetAmount"
+      :assetInfo="assetInfo"
     />
-  </div>
 
-  <!-- 로그아웃 및 회원탈퇴 -->
-  <div class="mt-4 flex items-center justify-end gap-4 text-xs text-red-300">
-    <div class="text-surface-500 cursor-pointer" @click="">사용방법 보기</div>
-    <div class="cursor-pointer underline" @click="handleLogout">로그아웃</div>
-    <p class="cursor-pointer underline" @click="showModal = true">회원탈퇴</p>
-  </div>
+    <!-- Menu Section -->
+    <div class="flex flex-col gap-4">
+      <Btn
+        color="secondary"
+        :label="menu.title"
+        size="large"
+        v-for="menu in menuItems"
+        :key="menu.id"
+        @click="handleMenuClick(menu.id)"
+      />
+    </div>
 
+    <!-- 로그아웃 및 회원탈퇴 -->
+    <div class="mt-4 flex items-center justify-end gap-4 text-xs text-red-300">
+      <div class="text-surface-500 cursor-pointer" @click="">사용방법 보기</div>
+      <div class="cursor-pointer underline" @click="handleLogout">로그아웃</div>
+      <p class="cursor-pointer underline" @click="showModal = true">회원탈퇴</p>
+    </div>
+  </div>
   <!-- 회원탈퇴 모달 -->
   <Modal
     v-if="showModal"
@@ -77,12 +73,20 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import AssetSummaryCardPie from '@/components/cards/AssetSummaryCardPie.vue';
 import Btn from '@/components/buttons/Btn.vue';
-import { retirement } from '../nohoo/_dummy';
+import { api_data } from '@/api/profile/profile';
 import Modal from '@/components/modals/Modal.vue';
+import Carousel from '@/components/carousel/Carousel.vue';
+import RegisterCard from './_components/RegisterCard.vue';
+
+const retirement = api_data;
+
+const userName = retirement.user_info.name;
+const assetAmount = retirement.asset_info.total;
+const assetInfo = retirement.asset_info;
 
 const router = useRouter();
 
@@ -140,4 +144,10 @@ const handleLogout = () => {
   // 로그아웃 로직 추가
   console.log('로그아웃');
 };
+
+const bookingItems = computed(() => {
+  return [api_data.booking.gift_booking, api_data.booking.prdt_booking].filter(
+    Boolean
+  ); // null/undefined 방지
+});
 </script>
