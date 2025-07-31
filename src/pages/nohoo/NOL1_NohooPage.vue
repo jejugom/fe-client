@@ -150,7 +150,9 @@ const recommendedProducts = computed(() => {
         product.optionList?.length
       ) {
         // 12개월짜리 옵션만 필터링
-        const option12 = product.optionList.find((opt) => opt.saveTrm === '12');
+        const option12 = product.optionList.find(
+          (opt: any) => opt.saveTrm === '12'
+        );
 
         if (option12) {
           const maxRate = option12.intrRate2 ?? 0;
@@ -158,10 +160,10 @@ const recommendedProducts = computed(() => {
         } else {
           // 12개월 없을 경우 기존 saveTrm 전체 태그로 fallback
           const saveTerms = product.optionList
-            .filter((opt) => opt.saveTrm !== null)
-            .map((opt) => `${opt.saveTrm}개월`);
+            .filter((opt: any) => opt.saveTrm !== null)
+            .map((opt: any) => `${opt.saveTrm}개월`);
           const maxRate = Math.max(
-            ...(product.optionList.map((opt) => opt.intrRate2) ?? [0])
+            ...(product.optionList.map((opt: any) => opt.intrRate2) ?? [0])
           );
           tags.push(...saveTerms, `최고금리 ${maxRate.toFixed(2)}%`);
         }
@@ -170,7 +172,7 @@ const recommendedProducts = computed(() => {
       // 주택담보대출 상품인 경우
       if (product.finPrdtCategory === '3' && product.optionList?.length) {
         const minRate = Math.min(
-          ...product.optionList.map((opt) =>
+          ...product.optionList.map((opt: any) =>
             parseFloat(opt.lendRateMin ?? '999')
           )
         );

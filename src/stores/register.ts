@@ -1,8 +1,10 @@
+import type { set } from 'date-fns';
 import { defineStore } from 'pinia';
 
 export const useRegisterStore = defineStore('register', {
   state: () => ({
     productName: '',
+    finPrdtCode: '',
     branchId: 0,
     branch: '',
     date: '',
@@ -28,11 +30,13 @@ export const useRegisterStore = defineStore('register', {
     setReservedSlots(slots: Record<string, string[]>) {
       this.reservedSlots = slots;
     },
+    setFinPrdtCode(code: string) {
+      this.finPrdtCode = code;
+    },
     getSummary() {
       return {
-        productName: this.productName,
-        branch: this.branch,
         branchId: this.branchId,
+        finPrdtCode: this.finPrdtCode,
         date: this.date,
         time: this.time,
       };

@@ -81,7 +81,7 @@ import BranchSelectModal from './_components/BranchSelectModal.vue';
 import DateTimeSelectModal from './_components/DateTimeSelectModal.vue';
 import { useRegisterStore } from '@/stores/register';
 import { branchList } from '@/data/branchList';
-import { fetchReservedSlots } from '@/api/products/register';
+import { fetchReservedSlots, postBooking } from '@/api/products/register';
 
 const router = useRouter();
 const route = useRoute();
@@ -168,16 +168,32 @@ const submitDateTime = () => {
 };
 
 // 예약 완료 처리
-const goToRegister = () => {
+const goToRegister = async () => {
   if (!isFormValid.value) {
     alert('모든 값을 입력해주세요.');
     return;
   }
-  console.log('예약 완료:', registerStore.getSummary());
 
-  router.push({
-    name: 'register-complete',
-    params: { type: route.params.id === 'gift' ? 'gift' : 'product' },
-  });
+  const payload = {
+    branchId: registerStore.branchId,
+    finPrdtCode: route.params.id as string,
+    date: registerStore.date,
+    time: registerStore.time,
+  };
+
+  console.log('예약 정보:', payload);
+
+  try {
+    const result = await postBooking(payload, token);
+    console.log('예약 성공:', result);
+    router.push({
+      name: 'register-complete',
+      params: { type: route.params.id === 'gift' ? 'gift' : 'product' },
+      query: { bookingId: result.bookingId },
+    });
+  } catch (error: any) {
+    console.error('예약 실패:', error.response?.data || error.message);
+    alert('예약 중 오류가 발생했습니다.');
+  }
 };
 </script>
