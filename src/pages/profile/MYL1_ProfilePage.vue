@@ -75,6 +75,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import AssetSummaryCardPie from '@/components/cards/AssetSummaryCardPie.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { api_data } from '@/api/profile/profile';
@@ -89,6 +90,7 @@ const assetAmount = retirement.asset_info.total;
 const assetInfo = retirement.asset_info;
 
 const router = useRouter();
+const authStore = useAuthStore();
 
 const showModal = ref(false);
 const confirmText = ref('');
@@ -141,8 +143,10 @@ const handleMenuClick = (menuId) => {
 };
 
 const handleLogout = () => {
-  // 로그아웃 로직 추가
-  console.log('로그아웃');
+  // auth store의 로그아웃 함수 호출
+  authStore.logout();
+  // 홈페이지로 리다이렉트
+  router.push({ name: 'home' });
 };
 
 const bookingItems = computed(() => {
