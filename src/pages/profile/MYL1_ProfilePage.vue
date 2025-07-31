@@ -1,5 +1,9 @@
 <template>
-  <div class="space-y-16">
+  <div v-if="loading" class="flex justify-center items-center h-64">
+    <div class="text-lg">데이터를 불러오는 중...</div>
+  </div>
+  
+  <div v-else class="space-y-16">
     <!-- Info Box -->
     <!-- 예약 내역이 2개 이상일 때는 슬라이드로 보여주기 -->
     <Carousel v-if="bookingItems.length > 1" :items="bookingItems">
@@ -9,8 +13,13 @@
     </Carousel>
 
     <!-- 예약이 1개뿐일 때는 일반 렌더링 -->
-    <div v-else>
+    <div v-else-if="bookingItems.length === 1">
       <RegisterCard :booking="bookingItems[0]" />
+    </div>
+
+    <!-- 예약 내역이 없을 때 -->
+    <div v-else class="text-center text-gray-500 py-8">
+      예약 내역이 없습니다.
     </div>
 
     <!-- 자산현황 파이차트 컴포넌트-->
@@ -73,21 +82,64 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import AssetSummaryCardPie from '@/components/cards/AssetSummaryCardPie.vue';
 import Btn from '@/components/buttons/Btn.vue';
-import { api_data } from '@/api/profile/profile';
 import Modal from '@/components/modals/Modal.vue';
 import Carousel from '@/components/carousel/Carousel.vue';
 import RegisterCard from './_components/RegisterCard.vue';
+import { mypageApi } from '@/api/user/mypage';
 
-const retirement = api_data;
+const myPageData = ref(null);
+const loading = ref(true);
 
-const userName = retirement.user_info.name;
-const assetAmount = retirement.asset_info.total;
-const assetInfo = retirement.asset_info;
+const userName = computed(() => myPageData.value?.userInfo.userName || '');
+const assetAmount = computed(() => {
+  if (!myPageData.value?.userInfo.assetStatus) return 0;
+  return myPageData.value.userInfo.assetStatus.reduce((total, asset) => total + asset.amount, 0);
+});
+
+// 자산 카테고리 코드를 프론트엔드 형식으로 변환
+const assetInfo = computed(() => {
+  // API 데이터가 로드되지 않았을 때 임시 더미 데이터로 차트 테스트
+  if (!myPageData.value?.userInfo.assetStatus) {
+    console.log('API 데이터 없어서 더미 데이터 사용');
+    return {
+      total: 195000000,
+      real_estate: 150000000,
+      deposit: 35000000,
+      cash: 5000000,
+      stock_fund: 3000000,
+      business_equity: 2000000,
+      etc: 0,
+    };
+  }
+
+  console.log('API 데이터:', myPageData.value.userInfo.assetStatus);
+
+  const assetMap = myPageData.value.userInfo.assetStatus.reduce((acc, asset) => {
+    acc[asset.assetCategoryCode] = asset.amount;
+    return acc;
+  }, {});
+
+  console.log('변환된 자산 맵:', assetMap);
+
+  // 현재 백엔드에서 오는 카테고리 코드에 따라 매핑
+  const result = {
+    total: assetAmount.value,
+    real_estate: assetMap['1'] || assetMap[1] || 0,      // 카테고리 1: 부동산
+    deposit: assetMap['2'] || assetMap[2] || 0,          // 카테고리 2: 예적금  
+    cash: assetMap['3'] || assetMap[3] || 0,             // 카테고리 3: 현금 ✓
+    stock_fund: assetMap['4'] || assetMap[4] || 0,       // 카테고리 4: 주식/펀드 ✓
+    business_equity: assetMap['5'] || assetMap[5] || 0,  // 카테고리 5: 사업지분 ✓
+    etc: assetMap['6'] || assetMap[6] || 0,              // 카테고리 6: 기타
+  };
+
+  console.log('최종 자산 정보:', result);
+  return result;
+});
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -150,8 +202,32 @@ const handleLogout = () => {
 };
 
 const bookingItems = computed(() => {
-  return [api_data.booking.gift_booking, api_data.booking.prdt_booking].filter(
-    Boolean
-  ); // null/undefined 방지
+  if (!myPageData.value?.bookingInfo) return [];
+  
+  return myPageData.value.bookingInfo.map(booking => ({
+    id: booking.bookingId,
+    date: new Date(booking.date).toISOString().split('T')[0], // timestamp를 YYYY-MM-DD 형식으로 변환
+    time: booking.time,
+    bank_name: '국민은행', // 백엔드에서 지점명 조회 필요시 추가 API 호출 필요
+    prdt_name: booking.finPrdtCode, // 상품명 조회 필요시 추가 API 호출 필요
+  }));
 });
+
+// 페이지 로드시 데이터 가져오기
+const loadMyPageData = async () => {
+  try {
+    loading.value = true;
+    myPageData.value = await mypageApi.getMyPageData();
+  } catch (error) {
+    console.error('마이페이지 데이터 로드 실패:', error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  loadMyPageData();
+});
+
+// API 데이터로 렌더링 완료
 </script>

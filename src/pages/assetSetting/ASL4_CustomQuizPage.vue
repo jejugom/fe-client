@@ -30,6 +30,7 @@ import { ref, computed, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import QuizContent from './_components/QuizContent.vue';
 import QuizNavigation from './_components/QuizNavigation.vue';
+import { preferencesApi } from '@/api/user/preferences';
 
 const router = useRouter();
 const route = useRoute();
@@ -108,18 +109,32 @@ const handleNextQuestion = async () => {
   // 마지막 질문인 경우
   if (isLastQuestion.value) {
     console.log('최종 답변:', finalAnswers.value);
-    // TODO: 여기에 API 호출 로직 추가
-    // 성공 시 다음 페이지로 이동
-    // 실패 시 에러 메시지 표시
+    
+    try {
+      // 투자성향 질문 답변 API 호출
+      const preferencesData = {
+        q1: String(finalAnswers.value.q1),
+        q2: String(finalAnswers.value.q2),
+        q3: String(finalAnswers.value.q3),
+        q4: String(finalAnswers.value.q4),
+        q5: String(finalAnswers.value.q5),
+      };
 
-    // 프로필에서 온 경우 마이페이지로 돌아가기
-    const isFromProfile = route.query.from === 'profile';
+      const response = await preferencesApi.submit(preferencesData);
+      console.log('투자성향 제출 성공:', response);
 
-    if (isFromProfile) {
-      router.push({ name: 'profile' });
-    } else {
-      // 기본 플로우: 지점 설정으로 이동
-      router.push({ name: 'edit-branch' });
+      // 프로필에서 온 경우 마이페이지로 돌아가기
+      const isFromProfile = route.query.from === 'profile';
+
+      if (isFromProfile) {
+        router.push({ name: 'profile' });
+      } else {
+        // 기본 플로우: 지점 설정으로 이동
+        router.push({ name: 'edit-branch' });
+      }
+    } catch (error) {
+      console.error('투자성향 제출 실패:', error);
+      alert('투자성향 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
   }
   // 마지막 질문이 아닌 경우
