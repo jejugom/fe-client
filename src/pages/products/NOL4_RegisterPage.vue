@@ -199,21 +199,21 @@ const goToRegister = async () => {
   };
 
   try {
-    // 임시로 test 요청만 보냅니다. - 추후 삭제
-    // !! 백엔드 서버 켜야해서 주석 처리 해놓겠습니다 !!
-    // const testResult = await smsApi.test();
-    // if (testResult) {
-    //   console.log('SMS API 테스트 결과: ', testResult);
-    // }
+    // 임시로 test 요청만 보냅니다.
+    // !백엔드 서버 켜야 작동합니다!
+    // api 요청에 로그인시 자동으로 jwt 토큰이 헤더에 포함됩니다.
+    const testResult = await smsApi.test();
+    if (testResult) {
+      console.log('SMS API 테스트 결과: ', testResult);
 
-    router.push({
-      name: 'register-complete',
-    });
+      router.push({
+        name: 'register-complete',
+      });
 
-    console.log('예약 완료:', registerStore.getSummary());
-    // } else {
-    //   alert('SMS API 테스트 실패: ' + testResult);
-    // }
+      console.log('예약 완료:', registerStore.getSummary());
+    } else {
+      alert('SMS API 테스트 실패: ' + testResult);
+    }
 
     // SMS 전송 API - 구현 완료 - 추후 이 코드로 교체
     // const result = await smsApi.send(smsData);

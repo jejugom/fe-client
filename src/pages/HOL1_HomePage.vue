@@ -1,8 +1,52 @@
+<!--
+  노후도락 홈페이지
+  
+  사용자의 로그인 상태에 따라 다른 UI를 제공해야함
+  - 비로그인: 카카오 로그인 유도 메시지 및 버튼
+  - 로그인: 개인화된 인사말, 자산 정보, 맞춤형 서비스 제공
+-->
 <template>
-  <!-- 인사 및 자산 표시 -->
-  <div class="border-primary-300 mb-2 rounded-xl border bg-white p-4">
+  <!-- 비로그인 사용자를 대상 로그인 유도 -->
+  <div
+    v-if="!authStore.isLogin"
+    class="border-primary-300 mb-8 rounded-xl border bg-white p-4"
+  >
+    <div class="space-y-4 text-center">
+      <div class="text-primary-300 text-xl font-semibold">
+        노후도락에 오신 것을 환영합니다!
+      </div>
+      <p class="text-surface-500 text-base">
+        카카오로 로그인해서 맞춤형 금융 서비스를 시작해보세요
+      </p>
+      <!-- 카카오 로그인 버튼 - auth store를 통해 OAuth2.0 플로우 시작 -->
+      <!-- 현재 구현방식 - 서버사이드 (백엔드에서 모든 로직 처리) -->
+      <!-- 백엔드에서 처리 후에 [ jwt 토큰, 신규사용자 여부, 리다이렉트 주소] 전달 -->
+      <!-- 강사님 피드백 (고도화때 처리)
+       1. 로그인 요청을 백엔드로 보내고 필터로 가로채서 구현
+       2. 주소에 jwt 토큰 정보 담기는것을 막기위해 httpOnly 쿠키로 보낼 것
+       -->
+
+      <!-- <Btn
+        color="secondary"
+        label="카카오 시작하기"
+        size="large"
+        @click="authStore.startKakaoLogin"
+        class="w-full"
+      /> -->
+      <div class="flex justify-center">
+        <img
+          :src="KakaoLoginBtn"
+          alt="카카오 로그인"
+          @click="authStore.startKakaoLogin"
+        /> </div
+    ></div>
+  </div>
+
+  <!-- 로그인된 사용자를 위한 개인화된 인사 및 자산 정보 -->
+  <div v-else class="border-primary-300 mb-2 rounded-xl border bg-white p-4">
     <div class="text-primary-300 mb-4 text-lg font-semibold">
-      {{ userName }}님 <span class="text-surface-500">안녕하세요!</span>
+      {{ authStore.userName || authStore.username }}님
+      <span class="text-surface-500">안녕하세요!</span>
     </div>
     <div class="space-y-1">
       <p class="text-surface-300 font-semibold">내 자산</p>
@@ -12,8 +56,9 @@
     </div>
   </div>
 
-  <!-- 자산 추가 버튼 -->
+  <!-- 자산 관리 버튼 - 로그인된 사용자에게만 표시 -->
   <Btn
+    v-if="authStore.isLogin"
     class="mb-8"
     color="secondary"
     label="자산 추가 등록·수정"
@@ -90,6 +135,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import Top3Products from '@/components/cards/Top3ProductsCard.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { api_data } from '@/api/home';
@@ -101,13 +147,21 @@ import Home3 from '@/assets/images/Home3.svg';
 import Home4 from '@/assets/images/Home4.svg';
 import Home5 from '@/assets/images/Home5.svg';
 import Home6 from '@/assets/images/Home6.svg';
+import KakaoLoginBtn from '@/assets/images/kakao_login_medium_wide.png';
 
+/** Vue Router 인스턴스 - 페이지 네비게이션용 */
 const router = useRouter();
 
-const userName = api_data.userSummary.name;
-const totalAsset = api_data.userSummary.asset;
+/** 인증 상태 관리 store - 로그인 여부 확인 및 카카오 로그인 처리 */
+const authStore = useAuthStore();
 
-// 금액 포맷 함수
+/** 사용자 총 자산 - 로그인된 경우에만 실제 데이터 사용, 비로그인 시 0 */
+const totalAsset = authStore.isLogin ? api_data.userSummary.asset : 0;
+
+/**
+ * @param value "1234567"
+ * @returns "1,234,567원"
+ */
 const formatCurrency = (value: number): string => {
   return value.toLocaleString('ko-KR') + '원';
 };
@@ -149,6 +203,10 @@ const handlers: Record<string, () => void> = {
   },
 };
 
+/**
+ * 자산 등록 수정 페이지로 이동
+ * 로그인된 사용자에게만 노출
+ */
 const goToEditAsset = () => {
   router.push({ name: 'edit-asset' });
 };
