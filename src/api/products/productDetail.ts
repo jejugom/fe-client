@@ -1,30 +1,38 @@
 import axios from 'axios';
 
 export interface Option {
-  save_trm: string;
-  intr_rate_type_nm: string;
-  intr_rate: number;
-  intr_rate2: number;
+  saveTrm: string;
+  intrRateTypeNm: string;
+  intrRate: number;
+  intrRate2: number;
+}
+
+export interface Option2 {
+  mrtgTypeNm: string;
+  rpayTypeNm: string;
+  lendRateTypeNm: string;
+  lendRateMin: string;
+  lendRateMax: string;
 }
 
 export interface ProductDetail {
-  fin_prdt_cd: string;
-  fin_prdt_category: string;
-  fin_prdt_nm: string;
-  rec_reason: string | null;
-  kor_co_nm: string;
-  prdt_feature: string;
+  finPrdtCd: string;
+  finPrdtCategory: string;
+  finPrdtNm: string;
+  recReason: string | null;
+  korCoNm: string;
+  prdtFeature: string;
   description: string;
-  join_way: string;
-  mtrt_int: string;
-  spcl_cnd: string;
-  join_deny: string;
-  join_member: string;
-  etc_note: string;
-  max_limit: number | null;
+  joinWay: string;
+  mtrtInt: string;
+  spclCnd: string;
+  joinDeny: string;
+  joinMember: string;
+  etcNote: string;
+  maxLimit: number | null;
   tendency: string | null;
-  option_list: Option[];
-  icon_info?: Record<string, string>;
+  optionList: Option[] | Option2[] | null;
+  iconInfo?: Record<string, string>;
 }
 
 export async function fetchProductDetail(

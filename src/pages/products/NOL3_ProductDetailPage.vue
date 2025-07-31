@@ -6,13 +6,13 @@
     <!-- 추천 이유 -->
     <div class="stroke-secondary flex flex-col gap-2 rounded-xl px-6 py-4">
       <span class="text-secondary-500 text-lg font-semibold">추천 이유</span>
-      <span>{{ detail?.rec_reason || '추천 사유 없음' }}</span>
+      <span>{{ detail?.recReason || '추천 사유 없음' }}</span>
     </div>
 
     <!-- 상품 설명 -->
     <div class="mb-8">
       <p class="text-primary-300 mb-4 text-2xl font-bold">
-        {{ detail?.fin_prdt_nm }}
+        {{ detail?.finPrdtNm }}
       </p>
       <p class="indent-4 leading-relaxed whitespace-pre-line">
         {{ detail?.description }}
@@ -70,15 +70,15 @@ onMounted(async () => {
 
 const goToRegister = () => {
   if (!detail.value) return;
-  registerStore.setProductName(detail.value.fin_prdt_nm);
-  router.push({ name: 'register', params: { id: detail.value.fin_prdt_cd } });
+  registerStore.setProductName(detail.value.finPrdtNm);
+  router.push({ name: 'register', params: { id: detail.value.finPrdtCd } });
 };
 
 // 상단 대표 정보 생성
 const topInfos = computed(() => {
   if (!detail.value) return [];
-  const icon = detail.value.icon_info || {};
-  switch (detail.value.fin_prdt_category) {
+  const icon = detail.value.iconInfo || {};
+  switch (detail.value.finPrdtCategory) {
     case '1':
     case '2':
       return [
