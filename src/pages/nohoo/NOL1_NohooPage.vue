@@ -8,7 +8,7 @@
     <AdBox
       :selectedTab="selectedTab"
       :userName="userName"
-      :assetInfo="assetInfo"
+      
       :assetAmount="totalAsset"
       :assetSummary="assetSummary"
     />
@@ -114,9 +114,9 @@ onMounted(async () => {
 
 const userInfo = computed(() => data.value?.userInfo[0]);
 const userName = computed(() => userInfo.value?.userName.userName ?? '');
-const assetInfo = computed(() => userInfo.value?.assetStatus ?? []);
+const assetInfo = computed(() => data.value?.userInfo[0]?.assetStatus ?? []);
 const totalAsset = computed(() =>
-  assetInfo.value.reduce((acc, cur) => acc + cur.amount, 0)
+  assetInfo.value.reduce((acc: number, cur: { amount: number }) => acc + cur.amount, 0)
 );
 
 // 자산 데이터를 카테고리별로 그룹화
@@ -130,7 +130,7 @@ const ASSET_CATEGORY_MAP: Record<string, string> = {
 };
 
 const assetSummary = computed(() =>
-  assetInfo.value.map((item) => ({
+  assetInfo.value.map((item: { assetCategoryCode: string; amount: number }) => ({
     category: ASSET_CATEGORY_MAP[item.assetCategoryCode] ?? '기타',
     amount: item.amount,
   }))
@@ -148,36 +148,37 @@ const recommendedProducts = computed(() => {
     .getProductsByRecommendIds(recommendItems)
     .map((product) => {
       const tags: string[] = [];
+      const optionList = (product as any).optionList ?? [];
 
       // 예금/적금 상품인 경우
       if (
         (product.finPrdtCategory === '1' || product.finPrdtCategory === '2') &&
-        product.optionList?.length
+        optionList.length
       ) {
         // 12개월짜리 옵션만 필터링
-        const option12 = product.optionList.find(
-          (opt: any) => opt.saveTrm === '12'
+        const option12 = optionList.find(
+          (opt: { saveTrm: string }) => opt.saveTrm === '12'
         );
 
         if (option12) {
-          const maxRate = option12.intrRate2 ?? 0;
+          const maxRate = (option12 as any).intrRate2 ?? 0;
           tags.push('12개월', `최고금리 ${maxRate.toFixed(2)}%`);
         } else {
           // 12개월 없을 경우 기존 saveTrm 전체 태그로 fallback
-          const saveTerms = product.optionList
-            .filter((opt: any) => opt.saveTrm !== null)
-            .map((opt: any) => `${opt.saveTrm}개월`);
+          const saveTerms = optionList
+            .filter((opt: { saveTrm: string | null }) => opt.saveTrm !== null)
+            .map((opt: { saveTrm: string }) => `${opt.saveTrm}개월`);
           const maxRate = Math.max(
-            ...(product.optionList.map((opt: any) => opt.intrRate2) ?? [0])
+            ...(optionList.map((opt: { intrRate2: number }) => opt.intrRate2) ?? [0])
           );
           tags.push(...saveTerms, `최고금리 ${maxRate.toFixed(2)}%`);
         }
       }
 
       // 주택담보대출 상품인 경우
-      if (product.finPrdtCategory === '3' && product.optionList?.length) {
+      if (product.finPrdtCategory === '3' && optionList.length) {
         const minRate = Math.min(
-          ...product.optionList.map((opt: any) =>
+          ...optionList.map((opt: { lendRateMin: string | null }) =>
             parseFloat(opt.lendRateMin ?? '999')
           )
         );
@@ -192,11 +193,11 @@ const recommendedProducts = computed(() => {
       // 펀드 상품인 경우
       if (
         product.finPrdtCategory === '5' &&
-        Array.isArray(product.optionList) &&
-        product.optionList.length
+        Array.isArray(optionList) &&
+        optionList.length
       ) {
         const maxReturn = Math.max(
-          ...product.optionList.map((opt: any) =>
+          ...optionList.map((opt: { rate3mon: string | null }) =>
             parseFloat(opt.rate3mon?.replace('%', '') || '0')
           )
         );
@@ -215,14 +216,15 @@ const filteredProducts = computed(() => {
   // 예금
   if (tab === '예금') {
     products = productStore.allProducts.timeDeposits.map((p) => {
-      const option12 = p.optionList?.find((opt) => opt.saveTrm === '12');
+      const optionList = (p as any).optionList ?? [];
+      const option12 = optionList.find((opt: { saveTrm: string }) => opt.saveTrm === '12');
       const tags = option12
-        ? ['12개월', `최고금리 ${option12.intrRate2.toFixed(2)}%`]
+        ? ['12개월', `최고금리 ${(option12 as any).intrRate2.toFixed(2)}%`]
         : [];
 
       const maxRate = option12
-        ? option12.intrRate2
-        : Math.max(...(p.optionList?.map((opt) => opt.intrRate2) ?? [0]));
+        ? (option12 as any).intrRate2
+        : Math.max(...(optionList.map((opt: { intrRate2: number }) => opt.intrRate2) ?? [0]));
 
       return { ...p, tags, maxRate };
     });
@@ -231,14 +233,15 @@ const filteredProducts = computed(() => {
   // 적금
   else if (tab === '적금') {
     products = productStore.allProducts.savingsDeposits.map((p) => {
-      const option12 = p.optionList?.find((opt) => opt.saveTrm === '12');
+      const optionList = (p as any).optionList ?? [];
+      const option12 = optionList.find((opt: { saveTrm: string }) => opt.saveTrm === '12');
       const tags = option12
-        ? ['12개월', `최고금리 ${option12.intrRate2.toFixed(2)}%`]
+        ? ['12개월', `최고금리 ${(option12 as any).intrRate2.toFixed(2)}%`]
         : [];
 
       const maxRate = option12
-        ? option12.intrRate2
-        : Math.max(...(p.optionList?.map((opt) => opt.intrRate2) ?? [0]));
+        ? (option12 as any).intrRate2
+        : Math.max(...(optionList.map((opt: { intrRate2: number }) => opt.intrRate2) ?? [0]));
 
       return { ...p, tags, maxRate };
     });
@@ -247,8 +250,9 @@ const filteredProducts = computed(() => {
   // 주택담보
   else if (tab === '주택담보') {
     products = productStore.allProducts.mortgageLoan.map((p) => {
+      const optionList = (p as any).optionList ?? [];
       const minRate = Math.min(
-        ...(p.optionList?.map((opt) =>
+        ...(optionList.map((opt: { lendRateMin: string | null }) =>
           parseFloat(opt.lendRateMin ?? '999')
         ) ?? [999])
       );
@@ -269,8 +273,9 @@ const filteredProducts = computed(() => {
     }));
   } else if (tab === '펀드') {
     products = productStore.allProducts.fundProducts.map((p) => {
+      const optionList = (p as any).optionList ?? [];
       const maxReturn = Math.max(
-        ...(p.optionList?.map((opt) =>
+        ...(optionList.map((opt: { rate3mon: string | null }) =>
           parseFloat(opt.rate3mon?.replace('%', '') || '0')
         ) ?? [0])
       );

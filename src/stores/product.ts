@@ -50,11 +50,12 @@ export interface FundProduct {
   finPrdtCd: string;
   finPrdtNm: string;
   prdtFeature: string;
+  finPrdtCategory: string; // "5"
   optionList: {
     rate3mon: string;
     riskGrade: string;
     priceStd: string;
-  };
+  }[];
 }
 
 export interface AllProducts {
