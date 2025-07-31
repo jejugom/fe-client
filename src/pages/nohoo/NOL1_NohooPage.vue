@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-8">
     <TabBtnGroup
-      :tabs="['맞춤', '예금', '적금', '주택담보', '금']"
+      :tabs="['맞춤', '예금', '적금', '펀드', '금', '주택담보']"
       v-model:selectedTab="selectedTab"
     />
 
@@ -26,6 +26,7 @@
         <option v-if="selectedTab === '주택담보'" value="rate"
           >최저금리순</option
         >
+        <option v-if="selectedTab === '펀드'" value="rate">최고수익률순</option>
       </SelectBox>
     </div>
 
@@ -100,6 +101,10 @@ onMounted(async () => {
       goldProducts: result.goldProducts.map((p) => ({
         ...p,
         finPrdtCategory: '4', // 금 상품 카테고리
+      })),
+      fundProducts: result.fundProducts.map((p) => ({
+        ...p,
+        finPrdtCategory: '5', // 펀드 카테고리
       })),
     });
   } catch (error) {
@@ -184,6 +189,20 @@ const recommendedProducts = computed(() => {
       if (product.finPrdtCategory === '4' && product.prdtFeature) {
       }
 
+      // 펀드 상품인 경우
+      if (
+        product.finPrdtCategory === '5' &&
+        Array.isArray(product.optionList) &&
+        product.optionList.length
+      ) {
+        const maxReturn = Math.max(
+          ...product.optionList.map((opt: any) =>
+            parseFloat(opt.rate3mon?.replace('%', '') || '0')
+          )
+        );
+        tags.push(`수익률 ${maxReturn.toFixed(2)}%`);
+      }
+
       return { ...product, tags };
     });
 });
@@ -248,6 +267,19 @@ const filteredProducts = computed(() => {
       ...p,
       tags: [], // 태그 표시하지 않음
     }));
+  } else if (tab === '펀드') {
+    products = productStore.allProducts.fundProducts.map((p) => {
+      const maxReturn = Math.max(
+        ...(p.optionList?.map((opt) =>
+          parseFloat(opt.rate3mon?.replace('%', '') || '0')
+        ) ?? [0])
+      );
+      return {
+        ...p,
+        tags: [`수익률 ${maxReturn.toFixed(2)}%`],
+        maxRate: maxReturn,
+      };
+    });
   }
 
   // 정렬

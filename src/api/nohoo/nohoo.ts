@@ -64,6 +64,19 @@ export interface GoldProduct {
   prdtFeature: string;
 }
 
+export interface FundOption {
+  rate3mon: string;
+  riskGrade: string;
+  priceStd: string;
+}
+
+export interface FundProduct {
+  finPrdtCd: string;
+  finPrdtNm: string;
+  prdtFeature: string;
+  optionList: FundOption[];
+}
+
 export interface ParsedApiResponse {
   userInfo: UserInfo[];
   customRecommendPrdt: CustomRecommendPrdt[];
@@ -71,6 +84,7 @@ export interface ParsedApiResponse {
   savingsDeposits: SavingDeposit[];
   mortgageLoan: MortgageLoan[];
   goldProducts: GoldProduct[];
+  fundProducts: FundProduct[];
 }
 
 export async function fetchNohooData(

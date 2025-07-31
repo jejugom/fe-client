@@ -46,11 +46,23 @@ export interface GoldProduct {
   finPrdtCategory: string; // "4"
 }
 
+export interface FundProduct {
+  finPrdtCd: string;
+  finPrdtNm: string;
+  prdtFeature: string;
+  optionList: {
+    rate3mon: string;
+    riskGrade: string;
+    priceStd: string;
+  };
+}
+
 export interface AllProducts {
   timeDeposits: TimeDepositProduct[];
   savingsDeposits: SavingDepositProduct[];
   mortgageLoan: MortgageLoanProduct[];
   goldProducts: GoldProduct[];
+  fundProducts: FundProduct[];
 }
 
 // 추천 상품 인터페이스
@@ -66,6 +78,7 @@ export const useProductStore = defineStore('product', {
       savingsDeposits: [] as SavingDepositProduct[],
       mortgageLoan: [] as MortgageLoanProduct[],
       goldProducts: [] as GoldProduct[],
+      fundProducts: [] as FundProduct[],
     } as AllProducts,
   }),
   actions: {
@@ -79,11 +92,13 @@ export const useProductStore = defineStore('product', {
         | SavingDepositProduct
         | MortgageLoanProduct
         | GoldProduct
+        | FundProduct
       )[] = [
         ...this.allProducts.timeDeposits,
         ...this.allProducts.savingsDeposits,
         ...this.allProducts.mortgageLoan,
         ...this.allProducts.goldProducts,
+        ...this.allProducts.fundProducts,
       ];
       return all.find((p) => p.finPrdtCd === id);
     },
@@ -93,6 +108,7 @@ export const useProductStore = defineStore('product', {
         | SavingDepositProduct
         | MortgageLoanProduct
         | GoldProduct
+        | FundProduct
       )[] = [];
       recommendItems.forEach((item) => {
         const product = this.getProductById(item.finPrdtCd);
