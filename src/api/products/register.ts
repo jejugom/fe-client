@@ -20,11 +20,15 @@ interface BookingRequest {
 }
 
 export async function postBooking(data: BookingRequest, token: string) {
-  const response = await axios.post('/api/bookings', data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axios.post(
+    'http://localhost:8080/api/bookings',
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   return response.data;
 }

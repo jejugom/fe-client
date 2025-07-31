@@ -22,7 +22,7 @@
       >
       <ul class="mt-4 list-disc pl-5">
         <li
-          v-for="(doc, index) in api_data.docInfo.requiredDocuments"
+          v-for="(doc, index) in data?.docInfo?.requiredDocuments || []"
           :key="index"
         >
           {{ doc }}
@@ -35,19 +35,46 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { api_data } from '@/api/products/registerComplete';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import {
+  fetchReservedDetail,
+  type Register,
+} from '@/api/products/registerComplete';
 import ReserveCompleteBox from './_components/ReserveCompleteBox.vue';
 import InfoRow from './_components/InfoRow.vue';
 
-const formattedDateTime = computed(
-  () => `${api_data.date.replace(/-/g, '/')} ${api_data.time}`
-);
+const route = useRoute();
+const token = import.meta.env.VITE_ACCESS_TOKEN;
 
-const infoRows = computed(() => [
-  { label: '상품명', value: api_data.prodName },
-  { label: '지점명', value: api_data.branchName },
-  { label: '날짜/시간', value: formattedDateTime.value },
-  { label: '예약 번호', value: api_data.bookingId },
-]);
+const bookingId = ref('');
+const data = ref<Register | null>(null);
+
+onMounted(async () => {
+  const id = route.query.bookingId as string;
+  if (!id) return;
+
+  bookingId.value = id;
+  try {
+    const result = await fetchReservedDetail(id, token);
+    data.value = result;
+  } catch (e) {
+    console.error('예약 상세 조회 실패', e);
+  }
+});
+
+const formattedDateTime = computed(() => {
+  if (!data.value) return '';
+  return `${data.value.date.replace(/-/g, '/')} ${data.value.time}`;
+});
+
+const infoRows = computed(() => {
+  if (!data.value) return [];
+  return [
+    { label: '상품명', value: data.value.prodName },
+    { label: '지점명', value: data.value.branchName },
+    { label: '날짜/시간', value: formattedDateTime.value },
+    { label: '예약 번호', value: data.value.bookingId },
+  ];
+});
 </script>
