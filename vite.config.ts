@@ -22,7 +22,7 @@ export default defineConfig({
     },
   },
   // guno: 백엔드 로컬에서 돌리면
-  // /api/sms/test 요청이 백엔드 서버 http://localhost:5173/api/sms/test
+  // /api/sms/test 요청이 백엔드 서버 http://localhost:8080/api/sms/test
   // 로 가도록 baseURL 설정.
   server: {
     proxy: {
