@@ -1,6 +1,15 @@
 //  snake_case → camelCase 변환 함수
-export function toCamelCase(str: string): string {
-  return str.replace(/_([a-z])/g, (_, char: string) => char.toUpperCase());
+export function toCamelCase(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map((v) => toCamelCase(v));
+  } else if (obj !== null && obj.constructor === Object) {
+    return Object.entries(obj).reduce((acc, [key, value]) => {
+      const camelKey = key.replace(/([-_][a-z])/g, (g) => g[1].toUpperCase());
+      acc[camelKey] = toCamelCase(value);
+      return acc;
+    }, {} as any);
+  }
+  return obj;
 }
 
 //  객체의 모든 키를 camelCase로 재귀 변환
