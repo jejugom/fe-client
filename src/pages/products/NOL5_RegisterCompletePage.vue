@@ -45,7 +45,6 @@ import ReserveCompleteBox from './_components/ReserveCompleteBox.vue';
 import InfoRow from './_components/InfoRow.vue';
 
 const route = useRoute();
-const token = import.meta.env.VITE_ACCESS_TOKEN;
 
 const bookingId = ref('');
 const data = ref<Register | null>(null);
@@ -56,7 +55,7 @@ onMounted(async () => {
 
   bookingId.value = id;
   try {
-    const result = await fetchReservedDetail(id, token);
+    const result = await fetchReservedDetail(id);
     data.value = result;
   } catch (e) {
     console.error('예약 상세 조회 실패', e);

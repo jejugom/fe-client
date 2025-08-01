@@ -1,14 +1,9 @@
 import axios from 'axios';
 import api from '@/api';
 
-export const fetchReservedSlots = async (branchId: number, token: string) => {
+export const fetchReservedSlots = async (branchId: number) => {
   console.log('Fetching reserved slots for branch:', branchId);
-  const res = await axios.get(
-    `http://localhost:8080/api/bookings/${branchId}/reserved-slots`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+  const res = await api.get(`/api/bookings/${branchId}/reserved-slots`);
   console.log('Reserved slots fetched:', res.data);
   return res.data;
 };
@@ -20,17 +15,8 @@ interface BookingRequest {
   time: string;
 }
 
-export async function postBooking(data: BookingRequest, token: string) {
-  const response = await axios.post(
-    'http://localhost:8080/api/bookings',
-    data,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
+export async function postBooking(data: BookingRequest) {
+  const response = await api.post(`/api/bookings`, data);
   return response.data;
 }
 

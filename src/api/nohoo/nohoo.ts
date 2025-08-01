@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api';
 
 // API 응답 데이터 구조에 맞게 인터페이스 정의
 export interface UserInfo {
@@ -87,18 +87,8 @@ export interface ParsedApiResponse {
   fundProducts: FundProduct[];
 }
 
-export async function fetchNohooData(
-  token: string
-): Promise<ParsedApiResponse> {
-  const res = await axios.get<ParsedApiResponse>(
-    `http://localhost:8080/api/retirement`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+export async function fetchNohooData(): Promise<ParsedApiResponse> {
+  const res = await api.get<ParsedApiResponse>(`/api/retirement`);
   console.log('Nohoo data fetched:', res.data);
   return res.data;
 }

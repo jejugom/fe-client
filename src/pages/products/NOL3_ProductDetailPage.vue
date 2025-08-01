@@ -54,14 +54,11 @@ const registerStore = useRegisterStore();
 
 const detail = ref<ProductDetail | null>(null);
 
-// 실제 토큰을 여기에 삽입하거나 상태에서 가져오기
-const token = import.meta.env.VITE_ACCESS_TOKEN;
-
 onMounted(async () => {
   const id = route.params.id as string;
   if (!id) return;
   try {
-    const result = await fetchProductDetail(id, token);
+    const result = await fetchProductDetail(id);
     detail.value = result;
   } catch (e) {
     console.error('상품 상세 조회 실패', e);

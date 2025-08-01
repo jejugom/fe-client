@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api';
 
 export interface Register {
   bookingId: string;
@@ -11,14 +11,9 @@ export interface Register {
   };
 }
 
-export const fetchReservedDetail = async (bookingId: string, token: string) => {
+export const fetchReservedDetail = async (bookingId: string) => {
   console.log('Fetching reserved detail for booking ID:', bookingId);
-  const res = await axios.get(
-    `http://localhost:8080/api/bookings/detail/${bookingId}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+  const res = await api.get(`/api/bookings/detail/${bookingId}`);
   console.log('Reserved detail fetched:', res.data);
   return res.data;
 };

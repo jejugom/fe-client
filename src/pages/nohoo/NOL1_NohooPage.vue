@@ -69,8 +69,6 @@ import { fetchNohooData, type ParsedApiResponse } from '@/api/nohoo/nohoo';
 
 const router = useRouter();
 const productStore = useProductStore();
-// 실제 환경에서는 .env 파일에 토큰을 저장하고 가져와야 합니다.
-const token = import.meta.env.VITE_ACCESS_TOKEN;
 
 const data = ref<ParsedApiResponse | null>(null);
 const selectedTab = ref('맞춤');
@@ -78,7 +76,7 @@ const sortOption = ref('name');
 
 onMounted(async () => {
   try {
-    const result = await fetchNohooData(token);
+    const result = await fetchNohooData();
     data.value = result;
 
     // API 응답 데이터를 store에 저장할 형식으로 매핑
@@ -317,7 +315,3 @@ const goToDetail = (id: string) => {
   router.push({ name: 'product-detail', params: { id } });
 };
 </script>
-
-<style scoped>
-/* 여기에 필요한 스타일을 추가하세요. */
-</style>

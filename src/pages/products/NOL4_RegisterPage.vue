@@ -89,10 +89,12 @@ import {
   smsApi,
   type SmsData,
 } from '@/api/products/register';
+import { useProductStore } from '@/stores/product';
 
 const router = useRouter();
 const route = useRoute();
 const registerStore = useRegisterStore();
+const productStore = useProductStore();
 
 // guno: DetailImg 컴포넌트용 임시 데이터 - 추후 수정 필요
 // 선택한 상품에 맞는 결과로 수정해야 함
@@ -145,8 +147,6 @@ const isFormValid = computed(() => {
 });
 
 // 지점 선택 완료
-const token = import.meta.env.VITE_ACCESS_TOKEN;
-console.log('Access Token:', token);
 
 // 상품명 쿼리 기반 설정
 watch(
@@ -157,8 +157,10 @@ watch(
         // guno: 증여 시뮬레이션에서 온 경우 '증여 시뮬레이션 결과'
         registerStore.setProductName('증여 시뮬레이션 결과');
       } else {
-        const match = api_data.fin_prdt_cd === id ? api_data : null;
-        if (match) registerStore.setProductName(match.fin_prdt_nm);
+        const product = productStore.getProductById(id);
+        if (product) {
+          registerStore.setProductName(product.finPrdtNm);
+        }
       }
     }
   },
@@ -166,7 +168,7 @@ watch(
 );
 // 지점 선택 완료
 
-const selectBranch = () => {
+const selectBranch = async () => {
   const selected = branchModalRef.value?.getSelectedBranch?.();
   if (selected) {
     const found = branchList.find((b) => b.name === selected); // 먼저 찾기
@@ -178,7 +180,7 @@ const selectBranch = () => {
       showBranchModal.value = false;
 
       try {
-        const slots = await fetchReservedSlots(found.id, token);
+        const slots = await fetchReservedSlots(found.id);
         registerStore.setReservedSlots(slots);
       } catch (e) {
         console.error('예약 슬롯 조회 실패', e);
@@ -216,7 +218,7 @@ const goToRegister = async () => {
   console.log('예약 정보:', payload);
 
   try {
-    const result = await postBooking(payload, token);
+    const result = await postBooking(payload);
     console.log('예약 성공:', result);
     router.push({
       name: 'register-complete',

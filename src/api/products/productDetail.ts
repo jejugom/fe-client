@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '@/api';
 
 export interface Option {
   saveTrm: string;
@@ -35,19 +35,8 @@ export interface ProductDetail {
   iconInfo?: Record<string, string>;
 }
 
-export async function fetchProductDetail(
-  id: string,
-  token: string
-): Promise<ProductDetail> {
-  const res = await axios.get<ProductDetail>(
-    `http://localhost:8080/api/retirement/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-  console.log;
+export async function fetchProductDetail(id: string): Promise<ProductDetail> {
+  const res = await api.get<ProductDetail>(`/api/retirement/${id}`);
+  console.log('Product detail response:', res.data);
   return res.data;
 }
