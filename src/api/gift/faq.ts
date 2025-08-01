@@ -1,3 +1,4 @@
+// /api/faq
 export interface Faq {
   faqId: number;
   category: '상' | '증';
