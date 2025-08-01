@@ -74,7 +74,7 @@ const loadingStore = useLoadingStore();
 
 const data = ref<ParsedApiResponse | null>(null);
 const selectedTab = ref('맞춤');
-const sortOption = ref('name');
+const sortOption = ref<'name' | 'score' | 'rate'>('name');
 
 onMounted(async () => {
   loadingStore.startLoading();
@@ -147,6 +147,10 @@ watch(selectedTab, () => {
   sortOption.value = 'name';
 });
 
+function hasOptionList(product: any): product is { optionList: any[] } {
+  return 'optionList' in product && Array.isArray(product.optionList);
+}
+
 // 추천 상품 목록
 const recommendedProducts = computed(() => {
   const recommendItems = data.value?.customRecommendPrdt ?? [];
@@ -166,26 +170,32 @@ const recommendedProducts = computed(() => {
       // 금리/기간 태그 설정 (예금/적금/주담대)
       if (
         (product.finPrdtCategory === '1' || product.finPrdtCategory === '2') &&
-        product.optionList?.length
+        'optionList' in product &&
+        Array.isArray(product.optionList) &&
+        product.optionList.length > 0
       ) {
-        const option12 = product.optionList.find(
-          (opt: any) => opt.saveTrm === '12'
-        );
-        if (option12) {
+        const options = product.optionList;
+
+        const option12 = options.find((opt: any) => opt.saveTrm === '12');
+
+        if (option12 && 'intrRate2' in option12) {
           const maxRate = option12.intrRate2 ?? 0;
           tags.push('12개월', `최고금리 ${maxRate.toFixed(2)}%`);
         } else {
-          const saveTerms = product.optionList
+          const saveTerms = options
             .filter((opt: any) => opt.saveTrm !== null)
             .map((opt: any) => `${opt.saveTrm}개월`);
-          const maxRate = Math.max(
-            ...(product.optionList.map((opt: any) => opt.intrRate2) ?? [0])
-          );
+          const maxRate = Math.max(...options.map((opt: any) => ('intrRate2' in opt ? opt.intrRate2 : 0)));
           tags.push(...saveTerms, `최고금리 ${maxRate.toFixed(2)}%`);
         }
       }
 
-      if (product.finPrdtCategory === '3' && product.optionList?.length) {
+      if (
+        product.finPrdtCategory === '3' &&
+        'optionList' in product &&
+        Array.isArray(product.optionList) &&
+        product.optionList.length > 0
+      ) {
         const minRate = Math.min(
           ...product.optionList.map((opt: any) =>
             parseFloat(opt.lendRateMin ?? '999')
@@ -196,7 +206,9 @@ const recommendedProducts = computed(() => {
 
       if (
         product.finPrdtCategory === '5' &&
-        Array.isArray(product.optionList)
+        'optionList' in product &&
+        Array.isArray(product.optionList) &&
+        product.optionList.length > 0
       ) {
         const maxReturn = Math.max(
           ...product.optionList.map((opt: any) =>

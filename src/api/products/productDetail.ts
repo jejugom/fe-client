@@ -7,7 +7,14 @@ export interface Option {
   intrRate2: number;
 }
 
-export interface Option2 {
+export interface FundOption {
+  rate3mon: number;
+  riskGrade: string;
+  priceStd: number;
+  totalFee: number;
+}
+
+export interface MortgageOption {
   mrtgTypeNm: string;
   rpayTypeNm: string;
   lendRateTypeNm: string;
@@ -31,8 +38,10 @@ export interface ProductDetail {
   etcNote: string;
   maxLimit: number | null;
   tendency: string | null;
-  optionList: Option[] | Option2[] | null;
+  optionList: Option[] | FundOption[] | MortgageOption[] | null;
   iconInfo?: Record<string, string>;
+  lot?: string;
+  currency?: string;
 }
 
 export async function fetchProductDetail(id: string): Promise<ProductDetail> {

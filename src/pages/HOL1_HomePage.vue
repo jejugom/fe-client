@@ -38,7 +38,7 @@
           <img
             :src="KakaoLoginBtn"
             alt="카카오 로그인"
-            @click="authStore.startKakaoLogin"
+            @click="() => authStore.startKakaoLogin()"
           /> </div
       ></div>
     </div>

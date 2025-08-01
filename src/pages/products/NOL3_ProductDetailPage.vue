@@ -36,7 +36,7 @@
             v-for="(item, idx) in etcNoteList"
             :key="idx"
             class="leading-relaxed"
-            >{{ item }}</li
+            >{{ item! }}</li
           >
         </ul>
       </div>
@@ -68,7 +68,7 @@
             v-for="(item, idx) in mtrtIntList"
             :key="idx"
             class="leading-relaxed"
-            >{{ item }}</li
+            >{{ item! }}</li
           >
         </ul>
       </div>
@@ -80,19 +80,14 @@
             v-for="(item, idx) in spclCndList"
             :key="idx"
             class="leading-relaxed"
-            >{{ item }}</li
+            >{{ item! }}</li
           >
         </ul>
       </div>
     </div>
 
     <!-- 옵션 테이블: 예금/적금 -->
-    <div
-      v-if="
-        ['1', '2'].includes(detail?.finPrdtCategory) &&
-        detail?.optionList?.length
-      "
-    >
+    <div v-if="depositOptions.length">
       <p class="text-primary-300 mb-2 font-semibold">금리 정보</p>
       <table
         class="w-full table-auto border-collapse overflow-hidden text-center text-sm"
@@ -105,7 +100,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(opt, idx) in detail.optionList" :key="idx">
+          <tr v-for="(opt, idx) in depositOptions" :key="idx">
             <td class="border-surface-200 border px-4 py-2"
               >{{ opt.saveTrm }}개월</td
             >
@@ -121,7 +116,7 @@
     </div>
 
     <!-- 옵션 테이블: 펀드 -->
-    <div v-if="detail?.finPrdtCategory === '5' && detail?.optionList?.length">
+    <div v-if="fundOptions.length">
       <p class="text-primary-300 mb-2 font-semibold">펀드 정보</p>
       <table
         class="w-full table-auto border-collapse overflow-hidden text-center text-sm"
@@ -134,7 +129,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(opt, idx) in detail.optionList" :key="idx">
+          <tr v-for="(opt, idx) in fundOptions" :key="idx">
             <td class="border-surface-200 border px-4 py-2">{{
               opt.rate3mon
             }}</td>
@@ -150,7 +145,7 @@
     </div>
 
     <!-- 옵션 테이블: 주담대 -->
-    <div v-if="detail?.finPrdtCategory === '3' && detail?.optionList?.length">
+    <div v-if="mortgageOptions.length">
       <p class="text-primary-300 mb-2 font-semibold">대출 조건</p>
       <table
         class="w-full table-auto border-collapse overflow-hidden text-center text-sm"
@@ -165,7 +160,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(opt, idx) in detail.optionList" :key="idx">
+          <tr v-for="(opt, idx) in mortgageOptions" :key="idx">
             <td class="border-surface-200 border px-4 py-2">{{
               opt.mrtgTypeNm
             }}</td>
@@ -207,6 +202,9 @@ import { useRoute, useRouter } from 'vue-router';
 import {
   fetchProductDetail,
   type ProductDetail,
+  type Option,
+  type MortgageOption,
+  type FundOption,
 } from '@/api/products/productDetail';
 
 import DetailImg from './_components/DetailImg.vue';
@@ -246,31 +244,77 @@ const goToRegister = () => {
   router.push({ name: 'register', params: { id: detail.value.finPrdtCd } });
 };
 
-const etcNoteList = computed(() => {
+const etcNoteList = computed<string[]>(() => {
   if (!detail.value?.etcNote) return [];
-  return detail.value.etcNote
-    .split('\n') // 줄바꿈 기준 1차 분리
-    .flatMap((line) => line.split('-')) // "-" 기준 추가 분리
-    .map((item) => item.trim())
+  return String(detail.value.etcNote)
+    .split('\n')
+    .flatMap((line) => line.split('-'))
+    .map((item) => String(item || '').trim())
     .filter((item) => item.length > 0);
 });
 
-const mtrtIntList = computed(() => {
+const mtrtIntList = computed<string[]>(() => {
   if (!detail.value?.mtrtInt) return [];
-  return detail.value.mtrtInt
+  return String(detail.value.mtrtInt)
     .split('\n') // 줄바꿈 기준 1차 분리
     .flatMap((line) => line.split('-')) // "-" 기준 재분리
-    .map((item) => item.trim())
+    .map((item) => String(item || '').trim())
     .filter((item) => item.length > 0);
 });
 
 const spclCndList = computed(() => {
   if (!detail.value?.spclCnd) return [];
-  return detail.value.spclCnd
+  return String(detail.value.spclCnd)
     .split('\n') // 줄바꿈 기준 1차 분리
     .flatMap((line) => line.split('-')) // "-" 기준 분리
-    .map((item) => item.trim())
+    .map((item) => String(item || '').trim())
     .filter((item) => item.length > 0);
+});
+
+// 타입 가드 함수
+function isOption(option: any): option is Option {
+  return 'saveTrm' in option;
+}
+
+function isMortgageOption(option: any): option is MortgageOption {
+  return 'mrtgTypeNm' in option;
+}
+
+function isFundOption(option: any): option is FundOption {
+  return 'rate3mon' in option;
+}
+
+// 예금/적금 옵션을 위한 computed 속성
+const depositOptions = computed(() => {
+  if (
+    ['1', '2'].includes(detail.value?.finPrdtCategory ?? '') &&
+    Array.isArray(detail.value?.optionList)
+  ) {
+    return detail.value.optionList.filter(isOption) as Option[];
+  }
+  return [];
+});
+
+// 펀드 옵션을 위한 computed 속성
+const fundOptions = computed(() => {
+  if (
+    detail.value?.finPrdtCategory === '5' &&
+    Array.isArray(detail.value?.optionList)
+  ) {
+    return detail.value.optionList.filter(isFundOption) as FundOption[];
+  }
+  return [];
+});
+
+// 주담대 옵션을 위한 computed 속성
+const mortgageOptions = computed(() => {
+  if (
+    detail.value?.finPrdtCategory === '3' &&
+    Array.isArray(detail.value?.optionList)
+  ) {
+    return detail.value.optionList.filter(isMortgageOption) as MortgageOption[];
+  }
+  return [];
 });
 
 // 상단 대표 정보 생성
@@ -281,13 +325,13 @@ const topInfos = computed(() => {
   switch (d.finPrdtCategory) {
     case '1': // 예금
     case '2': // 적금
+      const depositRates = depositOptions.value.map((o) => o.intrRate2);
       return [
         {
           label: '최고금리',
-          value: (() => {
-            const rates = d.optionList?.map((o) => o.intrRate2) ?? [];
-            return rates.length ? `${Math.max(...rates).toFixed(2)}%` : '-';
-          })(),
+          value: depositRates.length
+            ? `${Math.max(...depositRates).toFixed(2)}%`
+            : '-',
         },
         {
           label: '가입방법',
@@ -300,25 +344,23 @@ const topInfos = computed(() => {
       ];
 
     case '3': // 주담대
+      const minRates = mortgageOptions.value.map((o) =>
+        parseFloat(o.lendRateMin ?? '999')
+      );
       return [
         {
           label: '대출금리',
-          value: (() => {
-            const minRates =
-              d.optionList?.map((o) => parseFloat(o.lendRateMin ?? '999')) ??
-              [];
-            return minRates.length
-              ? `최저 ${Math.min(...minRates).toFixed(2)}%`
-              : '-';
-          })(),
+          value: minRates.length
+            ? `최저 ${Math.min(...minRates).toFixed(2)}%`
+            : '-',
         },
         {
           label: '담보유형',
-          value: d.optionList?.[0]?.mrtgTypeNm ?? '-',
+          value: mortgageOptions.value[0]?.mrtgTypeNm ?? '-',
         },
         {
           label: '금리유형',
-          value: d.optionList?.[0]?.lendRateTypeNm ?? '-',
+          value: mortgageOptions.value[0]?.lendRateTypeNm ?? '-',
         },
       ];
 
@@ -342,15 +384,15 @@ const topInfos = computed(() => {
       return [
         {
           label: '3개월 수익률',
-          value: d.optionList?.[0]?.rate3mon ?? '-',
+          value: fundOptions.value[0]?.rate3mon?.toString() ?? '-',
         },
         {
           label: '위험등급',
-          value: d.optionList?.[0]?.riskGrade ?? '-',
+          value: fundOptions.value[0]?.riskGrade ?? '-',
         },
         {
           label: '총보수',
-          value: d.optionList?.[0]?.totalFee ?? '-',
+          value: fundOptions.value[0]?.totalFee?.toString() ?? '-',
         },
       ];
 
