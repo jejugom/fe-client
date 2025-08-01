@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Modal from '@/components/modals/Modal.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
@@ -76,6 +76,8 @@ import {
   transformApiResponseToAssets,
   transformAssetsToApiRequest,
   ASSET_CATEGORY_MAP,
+  CATEGORY_NAME_TO_CODE,
+  assetsApi,
 } from '@/api/profile/editAsset';
 
 const router = useRouter();
@@ -140,8 +142,8 @@ const resetValidationState = () => {
 
 const selectedOption = ref('');
 
-// API 응답 데이터를 컴포넌트에서 사용할 형태로 변환
-const assets = ref(transformApiResponseToAssets(assetsApiResponse));
+// 자산 데이터 (초기값은 빈 배열, onMounted에서 로드)
+const assets = ref([]);
 
 // 카테고리 목록 (필터용)
 const categoryOptions = Object.values(ASSET_CATEGORY_MAP);
@@ -197,9 +199,28 @@ const editAsset = (assetId) => {
   }
 };
 
-const deleteAsset = (assetId) => {
-  // 자산 삭제 로직
-  assets.value = assets.value.filter((asset) => asset.id !== assetId);
+const deleteAsset = async (assetId) => {
+  try {
+    console.log('삭제 요청 assetId:', assetId);
+    console.log('현재 자산 목록:', assets.value);
+    
+    if (assetId === null || assetId === undefined) {
+      alert('유효하지 않은 자산 ID입니다.');
+      return;
+    }
+    
+    if (confirm('정말로 이 자산을 삭제하시겠습니까?')) {
+      // 자산 삭제 API 호출
+      await assetsApi.deleteAsset(assetId);
+      console.log('자산 삭제 성공:', assetId);
+
+      // 삭제 후 전체 자산 목록을 다시 조회하여 최신 상태로 업데이트
+      await loadAssets();
+    }
+  } catch (error) {
+    console.error('자산 삭제 실패:', error);
+    alert('자산 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+  }
 };
 
 const addNewAsset = () => {
@@ -227,7 +248,7 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 
-const saveNewAsset = () => {
+const saveNewAsset = async () => {
   // 유효성 검사 초기화
   resetValidationState();
 
@@ -267,35 +288,70 @@ const saveNewAsset = () => {
     amount: Number(newAsset.value.amount),
   };
 
-  if (newAsset.value.id) {
-    // 기존 자산 수정
-    const index = assets.value.findIndex(
-      (asset) => asset.id === newAsset.value.id
-    );
-    if (index !== -1) {
-      assets.value[index] = assetToSave;
+  try {
+    console.log('저장할 자산 데이터:', assetToSave);
+    console.log('newAsset.value.id:', newAsset.value.id);
+    
+    if (newAsset.value.id) {
+      // 기존 자산 수정
+      const updateData = {
+        assetCategoryCode: CATEGORY_NAME_TO_CODE[assetToSave.type],
+        assetName: assetToSave.name,
+        amount: assetToSave.amount * 10000, // 만원 단위를 원 단위로 변환
+        businessType: assetToSave.companyType || null,
+      };
+
+      console.log('수정 요청 데이터:', updateData);
+      await assetsApi.updateAsset(newAsset.value.id, updateData);
+      console.log('자산 수정 성공:', updateData);
+
+      // 수정 후 전체 자산 목록을 다시 조회하여 최신 상태로 업데이트
+      await loadAssets();
+    } else {
+      // 새 자산 추가
+      const createData = {
+        assetCategoryCode: CATEGORY_NAME_TO_CODE[assetToSave.type],
+        assetName: assetToSave.name,
+        amount: assetToSave.amount * 10000, // 만원 단위를 원 단위로 변환
+        businessType: assetToSave.companyType || null,
+      };
+
+      await assetsApi.createAsset(createData);
+      console.log('자산 생성 성공');
+
+      // 생성 후 전체 자산 목록을 다시 조회하여 정확한 ID로 업데이트
+      await loadAssets();
     }
-  } else {
-    // 새 자산 추가
-    assets.value.push({
-      id: Date.now(), // 임시로 간단한 고유 ID 생성
-      ...assetToSave,
-    });
+
+    // 모달 닫기
+    closeModal();
+  } catch (error) {
+    console.error('자산 저장 실패:', error);
+    alert('자산 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
   }
-
-  // TODO : 서버에 자산 정보 저장 로직 추가
-  console.log('저장된 자산 (컴포넌트 형태):', assetToSave);
-
-  // API 형태로 변환하여 서버에 전송할 데이터 확인
-  const apiData = transformAssetsToApiRequest([assetToSave]);
-  console.log('API 전송용 데이터:', apiData[0]);
-  // axios.post('/api/assets', apiData[0])
-
-  // 모달 닫기
-  closeModal();
 };
 
 const goToProfilePage = () => {
   router.push({ name: 'profile' });
 };
+
+// 자산 데이터 로드
+const loadAssets = async () => {
+  try {
+    const apiResponse = await assetsApi.getAssets();
+    assets.value = transformApiResponseToAssets(apiResponse);
+    console.log('자산 조회 성공:', apiResponse);
+    console.log('변환된 자산 데이터:', assets.value);
+  } catch (error) {
+    console.error('자산 조회 실패:', error);
+    // 실패 시 더미 데이터 사용
+    assets.value = transformApiResponseToAssets(assetsApiResponse);
+    console.log('더미 데이터 사용:', assets.value);
+  }
+};
+
+// 컴포넌트 마운트 시 자산 데이터 로드
+onMounted(() => {
+  loadAssets();
+});
 </script>

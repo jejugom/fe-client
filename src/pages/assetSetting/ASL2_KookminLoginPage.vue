@@ -41,6 +41,7 @@ import { computed } from 'vue';
 
 import BtnSet from '@/components/buttons/BtnSet.vue';
 import LoginForm from './_components/LoginForm.vue';
+import { codefApi } from '@/api/asset/codef';
 
 const route = useRoute();
 const router = useRouter();
@@ -57,34 +58,52 @@ const isFormFilled = computed(
     credentials.value.password.trim() !== ''
 );
 
-const handleAssetSync = () => {
-  // TODO: CODEF : 국민은행 API 연동 로직 추가
-  // Body: {
-  //   bankId: '',
-  //   id: '',
-  //   password: '',
-  // }
-  // POST 요청을 보내야 합니다.
-  // 예시: axios.post();
-  // 성공적으로 연동되면 다음 페이지로 이동
-  // 실패하면 에러 메시지를 표시해야 합니다.
+const handleAssetSync = async () => {
+  try {
+    // CODEF 국민은행 API 연동 요청 데이터
+    const requestData = {
+      accountList: [
+        {
+          countryCode: 'KR',
+          businessType: 'BK',
+          clientType: 'P', // 개인
+          organization: '0004', // 국민은행 코드
+          loginType: '1', // 0: 공인인증서 로그인, 1: IDPW 로그인
+          password: credentials.value.password,
+          id: credentials.value.id,
+          birthday: '', // 선택 사항
+        },
+      ],
+    };
 
-  // 현재 임시로 ID, Password 콘솔 출력
-  console.log('입력한 ID:', credentials.value.id);
-  console.log('입력한 Password:', credentials.value.password);
+    // CODEF API 호출
+    const response = await codefApi.connect(requestData);
 
-  // 현재 route의 쿼리 파라미터 확인
-  const isFromProfile = route.query.from === 'profile';
+    console.log('자산 연동 성공:', response);
 
-  if (isFromProfile) {
-    // 프로필에서 시작한 경우 -> 프로필 페이지로 돌아가기
-    // TODO : 자산 연동이 완료되었다고 알려주기 페이지 구현 필요?
-    // UX 적으로 고민해야함
+    // 현재 route의 쿼리 파라미터 확인
+    const isFromProfile = route.query.from === 'profile';
 
-    router.push({ name: 'profile' });
-  } else {
-    // 회원가입 과정인 경우 -> 다음 스텝으로 이동
-    router.push({ name: 'asset-custom-start' });
+    if (isFromProfile) {
+      // 프로필에서 시작한 경우 -> 프로필 페이지로 돌아가기
+      router.push({ name: 'profile' });
+    } else {
+      // 회원가입 과정인 경우 -> 다음 스텝으로 이동
+      router.push({ name: 'asset-custom-start' });
+    }
+  } catch (error: any) {
+    console.error('자산 연동 실패:', error);
+
+    // 에러 메시지 표시
+    if (error.code === 'ECONNABORTED') {
+      alert('자산 연동 처리 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.');
+    } else if (error.response?.status === 401) {
+      alert('국민은행 로그인 정보가 올바르지 않습니다. 다시 확인해주세요.');
+    } else if (error.response?.status === 500) {
+      alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } else {
+      alert('자산 연동 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
   }
 };
 </script>

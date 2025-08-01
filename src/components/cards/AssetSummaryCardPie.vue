@@ -8,7 +8,15 @@
       </div>
       <div>{{ assetAmount?.toLocaleString() }} 원</div>
     </div>
-    <apexchart type="pie" :options="chartOptions" :series="series"></apexchart>
+    <apexchart 
+      v-if="series.length > 0" 
+      type="pie" 
+      :options="chartOptions" 
+      :series="series">
+    </apexchart>
+    <div v-else class="text-center py-8 text-gray-500">
+      자산 데이터가 없습니다.
+    </div>
   </div>
 </template>
 
@@ -23,7 +31,8 @@ const props = defineProps({
 
 const series = computed(() => {
   if (!props.assetInfo) return [];
-  return [
+  
+  const values = [
     props.assetInfo.real_estate,
     props.assetInfo.deposit,
     props.assetInfo.cash,
@@ -31,6 +40,17 @@ const series = computed(() => {
     props.assetInfo.business_equity,
     props.assetInfo.etc,
   ];
+  
+  console.log('차트 시리즈 데이터:', values);
+  
+  // 모든 값이 0인 경우 빈 배열 반환하여 차트 숨김
+  const hasData = values.some(val => val > 0);
+  if (!hasData) {
+    console.log('모든 자산 값이 0이므로 차트를 숨깁니다');
+    return [];
+  }
+  
+  return values;
 });
 
 const chartOptions = computed(() => {
