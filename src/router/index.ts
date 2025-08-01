@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { isAuthenticated } from '@/utils/guard';
 
 // 기본페이지
 import HomePage from '@/pages/HOL1_HomePage.vue';
@@ -57,6 +58,25 @@ const router = createRouter({
     }
     return { top: 0, behavior: 'smooth' };
   },
+});
+
+router.beforeEach((to) => {
+  const allowedRoutes = [
+    'home',
+    'fail',
+    'loading',
+    'not-found',
+    'auth-success',
+    'auth-error',
+  ];
+  if (!allowedRoutes.includes(to.name as string)) {
+    const authResult = isAuthenticated(to);
+    if (authResult === false) {
+      return false; // Cancel navigation if user cancels login prompt
+    } else if (authResult) {
+      return authResult; // Redirect or allow (if true)
+    }
+  }
 });
 
 export default router;

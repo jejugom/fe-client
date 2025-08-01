@@ -43,10 +43,12 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import Btn from '@/components/buttons/Btn.vue';
+import { useLoadingStore } from '@/stores/loading';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const loadingStore = useLoadingStore();
 
 /** 로그인 처리 진행 상태 */
 const isProcessing = ref(true);
@@ -62,8 +64,10 @@ const error = ref('');
  */
 onMounted(async () => {
   try {
+    loadingStore.startLoading();
     // 1. URL 쿼리 파라미터에서 토큰 정보 추출
-    const { token, refreshToken, isNew } = route.query;
+    const { token, refreshToken, isNew, state } = route.query;
+    console.log('AuthSuccessPage received state:', state);
 
     // 2. 필수 토큰 정보 검증
     if (!token || !refreshToken) {
@@ -85,21 +89,26 @@ onMounted(async () => {
     );
 
     // 5. 회원 유형에 따른 페이지 이동
+    const nextRoute = state ? String(state) : 'home';
+
     if (isNew === 'true') {
       // 신규 회원 → 튜토리얼 페이지로 이동
       router.replace({ name: 'asset-tutorial' });
     } else {
-      // 기존 회원 → 홈페이지로 이동
-      router.replace({ name: 'home' });
+      // 기존 회원 → 원래 가려던 페이지 또는 홈페이지로 이동
+      router.replace({ name: nextRoute });
     }
   } catch (err) {
     // 6. 오류 처리
     console.error('Auth processing error:', err);
+    loadingStore.setError(true);
     error.value =
       err instanceof Error
         ? err.message
         : '로그인 처리 중 오류가 발생했습니다.';
     isProcessing.value = false;
+  } finally {
+    loadingStore.stopLoading();
   }
 });
 

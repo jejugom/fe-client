@@ -45,14 +45,6 @@ defineProps<{
   selectedTab: string;
   userName: string;
   assetAmount: number;
-  assetInfo: {
-    assetId: number;
-    email: string;
-    assetCategoryCode: string;
-    amount: number;
-    assetName: string;
-    businessType: string | null;
-  }[];
   assetSummary: { category: string; amount: number }[];
 }>();
 

@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-8">
     <!-- 상단 대표 정보 -->
-    <DetailImg :items="detailItems"></DetailImg>
+    <DetailImg v-if="detailItems.length" :items="detailItems" />
 
     <!-- 입력폼 -->
     <div class="flex flex-col gap-4">
@@ -82,21 +82,22 @@ import Modal from '@/components/modals/Modal.vue';
 import BranchSelectModal from './_components/BranchSelectModal.vue';
 import DateTimeSelectModal from './_components/DateTimeSelectModal.vue';
 import { useRegisterStore } from '@/stores/register';
-import { api_data } from '@/api/products/productDetail';
-import { smsApi, type SmsData } from '@/api/products/register';
+import { branchList } from '@/data/branchList';
+import {
+  fetchReservedSlots,
+  postBooking,
+  smsApi,
+  type SmsData,
+} from '@/api/products/register';
+import { useProductStore } from '@/stores/product';
 
 const router = useRouter();
 const route = useRoute();
 const registerStore = useRegisterStore();
+const productStore = useProductStore();
 
-// guno: DetailImg 컴포넌트용 임시 데이터 - 추후 수정 필요
 // 선택한 상품에 맞는 결과로 수정해야 함
-const detailItems = ref([
-  { label: '최고금리', value: '3.5%' },
-  { label: '가입방법', value: '은행 방문' },
-  { label: '연금저축유형', value: '--형' },
-  { label: '담보인정비율', value: '100%' },
-]);
+const detailItems = computed(() => registerStore.topInfos);
 
 const productName = computed({
   get: () => registerStore.productName,
@@ -130,13 +131,16 @@ const displayDateTime = computed(() => {
   return `${year}년 ${month}월 ${day}일 ${ampm} ${hh}시 ${minute}분`;
 });
 
-const isFormValid = computed(
-  () =>
+const isFormValid = computed(() => {
+  return (
     productName.value &&
     branchValue.value &&
     selectedReservation.value.date &&
     selectedReservation.value.time
-);
+  );
+});
+
+// 지점 선택 완료
 
 // 상품명 쿼리 기반 설정
 watch(
@@ -147,8 +151,10 @@ watch(
         // guno: 증여 시뮬레이션에서 온 경우 '증여 시뮬레이션 결과'
         registerStore.setProductName('증여 시뮬레이션 결과');
       } else {
-        const match = api_data.fin_prdt_cd === id ? api_data : null;
-        if (match) registerStore.setProductName(match.fin_prdt_nm);
+        const product = productStore.getProductById(id);
+        if (product) {
+          registerStore.setProductName(product.finPrdtNm);
+        }
       }
     }
   },
@@ -156,12 +162,24 @@ watch(
 );
 // 지점 선택 완료
 
-const selectBranch = () => {
+const selectBranch = async () => {
   const selected = branchModalRef.value?.getSelectedBranch?.();
   if (selected) {
-    branchValue.value = selected;
-    registerStore.setBranch(selected);
-    showBranchModal.value = false;
+    const found = branchList.find((b) => b.name === selected); // 먼저 찾기
+
+    if (found) {
+      branchValue.value = selected;
+      registerStore.setBranch(selected);
+      registerStore.setBranchId(found.id); // 그 다음 id 설정
+      showBranchModal.value = false;
+
+      try {
+        const slots = await fetchReservedSlots(found.id);
+        registerStore.setReservedSlots(slots);
+      } catch (e) {
+        console.error('예약 슬롯 조회 실패', e);
+      }
+    }
   }
 };
 
@@ -182,6 +200,25 @@ const goToRegister = async () => {
   if (!isFormValid.value) {
     alert('모든 값을 입력해주세요.');
     return;
+  }
+
+  const payload = {
+    branchId: registerStore.branchId,
+    finPrdtCode: route.params.id as string,
+    date: registerStore.date,
+    time: registerStore.time,
+  };
+
+  console.log('예약 정보:', payload);
+
+  let bookingResult: { bookingId: string } | null = null;
+  try {
+    bookingResult = await postBooking(payload);
+    console.log('예약 성공:', bookingResult);
+  } catch (error: any) {
+    console.error('예약 실패:', error.response?.data || error.message);
+    alert('예약 중 오류가 발생했습니다.');
+    return; // 예약 실패 시 함수 종료
   }
 
   // --- SMS 전송 로직 추가 ---
@@ -208,6 +245,7 @@ const goToRegister = async () => {
 
       router.push({
         name: 'register-complete',
+        query: { bookingId: bookingResult?.bookingId },
       });
 
       console.log('예약 완료:', registerStore.getSummary());

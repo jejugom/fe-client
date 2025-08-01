@@ -217,11 +217,11 @@ const searchCurrentMap = () => {
 onMounted(() => {
   navigator.geolocation.getCurrentPosition(
     (position) => {
+      // 성공 시 기존 로직 유지
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
       const locPosition = new kakao.maps.LatLng(lat, lng);
 
-      // 지도 초기화
       map = new kakao.maps.Map(document.getElementById('map') as HTMLElement, {
         center: locPosition,
         level: 3,
@@ -229,17 +229,15 @@ onMounted(() => {
 
       currentCenter = locPosition;
 
-      // 현재 위치 마커 표시
       const marker = new kakao.maps.Marker({
         map,
         position: locPosition,
       });
       markers.value.push(marker);
 
-      // 지도 중심 변경 감지
       kakao.maps.event.addListener(map, 'dragend', () => {
         currentCenter = map.getCenter();
-        mapMoved.value = true; // 지도 이동 시 표시
+        mapMoved.value = true;
       });
 
       const geocoder = new kakao.maps.services.Geocoder();
@@ -249,14 +247,54 @@ onMounted(() => {
           searchQuery.value = result[0].region_2depth_name || '';
           searchPlaces();
         } else {
-          errorMessage.value = '현재 위치를 가져올 수 없습니다.';
+          // 주소를 가져오지 못해도 지도 자체는 표시되도록 함
+          errorMessage.value = '현재 위치의 주소를 가져올 수 없습니다.';
+          searchPlaces(); // 주소 없이도 검색 시도 (예: 기본값 '국민은행'으로)
         }
       });
     },
     (error) => {
       console.error('위치 정보를 가져올 수 없습니다:', error);
-      errorMessage.value =
-        '현재 위치를 가져올 수 없습니다. 위치 권한을 허용해주세요.';
+      let userMessage = '';
+
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          // code: 1 - 사용자가 위치 권한을 거부함
+          userMessage =
+            '위치 권한이 거부되었습니다. 설정에서 위치 권한을 허용해주세요.';
+          break;
+        case error.POSITION_UNAVAILABLE:
+          // code: 2 - 위치 정보를 사용할 수 없음 (GPS/Wi-Fi 신호 문제 등)
+          userMessage =
+            '현재 위치 정보를 찾을 수 없습니다. (GPS/네트워크 상태를 확인해주세요)';
+          break;
+        case error.TIMEOUT:
+          // code: 3 - 위치 정보를 가져오는 데 시간 초과
+          userMessage =
+            '위치 정보를 가져오는 데 시간이 초과되었습니다. 다시 시도해주세요.';
+          break;
+        default:
+          userMessage = '알 수 없는 이유로 현재 위치를 가져올 수 없습니다.';
+      }
+      errorMessage.value = userMessage;
+
+      // 위치 정보를 가져오지 못했을 때의 폴백 처리
+      // 예를 들어, 지도를 서울의 특정 위치로 초기화
+      const defaultLocPosition = new kakao.maps.LatLng(37.5665, 126.978); // 서울 시청
+      map = new kakao.maps.Map(document.getElementById('map') as HTMLElement, {
+        center: defaultLocPosition,
+        level: 3,
+      });
+      currentCenter = defaultLocPosition;
+
+      // 지도 이동 감지 리스너는 계속 추가
+      kakao.maps.event.addListener(map, 'dragend', () => {
+        currentCenter = map.getCenter();
+        mapMoved.value = true;
+      });
+
+      // 기본 검색 실행 또는 사용자에게 검색 유도
+      searchPlaces(); // '국민은행' 또는 빈 값으로 기본 검색 실행
     }
   );
 });

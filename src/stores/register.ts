@@ -1,26 +1,26 @@
+import type { set } from 'date-fns';
 import { defineStore } from 'pinia';
 
-interface RegisterState {
-  productName: string;
-  branch: string;
-  date: string;
-  time: string;
-}
-
 export const useRegisterStore = defineStore('register', {
-  state: (): RegisterState => ({
+  state: () => ({
     productName: '',
+    finPrdtCode: '',
+    branchId: 0,
     branch: '',
     date: '',
     time: '',
+    reservedSlots: {} as Record<string, string[]>,
+    topInfos: [] as { label: string; value: string }[],
   }),
-
   actions: {
     setProductName(name: string) {
       this.productName = name;
     },
-    setBranch(branch: string) {
-      this.branch = branch;
+    setBranchId(id: number) {
+      this.branchId = id;
+    },
+    setBranch(branchName: string) {
+      this.branch = branchName;
     },
     setDate(date: string) {
       this.date = date;
@@ -28,18 +28,21 @@ export const useRegisterStore = defineStore('register', {
     setTime(time: string) {
       this.time = time;
     },
-    reset() {
-      this.productName = '';
-      this.branch = '';
-      this.date = '';
-      this.time = '';
+    setReservedSlots(slots: Record<string, string[]>) {
+      this.reservedSlots = slots;
+    },
+    setFinPrdtCode(code: string) {
+      this.finPrdtCode = code;
+    },
+    setTopInfos(data: { label: string; value: string }[]) {
+      this.topInfos = data;
     },
     getSummary() {
       return {
-        상품명: this.productName,
-        지점: this.branch,
-        날짜: this.date,
-        시각: this.time,
+        branchId: this.branchId,
+        finPrdtCode: this.finPrdtCode,
+        date: this.date,
+        time: this.time,
       };
     },
   },
