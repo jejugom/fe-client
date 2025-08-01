@@ -43,22 +43,28 @@ import {
 } from '@/api/products/registerComplete';
 import ReserveCompleteBox from './_components/ReserveCompleteBox.vue';
 import InfoRow from './_components/InfoRow.vue';
+import { useLoadingStore } from '@/stores/loading';
 
 const route = useRoute();
 
 const bookingId = ref('');
 const data = ref<Register | null>(null);
+const loadingStore = useLoadingStore();
 
 onMounted(async () => {
   const id = route.query.bookingId as string;
   if (!id) return;
 
   bookingId.value = id;
+  loadingStore.startLoading();
   try {
     const result = await fetchReservedDetail(id);
     data.value = result;
   } catch (e) {
     console.error('예약 상세 조회 실패', e);
+    loadingStore.setError(true);
+  } finally {
+    loadingStore.stopLoading();
   }
 });
 

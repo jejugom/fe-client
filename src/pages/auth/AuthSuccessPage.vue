@@ -43,10 +43,12 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import Btn from '@/components/buttons/Btn.vue';
+import { useLoadingStore } from '@/stores/loading';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const loadingStore = useLoadingStore();
 
 /** 로그인 처리 진행 상태 */
 const isProcessing = ref(true);
@@ -62,6 +64,7 @@ const error = ref('');
  */
 onMounted(async () => {
   try {
+    loadingStore.startLoading();
     // 1. URL 쿼리 파라미터에서 토큰 정보 추출
     const { token, refreshToken, isNew } = route.query;
 
@@ -95,11 +98,14 @@ onMounted(async () => {
   } catch (err) {
     // 6. 오류 처리
     console.error('Auth processing error:', err);
+    loadingStore.setError(true);
     error.value =
       err instanceof Error
         ? err.message
         : '로그인 처리 중 오류가 발생했습니다.';
     isProcessing.value = false;
+  } finally {
+    loadingStore.stopLoading();
   }
 });
 

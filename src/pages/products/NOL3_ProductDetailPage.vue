@@ -212,6 +212,7 @@ import {
 import DetailImg from './_components/DetailImg.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { useRegisterStore } from '@/stores/register';
+import { useLoadingStore } from '@/stores/loading';
 
 // 라우트에서 id 추출
 const route = useRoute();
@@ -221,14 +222,20 @@ const registerStore = useRegisterStore();
 
 const detail = ref<ProductDetail | null>(null);
 
+const loadingStore = useLoadingStore();
+
 onMounted(async () => {
   const id = route.params.id as string;
   if (!id) return;
+  loadingStore.startLoading();
   try {
     const result = await fetchProductDetail(id);
     detail.value = result;
   } catch (e) {
     console.error('상품 상세 조회 실패', e);
+    loadingStore.setError(true);
+  } finally {
+    loadingStore.stopLoading();
   }
 });
 

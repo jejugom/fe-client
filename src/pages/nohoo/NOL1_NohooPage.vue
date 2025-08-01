@@ -66,15 +66,18 @@ import AdBox from './_components/AdBox.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import { useProductStore } from '@/stores/product';
 import { fetchNohooData, type ParsedApiResponse } from '@/api/nohoo/nohoo';
+import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
 const productStore = useProductStore();
+const loadingStore = useLoadingStore();
 
 const data = ref<ParsedApiResponse | null>(null);
 const selectedTab = ref('맞춤');
 const sortOption = ref('name');
 
 onMounted(async () => {
+  loadingStore.startLoading();
   try {
     const result = await fetchNohooData();
     data.value = result;
@@ -104,6 +107,9 @@ onMounted(async () => {
     });
   } catch (error) {
     console.error('Nohoo 데이터 요청 실패', error);
+    loadingStore.setError(true);
+  } finally {
+    loadingStore.stopLoading();
   }
 });
 
