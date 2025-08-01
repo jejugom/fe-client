@@ -1,4 +1,3 @@
-<!-- _components/RecipientFormModal.vue -->
 <template>
   <Modal
     @click1="$emit('cancel')"
@@ -61,19 +60,50 @@
         </SelectBox>
       </FormField>
 
-      <!-- 소득 여부 -->
+      <!-- 최근 10년 내 증여 여부 -->
       <FormField
-        label="1년에 버시는 수입이 100만 원을 넘으시나요?"
-        description="총급여 100만 원 초과 시 '소득 있음'을 선택하세요."
+        :label="`최근 10년 내 ${formData.name || '수증자'}에게 증여한 적 있나요?`"
       >
-        <SelectBox v-model="formData.incomeStatus" size="large" class="w-full">
+        <SelectBox v-model="formData.giftedBefore" size="medium" class="w-full">
           <option disabled value="">선택하세요</option>
-          <option
-            v-for="option in incomeStatusOptions"
-            :key="option"
-            :value="option"
-          >
-            {{ option }}
+          <option value="true">예</option>
+          <option value="false">아니오</option>
+        </SelectBox>
+      </FormField>
+
+      <!-- 증여 금액 (조건부 표시) -->
+      <FormField
+        v-if="formData.giftedBefore === 'true'"
+        label="증여한 금액 (원)"
+      >
+        <div class="flex flex-col items-start">
+          <div class="relative w-full">
+            <InputBox
+              type="text"
+              size="medium"
+              placeholder="금액을 입력하세요"
+              v-model="formData.giftedAmount"
+              class="w-full"
+              @input="handleAmountInput"
+            />
+            <span
+              class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-sm"
+            >
+              만원
+            </span>
+          </div>
+          <p class="mt-1 w-full text-right text-sm text-blue-300">
+            {{ formatAmount(formData.giftedAmount) }}
+          </p>
+        </div>
+      </FormField>
+      <!-- 증여세 납부자 -->
+      <FormField label="증여세는 누가 부담하나요?">
+        <SelectBox v-model="formData.whoPaysTax" size="medium" class="w-full">
+          <option disabled value="">선택하세요</option>
+          <option value="본인">본인이 대신 납부</option>
+          <option value="수증자">
+            {{ formData.name ? `${formData.name}이(가) 직접 납부` : '수증자' }}
           </option>
         </SelectBox>
       </FormField>
@@ -82,58 +112,132 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, defineEmits, defineProps } from 'vue';
 import Modal from '@/components/modals/Modal.vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import FormField from './FormField.vue';
 
 // 타입 정의
-interface Recipient {
+interface OriginalRecipient {
   name: string;
   relationship: string;
   birth: string;
   maritalStatus: string;
-  incomeStatus: string;
+  giftedBefore: boolean;
+  giftedAmount: number;
+  whoPaysTax: string;
+}
+
+interface FormRecipient {
+  name: string;
+  relationship: string;
+  birth: string;
+  maritalStatus: string;
+  giftedBefore: string; // 'true' | 'false' | ''
+  giftedAmount: string;
+  whoPaysTax: string;
 }
 
 interface Props {
-  recipient?: Recipient;
+  recipient?: OriginalRecipient | null;
   isEditing?: boolean;
 }
 
 interface Emits {
   (e: 'cancel'): void;
-  (e: 'confirm', recipient: Recipient): void;
+  (e: 'confirm', recipient: OriginalRecipient): void;
 }
 
 // Props & Emits
 const props = withDefaults(defineProps<Props>(), {
-  recipient: () => ({
-    name: '',
-    relationship: '',
-    birth: '',
-    maritalStatus: '',
-    incomeStatus: '',
-  }),
+  recipient: null,
   isEditing: false,
 });
 
 const emit = defineEmits<Emits>();
 
+// 기본값 생성 함수
+const createDefaultRecipient = (): FormRecipient => ({
+  name: '',
+  relationship: '',
+  birth: '',
+  maritalStatus: '',
+  giftedBefore: '',
+  giftedAmount: '',
+  whoPaysTax: '',
+});
+
+// 타입 변환 함수
+const convertToFormData = (
+  recipient: OriginalRecipient | null
+): FormRecipient => {
+  if (!recipient) return createDefaultRecipient();
+
+  return {
+    ...recipient,
+    giftedBefore:
+      recipient.giftedBefore === true
+        ? 'true'
+        : recipient.giftedBefore === false
+          ? 'false'
+          : '',
+    giftedAmount: recipient.giftedAmount.toString(), // 숫자를 문자열로 변환
+  };
+};
+
+// 숫자 입력만 허용 (숫자가 아니면 제거)
+const handleAmountInput = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const raw = target.value.replace(/[^\d]/g, ''); // 숫자만 남김
+  formData.value.giftedAmount = raw; // 숫자가 아닌 문자열 할당 (ex: '5000')
+};
+
+// 금액 포맷 함수 (원 단위)
+const formatAmount = (amount: number | string): string => {
+  const num = Number(amount);
+
+  // 숫자가 아닌 경우 경고 표시
+  const eok = Math.floor(num / 100000000);
+  const man = Math.floor((num % 100000000) / 10000);
+  const won = num % 10000;
+
+  let result = '';
+
+  if (eok > 0) result += `${eok.toLocaleString()}억 `;
+  if (man > 0) result += `${man.toLocaleString()}만 `;
+  if (won > 0) result += `${won.toLocaleString()}원`;
+
+  // 뒤에 단위가 없는 경우 마지막에 '원' 붙이기
+  if (result.trim().endsWith('억') || result.trim().endsWith('만')) {
+    result = result.trim() + '원';
+  }
+
+  return result.trim();
+};
+
 // 더미 옵션
 const relationshipOptions = ['자녀', '배우자', '손자녀', '형제자매', '기타'];
 const maritalStatusOptions = ['미혼', '결혼', '기타'];
-const incomeStatusOptions = ['소득 있음', '소득 없음', '소득 모름'];
 
 // 반응형 데이터
-const formData = ref<Recipient>({ ...props.recipient });
+const formData = ref<FormRecipient>(convertToFormData(props.recipient));
+
+// giftedBefore 변경 시 giftedAmount 초기화
+watch(
+  () => formData.value.giftedBefore,
+  (newVal) => {
+    if (newVal !== 'true') {
+      formData.value.giftedAmount = '0';
+    }
+  }
+);
 
 // Props가 변경될 때 formData 동기화
 watch(
   () => props.recipient,
   (newRecipient) => {
-    formData.value = { ...newRecipient };
+    formData.value = convertToFormData(newRecipient);
   },
   { deep: true, immediate: true }
 );
@@ -146,13 +250,25 @@ const handleSubmit = () => {
   if (!formData.value.relationship) missingFields.push('관계');
   if (!formData.value.birth) missingFields.push('생년월일');
   if (!formData.value.maritalStatus) missingFields.push('결혼 여부');
-  if (!formData.value.incomeStatus) missingFields.push('소득 여부');
+  if (formData.value.giftedBefore === '')
+    missingFields.push('최근 10년간 증여 여부');
+  if (formData.value.giftedBefore === 'true' && !formData.value.giftedAmount) {
+    missingFields.push('증여 금액');
+    if (!formData.value.whoPaysTax) missingFields.push('증여세 납부자');
+  }
 
   if (missingFields.length > 0) {
     alert(`정보를 입력해주세요:\n${missingFields.join(', ')}`);
     return;
   }
 
-  emit('confirm', { ...formData.value });
+  // 제출할 때는 다시 boolean으로 변환
+  const submitData: OriginalRecipient = {
+    ...formData.value,
+    giftedBefore: formData.value.giftedBefore === 'true',
+    giftedAmount: Number(formData.value.giftedAmount), // 문자열을 숫자로 변환
+  };
+
+  emit('confirm', submitData);
 };
 </script>
