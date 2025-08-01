@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-8">
     <!-- 상단 대표 정보 -->
-    <DetailImg :items="detailItems"></DetailImg>
+    <DetailImg v-if="detailItems.length" :items="detailItems" />
 
     <!-- 입력폼 -->
     <div class="flex flex-col gap-4">
@@ -96,14 +96,8 @@ const route = useRoute();
 const registerStore = useRegisterStore();
 const productStore = useProductStore();
 
-// guno: DetailImg 컴포넌트용 임시 데이터 - 추후 수정 필요
 // 선택한 상품에 맞는 결과로 수정해야 함
-const detailItems = ref([
-  { label: '최고금리', value: '3.5%' },
-  { label: '가입방법', value: '은행 방문' },
-  { label: '연금저축유형', value: '--형' },
-  { label: '담보인정비율', value: '100%' },
-]);
+const detailItems = computed(() => registerStore.topInfos);
 
 const productName = computed({
   get: () => registerStore.productName,
@@ -217,18 +211,16 @@ const goToRegister = async () => {
 
   console.log('예약 정보:', payload);
 
+  let bookingResult: { bookingId: string } | null = null;
   try {
-    const result = await postBooking(payload);
-    console.log('예약 성공:', result);
-    router.push({
-      name: 'register-complete',
-      params: { type: route.params.id === 'gift' ? 'gift' : 'product' },
-      query: { bookingId: result.bookingId },
-    });
+    bookingResult = await postBooking(payload);
+    console.log('예약 성공:', bookingResult);
   } catch (error: any) {
     console.error('예약 실패:', error.response?.data || error.message);
     alert('예약 중 오류가 발생했습니다.');
+    return; // 예약 실패 시 함수 종료
   }
+
   // --- SMS 전송 로직 추가 ---
 
   // SMS 전송을 위한 예약 정보
@@ -253,6 +245,7 @@ const goToRegister = async () => {
 
       router.push({
         name: 'register-complete',
+        query: { bookingId: bookingResult?.bookingId },
       });
 
       console.log('예약 완료:', registerStore.getSummary());

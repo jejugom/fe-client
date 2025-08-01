@@ -10,6 +10,7 @@ export const useRegisterStore = defineStore('register', {
     date: '',
     time: '',
     reservedSlots: {} as Record<string, string[]>,
+    topInfos: [] as { label: string; value: string }[],
   }),
   actions: {
     setProductName(name: string) {
@@ -32,6 +33,9 @@ export const useRegisterStore = defineStore('register', {
     },
     setFinPrdtCode(code: string) {
       this.finPrdtCode = code;
+    },
+    setTopInfos(data: { label: string; value: string }[]) {
+      this.topInfos = data;
     },
     getSummary() {
       return {

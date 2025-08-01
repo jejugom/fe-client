@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-primary-100 flex h-50 w-full items-center justify-center gap-8 p-8"
+    class="bg-secondary-100 flex h-50 w-full items-center justify-center gap-8 p-8"
   >
     <div
       v-for="(item, idx) in items"
@@ -49,6 +49,8 @@ const getIcon = (label: string): string | null => {
   if (label.includes('통화')) return Currency;
   if (label.includes('금리유형')) return RateType;
   if (label.includes('매매단위')) return UnitOfAccount;
+  if (label.includes('총보수')) return LoanRate;
+  if (label.includes('위험등급')) return SubscriptionRestriction;
   return null;
 };
 </script>

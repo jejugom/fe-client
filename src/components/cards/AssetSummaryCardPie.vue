@@ -2,7 +2,7 @@
   <div class="border-primary-300 flex flex-col gap-2 rounded-xl border p-4">
     <div class="font-semibold">
       <div class="text-lg">
-        <span class="text-gold">안정적인 주식형</span> 자산가<br />
+        <!-- <span class="text-gold">안정적인 주식형</span> 자산가<br /> -->
         <span class="text-primary-300">{{ userName }}</span> 님이 갖고 계신
         자산입니다
       </div>

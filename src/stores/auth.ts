@@ -108,9 +108,12 @@ export const useAuthStore = defineStore('auth', () => {
    * 카카오 OAuth 인증 페이지로 리다이렉트합니다.
    * 사용자가 카카오에서 로그인하면 백엔드 콜백 URL로 인가 코드가 전송됩니다.
    */
-  const startKakaoLogin = () => {
+  const startKakaoLogin = (nextRouteName?: string) => {
     /** 인가코드 전달은 백엔드로 보냄. */
-    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=3915e266f2340851e307cca982620137&redirect_uri=http://localhost:8080/auth/kakao/callback&response_type=code`;
+    let kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=3915e266f2340851e307cca982620137&redirect_uri=http://localhost:8080/auth/kakao/callback&response_type=code`;
+    if (nextRouteName) {
+      kakaoAuthUrl += `&state=${encodeURIComponent(nextRouteName)}`; // Using 'state' parameter to pass the next route
+    }
     window.location.href = kakaoAuthUrl;
   };
 

@@ -12,7 +12,7 @@
       v-if="!authStore.isLogin"
       class="border-primary-300 mb-8 rounded-xl border bg-white p-4"
     >
-      <div class="space-y-4 text-center">
+      <div class="space-y-4">
         <div class="text-primary-300 text-xl font-semibold">
           노후도락에 오신 것을 환영합니다!
         </div>
@@ -44,7 +44,10 @@
     </div>
 
     <!-- 로그인된 사용자를 위한 개인화된 인사 및 자산 정보 -->
-    <div v-if="authStore.isLogin && homeData" class="border-primary-300 mb-2 rounded-xl border bg-white p-4">
+    <div
+      v-if="authStore.isLogin && homeData"
+      class="border-primary-300 mb-2 rounded-xl border bg-white p-4"
+    >
       <div class="text-primary-300 mb-4 text-lg font-semibold">
         {{ homeData.userSummary.name }}님
         <span class="text-surface-500">안녕하세요!</span>
@@ -99,7 +102,11 @@
     </section>
 
     <!-- 광고 배너 -->
-    <img :src="AdBanner" alt="광고 배너" class="mb-16 h-30 w-full object-cover" />
+    <img
+      :src="AdBanner"
+      alt="광고 배너"
+      class="mb-16 h-30 w-full object-cover"
+    />
 
     <!-- 하단 서비스 특징 -->
     <section class="border-secondary-300 rounded-xl border p-4 text-center">

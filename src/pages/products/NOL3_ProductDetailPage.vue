@@ -242,6 +242,7 @@ onMounted(async () => {
 const goToRegister = () => {
   if (!detail.value) return;
   registerStore.setProductName(detail.value.finPrdtNm);
+  registerStore.setTopInfos(topInfos.value);
   router.push({ name: 'register', params: { id: detail.value.finPrdtCd } });
 };
 
