@@ -43,9 +43,9 @@
   </div>
 
   <!-- 로그인된 사용자를 위한 개인화된 인사 및 자산 정보 -->
-  <div v-else class="border-primary-300 mb-2 rounded-xl border bg-white p-4">
+  <div v-if="authStore.isLogin && homeData" class="border-primary-300 mb-2 rounded-xl border bg-white p-4">
     <div class="text-primary-300 mb-4 text-lg font-semibold">
-      {{ authStore.userName || authStore.username }}님
+      {{ homeData.userSummary.name }}님
       <span class="text-surface-500">안녕하세요!</span>
     </div>
     <div class="space-y-1">
@@ -134,11 +134,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import Top3Products from '@/components/cards/Top3ProductsCard.vue';
 import Btn from '@/components/buttons/Btn.vue';
-import { api_data } from '@/api/home';
+import { fetchHomeData, type HomeData } from '@/api/home';
 import IconCard from '@/components/cards/IconCard.vue';
 import AdBanner from '@/assets/images/AdBanner.png';
 import Home1 from '@/assets/images/Home1.svg';
@@ -155,8 +156,20 @@ const router = useRouter();
 /** 인증 상태 관리 store - 로그인 여부 확인 및 카카오 로그인 처리 */
 const authStore = useAuthStore();
 
+const homeData = ref<HomeData | null>(null);
+
+onMounted(async () => {
+  if (authStore.isLogin) {
+    try {
+      homeData.value = await fetchHomeData();
+    } catch (error) {
+      console.error('홈 데이터 요청 실패', error);
+    }
+  }
+});
+
 /** 사용자 총 자산 - 로그인된 경우에만 실제 데이터 사용, 비로그인 시 0 */
-const totalAsset = authStore.isLogin ? api_data.userSummary.asset : 0;
+const totalAsset = computed(() => homeData.value?.userSummary.asset ?? 0);
 
 /**
  * @param value "1234567"
@@ -212,11 +225,14 @@ const goToEditAsset = () => {
 };
 
 // 맞춤형 금융상품
-const slides = api_data.recommandTop3.map((product) => ({
-  prod_name: product.fin_prdt_nm,
-  description: product.prdt_feature,
-  rate: product.intr_rate,
-}));
+const slides = computed(() => {
+  if (!homeData.value) return [];
+  return homeData.value.recommandTop3.map((product) => ({
+    prod_name: product.fin_prdt_nm,
+    description: product.prdt_feature,
+    rate: product.intr_rate,
+  }));
+});
 
 // 하단 노후도락 설명
 const features = [
