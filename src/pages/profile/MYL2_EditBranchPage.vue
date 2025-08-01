@@ -54,6 +54,7 @@ import { useRouter, useRoute } from 'vue-router';
 import InputBox from '@/components/forms/InputBox.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import BtnSet from '@/components/buttons/BtnSet.vue';
+// import { branchApi } from '@/api/user/branch'; // 백엔드 수정 후 활성화 예정
 
 interface KakaoPlace {
   place_name: string;
@@ -67,6 +68,21 @@ const searchQuery = ref('');
 const currentAddress = ref('');
 const selectedBranch = ref('');
 let map: kakao.maps.Map;
+
+/* 백엔드 수정 후 활성화 예정
+// 지점 이름에서 branchId 생성하는 임시 함수
+// 실제로는 백엔드에 branchName으로 branchId를 조회하는 API가 필요
+const generateBranchId = (branchName: string): number => {
+  // DB에 실제로 존재하는 작은 범위의 ID 사용 (1-10)
+  let hash = 0;
+  for (let i = 0; i < branchName.length; i++) {
+    const char = branchName.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // 32bit 정수로 변환
+  }
+  return Math.abs(hash) % 10 + 1; // 1-10 사이의 양수 (실제 DB에 존재할 가능성 높음)
+};
+*/
 
 const searchPlaces = () => {
   const ps = new kakao.maps.services.Places();
@@ -101,8 +117,33 @@ const handleComplete = async () => {
       return;
     }
 
-    // TODO: API 호출하여 지점 정보 업데이트
+    // TODO: 백엔드에서 지점 테이블 구조 수정 후 활성화
+    // 현재는 DB의 auto_increment branchId와 프론트에서 생성한 ID가 불일치하여 임시 비활성화
+    
     console.log('선택된 지점:', selectedBranch.value);
+    console.log('지점 설정 기능은 백엔드 지점 테이블 구조 수정 후 활성화 예정입니다.');
+    
+    // 임시로 성공 메시지 표시
+    alert(`지점 "${selectedBranch.value}"이(가) 선택되었습니다.\n(실제 저장은 백엔드 수정 후 활성화 예정)`);
+    
+    /* 백엔드 수정 후 활성화 예정 코드:
+    try {
+      const branchInfo = await branchApi.getBranchByName(selectedBranch.value);
+      console.log('지점 정보 조회 성공:', branchInfo);
+      
+      // 실제 branchId는 백엔드에서 반환받아야 함
+      const branchData = {
+        branchId: branchInfo.branchId // 백엔드에서 실제 ID 반환 필요
+      };
+
+      const response = await branchApi.setMyBranch(branchData);
+      console.log('지점 설정 성공:', response);
+    } catch (error) {
+      console.error('지점 설정 실패:', error);
+      alert('지점 설정 중 오류가 발생했습니다.');
+      return;
+    }
+    */
 
     // 쿼리 파라미터에 따라 다른 페이지로 이동
     if (route.query.from === 'profile') {
@@ -112,6 +153,7 @@ const handleComplete = async () => {
     }
   } catch (error) {
     console.error('지점 업데이트 실패:', error);
+    alert('지점 설정 중 오류가 발생했습니다. 다시 시도해주세요.');
   }
 };
 

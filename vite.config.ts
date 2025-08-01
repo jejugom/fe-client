@@ -21,6 +21,18 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  // guno: 백엔드 로컬에서 돌리면
+  // /api/sms/test 요청이 백엔드 서버 http://localhost:8080/api/sms/test
+  // 로 가도록 baseURL 설정.
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
   test: {
     projects: [
       {

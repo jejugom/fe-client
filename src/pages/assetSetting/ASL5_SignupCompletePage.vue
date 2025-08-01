@@ -49,8 +49,12 @@ const userType = ref('안정적인 주식형 자산가'); // 개발용 기본값
 const fetchUserType = async () => {
   try {
     // TODO: API 호출로 사용자 유형 가져오기
-    // const response = await axios.get('/api/user/investment-type');
-    // userType.value = response.data.type;
+    // [GET] /api/v1/preferences
+    //     {
+    // 	"segment" : "AB",
+    // 	"description":"당신은 안정적인 자산가"
+    // }
+    // userType.value = response.data.description;
   } catch (error) {
     console.error('사용자 유형 조회 실패:', error);
   }

@@ -5,8 +5,7 @@
       class="stroke-primary px-auto my-auto flex w-full flex-col items-center justify-center gap-16 rounded-xl bg-white py-15"
     >
       <h1 class="text-primary-300 text-2xl font-bold">
-        <!-- TODO : 사용자의 이름으로 동적으로 넣기 -->
-        최승아님, 안녕하세요!
+        {{ authStore.userName || authStore.username }}님, 안녕하세요!
       </h1>
       <div class="text-surface-500 text-center text-lg font-semibold">
         <p>더 정확한 서비스 제공을 위해서</p>
@@ -25,9 +24,11 @@
 <script setup lang="ts">
 import Btn from '@/components/buttons/Btn.vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const route = useRoute();
+const authStore = useAuthStore();
 
 const goToKookminLogin = () => {
   // 현재 route의 쿼리 파라미터 확인

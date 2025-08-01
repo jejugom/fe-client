@@ -1,8 +1,7 @@
 <template>
   <button
     :class="[
-      'rounded-lg font-semibold',
-      transition && 'transition-colors duration-300',
+      'rounded-lg font-semibold transition-colors duration-300',
       color === 'primary' && 'bg-primary-100 text-primary-500',
       color === 'secondary' && 'bg-secondary-100 text-secondary-500',
       color === 'secondary-stroke' &&
@@ -29,7 +28,6 @@ defineProps<{
   label?: string;
   color?: 'primary' | 'secondary' | 'secondary-stroke' | 'surface';
   size?: 'small' | 'medium' | 'large' | 'square';
-  transition?: boolean;
 }>();
 
 const emit = defineEmits<{
