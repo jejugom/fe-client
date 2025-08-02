@@ -1,12 +1,12 @@
 <template>
   <button
     type="button"
-    class="border-surface-300 flex h-15 w-74 items-center justify-between gap-1 rounded-lg border px-3 text-left text-base"
+    class="flex h-15 w-full items-center justify-between gap-1 rounded-lg px-3 text-left text-base"
     @click="toggle"
   >
     <div class="flex flex-col">
       <div class="text-surface-500 text-base">{{ label }}</div>
-      <div class="text-surface-300 text-sm">{{ amount }}</div>
+      <div class="text-surface-300 text-sm">{{ formattedAmount }}</div>
     </div>
     <img
       :src="isChecked ? Check : CheckNone"
@@ -17,9 +17,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import Check from '@/assets/icons/Check.svg';
 import CheckNone from '@/assets/icons/CheckNone.svg';
+import { formatCurrency } from '@/utils/format';
 
 const props = defineProps<{
   modelValue: boolean;
@@ -44,4 +45,10 @@ const toggle = () => {
   isChecked.value = !isChecked.value;
   emit('update:modelValue', isChecked.value);
 };
+
+// 금액을 만원/억원 형식으로 포맷팅
+const formattedAmount = computed(() => {
+  // 가져온 formatCurrency 함수를 사용
+  return formatCurrency(props.amount);
+});
 </script>

@@ -1,51 +1,22 @@
 <template>
   <!-- 자산 차트 영역 -->
   <section class="mb-8">
-    <!-- 자산현황 파이차트 컴포넌트-->
-    <!-- <AssetSummaryCardPie
-      :userName="retirement.user_info.user_name"
-      :assetAmount="retirement.user_info.asset_info.total"
-      :assetInfo="retirement.user_info.asset_info"
-    /> -->
+    <!-- 자산현황 파이차트 컴포넌트 -->
+    <AssetSummaryCardBar
+      :userName="api_data.user_info.user_name"
+      :assetAmount="api_data.user_info.asset_info.total"
+      :assetInfo="assetArray"
+    />
   </section>
-
-  <!-- 자산 카테고리 선택 -->
-  <section>
-    <h2 class="text-primary-300 mb-2 text-2xl font-bold">
-      증여 자산 종류 선택하기
-    </h2>
-    <p class="mb-8 text-sm">
-      어떤 자산을 누구에게 줄지<br />
-      먼저 나눌 자산 종류부터 골라주세요.
-    </p>
-
-    <div class="mb-16 grid grid-cols-3 gap-x-6 gap-y-4">
-      <!-- 반복 렌더링 -->
-      <CategoryCard
-        v-for="(assets, category) in allAssets"
-        :key="category"
-        :category="category"
-        :selectedCount="assets.filter((a) => a.selected).length"
-        :totalCount="assets.length"
-        @click="openModal(category)"
-      />
-    </div>
-  </section>
-
-  <AssetSelectionModal
-    v-if="isModalOpen"
-    :asset-list="assetList"
-    @close="closeModal"
-    @confirm="closeModal"
-  />
 
   <!-- 수증자 정보 입력 -->
   <section>
     <h2 class="text-primary-300 mb-2 text-2xl font-bold"
-      >자산을 받으실 분 정보를 입력하기</h2
+      >수증자 정보 입력하기</h2
     >
     <p class="mb-4 text-sm"
-      >누구에게 주실지 알려주세요.<br />받으실 분의 정보가 필요해요.</p
+      >누구에게 주실지 알려주세요.<br />받으실 분의 정보를 통해 정확한 세금
+      계산을 도와드릴 수 있어요</p
     >
 
     <div class="space-y-3">
@@ -54,8 +25,12 @@
         v-for="(recipient, index) in recipients"
         :key="index"
         :title="recipient.name"
-        :content="`${recipient.relationship} / ${recipient.birth}`"
-        :tags="`${recipient.maritalStatus} | ${recipient.incomeStatus}`"
+        :content="`${recipient.relationship} | ${recipient.birth}`"
+        :tags="`${recipient.maritalStatus} | ${
+          recipient.giftedBefore
+            ? formatCurrency(recipient.giftedAmount) + ' 증여'
+            : '증여 이력 없음'
+        }`"
         btnText1="수정"
         btnText2="삭제"
         @click:edit="editRecipient(index)"
@@ -82,7 +57,7 @@
       <Btn
         @click="openRecipientModal"
         color="surface"
-        label="+ 자산 받을 사람 추가하기"
+        label="+ 수증자 추가하기"
         size="large"
       />
     </div>
@@ -107,13 +82,20 @@
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
-import CategoryCard from './_components/CategoryCard.vue';
 import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
-import AssetSelectionModal from './_components/AssetSelectionModal.vue';
 import RecipientFormModal from './_components/RecipientFormModal.vue';
 import DeleteConfirmModal from './_components/DeleteConfirmModal.vue';
-import { dummyAssets, dummyRecipients, emptyRecipient } from './_inputDummy';
-import AssetSummaryCardPie from '@/components/cards/AssetSummaryCardPie.vue';
+import { dummyRecipients, emptyRecipient } from './_inputDummy';
+import AssetSummaryCardBar from '@/components/cards/AssetSummaryCardBar.vue';
+import { api_data } from '@/api/gift/giftAssets';
+import { formatCurrency } from '@/utils/format';
+
+const assetArray = Object.entries(api_data.user_info.asset_info).map(
+  ([category, amount]) => ({
+    category,
+    amount,
+  })
+);
 
 interface Asset {
   name: string;
@@ -126,43 +108,31 @@ interface Recipient {
   relationship: string;
   birth: string;
   maritalStatus: string;
-  incomeStatus: string;
+  giftedBefore: boolean;
+  giftedAmount: number;
+  whoPaysTax: string;
 }
 
-const router = useRouter();
+const newRecipient = ref<Recipient>({
+  name: '',
+  relationship: '',
+  birth: '',
+  maritalStatus: '',
+  giftedBefore: false,
+  giftedAmount: 0,
+  whoPaysTax: '',
+});
 
-// 자산 관리
-const allAssets = ref<Record<string, Asset[]>>(
-  JSON.parse(JSON.stringify(dummyAssets))
-);
-const assetList = ref<Asset[]>([]);
-const selectedCategory = ref<string | null>(null);
+const router = useRouter();
 
 // 모달 상태 관리
 const isModalOpen = ref(false);
 const isRecipientModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 
-// 자산 모달 관리
-const openModal = (category: string) => {
-  selectedCategory.value = category;
-  isModalOpen.value = true;
-  assetList.value =
-    allAssets.value[category]?.map((item) => ({ ...item })) || [];
-};
-
-const closeModal = () => {
-  if (selectedCategory.value) {
-    allAssets.value[selectedCategory.value] = assetList.value.map((item) => ({
-      ...item,
-    }));
-  }
-  isModalOpen.value = false;
-};
-
 // 수증자 관리
 const recipients = ref<Recipient[]>([...dummyRecipients]);
-const newRecipient = ref<Recipient>({ ...emptyRecipient });
+// const newRecipient = ref<Recipient>({ ...emptyRecipient });
 const isEditing = ref(false);
 const selectedRecipientIndex = ref<number | null>(null);
 

@@ -1,3 +1,4 @@
+// /api/faq/{faqId}
 export interface FaqDetail {
   faqId: number;
   category: string;
