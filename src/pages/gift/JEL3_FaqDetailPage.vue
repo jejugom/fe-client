@@ -7,7 +7,7 @@
     <!-- 카테고리 -->
     <div class="mb-4">
       <span class="text-primary-500 text-lg font-semibold">
-        {{ currentFaq.category === 'gift' ? '증여' : '상속' }}
+        {{ currentFaq.category === '증여' ? '증여' : '상속' }}
       </span>
     </div>
 
@@ -53,41 +53,64 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
-import { api_data } from '@/api/gift/faqDetail';
+import { getFaqById, getFaqList, type Faq } from '@/api/gift/faq';
 
 const router = useRouter();
 const route = useRoute();
 
-// 현재 선택된 FAQ를 계산하는 computed 속성
-const currentFaq = computed(() => {
-  const id = Number(route.params.id);
-  return api_data.find((faq) => faq.faqId === id) || null;
-});
+const currentFaq = ref<Faq | null>(null);
+const relatedFaqs = ref<Faq[]>([]);
+const allFaqs = ref<Faq[]>([]); // 전체 목록 캐싱
 
-const relatedFaqs = computed(() => {
-  if (!currentFaq.value) return [];
-  return api_data
-    .filter(
-      (faq) =>
-        faq.category === currentFaq.value?.category &&
-        faq.faqId !== currentFaq.value?.faqId
-    )
-    .slice(0, 2);
-});
+// FAQ 상세 + 관련 질문 계산
+const fetchFaqDetail = async (id: number) => {
+  try {
+    // 1) 상세 조회
+    const { data } = await getFaqById(id);
+    currentFaq.value = data;
 
-const goToFaqDetail = (id: number) => {
+    // 2) 전체 목록 캐싱
+    if (!allFaqs.value.length) {
+      const listRes = await getFaqList();
+      allFaqs.value = listRes.data;
+    }
+
+    // 3) 같은 카테고리 목록에서 관련 질문 찾기
+    const sameCategoryFaqs = allFaqs.value
+      .filter((f) => f.category === data.category)
+      .sort((a, b) => a.faqId - b.faqId);
+
+    const currentIndex = sameCategoryFaqs.findIndex(
+      (f) => f.faqId === data.faqId
+    );
+
+    // 이전/다음 FAQ 1개씩
+    if (currentIndex !== -1) {
+      relatedFaqs.value = [
+        sameCategoryFaqs[currentIndex - 1],
+        sameCategoryFaqs[currentIndex + 1],
+      ].filter(Boolean); // undefined 제거
+    } else {
+      relatedFaqs.value = [];
+    }
+  } catch (err) {
+    console.error('FAQ 상세조회 에러:', err);
+  }
+};
+
+// 라우트 param 감시 (초기 실행 포함)
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId) fetchFaqDetail(Number(newId));
+  },
+  { immediate: true }
+);
+
+const goToFaqDetail = (id: number) =>
   router.push({ name: 'gift-detail', params: { id } });
-};
-
-const goToStart = () => {
-  router.push({ name: 'gift-start' });
-};
-
-// 컴포넌트 마운트 시 FAQ 데이터 로드
-onMounted(() => {
-  // 실제로는 여기서 API를 호출해서 FAQ 상세 정보를 가져올 것
-});
+const goToStart = () => router.push({ name: 'gift-start' });
 </script>

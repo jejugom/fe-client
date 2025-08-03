@@ -1,8 +1,8 @@
 <template>
   <!-- 타이틀 -->
   <h2 class="text-primary-300 mb-4 text-2xl font-bold">상속·증여</h2>
-  <p class="text-primary-300 mb-8 text-xl font-semibold"
-    >많이 물어보신 질문이에요
+  <p class="text-primary-300 mb-8 text-xl font-semibold">
+    많이 물어보신 질문이에요
   </p>
 
   <!-- 검색 섹션 -->
@@ -18,24 +18,26 @@
       <Btn color="primary" label="검색" size="square" @click="handleSearch" />
     </div>
   </div>
+
   <!-- 카테고리 탭 -->
   <div class="mb-4 flex">
     <FaqTab
-      :is-active="activeTab === 'gift'"
+      :is-active="activeTab === '증여'"
       side="left"
-      @click="toggleTab('gift')"
+      @click="toggleTab('증여')"
     >
       증여
     </FaqTab>
 
     <FaqTab
-      :is-active="activeTab === 'inheritance'"
+      :is-active="activeTab === '상속'"
       side="right"
-      @click="toggleTab('inheritance')"
+      @click="toggleTab('상속')"
     >
       상속
     </FaqTab>
   </div>
+
   <!-- FAQ 목록 -->
   <div class="space-y-4">
     <FaqCard
@@ -57,40 +59,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import FaqCard from './_components/FaqCard.vue';
 import FaqTab from './_components/FaqTab.vue';
-import { api_data } from '@/api/gift/faq';
-import type { Faq } from '@/api/gift/faq';
+import { getFaqList, type Faq } from '@/api/gift/faq';
 
-const faqData = ref<Faq[]>(api_data);
-
+const faqData = ref<Faq[]>([]);
 const router = useRouter();
 
 // 검색어 및 탭 상태
 const searchQuery = ref('');
-const activeTab = ref<'all' | 'gift' | 'inheritance'>('all');
+const activeTab = ref<'all' | '상속' | '증여'>('all');
 
 // 탭 토글
-function toggleTab(tab: 'gift' | 'inheritance') {
+function toggleTab(tab: '상속' | '증여') {
   activeTab.value = activeTab.value === tab ? 'all' : tab;
 }
 
-const categoryMap = {
-  gift: '증',
-  inheritance: '상',
-};
-
-// 검색 필터링
+// 검색 및 탭 필터링
 const filteredFaqs = computed(() => {
   let faqs = faqData.value;
 
   if (activeTab.value !== 'all') {
-    const mappedCategory = categoryMap[activeTab.value];
-    faqs = faqs.filter((faq) => faq.category === mappedCategory);
+    faqs = faqs.filter((faq) => faq.category === activeTab.value);
   }
 
   if (searchQuery.value.trim()) {
@@ -106,10 +100,31 @@ const handleSearch = () => {
   console.log('검색:', searchQuery.value);
 };
 
+// 상세 페이지 이동
 const goToFaqDetail = (faqId: number) => {
   router.push({
     name: 'gift-detail',
     params: { id: faqId },
   });
 };
+
+// FAQ 목록 가져오기
+onMounted(async () => {
+  try {
+    const res = await getFaqList();
+    faqData.value = res.data; // ✅ 백엔드 반환 형식에 맞춰 할당
+  } catch (error) {
+    console.error('FAQ 목록 조회 실패:', error);
+  }
+});
+
+onMounted(async () => {
+  try {
+    const { data } = await getFaqList();
+    console.log('FAQ 응답:', data);
+    faqData.value = data;
+  } catch (err) {
+    console.error('FAQ API 에러:', err);
+  }
+});
 </script>

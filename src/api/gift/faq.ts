@@ -1,39 +1,32 @@
-// /api/faq
+import axios from 'axios';
+
+// FAQ 목록 조회 (내용 제외)
+export const getFaqList = () => {
+  return axios.get('/api/faq/list');
+};
+
+// FAQ 전체 상세 조회 (내용 포함)
+export const getAllFaqs = () => {
+  return axios.get('/api/faq/all');
+};
+
+// 특정 FAQ 상세 조회
+export const getFaqById = (faqId: number) => {
+  return axios.get(`/api/faq/${faqId}`);
+};
+
+// 특정 FAQ 일부 업데이트
+export const updateFaqPartial = (
+  faqId: number,
+  updates: Record<string, any>
+) => {
+  return axios.patch(`/api/faq/${faqId}`, updates);
+};
+
+// 타입 정의 (FaqListDto 기준)
 export interface Faq {
   faqId: number;
-  category: '상' | '증';
+  category: '상속' | '증여';
   title: string;
+  content: string;
 }
-
-export const api_data: Faq[] = [
-  {
-    faqId: 1,
-    category: '상',
-    title: '상속세는 어떤 세금인가요?',
-  },
-  {
-    faqId: 2,
-    category: '상',
-    title: '상속재산에 추가로 포함되는 것이 있나요?',
-  },
-  {
-    faqId: 3,
-    category: '증',
-    title: '증여세 신고는 어떻게 하나요?',
-  },
-  {
-    faqId: 4,
-    category: '증',
-    title: '증여세 면제 한도는 얼마인가요?',
-  },
-  {
-    faqId: 5,
-    category: '상',
-    title: '상속재산 평가 방법은 무엇인가요?',
-  },
-  {
-    faqId: 6,
-    category: '증',
-    title: '증여세 신고 기한은 언제인가요?',
-  },
-];
