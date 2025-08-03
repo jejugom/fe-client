@@ -33,8 +33,6 @@
   --font-regular: 'Pretendard-Regular';
   --font-semibold: 'Pretendard-SemiBold';
   --font-bold: 'Pretendard-Bold';
-  --font-pretendard:
-    'Pretendard-Regular', 'Pretendard-SemiBold', 'Pretendard-Bold';
   --font-hakgyo: 'TTHakgyoansimYeohaengR';
 
   --shadow-xs: 0 1px 2px var(--color-surface-200);
@@ -97,33 +95,24 @@
 }
 
 @font-face {
-  font-family: 'Pretendard-Regular';
-  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff')
-    format('woff');
-  font-weight: 400;
-  font-style: normal;
+  font-family: 'Pretendard-Bold';
+  src: url('./styles/fonts/pretendard/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 700;
 }
 
 @font-face {
   font-family: 'Pretendard-SemiBold';
-  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-SemiBold.woff')
-    format('woff');
+  src: url('./styles/fonts/pretendard/Pretendard-SemiBold.woff2')
+    format('woff2');
   font-weight: 600;
-  font-style: normal;
 }
-
 @font-face {
-  font-family: 'Pretendard-Bold';
-  src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Bold.woff')
-    format('woff');
-  font-weight: 700;
-  font-style: normal;
+  font-family: 'Pretendard-Regular';
+  src: url('./styles/fonts/pretendard/Pretendard-Regular.woff2') format('woff2');
+  font-weight: 400;
 }
-
 @font-face {
   font-family: 'TTHakgyoansimYeohaengR';
-  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2402_keris@1.0/TTHakgyoansimYeohaengR.woff2')
-    format('woff2');
-  font-weight: normal;
-  font-style: normal;
+  src: url('./styles/fonts/hakgyoansim/HakgyoansimYeohaengR.ttf')
+    format('truetype');
 }
