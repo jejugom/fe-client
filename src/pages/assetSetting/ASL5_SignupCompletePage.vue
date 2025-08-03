@@ -11,16 +11,14 @@
 
         <p class="text-surface-500 mb-8 flex items-end text-xl font-semibold">
           고객님은
-          <span class="text-secondary-300 font-hakgyo mx-1">{{
-            userType
-          }}</span>
+          <span class="text-secondary-300 font-point mx-1">{{ userType }}</span>
           입니다!
         </p>
 
         <div class="text-surface-500 space-y-2 text-lg font-semibold">
           <p class="flex items-end justify-center gap-1"
             >앞으로는
-            <span class="text-primary-300 font-hakgyo text-3xl">
+            <span class="text-primary-300 font-point text-3xl">
               <img :src="Logo" alt="노후도락 로고" class="h-8 w-auto" /></span
             >과 함께</p
           >

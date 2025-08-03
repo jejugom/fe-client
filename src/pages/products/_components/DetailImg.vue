@@ -16,7 +16,7 @@
       <span class="text-surface-300 mt-1 mb-2 text-base font-semibold">{{
         item.label
       }}</span>
-      <span class="font-hakgyo text-primary-500 text-center">
+      <span class="font-point text-primary-500 text-center">
         {{ item.value }}
       </span>
     </div>
