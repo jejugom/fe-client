@@ -50,7 +50,7 @@
 
   <!-- FAQ가 없을 때 -->
   <div v-if="filteredFaqs.length === 0" class="py-10 text-center">
-    <p class="text-surface-300">
+    <p class="text-sm text-gray-500">
       {{ searchQuery ? '검색 결과가 없습니다.' : 'FAQ가 없습니다.' }}
     </p>
   </div>

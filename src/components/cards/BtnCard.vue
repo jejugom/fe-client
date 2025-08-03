@@ -25,7 +25,7 @@
 
       <!-- 내용 -->
       <ul
-        class="text-surface-500 mt-2 mb-1 list-disc overflow-hidden pl-5"
+        class="text-surface-500 mt-2 mb-1 list-disc overflow-hidden pl-5 text-sm"
         v-if="contentList.length"
       >
         <li
@@ -39,7 +39,11 @@
 
       <!-- 태그 -->
       <div class="flex flex-wrap gap-1 pt-1">
-        <span v-for="tag in parsedTags" :key="tag" class="text-surface-300">
+        <span
+          v-for="tag in parsedTags"
+          :key="tag"
+          class="text-surface-300 text-sm"
+        >
           {{ tag }}
         </span>
       </div>

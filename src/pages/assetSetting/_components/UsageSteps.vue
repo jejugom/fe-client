@@ -17,7 +17,7 @@
           </div>
           <div class="ml-4 flex-1">
             <h3 class="text-surface-500 font-semibold">{{ step.title }}</h3>
-            <p class="text-surface-400">{{ step.description }}</p>
+            <p class="text-surface-400 text-sm">{{ step.description }}</p>
           </div>
           <div class="text-2xl">{{ step.emoji }}</div>
         </div>

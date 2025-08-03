@@ -21,7 +21,7 @@
 
     <div
       v-if="errorMessage"
-      class="bg-secondary-100 my-2 w-full p-2 text-red-500"
+      class="bg-secondary-100 my-2 w-full p-2 text-sm text-red-500"
     >
       {{ errorMessage }}
     </div>

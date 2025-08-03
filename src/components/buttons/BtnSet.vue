@@ -1,6 +1,6 @@
 <template>
   <template v-if="type === 'type1'">
-    <div class="flex gap-5 font-semibold">
+    <div class="flex gap-5 text-sm font-semibold">
       <button
         class="bg-secondary-100 text-secondary-500 h-10.5 w-33 rounded-lg transition-colors duration-300"
         @click="onClick1"

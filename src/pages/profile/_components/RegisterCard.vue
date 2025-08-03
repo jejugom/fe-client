@@ -4,7 +4,7 @@
       <div class="text-secondary-500 mb-2 text-lg font-semibold">
         예약하신 방문 내용을 확인하세요
       </div>
-      <div class="text-surface-500 space-y-1">
+      <div class="text-surface-500 space-y-1 text-sm">
         <div>
           <span class="font-semibold">방문 날짜 :</span> {{ formattedDate }}
         </div>

@@ -7,11 +7,14 @@
         <!-- 자산 이름 -->
         <div class="text-surface-500 font-semibold">{{ tempAsset.name }}</div>
         <!-- 자산 금액 -->
-        <div class="text-surface-500">
+        <div class="text-surface-500 text-sm">
           {{ formatCurrency(tempAsset.value) }}
         </div>
         <!-- 선택된 수증자 정보 (펼치기 전 상태에서만 표시) -->
-        <div v-if="tempAsset.selected && !isExpanded" class="text-primary-300">
+        <div
+          v-if="tempAsset.selected && !isExpanded"
+          class="text-primary-300 text-sm"
+        >
           {{ getSelectedBeneficiaryInfo(tempAsset) }}
         </div>
       </div>
@@ -66,7 +69,9 @@
       <div class="p-4">
         <!-- 수증자 선택 영역 -->
         <div class="mb-4 flex flex-col gap-4 md:flex-row md:items-start">
-          <h4 class="text-surface-500 font-semibold md:w-32"> 수증자 선택 </h4>
+          <h4 class="text-surface-500 text-sm font-semibold md:w-32">
+            수증자 선택
+          </h4>
           <div class="flex-1">
             <!-- 드롭다운 선택 박스 -->
             <div
@@ -93,7 +98,7 @@
               >
                 <div class="flex items-center justify-between">
                   <span>{{ beneficiary.name }}</span>
-                  <span class="text-surface-500">
+                  <span class="text-surface-500 text-sm">
                     {{ beneficiary.relation }}
                   </span>
                 </div>
@@ -112,7 +117,7 @@
 
         <!-- 다수 수증자 선택 시 비율 설정 -->
         <div v-if="tempAsset.isMultipleBeneficiaries && !dropdownOpen">
-          <h5 class="text-surface-500 font-semibold">
+          <h5 class="text-surface-500 text-sm font-semibold">
             수증자별 분배 비율 설정
           </h5>
 
@@ -144,7 +149,7 @@
                 <!-- 이름 + 관계 -->
                 <div class="mb-2 flex items-center justify-between">
                   <span>{{ beneficiary.name }}</span>
-                  <span class="text-surface-500">
+                  <span class="text-surface-500 text-sm">
                     {{ beneficiary.relation }}
                   </span>
                 </div>
@@ -160,10 +165,10 @@
                     max="100"
                     class="border-surface-200 w-20 rounded border px-2 py-1 text-center"
                   />
-                  <span class="text-surface-500">%</span>
+                  <span class="text-surface-500 text-sm">%</span>
 
                   <div class="flex-1 text-right">
-                    <span class="text-surface-500">
+                    <span class="text-surface-500 text-sm">
                       금액:
                       {{
                         formatCurrency(
@@ -189,7 +194,7 @@
       @click1="closeModal"
       @click2="confirmDelete"
     >
-      <p class="text-surface-500 text-center">
+      <p class="text-surface-500 text-center text-sm">
         <strong>{{ tempAsset.name }}</strong
         >을/를 <strong>{{ getSelectedBeneficiaryInfo(tempAsset) }}</strong
         >에게<br />

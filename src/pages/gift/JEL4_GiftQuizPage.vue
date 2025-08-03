@@ -63,7 +63,7 @@
           {{ formatCurrency(calculateTotalForBeneficiary(beneficiary.id)) }}
         </span>
       </div>
-      <div class="text-surface-500">
+      <div class="text-surface-500 text-sm">
         총 증여 금액: {{ formatCurrency(calculateGrandTotal()) }}
       </div>
     </div>

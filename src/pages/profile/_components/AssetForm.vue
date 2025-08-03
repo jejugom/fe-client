@@ -92,12 +92,12 @@
           @blur="handleBlur('amount')"
         />
         <span
-          class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform"
+          class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-sm"
         >
           만원
         </span>
       </div>
-      <p class="mt-1 w-68 text-right text-blue-300">
+      <p class="mt-1 w-68 text-right text-sm text-blue-300">
         {{ formatAmount(asset.amount) }}
       </p>
     </div>

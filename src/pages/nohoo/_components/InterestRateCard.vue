@@ -5,7 +5,10 @@
     <!-- 상단: 금리 & 영향력 -->
     <div class="ml-4 flex items-center justify-between font-semibold">
       <span class="text-lg">{{ currentRate.toFixed(2) }} % </span>
-      <span :class="rateDiff > 0 ? 'text-red-300' : 'text-blue-300'">
+      <span
+        :class="rateDiff > 0 ? 'text-red-300' : 'text-blue-300'"
+        class="text-sm"
+      >
         {{ rateDiff > 0 ? '▲' : '▼' }} {{ Math.abs(rateDiff).toFixed(2) }}%
       </span>
     </div>

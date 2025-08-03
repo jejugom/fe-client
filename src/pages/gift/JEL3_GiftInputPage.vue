@@ -14,7 +14,7 @@
     <h2 class="text-primary-300 mb-2 text-2xl font-bold"
       >수증자 정보 입력하기</h2
     >
-    <p class="mb-4"
+    <p class="mb-4 text-sm"
       >누구에게 주실지 알려주세요.<br />받으실 분의 정보를 통해 정확한 세금
       계산을 도와드릴 수 있어요</p
     >

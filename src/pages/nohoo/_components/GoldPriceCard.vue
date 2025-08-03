@@ -5,7 +5,7 @@
     <div class="ml-4 flex items-center justify-between font-semibold">
       <span class="text-lg">
         {{ Math.round(currentPrice).toLocaleString() }}
-        <span class="font-regular text-surface-300"> (원/돈)</span>
+        <span class="font-regular text-surface-300 text-sm"> (원/돈)</span>
       </span>
       <span :class="priceDiff > 0 ? 'text-red-300' : 'text-blue-300'">
         {{ priceDiff > 0 ? '▲' : '▼' }}

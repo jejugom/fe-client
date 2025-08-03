@@ -6,7 +6,7 @@
     </div>
     <div class="mb-6">
       <h3 class="mb-2 text-lg font-semibold">수증자별 세금 요약</h3>
-      <table class="border-surface-200 w-full border">
+      <table class="border-surface-200 w-full border text-sm">
         <thead class="bg-primary-100">
           <tr>
             <th class="border-surface-200 border p-2">수증자</th>
@@ -29,7 +29,7 @@
     </div>
     <div class="mb-6">
       <h3 class="mb-2 text-lg font-semibold">절세 전략 추천</h3>
-      <ul class="list-disc pl-5">
+      <ul class="list-disc pl-5 text-sm">
         <li v-for="(strategy, index) in taxSavingStrategies" :key="index">
           {{ strategy }}
         </li>

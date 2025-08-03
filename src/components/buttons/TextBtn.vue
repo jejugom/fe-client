@@ -5,7 +5,7 @@
       color === 'surface' && 'text-surface-400',
       color === 'primary' && 'text-primary-300',
       size === 'medium' && 'text-lg',
-      size === 'small' && '',
+      size === 'small' && 'text-sm',
       $attrs.class,
     ]"
     v-bind="$attrs"

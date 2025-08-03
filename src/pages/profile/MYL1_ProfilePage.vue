@@ -1,8 +1,8 @@
 <template>
-  <div v-if="loading" class="flex h-64 items-center justify-center">
+  <div v-if="loading" class="flex justify-center items-center h-64">
     <div class="text-lg">데이터를 불러오는 중...</div>
   </div>
-
+  
   <div v-else class="space-y-16">
     <!-- Info Box -->
     <!-- 예약 내역이 2개 이상일 때는 슬라이드로 보여주기 -->
@@ -18,7 +18,7 @@
     </div>
 
     <!-- 예약 내역이 없을 때 -->
-    <div v-else class="text-surface-400 py-8 text-center">
+    <div v-else class="text-center text-gray-500 py-8">
       예약 내역이 없습니다.
     </div>
 
@@ -68,7 +68,7 @@
       v-model="confirmText"
       type="text"
       placeholder="노후도락 서비스를 종료합니다."
-      class="rounded border px-3 py-2"
+      class="rounded border px-3 py-2 text-sm"
     />
     <p
       v-if="
@@ -100,10 +100,7 @@ const loading = ref(true);
 const userName = computed(() => myPageData.value?.userInfo.userName || '');
 const assetAmount = computed(() => {
   if (!myPageData.value?.userInfo.assetStatus) return 0;
-  return myPageData.value.userInfo.assetStatus.reduce(
-    (total, asset) => total + asset.amount,
-    0
-  );
+  return myPageData.value.userInfo.assetStatus.reduce((total, asset) => total + asset.amount, 0);
 });
 
 // 자산 카테고리 코드를 프론트엔드 형식으로 변환
@@ -124,25 +121,22 @@ const assetInfo = computed(() => {
 
   console.log('API 데이터:', myPageData.value.userInfo.assetStatus);
 
-  const assetMap = myPageData.value.userInfo.assetStatus.reduce(
-    (acc, asset) => {
-      acc[asset.assetCategoryCode] = asset.amount;
-      return acc;
-    },
-    {}
-  );
+  const assetMap = myPageData.value.userInfo.assetStatus.reduce((acc, asset) => {
+    acc[asset.assetCategoryCode] = asset.amount;
+    return acc;
+  }, {});
 
   console.log('변환된 자산 맵:', assetMap);
 
   // 현재 백엔드에서 오는 카테고리 코드에 따라 매핑
   const result = {
     total: assetAmount.value,
-    real_estate: assetMap['1'] || assetMap[1] || 0, // 카테고리 1: 부동산
-    deposit: assetMap['2'] || assetMap[2] || 0, // 카테고리 2: 예적금
-    cash: assetMap['3'] || assetMap[3] || 0, // 카테고리 3: 현금 ✓
-    stock_fund: assetMap['4'] || assetMap[4] || 0, // 카테고리 4: 주식/펀드 ✓
-    business_equity: assetMap['5'] || assetMap[5] || 0, // 카테고리 5: 사업지분 ✓
-    etc: assetMap['6'] || assetMap[6] || 0, // 카테고리 6: 기타
+    real_estate: assetMap['1'] || assetMap[1] || 0,      // 카테고리 1: 부동산
+    deposit: assetMap['2'] || assetMap[2] || 0,          // 카테고리 2: 예적금  
+    cash: assetMap['3'] || assetMap[3] || 0,             // 카테고리 3: 현금 ✓
+    stock_fund: assetMap['4'] || assetMap[4] || 0,       // 카테고리 4: 주식/펀드 ✓
+    business_equity: assetMap['5'] || assetMap[5] || 0,  // 카테고리 5: 사업지분 ✓
+    etc: assetMap['6'] || assetMap[6] || 0,              // 카테고리 6: 기타
   };
 
   console.log('최종 자산 정보:', result);
@@ -211,8 +205,8 @@ const handleLogout = () => {
 
 const bookingItems = computed(() => {
   if (!myPageData.value?.bookingInfo) return [];
-
-  return myPageData.value.bookingInfo.map((booking) => ({
+  
+  return myPageData.value.bookingInfo.map(booking => ({
     id: booking.bookingId,
     date: new Date(booking.date).toISOString().split('T')[0], // timestamp를 YYYY-MM-DD 형식으로 변환
     time: booking.time,
