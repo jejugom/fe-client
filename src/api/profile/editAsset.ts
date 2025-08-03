@@ -21,7 +21,7 @@ export const ASSET_CATEGORY_MAP = {
 // 카테고리명을 코드로 변환하는 역매핑
 export const CATEGORY_NAME_TO_CODE = {
   부동산: '1',
-  예금: '2',
+  '예금/적금': '2',
   현금: '3',
   '주식/펀드': '4',
   '사업체/지분': '5',
