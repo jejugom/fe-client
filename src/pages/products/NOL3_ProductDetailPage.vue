@@ -90,7 +90,7 @@
     <div v-if="depositOptions.length">
       <p class="text-primary-300 mb-2 font-semibold">금리 정보</p>
       <table
-        class="w-full table-auto border-collapse overflow-hidden text-center text-sm"
+        class="w-full table-auto border-collapse overflow-hidden text-center"
       >
         <thead class="bg-surface-100 font-semibold">
           <tr>
@@ -119,7 +119,7 @@
     <div v-if="fundOptions.length">
       <p class="text-primary-300 mb-2 font-semibold">펀드 정보</p>
       <table
-        class="w-full table-auto border-collapse overflow-hidden text-center text-sm"
+        class="w-full table-auto border-collapse overflow-hidden text-center"
       >
         <thead class="bg-surface-100 font-semibold">
           <tr>
@@ -148,7 +148,7 @@
     <div v-if="mortgageOptions.length">
       <p class="text-primary-300 mb-2 font-semibold">대출 조건</p>
       <table
-        class="w-full table-auto border-collapse overflow-hidden text-center text-sm"
+        class="w-full table-auto border-collapse overflow-hidden text-center"
       >
         <thead class="bg-surface-100 font-semibold">
           <tr>

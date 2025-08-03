@@ -8,10 +8,10 @@
         'bg-secondary-100 text-secondary-500 border-secondary-300 border',
       color === 'surface' &&
         'text-surface-500 border-surface-200 border bg-white',
-      size === 'small' && 'h-8 w-20 text-sm',
+      size === 'small' && 'h-8 w-20',
       size === 'medium' && 'h-15 w-72 text-lg',
       size === 'large' && 'h-15 w-full text-lg',
-      size === 'square' && 'h-13 w-13 text-sm',
+      size === 'square' && 'h-13 w-13',
       $attrs.class,
     ]"
     v-bind="$attrs"

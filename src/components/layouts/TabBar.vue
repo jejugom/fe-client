@@ -6,7 +6,7 @@
       v-for="tab in tabs"
       :key="tab.name"
       :to="{ name: tab.name }"
-      class="flex w-13 flex-col items-center justify-center gap-1 text-sm"
+      class="flex w-13 flex-col items-center justify-center gap-1"
     >
       <img
         :src="isActive(tab.name) ? tab.iconActive : tab.icon"

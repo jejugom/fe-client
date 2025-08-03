@@ -19,7 +19,7 @@
         <div
           class="border-primary-300 mx-auto h-12 w-12 animate-spin rounded-full border-4 border-t-transparent"
         ></div>
-        <p class="text-lg text-gray-600">로그인 처리 중</p>
+        <p class="text-surface-400 text-lg">로그인 처리 중</p>
       </div>
 
       <!-- 오류 상태 -->

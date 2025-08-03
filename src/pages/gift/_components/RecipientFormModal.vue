@@ -87,12 +87,12 @@
               @input="handleAmountInput"
             />
             <span
-              class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-sm"
+              class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform"
             >
               만원
             </span>
           </div>
-          <p class="mt-1 w-full text-right text-sm text-blue-300">
+          <p class="mt-1 w-full text-right text-blue-300">
             {{ formatAmount(formData.giftedAmount) }}
           </p>
         </div>

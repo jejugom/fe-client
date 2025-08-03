@@ -1,9 +1,8 @@
 <template>
   <button
     :class="[
-
       // duration-200 유지, 검은 테두리 안보이도록 수정
-      'h-8 w-20 rounded-t-lg border border-b-0 text-sm font-semibold transition-colors duration-200',
+      'h-8 w-20 rounded-t-lg border border-b-0 font-semibold transition-colors duration-200',
       // 증여 페이지에서 사용, 노후 페이지에 영향 X (이미지는 중앙 정렬이 안 되어서 추가한 클랫스)
       'flex items-center justify-center',
       color === 'primary' && 'bg-primary-300 border-transparent text-white',

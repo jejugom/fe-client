@@ -41,7 +41,7 @@
 
 @layer base {
   body {
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
     color: var(--color-surface-500);
     font-family: var(--font-regular);
     transition: transform 300ms ease-in-out;

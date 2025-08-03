@@ -12,7 +12,7 @@
         <span class="text-primary-500 font-semibold">{{ recipientName }}</span>
         수증자를 삭제하시겠습니까?
       </p>
-      <p class="text-surface-400 mt-2 text-sm">
+      <p class="text-surface-400 mt-2">
         삭제된 수증자 정보는 복구할 수 없습니다.
       </p>
     </div>

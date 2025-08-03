@@ -25,7 +25,7 @@
         class="text-primary-300 mb-4 flex items-center justify-between text-2xl font-bold"
       >
         오늘의 금값
-        <span class="text-surface-300 font-regular text-sm">출처: FX</span>
+        <span class="text-surface-300 font-regular">출처: FX</span>
       </div>
       <GoldPriceCard class="mb-8" />
       <img :src="Gold" alt="Gold Banner" />

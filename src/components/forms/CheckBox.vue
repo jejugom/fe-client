@@ -6,7 +6,7 @@
   >
     <div class="flex flex-col">
       <div class="text-surface-500 text-base">{{ label }}</div>
-      <div class="text-surface-300 text-sm">{{ formattedAmount }}</div>
+      <div class="text-surface-300">{{ formattedAmount }}</div>
     </div>
     <img
       :src="isChecked ? Check : CheckNone"
