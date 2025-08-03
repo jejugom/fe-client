@@ -85,7 +85,7 @@ import { api_data } from '@/api/gift/giftAssets';
 import { dummyRecipients } from './_inputDummy';
 import Btn from '@/components/buttons/Btn.vue';
 
-import AssetCard from './_components/\bAssetCard.vue';
+import AssetCard from './_components/AssetCard.vue';
 import TabBtn from '../nohoo/_components/TabBtn.vue';
 import { useRouter } from 'vue-router';
 

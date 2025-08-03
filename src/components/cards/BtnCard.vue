@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'flex h-31.5 w-full items-center justify-between gap-6 rounded-lg border px-4 py-4',
+      'btn-pressed flex h-31.5 w-full items-center justify-between gap-6 rounded-lg border px-4 py-4',
       color === 'primary' && 'border-primary-300',
       color === 'secondary' && 'border-gold',
       color === 'surface' && 'border-surface-300',

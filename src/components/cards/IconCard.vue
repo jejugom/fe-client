@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'relative flex h-30 w-full items-center justify-start gap-6 rounded-lg p-4',
+      'btn-pressed relative flex h-30 w-full items-center justify-start gap-6 rounded-lg p-4',
       color === 'primary' && 'stroke-primary bg-primary-100',
       color === 'secondary' && 'stroke-secondary bg-secondary-100',
       $attrs.class,

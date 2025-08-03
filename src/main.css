@@ -49,6 +49,16 @@
 }
 
 @layer components {
+  .btn-pressed {
+    transition: all 150ms ease-in-out;
+  }
+  .btn-pressed:active {
+    transform: scale(1.02);
+    opacity: 0.9;
+    box-shadow: var(--shadow-xs);
+    box-shadow: var(--shadow-up-xs);
+  }
+
   .bg-gradient-cross-1 {
     background: linear-gradient(
       135deg,
