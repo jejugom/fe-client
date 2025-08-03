@@ -1,24 +1,26 @@
 <template>
-  <div
-    class="bg-secondary-100 flex h-50 w-full items-center justify-center gap-8 p-8"
-  >
+  <div class="relative left-1/2 w-screen max-w-150 -translate-x-1/2">
     <div
-      v-for="(item, idx) in items"
-      :key="idx"
-      class="flex w-24 flex-col items-center justify-between"
+      class="bg-secondary-100 flex h-50 w-full items-center justify-center gap-8 p-8"
     >
-      <img
-        v-if="getIcon(item.label)"
-        :src="getIcon(item.label) ?? undefined"
-        alt="icon"
-        class="h-20 w-20"
-      />
-      <span class="text-surface-300 mt-1 mb-2 text-base font-semibold">{{
-        item.label
-      }}</span>
-      <span class="font-point text-primary-500 text-center">
-        {{ item.value }}
-      </span>
+      <div
+        v-for="(item, idx) in items"
+        :key="idx"
+        class="flex w-24 flex-col items-center justify-between"
+      >
+        <img
+          v-if="getIcon(item.label)"
+          :src="getIcon(item.label) ?? undefined"
+          alt="icon"
+          class="h-20 w-20"
+        />
+        <span class="text-surface-300 mt-1 mb-2 text-base font-semibold">{{
+          item.label
+        }}</span>
+        <span class="font-point text-primary-500 text-center">
+          {{ item.value }}
+        </span>
+      </div>
     </div>
   </div>
 </template>

@@ -1,5 +1,8 @@
+<!-- Banner.vue -->
 <template>
-  <img :src="Img" alt="Banner Image" class="w-full object-cover" />
+  <div class="relative left-1/2 w-screen max-w-150 -translate-x-1/2">
+    <img :src="Img" alt="배너 이미지" class="h-auto w-full object-cover" />
+  </div>
 </template>
 
 <script setup lang="ts">

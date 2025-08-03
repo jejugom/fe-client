@@ -1,5 +1,7 @@
 <template>
-  <div class="relative w-full overflow-hidden">
+  <div
+    class="relative left-1/2 w-screen max-w-150 -translate-x-1/2 overflow-hidden"
+  >
     <div
       class="flex w-full transition-transform duration-300 ease-in-out"
       :style="{ transform: `translateX(-${currentIndex * 100}%)` }"

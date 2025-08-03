@@ -102,11 +102,7 @@
     </section>
 
     <!-- 광고 배너 -->
-    <img
-      :src="AdBanner"
-      alt="광고 배너"
-      class="mb-16 h-30 w-full object-cover"
-    />
+    <Banner class="mb-16" />
 
     <!-- 하단 서비스 특징 -->
     <section class="border-secondary-300 rounded-xl border p-4 text-center">
@@ -159,6 +155,7 @@ import Home4 from '@/assets/images/Home4.svg';
 import Home5 from '@/assets/images/Home5.svg';
 import Home6 from '@/assets/images/Home6.svg';
 import KakaoLoginBtn from '@/assets/images/kakao_login_medium_wide.png';
+import Banner from '@/components/cards/Banner.vue';
 
 /** Vue Router 인스턴스 - 페이지 네비게이션용 */
 const router = useRouter();

@@ -21,6 +21,7 @@ import Header from './Header.vue';
 import TabBar from './TabBar.vue';
 import LoadingPage from '@/pages/etc/ETL1_LoadingPage.vue';
 import FailPage from '@/pages/etc/ETL1_FailPage.vue';
+import Banner from '../cards/Banner.vue';
 
 const loadingStore = useLoadingStore();
 </script>
