@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen">
-    <nav class="sticky top-26 z-50 bg-white">
-      <div class="flex gap-2 overflow-x-auto bg-white">
+    <div
+      class="fixed top-[calc(4rem)] left-1/2 z-20 box-border w-full max-w-150 -translate-x-1/2 bg-white px-5 pt-4"
+    >
+      <div class="flex gap-2 overflow-x-auto">
         <TabBtn
           v-for="category in categories"
           :key="category.id"
@@ -19,7 +21,7 @@
         </TabBtn>
       </div>
       <div class="bg-surface-200 h-0.5 w-full" />
-    </nav>
+    </div>
 
     <div>
       <section

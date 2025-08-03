@@ -1,15 +1,19 @@
 <template>
-  <div class="flex flex-col">
-    <div class="flex gap-2">
-      <TabBtn
-        v-for="tab in tabs"
-        :key="tab"
-        :label="tab"
-        :color="selectedTab === tab ? 'primary' : 'surface'"
-        @click="selectTab(tab)"
-      />
+  <div
+    class="fixed top-[calc(4rem)] left-1/2 z-20 box-border w-full max-w-150 -translate-x-1/2 bg-white px-5 pt-4"
+  >
+    <div class="flex flex-col">
+      <div class="flex gap-2">
+        <TabBtn
+          v-for="tab in tabs"
+          :key="tab"
+          :label="tab"
+          :color="selectedTab === tab ? 'primary' : 'surface'"
+          @click="selectTab(tab)"
+        />
+      </div>
+      <div class="bg-surface-200 h-0.5 w-full" />
     </div>
-    <div class="bg-surface-200 h-0.5 w-full" />
   </div>
 </template>
 
