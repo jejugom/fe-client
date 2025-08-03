@@ -42,8 +42,10 @@
     </div>
 
     <!-- 로그아웃 및 회원탈퇴 -->
-    <div class="mt-4 flex items-center justify-end gap-4 text-xs text-red-300">
-      <div class="text-surface-500 cursor-pointer" @click="">사용방법 보기</div>
+    <div
+      class="text-surface-300 mt-4 flex items-center justify-end gap-4 text-sm"
+    >
+      <div class="text-primary-300 cursor-pointer" @click="">사용방법 보기</div>
       <div class="cursor-pointer underline" @click="handleLogout">로그아웃</div>
       <p class="cursor-pointer underline" @click="showModal = true">회원탈퇴</p>
     </div>
