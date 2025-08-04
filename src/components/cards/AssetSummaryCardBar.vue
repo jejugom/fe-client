@@ -1,10 +1,7 @@
 <template>
   <div class="border-primary-300 flex flex-col gap-2 rounded-xl border p-4">
     <div class="font-semibold">
-      <div class="text-lg">
-        <!-- <span class="text-gold">안정적인 주식형</span> 자산가        <br /> -->
-        지금까지 모은 자산은 이렇게 구성돼 있어요
-      </div>
+      <div class="text-lg"> 지금까지 모은 자산은 이렇게 구성돼 있어요 </div>
       <div>총 {{ assetAmount?.toLocaleString() }} 원</div>
     </div>
     <apexchart
@@ -58,6 +55,7 @@ const chartOptions = computed(() => ({
       show: false,
     },
     y: {
+      // toLocaleString()으로 이미 포맷팅하고 있습니다.
       formatter: (val: number) => `${val.toLocaleString()} 원`,
     },
   },

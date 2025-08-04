@@ -4,8 +4,8 @@
     @click="$emit('click')"
   >
     <!-- 카테고리 -->
-    <div class="text-primary-300 w-8 text-center text-base font-semibold">
-      {{ categoryLabel }}
+    <div class="text-primary-300 w-12 text-center text-base font-semibold">
+      {{ category }}
     </div>
 
     <!-- 질문 텍스트 -->
@@ -16,19 +16,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 
 const props = defineProps<{
   id: number;
-  category: string; // '상' | '증'
+  category: '상속' | '증여'; // ✅ 백엔드 데이터 그대로 사용
   question: string;
 }>();
 
 defineEmits<{
   (e: 'click'): void;
 }>();
-
-const categoryLabel = computed(() =>
-  props.category === '증' ? '증여' : '상속'
-);
 </script>

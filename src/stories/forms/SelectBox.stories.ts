@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import SelectBox from '@/components/forms/SelectBox.vue';
 
-const meta: Meta<typeof SelectBox> = {
+// SelectBox 컴포넌트의 제네릭 타입을 명시적으로 'string'으로 지정합니다.
+// 만약 다른 타입(number, boolean)을 사용한다면 해당 타입으로 변경해야 합니다.
+const meta: Meta<typeof SelectBox<string>> = {
   title: 'forms/SelectBox',
-  component: SelectBox,
+  component: SelectBox as any, // 'as any'를 사용해 타입스크립트의 엄격한 검사를 일시적으로 완화합니다.
   tags: ['autodocs'],
   argTypes: {
     modelValue: { control: 'text' },

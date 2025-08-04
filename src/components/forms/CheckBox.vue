@@ -48,7 +48,7 @@ const toggle = () => {
 
 // 금액을 만원/억원 형식으로 포맷팅
 const formattedAmount = computed(() => {
-  // 가져온 formatCurrency 함수를 사용
-  return formatCurrency(props.amount);
+  // props.amount를 Number()로 변환하여 formatCurrency에 전달
+  return formatCurrency(Number(props.amount));
 });
 </script>
