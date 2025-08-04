@@ -1,5 +1,7 @@
 <template>
-  <div class="relative w-full overflow-hidden">
+  <div
+    class="relative left-1/2 w-screen max-w-150 -translate-x-1/2 overflow-hidden"
+  >
     <div
       class="flex w-full transition-transform duration-300 ease-in-out"
       :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
@@ -12,13 +14,13 @@
 
     <!-- 좌우 이동 버튼 -->
     <button
-      class="shadow-up-xs bg-primary-100 absolute top-1/2 left-0.5 z-10 -translate-y-1/2 rounded-full p-2 shadow-xs"
+      class="shadow-up-xs bg-primary-100 btn-pressed absolute top-1/2 left-0.5 z-10 -translate-y-1/2 rounded-full p-2 shadow-xs"
       @click="prevSlide"
     >
       <img :src="ArrowPrev" alt="이전" class="h-4 w-4" />
     </button>
     <button
-      class="bg-primary-100 shadow-up-xs absolute top-1/2 right-0.5 z-10 -translate-y-1/2 rounded-full p-2 shadow-xs"
+      class="bg-primary-100 shadow-up-xs btn-pressed absolute top-1/2 right-0.5 z-10 -translate-y-1/2 rounded-full p-2 shadow-xs"
       @click="nextSlide"
     >
       <img :src="ArrowAfter" alt="다음" class="h-4 w-4" />
