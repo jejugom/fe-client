@@ -6,9 +6,7 @@
     <!-- <GiftSimulationResult /> -->
   </div>
   <Btn color="secondary" label="가족과 결과 함께 보기" size="large" />
-  <div
-    class="fixed bottom-[calc(5rem+1rem)] left-1/2 box-border w-full max-w-150 -translate-x-1/2 px-5"
-  >
+  <div class="mt-16 flex flex-col">
     <p class="text-primary-300 mb-2 text-center font-semibold">
       궁금한 점이 생기셨다면,<br />
       은행에서 자세히 알려드릴게요
