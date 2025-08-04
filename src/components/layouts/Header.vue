@@ -28,7 +28,15 @@ const router = useRouter();
 const route = useRoute();
 
 const goBack = () => {
-  router.back();
+  const referrer = document.referrer;
+
+  const isInternal = referrer.includes(window.location.host);
+
+  if (isInternal) {
+    router.back(); // 내부에서 온 경우 → 히스토리 뒤로 이동
+  } else {
+    router.push({ name: 'home' }); // 외부에서 온 경우 → 홈으로
+  }
 };
 
 const showBackBtn = computed(() => {

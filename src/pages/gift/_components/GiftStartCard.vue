@@ -1,6 +1,6 @@
 <template>
   <div
-    class="border-primary-300 mb-4 flex cursor-pointer items-center gap-6 rounded-xl border p-4"
+    class="border-primary-300 btn-pressed mb-4 flex cursor-pointer items-center gap-6 rounded-xl border p-4"
     @click="onClick"
   >
     <div class="aspect-square w-20 flex-shrink-0 overflow-hidden rounded-lg">

@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col items-center justify-center gap-8">
-    <div class="text-gold font-hakgyo text-5xl">404</div>
+    <div class="text-gold font-point text-5xl">404</div>
 
     <div class="text-center text-lg font-bold">
       정보를 찾지 못했어요.<br />걱정 마세요! <br />

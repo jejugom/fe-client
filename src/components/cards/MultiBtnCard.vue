@@ -28,14 +28,14 @@
     <div class="flex gap-2">
       <div
         :class="[
-          'bg-primary-100 text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg text-lg font-semibold',
+          'bg-primary-100 text-primary-500 btn-pressed flex h-20 w-15 items-center justify-center rounded-lg text-lg font-semibold',
         ]"
         @click="onClick1"
         >{{ btnText1 }}</div
       >
       <div
         :class="[
-          'text-primary-500 flex h-20 w-15 items-center justify-center rounded-lg bg-red-100 text-lg font-semibold',
+          'text-primary-500 btn-pressed flex h-20 w-15 items-center justify-center rounded-lg bg-red-100 text-lg font-semibold',
         ]"
         @click="onClick2"
         >{{ btnText2 }}</div

@@ -1,10 +1,9 @@
 <template>
-  <div class="flex flex-col gap-8">
-    <TabBtnGroup
-      :tabs="['맞춤', '예금', '적금', '펀드', '금', '주택담보']"
-      v-model:selectedTab="selectedTab"
-    />
-
+  <TabBtnGroup
+    :tabs="['맞춤', '예금', '적금', '펀드', '금', '주택담보']"
+    v-model:selectedTab="selectedTab"
+  />
+  <div class="mt-8 flex flex-col gap-8">
     <AdBox
       :selectedTab="selectedTab"
       :userName="userName"
@@ -185,7 +184,11 @@ const recommendedProducts = computed(() => {
           const saveTerms = options
             .filter((opt: any) => opt.saveTrm !== null)
             .map((opt: any) => `${opt.saveTrm}개월`);
-          const maxRate = Math.max(...options.map((opt: any) => ('intrRate2' in opt ? opt.intrRate2 : 0)));
+          const maxRate = Math.max(
+            ...options.map((opt: any) =>
+              'intrRate2' in opt ? opt.intrRate2 : 0
+            )
+          );
           tags.push(...saveTerms, `최고금리 ${maxRate.toFixed(2)}%`);
         }
       }

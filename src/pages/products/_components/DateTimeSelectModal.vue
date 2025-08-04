@@ -16,7 +16,10 @@
     <div v-if="selectedDate" class="mt-8">
       <h3 class="text-primary-300 mb-2 text-base font-semibold"> 시간 선택 </h3>
 
-      <div v-if="availableTimes.length > 0" class="grid grid-cols-4 gap-2">
+      <div
+        v-if="availableTimes.length > 0"
+        class="grid grid-cols-4 gap-2 text-sm"
+      >
         <Btn
           v-for="{ time, isReserved } in availableTimes"
           :key="time"

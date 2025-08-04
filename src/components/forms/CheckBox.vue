@@ -11,7 +11,7 @@
     <img
       :src="isChecked ? Check : CheckNone"
       alt="check icon"
-      class="h-7 w-7"
+      class="btn-pressed h-7 w-7"
     />
   </button>
 </template>

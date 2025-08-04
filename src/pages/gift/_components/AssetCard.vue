@@ -163,7 +163,7 @@
                     placeholder="0"
                     min="0"
                     max="100"
-                    class="border-surface-200 w-20 rounded border px-2 py-1 text-center"
+                    class="border-surface-200 focus:ring-gold focus:border-gold w-20 rounded border px-2 py-1 text-center focus:ring-1 focus:outline-none"
                   />
                   <span class="text-surface-500 text-sm">%</span>
 

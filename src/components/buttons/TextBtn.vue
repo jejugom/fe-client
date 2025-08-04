@@ -1,7 +1,7 @@
 <template>
   <button
     :class="[
-      'font-semibold',
+      'font-semibold active:scale-102 active:opacity-90',
       color === 'surface' && 'text-surface-400',
       color === 'primary' && 'text-primary-300',
       size === 'medium' && 'text-lg',

@@ -1,7 +1,7 @@
 <template>
   <button
     :class="[
-      'rounded-lg font-semibold',
+      'btn-pressed rounded-lg font-semibold',
       color === 'primary' && 'bg-primary-100 text-primary-500 stroke-primary',
       color === 'secondary' &&
         'bg-secondary-100 text-secondary-500 stroke-secondary',
