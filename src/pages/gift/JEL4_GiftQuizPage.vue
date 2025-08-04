@@ -48,25 +48,77 @@
     </div>
 
     <div class="border-primary-300 my-16 rounded-xl border bg-white p-4">
-      <div class="text-primary-300 mb-2 text-lg font-semibold">
-        수증자별 증여 금액
-      </div>
-      <div
-        v-for="beneficiary in beneficiaries"
-        :key="beneficiary.id"
-        class="mb-2"
-      >
-        <span class="font-medium">{{ beneficiary.name }}: </span>
-        <span>
-          {{ formatCurrency(calculateTotalForBeneficiary(beneficiary.id)) }}
-        </span>
-      </div>
-      <div class="text-surface-500 text-sm">
-        총 증여 금액: {{ formatCurrency(calculateGrandTotal()) }}
-      </div>
+      <template v-if="mode === 'gift'">
+        <div class="text-primary-300 mb-2 text-lg font-semibold">
+          수증자별 증여 금액
+        </div>
+        <div
+          v-for="beneficiary in beneficiaries"
+          :key="beneficiary.id"
+          class="mb-2"
+        >
+          <span class="font-medium">{{ beneficiary.name }}: </span>
+          <span>
+            {{ formatCurrency(calculateTotalForBeneficiary(beneficiary.id)) }}
+          </span>
+        </div>
+        <div class="text-surface-500 text-sm">
+          총 증여 금액: {{ formatCurrency(calculateGrandTotal()) }}
+        </div>
+      </template>
+
+      <template v-else-if="mode === 'inheritance'">
+        <div class="text-primary-300 mb-4 text-lg font-semibold">
+          상속인별 상속 자산 요약
+        </div>
+        <div
+          v-for="beneficiary in beneficiaries"
+          :key="beneficiary.id"
+          class="border-primary-100 mb-4 border-b pb-2 last:mb-0 last:border-b-0"
+        >
+          <div class="mb-2 flex items-center justify-between">
+            <div class="text-primary-500 text-base font-semibold">
+              {{ beneficiary.name }}
+            </div>
+            <div class="text-primary-500 text-base font-semibold">
+              {{ formatCurrency(calculateTotalForBeneficiary(beneficiary.id)) }}
+            </div>
+          </div>
+          <div class="pl-2">
+            <div
+              v-for="asset in getAssetsForBeneficiary(beneficiary.id)"
+              :key="asset.id"
+              class="text-surface-500 flex justify-between text-sm"
+            >
+              <span>{{ asset.name }}</span>
+              <span>{{ formatCurrency(asset.value) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="text-primary-300 text-right text-sm">
+          총 상속 자산: {{ formatCurrency(calculateGrandTotal()) }}
+        </div>
+      </template>
     </div>
 
-    <div class="w-full max-w-150">
+    <div
+      v-if="mode === 'inheritance'"
+      class="flex w-full max-w-150 flex-col space-y-2"
+    >
+      <Btn
+        color="primary"
+        label="추가 유언 작성하기"
+        size="large"
+        @click="goToWill"
+      />
+      <Btn
+        color="surface"
+        label="바로 유언장 보러가기"
+        size="large"
+        @click="goToResult"
+      />
+    </div>
+    <div v-else class="w-full max-w-150">
       <Btn
         color="primary"
         label="세액 및 절세 전략 확인하기"
@@ -78,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, withDefaults } from 'vue';
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 import AssetCard from './_components/AssetCard.vue';
@@ -87,7 +139,6 @@ import { fetchGiftPageData } from '@/api/gift/recipient';
 import { formatCurrency } from '@/utils/format';
 
 // types/gift/recipient.ts에서 필요한 타입들을 직접 임포트합니다.
-// 이제 `AssetStatusSummaryDto` 타입이 Vue 컴포넌트의 로직과 일치합니다.
 import type {
   AssetStatusSummaryDto,
   RecipientResponseDto,
@@ -115,6 +166,15 @@ interface Category {
   id: string;
   name: string;
 }
+
+const props = withDefaults(
+  defineProps<{
+    mode: 'gift' | 'inheritance';
+  }>(),
+  {
+    mode: 'gift',
+  }
+);
 
 const router = useRouter();
 
@@ -150,7 +210,7 @@ const loadAssetsAndBeneficiaries = async () => {
     const recipients: RecipientResponseDto[] = apiResponse.recipients;
     const assetSummary: AssetStatusSummaryDto[] = apiResponse.assetSummary;
 
-    // 수증자 목록 업데이트
+    // 수증자/상속인 목록 업데이트
     beneficiaries.splice(
       0,
       beneficiaries.length,
@@ -167,13 +227,13 @@ const loadAssetsAndBeneficiaries = async () => {
       allAssets.set(category.id, []);
     });
 
-    // 백엔드 필드 수정 요청하기 ->  name만 수정
+    // 백엔드 필드 수정 요청하기 -> name만 수정
     assetSummary.forEach((summaryItem, index) => {
       const categoryId = categoryCodeMap[summaryItem.assetCategoryCode];
       if (categoryId) {
         const newAsset: Asset = {
           id: `${categoryId}-${index}`,
-          name: `${categoryCodeMap[summaryItem.assetCategoryCode]} 자산`,
+          name: `${categories.find((c) => c.id === categoryId)?.name || ''} 자산`,
           value: summaryItem.amount,
           selected: false,
           beneficiary: null,
@@ -198,7 +258,7 @@ const onAssetUpdate = (updatedAsset: Asset) => {
   });
 };
 
-// 수증자별 총 금액 계산
+// 수증자/상속인별 총 금액 계산
 const calculateTotalForBeneficiary = (beneficiaryId: string): number => {
   let total = 0;
 
@@ -218,7 +278,36 @@ const calculateTotalForBeneficiary = (beneficiaryId: string): number => {
   return total;
 };
 
-// 총 증여 금액 계산
+// 특정 상속인에게 할당된 자산 목록 반환
+const getAssetsForBeneficiary = (beneficiaryId: string) => {
+  const assets: Asset[] = [];
+  Array.from(allAssets.values())
+    .flat()
+    .forEach((asset) => {
+      if (asset.selected) {
+        if (asset.beneficiary?.id === beneficiaryId) {
+          assets.push(asset);
+        } else if (
+          asset.isMultipleBeneficiaries &&
+          asset.distributionRatios &&
+          asset.distributionRatios[beneficiaryId] > 0
+        ) {
+          // 비율로 나눈 자산도 목록에 추가 (예: "부동산 자산 (지분 50%)")
+          assets.push({
+            ...asset,
+            name: `${asset.name} (지분 ${asset.distributionRatios[beneficiaryId]}%)`,
+            value: Math.floor(
+              (asset.value * (asset.distributionRatios[beneficiaryId] || 0)) /
+                100
+            ),
+          });
+        }
+      }
+    });
+  return assets;
+};
+
+// 총 증여/상속 금액 계산
 const calculateGrandTotal = (): number => {
   return Array.from(allAssets.values())
     .flat()
@@ -258,21 +347,32 @@ const handleScroll = () => {
 const goToResult = () => {
   const recipientSummaries = beneficiaries.map((beneficiary) => {
     const giftAmount = calculateTotalForBeneficiary(beneficiary.id);
-    // 예상 증여세는 계산 로직이 없으므로 임시로 0으로 설정
     return {
       name: beneficiary.name,
       giftAmount: giftAmount,
-      estimatedTax: 0, // 임시 값
+      estimatedTax: 0,
     };
   });
 
-  const totalGiftTax = 0; // 임시 값
+  // 총 세금도 임시 값
+  const totalGiftTax = 0;
 
   router.push({
-    name: 'gift-result',
+    name: props.mode === 'gift' ? 'gift-result' : 'inheritance-result',
     state: {
       recipientSummaries: recipientSummaries,
       totalGiftTax: totalGiftTax,
+      mode: props.mode,
+    },
+  });
+};
+
+// 유언 페이지로 이동
+const goToWill = () => {
+  router.push({
+    name: 'inheritance-will',
+    state: {
+      beneficiaries: beneficiaries,
     },
   });
 };
