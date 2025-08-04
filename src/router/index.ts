@@ -15,6 +15,7 @@ import nohooRoutes from './nohoo';
 import profileRoutes from './profile';
 import assetSetting from './assetSetting';
 import productRoutes from './product';
+import inheritanceRoutes from './inheritance';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +43,7 @@ const router = createRouter({
     ...nohooRoutes,
     ...productRoutes,
     ...profileRoutes,
+    ...inheritanceRoutes,
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
