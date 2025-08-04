@@ -8,7 +8,7 @@
       />
     </div>
 
-    <div v-if="selectedTab === '예금' || selectedTab === '적금'">
+    <div v-if="selectedTab === '예금'">
       <div class="mb-2 flex items-end justify-between">
         <span class="text-primary-300 text-2xl font-bold">
           금리 흐름을 확인하고<br />더 나은 예금 상품을 골라보세요!
@@ -18,7 +18,19 @@
       <InterestRateCard :interestRateData="graphStore.interestRate" />
     </div>
 
-    <Banner v-if="selectedTab === '주택담보'" />
+    <div v-if="selectedTab === '적금'">
+      <div v-if="news.length > 0">
+        <NewsCard :newsItem="news[0]" />
+      </div>
+      <Banner v-else />
+    </div>
+
+    <div v-if="selectedTab === '주택담보'">
+      <div v-if="news.length > 0">
+        <NewsCard :newsItem="news[0]" />
+      </div>
+      <Banner v-else />
+    </div>
 
     <div v-if="selectedTab === '금'">
       <div
@@ -30,6 +42,13 @@
       <GoldPriceCard class="mb-8" />
       <img :src="Gold" alt="Gold Banner" />
     </div>
+
+    <div v-if="selectedTab === '펀드'">
+      <div v-if="news.length > 0">
+        <NewsCard :newsItem="news[0]" />
+      </div>
+      <Banner v-else />
+    </div>
   </div>
 </template>
 
@@ -40,12 +59,15 @@ import InterestRateCard from './InterestRateCard.vue';
 import GoldPriceCard from './GoldPriceCard.vue';
 import { useGraphStore } from '@/stores/interestRate';
 import Gold from '@/assets/images/goldBanner.png';
+import type { News } from '@/api/nohoo/nohoo';
+import NewsCard from '@/components/cards/NewsCard.vue';
 
 defineProps<{
   selectedTab: string;
   userName: string;
   assetAmount: number;
   assetSummary: { category: string; amount: number }[];
+  news: News[];
 }>();
 
 const graphStore = useGraphStore();
