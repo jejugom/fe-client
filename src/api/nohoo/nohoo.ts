@@ -77,6 +77,14 @@ export interface FundProduct {
   optionList: FundOption[];
 }
 
+export interface News {
+  category: number;
+  title: string;
+  link: string;
+  date: string;
+  summary: string;
+}
+
 export interface ParsedApiResponse {
   userInfo: UserInfo[];
   customRecommendPrdt: CustomRecommendPrdt[];
@@ -85,6 +93,7 @@ export interface ParsedApiResponse {
   mortgageLoan: MortgageLoan[];
   goldProducts: GoldProduct[];
   fundProducts: FundProduct[];
+  news: News[];
 }
 
 export async function fetchNohooData(): Promise<ParsedApiResponse> {

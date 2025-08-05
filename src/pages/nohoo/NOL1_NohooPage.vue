@@ -9,6 +9,7 @@
       :userName="userName"
       :assetAmount="totalAsset"
       :assetSummary="assetSummary"
+      :news="filteredNews"
     />
     <div v-if="selectedTab !== '금'" class="flex justify-end">
       <SelectBox size="small" v-model="sortOption">
@@ -61,10 +62,15 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import TabBtnGroup from './_components/TabBtnGroup.vue';
 import BtnCard from '@/components/cards/BtnCard.vue';
+import NewsCard from '@/components/cards/NewsCard.vue';
 import AdBox from './_components/AdBox.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import { useProductStore } from '@/stores/product';
-import { fetchNohooData, type ParsedApiResponse } from '@/api/nohoo/nohoo';
+import {
+  fetchNohooData,
+  type ParsedApiResponse,
+  type News,
+} from '@/api/nohoo/nohoo';
 import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
@@ -74,12 +80,14 @@ const loadingStore = useLoadingStore();
 const data = ref<ParsedApiResponse | null>(null);
 const selectedTab = ref('맞춤');
 const sortOption = ref<'name' | 'score' | 'rate'>('name');
+const news = ref<News[]>([]);
 
 onMounted(async () => {
   loadingStore.startLoading();
   try {
     const result = await fetchNohooData();
     data.value = result;
+    news.value = result.news;
 
     // API 응답 데이터를 store에 저장할 형식으로 매핑
     productStore.setAllProducts({
@@ -110,6 +118,21 @@ onMounted(async () => {
   } finally {
     loadingStore.stopLoading();
   }
+});
+
+const filteredNews = computed(() => {
+  const tabCategoryMap: Record<string, number> = {
+    예금: 1,
+    적금: 2,
+    주택담보: 3,
+    금: 4,
+    펀드: 5,
+  };
+  const category = tabCategoryMap[selectedTab.value];
+  if (category) {
+    return news.value.filter((item) => item.category === category);
+  }
+  return [];
 });
 
 const userInfo = computed(() => data.value?.userInfo[0]);
