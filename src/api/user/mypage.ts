@@ -27,9 +27,24 @@ export interface MyPageResponse {
   bookingInfo: BookingInfo[];
 }
 
+export interface BookingUpdateRequest {
+  date: string;
+  time: string;
+}
+
 export const mypageApi = {
   async getMyPageData(): Promise<MyPageResponse> {
     const response = await api.get('/api/user/mypage');
+    return response.data;
+  },
+
+  async updateBooking(bookingId: string, data: BookingUpdateRequest): Promise<void> {
+    const response = await api.patch(`/api/bookings/${bookingId}`, data);
+    return response.data;
+  },
+
+  async deleteBooking(bookingId: string): Promise<void> {
+    const response = await api.delete(`/api/bookings/${bookingId}`);
     return response.data;
   },
 };

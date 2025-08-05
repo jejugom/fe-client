@@ -8,13 +8,13 @@
     <!-- 예약 내역이 2개 이상일 때는 슬라이드로 보여주기 -->
     <Carousel v-if="bookingItems.length > 1" :items="bookingItems">
       <template #default="{ item }">
-        <RegisterCard :booking="item" />
+        <RegisterCard :booking="item" @updated="loadMyPageData" />
       </template>
     </Carousel>
 
     <!-- 예약이 1개뿐일 때는 일반 렌더링 -->
     <div v-else-if="bookingItems.length === 1">
-      <RegisterCard :booking="bookingItems[0]" />
+      <RegisterCard :booking="bookingItems[0]" @updated="loadMyPageData" />
     </div>
 
     <!-- 예약 내역이 없을 때 -->
