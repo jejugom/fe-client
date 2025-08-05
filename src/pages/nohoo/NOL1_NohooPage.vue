@@ -35,11 +35,18 @@
         찾으신 조건으로는 상품이 아직 준비 중이에요!<br />조건을 조금
         바꿔보시겠어요?
       </div>
-      <div
-        v-if="selectedTab === '맞춤'"
-        class="text-primary-300 text-2xl font-semibold"
-      >
-        {{ userName }}님께 딱 맞는 상품만 보여드릴게요
+      <div v-if="selectedTab === '맞춤'">
+        <p class="text-primary-300 text-2xl font-semibold">
+          딱 맞는 상품만 보여드릴게요</p
+        >
+        <p v-if="recommendationCommentParts" class="mt-2">
+          <span>{{ recommendationCommentParts.name }}</span>
+          님께는
+          <span class="text-gold font-semibold">{{
+            recommendationCommentParts.category
+          }}</span>
+          상품이 가장 많이 추천되었어요.
+        </p>
       </div>
       <BtnCard
         v-for="product in selectedTab === '맞춤'
@@ -82,6 +89,18 @@ const selectedTab = ref('맞춤');
 const sortOption = ref<'name' | 'score' | 'rate'>('name');
 const news = ref<News[]>([]);
 
+const PRODUCT_CATEGORY_MAP: Record<string, number> = {
+  예금: 1,
+  적금: 2,
+  주택담보: 3,
+  금: 4,
+  펀드: 5,
+};
+
+const CATEGORY_LABEL_MAP = Object.fromEntries(
+  Object.entries(PRODUCT_CATEGORY_MAP).map(([k, v]) => [String(v), k])
+);
+
 onMounted(async () => {
   loadingStore.startLoading();
   try {
@@ -121,23 +140,16 @@ onMounted(async () => {
 });
 
 const filteredNews = computed(() => {
-  const tabCategoryMap: Record<string, number> = {
-    예금: 1,
-    적금: 2,
-    주택담보: 3,
-    금: 4,
-    펀드: 5,
-  };
-  const category = tabCategoryMap[selectedTab.value];
+  const category = PRODUCT_CATEGORY_MAP[selectedTab.value];
   if (category) {
     return news.value.filter((item) => item.category === category);
   }
   return [];
 });
-
-const userInfo = computed(() => data.value?.userInfo[0]);
-const userName = computed(() => userInfo.value?.userName.userName ?? '');
-const assetInfo = computed(() => data.value?.userInfo[0]?.assetStatus ?? []);
+const userInfo = computed(() => data.value?.userInfo ?? {});
+const userName = computed(() => userInfo.value.userName ?? '');
+console.log(userName.value); // "최승아"
+const assetInfo = computed(() => userInfo.value.assetStatus ?? []);
 const totalAsset = computed(() =>
   assetInfo.value.reduce(
     (acc: number, cur: { amount: number }) => acc + cur.amount,
@@ -352,6 +364,40 @@ const filteredProducts = computed(() => {
       ? products.sort((a, b) => a.maxRate - b.maxRate)
       : products.sort((a, b) => b.maxRate - a.maxRate)
     : products.sort((a, b) => a.finPrdtNm.localeCompare(b.finPrdtNm));
+});
+
+// 가장 많이 추천된 카테고리 계산
+const mostRecommendedCategory = computed(() => {
+  const recommendItems = productStore.getProductsByRecommendIds(
+    data.value?.customRecommendPrdt ?? []
+  );
+
+  const counts: Record<string, number> = {};
+
+  recommendItems.forEach((item) => {
+    const category = item.finPrdtCategory;
+    if (!category) return;
+    counts[category] = (counts[category] || 0) + 1;
+  });
+
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const topCategoryCode = sorted[0]?.[0]; // '1', '2' 등
+  const count = sorted[0]?.[1] ?? 0;
+
+  return {
+    categoryCode: topCategoryCode,
+    categoryLabel: CATEGORY_LABEL_MAP[topCategoryCode] ?? '기타',
+    count,
+  };
+});
+
+const recommendationCommentParts = computed(() => {
+  const { categoryLabel, count } = mostRecommendedCategory.value;
+  if (!count) return null;
+  return {
+    name: userName.value,
+    category: categoryLabel,
+  };
 });
 
 const goToDetail = (id: string) => {
