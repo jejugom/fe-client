@@ -61,6 +61,7 @@ import { useGraphStore } from '@/stores/interestRate';
 import Gold from '@/assets/images/goldBanner.png';
 import type { News } from '@/api/nohoo/nohoo';
 import NewsCard from '@/components/cards/NewsCard.vue';
+import AssetSummaryCardPie from '@/components/cards/AssetSummaryCardPie.vue';
 
 defineProps<{
   selectedTab: string;

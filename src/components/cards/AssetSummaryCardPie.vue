@@ -2,86 +2,105 @@
   <div class="border-primary-300 flex flex-col gap-2 rounded-xl border p-4">
     <div class="font-semibold">
       <div class="text-lg">
-        <!-- <span class="text-gold">안정적인 주식형</span> 자산가<br /> -->
-        <span class="text-primary-300">{{ userName }}</span> 님이 갖고 계신
-        자산입니다
+        {{ userName }}님은
+        <span class="text-primary-300 font-semibold">
+          {{ maxAsset.label }}
+        </span>
+        이(가)
+        <span class="text-primary-300 font-semibold">
+          {{ maxAsset.ratio }}%
+        </span>
+        로 가장 많아요
       </div>
-      <div>{{ assetAmount?.toLocaleString() }} 원</div>
     </div>
-    <apexchart 
-      v-if="series.length > 0" 
-      type="pie" 
-      :options="chartOptions" 
-      :series="series">
-    </apexchart>
-    <div v-else class="text-center py-8 text-gray-500">
-      자산 데이터가 없습니다.
-    </div>
+    <apexchart
+      type="donut"
+      height="300"
+      :options="chartOptions"
+      :series="series"
+    />
   </div>
 </template>
 
-<script setup>
-import { computed } from 'vue';
+<script setup lang="ts">
+import { computed, defineProps } from 'vue';
 
-const props = defineProps({
-  userName: String,
-  assetAmount: [String, Number],
-  assetInfo: Object,
-});
+const props = defineProps<{
+  userName: string;
+  assetAmount: number;
+  assetInfo: { category: string; amount: number }[];
+}>();
 
-const series = computed(() => {
-  if (!props.assetInfo) return [];
-  
-  const values = [
-    props.assetInfo.real_estate,
-    props.assetInfo.deposit,
-    props.assetInfo.cash,
-    props.assetInfo.stock_fund,
-    props.assetInfo.business_equity,
-    props.assetInfo.etc,
-  ];
-  
-  console.log('차트 시리즈 데이터:', values);
-  
-  // 모든 값이 0인 경우 빈 배열 반환하여 차트 숨김
-  const hasData = values.some(val => val > 0);
-  if (!hasData) {
-    console.log('모든 자산 값이 0이므로 차트를 숨깁니다');
-    return [];
-  }
-  
-  return values;
+const labels = computed(() => props.assetInfo.map((item) => item.category));
+const series = computed(() => props.assetInfo.map((item) => item.amount));
+
+// 가장 비율 높은 항목 구하기
+const maxAsset = computed(() => {
+  const values = series.value;
+  const total = props.assetAmount || 0;
+  if (values.length === 0 || total === 0) return { label: '', ratio: '0.0' };
+
+  const maxIndex = values.reduce(
+    (maxIdx, val, idx, arr) => (val > arr[maxIdx] ? idx : maxIdx),
+    0
+  );
+  const label = labels.value[maxIndex];
+  const ratio = ((values[maxIndex] / total) * 100).toFixed(1);
+
+  return { label, ratio };
 });
 
 const chartOptions = computed(() => {
-  const labels = ['부동산', '예적금', '현금', '주식/펀드', '사업지분', '기타'];
-  const values = series.value;
-  const sortedIndices = values
-    .map((val, idx) => ({ val, idx }))
-    .sort((a, b) => b.val - a.val)
-    .slice(0, 3) // 상위 3개만
-    .map((item) => item.idx);
+  const maxIndex = series.value.reduce(
+    (maxIdx, val, idx, arr) => (val > arr[maxIdx] ? idx : maxIdx),
+    0
+  );
 
   return {
     chart: {
-      type: 'pie',
+      type: 'donut',
     },
-    labels,
-    colors: ['#5B9BD5', '#70AD47', '#ED7D31', '#7030A0', '#7F7F7F', '#264478'],
+    labels: labels.value,
+    colors: labels.value.map((_, idx) =>
+      idx === maxIndex ? '#3674b5' : '#dedede'
+    ),
     legend: {
-      show: false,
-    },
-    dataLabels: {
-      enabled: true,
-      formatter: (val, { seriesIndex }) => {
-        return sortedIndices.includes(seriesIndex)
-          ? `${labels[seriesIndex]}: ${val.toFixed(1)}%`
-          : '';
+      position: 'right',
+      fontSize: '12px',
+      formatter: (seriesName: string, opts: any) => {
+        const val = opts.w.globals.series[opts.seriesIndex];
+        const total = opts.w.globals.series.reduce(
+          (a: number, b: number) => a + b,
+          0
+        );
+        const ratio = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+        return `${seriesName}: ${ratio}%`;
       },
     },
     tooltip: {
-      y: {
-        formatter: (val) => `${val.toLocaleString()} 원`,
+      show: false,
+    },
+    dataLabels: {
+      enabled: false,
+      formatter: (val: number, { seriesIndex }: any) => {
+        return seriesIndex === maxIndex
+          ? `${labels.value[seriesIndex]}: ${val.toFixed(1)}%`
+          : '';
+      },
+    },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '65%',
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              label: '총 자산',
+              formatter: () => `${props.assetAmount.toLocaleString()} 원`,
+            },
+          },
+        },
       },
     },
   };
