@@ -225,7 +225,7 @@ const goToRegister = async () => {
 
   // SMS 전송을 위한 예약 정보
   const smsData: SmsData = {
-    phoneNumber: '01099255708', // 실제로는 사용자 입력값 사용
+    phoneNumber: '01071100441', // 실제로는 사용자 입력값 사용
     productName: productName.value,
     branchName: branchValue.value,
     reservationDate: selectedReservation.value.date,
@@ -254,14 +254,14 @@ const goToRegister = async () => {
     }
 
     // SMS 전송 API - 구현 완료 - 추후 이 코드로 교체
-    // const result = await smsApi.send(smsData);
-    // if (result.success) {
-    //   console.log('SMS 전송 성공:', result);
-    //   router.push({ name: 'register-complete' });
-    // } else {
-    //   alert('SMS 전송 실패: ' + result.message);
-    //   // 오류 페이지 라우터 푸시
-    // }
+    const result = await smsApi.send(smsData);
+    if (result.success) {
+      console.log('SMS 전송 성공:', result);
+      router.push({ name: 'register-complete' });
+    } else {
+      alert('SMS 전송 실패: ' + result.message);
+      // 오류 페이지 라우터 푸시
+    }
   } catch (error) {
     console.error('SMS API 오류:', error);
     alert('SMS API 요청에 실패했습니다.');

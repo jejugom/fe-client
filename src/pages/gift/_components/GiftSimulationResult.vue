@@ -58,7 +58,7 @@
     <div class="mt-8 flex flex-col items-center justify-center gap-4">
       <Btn
         color="secondary"
-        :label="isMobile ? '결과 공유하기' : '결과 이미지 다운로드'"
+        :label="isMobile ? '결과 공유하기 (PDF)' : '결과 PDF 다운로드'"
         size="large"
         @click="handleShareOrDownload"
       />
@@ -71,6 +71,7 @@ import { ref, computed, nextTick, onMounted } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
 import { formatCurrency } from '@/utils/format';
 import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import Btn from '@/components/buttons/Btn.vue';
 
 const apexchart = VueApexCharts;
@@ -163,8 +164,8 @@ const chartOptions = computed(() => ({
   },
 }));
 
-// 이미지 저장 로직
-const saveAsImage = async () => {
+// PDF 생성 및 다운로드/공유 로직
+const generateAndDownloadPDF = async () => {
   if (!captureTargetRef.value) return;
 
   await nextTick();
@@ -177,66 +178,62 @@ const saveAsImage = async () => {
       allowTaint: true,
     });
 
-    const imageURL = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = imageURL;
-    link.download = '증여_시뮬레이션_결과.png';
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgData = canvas.toDataURL('image/png');
+    const imgWidth = 210; // A4 가로 사이즈 (mm)
+    const pageHeight = 295; // A4 세로 사이즈 (mm)
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    let position = 0;
 
-    alert('결과 이미지가 다운로드되었습니다.');
-  } catch (error) {
-    console.error('이미지 저장 실패:', error);
-    alert('이미지 저장에 실패했습니다.');
-  }
-};
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
 
-// 이미지 공유 로직
-const shareImage = async () => {
-  if (!captureTargetRef.value) return;
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
 
-  await nextTick();
-  await document.fonts.ready;
-
-  try {
-    const canvas = await html2canvas(captureTargetRef.value, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
+    const pdfBlob = pdf.output('blob');
+    const file = new File([pdfBlob], '증여_시뮬레이션_결과.pdf', {
+      type: 'application/pdf',
     });
 
-    const imageURL = canvas.toDataURL('image/png');
-
-    const response = await fetch(imageURL);
-    const blob = await response.blob();
-    const file = new File([blob], '증여_시뮬레이션_결과.png', {
-      type: 'image/png',
-    });
-
-    if (navigator.canShare?.({ files: [file] })) {
+    if (isMobile.value && navigator.canShare?.({ files: [file] })) {
+      // 모바일에서 공유
       await navigator.share({
         title: '증여 시뮬레이션 결과',
-        text: '시뮬레이션 결과를 확인해보세요.',
+        text: '시뮬레이션 결과를 PDF로 확인해보세요.',
         files: [file],
       });
     } else {
-      // 웹 공유 API를 지원하지 않을 경우 다운로드로 대체
-      saveAsImage();
+      // 데스크탑 또는 공유가 불가능한 경우 다운로드
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(pdfBlob);
+      link.download = '증여_시뮬레이션_결과.pdf';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+
+      alert(
+        isMobile.value
+          ? '공유 기능을 사용할 수 없어 PDF를 다운로드합니다.'
+          : '결과 PDF가 다운로드되었습니다.'
+      );
     }
   } catch (error) {
-    console.error('이미지 공유 실패:', error);
-    alert('이미지 공유에 실패했습니다. 다운로드 기능을 사용해주세요.');
+    console.error('PDF 생성/공유 실패:', error);
+    alert('결과를 공유하거나 저장하는 데 실패했습니다.');
   }
 };
 
 const handleShareOrDownload = () => {
-  if (isMobile.value) {
-    shareImage();
-  } else {
-    saveAsImage();
-  }
+  generateAndDownloadPDF();
 };
 </script>
 
