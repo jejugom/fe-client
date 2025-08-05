@@ -77,6 +77,7 @@ import {
   fetchNohooData,
   type ParsedApiResponse,
   type News,
+  type UserInfo,
 } from '@/api/nohoo/nohoo';
 import { useLoadingStore } from '@/stores/loading';
 
@@ -146,10 +147,9 @@ const filteredNews = computed(() => {
   }
   return [];
 });
-const userInfo = computed(() => data.value?.userInfo ?? {});
-const userName = computed(() => userInfo.value.userName ?? '');
-console.log(userName.value); // "최승아"
-const assetInfo = computed(() => userInfo.value.assetStatus ?? []);
+const userInfo = computed<UserInfo | undefined>(() => data.value?.userInfo);
+const userName = computed(() => userInfo.value?.userName ?? '');
+const assetInfo = computed(() => userInfo.value?.assetStatus ?? []);
 const totalAsset = computed(() =>
   assetInfo.value.reduce(
     (acc: number, cur: { amount: number }) => acc + cur.amount,

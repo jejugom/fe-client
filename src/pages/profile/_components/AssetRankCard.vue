@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import type { ApexOptions } from 'apexcharts';
 
 const props = defineProps({
   userName: String,

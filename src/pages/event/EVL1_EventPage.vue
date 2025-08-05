@@ -26,7 +26,7 @@
         </template>
       </IconCard>
     </div>
-    <div class="space-y-4">
+    <!-- <div class="space-y-4">
       <div class="text-primary-300 text-2xl font-bold">말동무가 되어드려요</div>
       <IconCard
         color="secondary"
@@ -37,7 +37,7 @@
           <img :src="ChatBot" class="h-18" />
         </template>
       </IconCard>
-    </div>
+    </div> -->
   </div>
 </template>
 

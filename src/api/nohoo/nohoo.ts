@@ -84,7 +84,7 @@ export interface News {
 }
 
 export interface ParsedApiResponse {
-  userInfo: UserInfo[];
+  userInfo: UserInfo;
   customRecommendPrdt: CustomRecommendPrdt[];
   timeDeposits: TimeDeposit[];
   savingsDeposits: SavingDeposit[];
