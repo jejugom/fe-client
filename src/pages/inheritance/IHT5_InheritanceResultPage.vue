@@ -30,9 +30,10 @@
           <table class="w-full table-fixed">
             <thead>
               <tr class="border-b border-black bg-gray-100 text-left">
-                <th class="w-1/5 px-4 py-2 font-bold">자산 종류</th>
-                <th class="w-2/5 px-4 py-2 font-bold">자산 설명</th>
                 <th class="w-1/5 px-4 py-2 font-bold">상속자</th>
+                <th class="w-1/5 px-4 py-2 font-bold">자산 종류</th>
+                <th class="w-2/5 px-4 py-2 font-bold">자산 이름</th>
+
                 <th class="w-1/5 px-4 py-2 font-bold">금액</th>
               </tr>
             </thead>
@@ -42,12 +43,21 @@
                 :key="index"
                 class="border-t border-black"
               >
+                <td class="px-4 py-2">{{ item.recipient.name }}</td>
                 <td class="px-4 py-2">{{ item.category }}</td>
                 <td class="px-4 py-2">{{ item.description }}</td>
-                <td class="px-4 py-2">{{ item.recipient.name }}</td>
+
                 <td class="px-4 py-2 text-right">{{
                   formatCurrency(item.amount)
                 }}</td>
+              </tr>
+              <tr v-if="distributedAssets.length === 0">
+                <td
+                  colspan="4"
+                  class="px-4 py-2 text-center text-sm text-gray-500"
+                >
+                  분배된 자산이 없습니다.
+                </td>
               </tr>
             </tbody>
           </table>
@@ -70,6 +80,7 @@
         <p class="text-center text-sm">유언자: 홍길동 (인)</p>
       </section>
     </div>
+
     <div class="flex flex-col">
       <Btn color="secondary" label="가족에게 공유하기" size="large" />
       <div class="mt-16 flex flex-col">
@@ -90,12 +101,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { formatCurrency } from '@/utils/format';
 import Btn from '@/components/buttons/Btn.vue';
+import { useInheritanceStore } from '@/stores/inheritance';
 
 const router = useRouter();
+const inheritanceStore = useInheritanceStore();
+
+const distributedAssets = computed(() => inheritanceStore.distributedAssets);
+const additionalWillContent = computed(
+  () => inheritanceStore.additionalWillContent
+);
+
+const formattedDate = computed(() => {
+  const date = new Date();
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+});
 
 const goToRegister = () => {
   router.push({
@@ -104,47 +127,29 @@ const goToRegister = () => {
   });
 };
 
-interface DistributedAsset {
-  category: string;
-  description: string;
-  recipient: {
-    name: string;
-    relation: string;
-  };
-  amount: number;
-}
-
-const distributedAssets = ref<DistributedAsset[]>([]);
-const additionalWillContent = ref<string>('');
-
-const formattedDate = computed(() => {
-  const date = new Date();
-  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
-});
-
 onMounted(() => {
-  const state = window.history.state as any;
+  console.log('=== InheritanceResultPage 마운트됨 ===');
+  console.log('Store에서 가져온 distributedAssets:', distributedAssets.value);
+  console.log(
+    'Store에서 가져온 additionalWillContent:',
+    additionalWillContent.value
+  );
 
-  const tempAssets: DistributedAsset[] = [
-    {
-      category: '예금',
-      description: 'KB국민은행 예금',
-      recipient: { name: '홍철수', relation: '자녀' },
-      amount: 50000000,
-    },
-    {
-      category: '부동산',
-      description: '○○빌라',
-      recipient: { name: '김미희', relation: '배우자' },
-      amount: 50000000,
-    },
-    // 상속자-관계가 별도로 표시되지 않아, 테이블에서 관계 필드를 제거했습니다.
-    // 만약 필요하다면, table과 DistributedAsset 인터페이스를 수정해주세요.
-  ];
-  distributedAssets.value = tempAssets;
+  if (distributedAssets.value.length === 0) {
+    console.warn('⚠️ 유언장에 표시할 자산이 없습니다.');
+  }
 
-  if (state && state.additionalWillContent) {
-    additionalWillContent.value = state.additionalWillContent;
+  // mode 속성이 삭제되었으므로, 해당 로그는 제거합니다.
+  console.log('Store 전체 상태:', {
+    distributedAssets: inheritanceStore.distributedAssets,
+    recipientSummaries: inheritanceStore.recipientSummaries,
+    additionalWillContent: inheritanceStore.additionalWillContent,
+    totalGiftTax: inheritanceStore.totalGiftTax,
+  });
+
+  const routerState = window.history.state;
+  if (routerState) {
+    console.log('Router state:', routerState);
   }
 });
 </script>
