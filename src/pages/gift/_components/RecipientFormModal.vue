@@ -2,11 +2,7 @@
   <Modal
     @click1="$emit('cancel')"
     @click2="handleSubmit"
-    :title="
-      isEditing
-        ? '정보 수정'
-        : `${mode === 'gift' ? '수증자' : '상속인'} 정보 입력`
-    "
+    :title="isEditing ? '정보 수정' : '수증자 정보 입력'"
     leftLabel="그만두기"
     rightLabel="저장하기"
   >
@@ -43,91 +39,76 @@
         />
       </FormField>
 
-      <template v-if="mode === 'gift'">
-        <FormField label="결혼하셨나요?">
-          <SelectBox v-model="formData.isMarried" size="medium" class="w-full">
-            <option disabled :value="null">선택하세요</option>
-            <option :value="true">예</option>
-            <option :value="false">아니오</option>
-          </SelectBox>
-        </FormField>
+      <FormField label="결혼하셨나요?">
+        <SelectBox v-model="formData.isMarried" size="medium" class="w-full">
+          <option disabled :value="null">선택하세요</option>
+          <option :value="true">예</option>
+          <option :value="false">아니오</option>
+        </SelectBox>
+      </FormField>
 
-        <FormField
-          :label="`최근 10년 내 ${formData.recipientName || '수증자'}에게 증여한 적 있나요?`"
-        >
-          <SelectBox
-            v-model="formData.hasPriorGift"
-            size="medium"
-            class="w-full"
-          >
-            <option disabled :value="null">선택하세요</option>
-            <option :value="true">예</option>
-            <option :value="false">아니오</option>
-          </SelectBox>
-        </FormField>
+      <FormField
+        :label="`최근 10년 내 ${formData.recipientName || '수증자'}에게 증여한 적 있나요?`"
+      >
+        <SelectBox v-model="formData.hasPriorGift" size="medium" class="w-full">
+          <option disabled :value="null">선택하세요</option>
+          <option :value="true">예</option>
+          <option :value="false">아니오</option>
+        </SelectBox>
+      </FormField>
 
-        <FormField
-          v-if="formData.hasPriorGift === true"
-          label="증여한 금액 (원)"
-        >
-          <div class="flex flex-col items-start">
-            <div class="relative w-full">
-              <InputBox
-                type="text"
-                size="medium"
-                placeholder="금액을 입력하세요"
-                v-model="priorGiftAmountInTenThousand"
-                class="w-full"
-                @input="handleAmountInput"
-              />
-              <span
-                class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-sm"
-              >
-                만원
-              </span>
-            </div>
-            <p class="mt-1 w-full text-right text-sm text-blue-300">
-              {{ formatCurrency(formData.priorGiftAmount || 0) }}
-            </p>
+      <FormField v-if="formData.hasPriorGift === true" label="증여한 금액 (원)">
+        <div class="flex flex-col items-start">
+          <div class="relative w-full">
+            <InputBox
+              type="text"
+              size="medium"
+              placeholder="금액을 입력하세요"
+              v-model="priorGiftAmountInTenThousand"
+              class="w-full"
+              @input="handleAmountInput"
+            />
+            <span
+              class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-sm"
+            >
+              만원
+            </span>
           </div>
-        </FormField>
-        <FormField label="증여세는 누가 부담하나요?">
-          <SelectBox
-            v-model="formData.giftTaxPayer"
-            size="medium"
-            class="w-full"
-          >
-            <option disabled value="">선택하세요</option>
-            <option value="본인">본인이 대신 납부</option>
-            <option value="수증자">
-              {{
-                formData.recipientName
-                  ? `${formData.recipientName}이(가) 직접 납부`
-                  : '수증자'
-              }}
-            </option>
-          </SelectBox>
-        </FormField>
-      </template>
+          <p class="mt-1 w-full text-right text-sm text-blue-300">
+            {{ formatCurrency(formData.priorGiftAmount || 0) }}
+          </p>
+        </div>
+      </FormField>
+      <FormField label="증여세는 누가 부담하나요?">
+        <SelectBox v-model="formData.giftTaxPayer" size="medium" class="w-full">
+          <option disabled value="">선택하세요</option>
+          <option value="본인">본인이 대신 납부</option>
+          <option value="수증자">
+            {{
+              formData.recipientName
+                ? `${formData.recipientName}이(가) 직접 납부`
+                : '수증자'
+            }}
+          </option>
+        </SelectBox>
+      </FormField>
     </div>
   </Modal>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineEmits, defineProps, computed } from 'vue';
+import { ref, watch, defineEmits, defineProps } from 'vue';
 import Modal from '@/components/modals/Modal.vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import FormField from './FormField.vue';
 import type { RecipientRequestDto } from '@/types/gift/recipient';
-
 import { formatCurrency } from '@/utils/format';
 
 // Props & Emits
 interface Props {
   recipient?: RecipientRequestDto | null;
   isEditing?: boolean;
-  mode: 'gift' | 'inheritance';
 }
 
 interface Emits {
@@ -135,10 +116,10 @@ interface Emits {
   (e: 'confirm', recipient: RecipientRequestDto): void;
 }
 
+// `mode` prop 제거
 const props = withDefaults(defineProps<Props>(), {
   recipient: null,
   isEditing: false,
-  mode: 'gift',
 });
 
 const emit = defineEmits<Emits>();
@@ -161,16 +142,15 @@ const formData = ref<RecipientRequestDto>(
 
 const priorGiftAmountInTenThousand = ref<string>('');
 
-// 숫자 입력 처리 함수 수정
+// 숫자 입력 처리 함수
 const handleAmountInput = (e: Event) => {
   const target = e.target as HTMLInputElement;
   const raw = target.value.replace(/[^\d]/g, '');
-  // 만원 단위로 입력된 값을 원 단위로 변환하여 formData에 저장
   formData.value.priorGiftAmount = Number(raw) * 10000 || undefined;
   priorGiftAmountInTenThousand.value = raw;
 };
 
-// 더미 옵션 (기존 코드와 동일)
+// 더미 옵션
 const relationshipOptions = ['자녀', '배우자', '손자녀', '형제자매', '기타'];
 
 // `hasPriorGift` 변경 시 `priorGiftAmount`와 `priorGiftAmountInTenThousand` 초기화
@@ -205,42 +185,27 @@ watch(
 const handleSubmit = () => {
   const missingFields: string[] = [];
 
+  // 모든 필드에 대한 유효성 검사
   if (!formData.value.recipientName.trim()) missingFields.push('이름');
   if (!formData.value.relationship) missingFields.push('관계');
   if (!formData.value.birthDate) missingFields.push('생년월일');
-
-  // 증여 모드일 때만 특정 필드 유효성 검사
-  if (props.mode === 'gift') {
-    if (formData.value.isMarried === null) missingFields.push('결혼 여부');
-    if (formData.value.hasPriorGift === null)
-      missingFields.push('최근 10년간 증여 여부');
-    if (
-      formData.value.hasPriorGift === true &&
-      (formData.value.priorGiftAmount === undefined ||
-        formData.value.priorGiftAmount < 0)
-    ) {
-      missingFields.push('증여 금액');
-    }
-    if (!formData.value.giftTaxPayer) missingFields.push('증여세 납부자');
+  if (formData.value.isMarried === null) missingFields.push('결혼 여부');
+  if (formData.value.hasPriorGift === null)
+    missingFields.push('최근 10년간 증여 여부');
+  if (
+    formData.value.hasPriorGift === true &&
+    (formData.value.priorGiftAmount === undefined ||
+      formData.value.priorGiftAmount < 0)
+  ) {
+    missingFields.push('증여 금액');
   }
+  if (!formData.value.giftTaxPayer) missingFields.push('증여세 납부자');
 
   if (missingFields.length > 0) {
     alert(`모든 필수 정보를 입력해 주세요:\n- ${missingFields.join('\n- ')}`);
     return;
   }
 
-  // 제출할 데이터를 `RecipientRequestDto` 타입으로 변환
-  // 상속 모드일 경우 증여 관련 필드는 서버에서 처리되도록 기본값으로 전송
-  const submitData: RecipientRequestDto = {
-    ...formData.value,
-    isMarried:
-      props.mode === 'gift' ? (formData.value.isMarried as boolean) : false,
-    hasPriorGift:
-      props.mode === 'gift' ? (formData.value.hasPriorGift as boolean) : false,
-    priorGiftAmount: props.mode === 'gift' ? formData.value.priorGiftAmount : 0,
-    giftTaxPayer: props.mode === 'gift' ? formData.value.giftTaxPayer : '',
-  };
-
-  emit('confirm', submitData);
+  emit('confirm', formData.value);
 };
 </script>
