@@ -23,9 +23,9 @@
         :title="recipient.recipientName"
         :content="recipient.relationship"
         :tags="
-          mode === 'gift'
-            ? `${recipient.hasPriorGift ? formatCurrency(recipient.priorGiftAmount || 0) + ` ${pageConfig.historyLabel}` : `${pageConfig.historyLabel} 이력 없음`}`
-            : ''
+          recipient.hasPriorGift
+            ? `${formatCurrency(recipient.priorGiftAmount || 0)} 증여`
+            : `증여 이력 없음`
         "
         btnText1="수정"
         btnText2="삭제"
@@ -136,9 +136,9 @@ const pageConfigs: Record<'gift' | 'inheritance', PageConfig> = {
     quizRouteName: 'gift-quiz',
   },
   inheritance: {
-    recipientTitle: '상속인 정보 입력하기',
-    recipientDescription: `자산을 남길 상속인을 알려주세요.\n입력한 정보는 유언장 템플릿 작성에 활용돼요.`,
-    addButtonLabel: '상속인 추가하기',
+    recipientTitle: '수증자 정보 입력하기',
+    recipientDescription: `누구에게 자산을 남길지 알려주세요.\n입력한 정보는 유언장 템플릿 작성에 활용돼요.`,
+    addButtonLabel: '수증자 추가하기',
     historyLabel: '상속',
     nextStepMessage:
       '다음 단계에서는 간단한 클릭을 통해\n어떤 자산을 누구에게 상속할지 알려주세요.',
