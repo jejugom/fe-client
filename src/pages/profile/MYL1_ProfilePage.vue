@@ -4,15 +4,8 @@
   </div>
 
   <div v-else class="space-y-16">
-    <!-- 예약이 2개 이상인 경우 -->
-    <Carousel v-if="bookingItems.length > 1" :items="bookingItems">
-      <template #default="{ item }">
-        <RegisterCard :booking="item" />
-      </template>
-    </Carousel>
-
-    <!-- 예약이 1개인 경우 -->
-    <div v-else-if="bookingItems.length === 1">
+    <!-- 최신예약 1개 출력 -->
+    <div v-if="bookingItems.length != 0">
       <RegisterCard :booking="bookingItems[0]" />
     </div>
 
@@ -142,6 +135,8 @@ const confirmWithdrawal = () => {
 
 const menuItems = ref([
   { id: 'asset', title: '내 자산 고치기' },
+  { id: 'register', title: '예약 내역 확인 및 수정하기' },
+  { id: 'asset-start', title: '자산 재연동하기' },
   { id: 'calculation', title: '자산 다시 연결하기' },
   { id: 'investment-reset', title: '내 투자 성향 다시 선택하기' },
   { id: 'revenue', title: '내 은행 지점 바꾸기' },
@@ -184,6 +179,9 @@ const handleMenuClick = (menuId) => {
       break;
     case 'withdrawal':
       showModal.value = true;
+      break;
+    case 'register':
+      router.push({ name: 'register-list' });
       break;
     default:
       console.warn(`Unknown menu item: ${menuId}`);

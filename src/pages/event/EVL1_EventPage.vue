@@ -1,14 +1,30 @@
 <template>
   <div class="space-y-16">
     <div class="space-y-4">
-      <div class="text-primary-300 text-2xl font-bold">오늘의 금융시장은?</div>
-      <Carousel :items="newsList">
-        <template #default="{ item }">
-          <div class="flex w-full justify-center">
-            <NewsCard :newsItem="item" class="m-1 w-4/5"
-          /></div>
-        </template>
-      </Carousel>
+      <div class="flex items-end justify-between">
+        <div class="text-primary-300 text-2xl font-bold"
+          >오늘의 금융시장은?</div
+        >
+        <TextBtn
+          @click="toggleShowMore"
+          color="primary"
+          size="medium"
+          :label="showMore ? '접기' : '더보기'"
+      /></div>
+
+      <NewsCard v-if="filteredNews.length > 0" :newsItem="filteredNews[0]" />
+
+      <!-- 더보기 토글 -->
+      <div v-if="showMore">
+        <NewsCard
+          v-for="(item, index) in filteredNews.slice(1)"
+          :key="index"
+          :newsItem="item"
+          class="mt-2"
+        />
+      </div>
+
+      <div class="flex justify-center"> </div>
     </div>
     <div class="space-y-4">
       <div class="text-primary-300 text-2xl font-bold">매일매일 NHDR PLAY</div>
@@ -26,33 +42,37 @@
         </template>
       </IconCard>
     </div>
-    <!-- <div class="space-y-4">
-      <div class="text-primary-300 text-2xl font-bold">말동무가 되어드려요</div>
-      <IconCard
-        color="secondary"
-        title="챗봇"
-        @click="() => router.push({ name: 'chatbot' })"
-      >
-        <template #icon>
-          <img :src="ChatBot" class="h-18" />
-        </template>
-      </IconCard>
-    </div> -->
+    <div class="space-y-4">
+      <div class="text-primary-300 text-2xl font-bold">챌린지 현황</div>
+      <ChallengeState />
+      <Btn
+        color="primary"
+        label="보상 선택하기"
+        size="large"
+        @click="router.push({ name: 'event-reward' })"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, Text } from 'vue';
 import { fetchEventData } from '@/api/event/event';
 import NewsCard from '@/components/cards/NewsCard.vue';
-import Carousel from '@/components/carousel/Carousel.vue';
 import IconCard from '@/components/cards/IconCard.vue';
 import { useRouter } from 'vue-router';
 import Number from '@/assets/icons/Number.svg';
 import Quiz from '@/assets/icons/Quiz.svg';
 import Park from '@/assets/icons/Park.svg';
-import ChatBot from '@/assets/icons/chatbot.png';
+import TextBtn from '@/components/buttons/TextBtn.vue';
+import Btn from '@/components/buttons/Btn.vue';
+import ChallengeState from './_components/ChallengeState.vue';
 const router = useRouter();
+
+const showMore = ref(false);
+const toggleShowMore = () => {
+  showMore.value = !showMore.value;
+};
 
 const newsList = ref<
   Array<{

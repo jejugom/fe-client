@@ -1,27 +1,33 @@
 <template>
-  <div class="flex justify-center">
-    <div class="border-secondary-300 w-4/5 rounded-lg border p-4">
-      <div class="text-secondary-500 mb-2 text-lg font-semibold">
-        예약하신 방문 내용을 확인하세요
+  <div class="border-secondary-300 relative rounded-lg border p-4">
+    <!-- 우측 상단 고정 아이콘 -->
+    <img
+      :src="ArrowIcon"
+      class="absolute top-4 right-4 h-6 w-6"
+      alt="arrow icon"
+    />
+
+    <div class="text-secondary-500 mb-2 text-lg font-semibold">
+      방문하실 날이 다가고오고 있어요
+    </div>
+    <div class="text-surface-500 space-y-1 text-sm">
+      <div>
+        <span class="font-semibold">방문 날짜 :</span> {{ formattedDate }}
       </div>
-      <div class="text-surface-500 space-y-1 text-sm">
-        <div>
-          <span class="font-semibold">방문 날짜 :</span> {{ formattedDate }}
-        </div>
-        <div>
-          <span class="font-semibold">방문 장소 :</span> {{ booking.bank_name }}
-        </div>
-        <div>
-          <span class="font-semibold">상담 내용 :</span> {{ booking.prdt_name }}
-        </div>
+      <div>
+        <span class="font-semibold">방문 장소 :</span> {{ booking.bank_name }}
       </div>
-    </div></div
-  >
+      <div>
+        <span class="font-semibold">상담 내용 :</span> {{ booking.prdt_name }}
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { BookingItem } from '@/api/profile/profile';
+import ArrowIcon from '@/assets/icons/Arrow45.svg';
 
 const props = defineProps<{
   booking: BookingItem;

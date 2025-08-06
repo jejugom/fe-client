@@ -139,5 +139,4 @@ const chartOptions = computed(() => ({
   },
   colors: ['#93C5FD', '#2563EB'],
 }));
-  generateAndDownloadPDF();
 </script>

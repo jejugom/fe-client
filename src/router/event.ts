@@ -22,9 +22,9 @@ const eventRoutes: RouteRecordRaw[] = [
     component: () => import('@/pages/event/EVL2_ParkPage.vue'),
   },
   {
-    path: '/chatbot',
-    name: 'chatbot',
-    component: () => import('@/pages/event/EVL2_ChatbotPage.vue'),
+    path: '/event/reward',
+    name: 'event-reward',
+    component: () => import('@/pages/event/EVL2_RewardPage.vue'),
   },
 ];
 
