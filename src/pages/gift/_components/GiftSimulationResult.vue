@@ -177,25 +177,15 @@ const generateAndDownloadPDF = async () => {
       useCORS: true,
       allowTaint: true,
     });
-
-    const pdf = new jsPDF('p', 'mm', 'a4');
     const imgData = canvas.toDataURL('image/png');
-    const imgWidth = 210; // A4 가로 사이즈 (mm)
-    const pageHeight = 295; // A4 세로 사이즈 (mm)
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    let heightLeft = imgHeight;
 
-    let position = 0;
-
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-
-    while (heightLeft >= 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-    }
+    // A4 크기 대신 캔버스 비율 기반 사이즈 계산
+    const pdf = new jsPDF({
+      orientation: 'p',
+      unit: 'px',
+      format: [canvas.width, canvas.height], // 핵심 부분
+    });
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
 
     const pdfBlob = pdf.output('blob');
     const file = new File([pdfBlob], '증여_시뮬레이션_결과.pdf', {
