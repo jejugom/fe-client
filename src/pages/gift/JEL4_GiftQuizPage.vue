@@ -48,25 +48,77 @@
     </div>
 
     <div class="border-primary-300 my-16 rounded-xl border bg-white p-4">
-      <div class="text-primary-300 mb-2 text-lg font-semibold">
-        수증자별 증여 금액
-      </div>
-      <div
-        v-for="beneficiary in beneficiaries"
-        :key="beneficiary.id"
-        class="mb-2"
-      >
-        <span class="font-medium">{{ beneficiary.name }}: </span>
-        <span>
-          {{ formatCurrency(calculateTotalForBeneficiary(beneficiary.id)) }}
-        </span>
-      </div>
-      <div class="text-surface-500 text-sm">
-        총 증여 금액: {{ formatCurrency(calculateGrandTotal()) }}
-      </div>
+      <template v-if="mode === 'gift'">
+        <div class="text-primary-300 mb-2 text-lg font-semibold">
+          수증자별 증여 금액
+        </div>
+        <div
+          v-for="beneficiary in beneficiaries"
+          :key="beneficiary.id"
+          class="mb-2"
+        >
+          <span class="font-medium">{{ beneficiary.name }}: </span>
+          <span>
+            {{ formatCurrency(calculateTotalForBeneficiary(beneficiary.id)) }}
+          </span>
+        </div>
+        <div class="text-surface-500 text-sm">
+          총 증여 금액: {{ formatCurrency(calculateGrandTotal()) }}
+        </div>
+      </template>
+
+      <template v-else-if="mode === 'inheritance'">
+        <div class="text-primary-300 mb-4 text-lg font-semibold">
+          상속인별 상속 자산 요약
+        </div>
+        <div
+          v-for="beneficiary in beneficiaries"
+          :key="beneficiary.id"
+          class="border-primary-100 mb-4 border-b pb-2 last:mb-0 last:border-b-0"
+        >
+          <div class="mb-2 flex items-center justify-between">
+            <div class="text-primary-500 text-base font-semibold">
+              {{ beneficiary.name }}
+            </div>
+            <div class="text-primary-500 text-base font-semibold">
+              {{ formatCurrency(calculateTotalForBeneficiary(beneficiary.id)) }}
+            </div>
+          </div>
+          <div class="pl-2">
+            <div
+              v-for="asset in getAssetsForBeneficiary(beneficiary.id)"
+              :key="asset.id"
+              class="text-surface-500 flex justify-between text-sm"
+            >
+              <span>{{ asset.name }}</span>
+              <span>{{ formatCurrency(asset.value) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="text-primary-300 text-right text-sm">
+          총 상속 자산: {{ formatCurrency(calculateGrandTotal()) }}
+        </div>
+      </template>
     </div>
 
-    <div class="w-full max-w-150">
+    <div
+      v-if="mode === 'inheritance'"
+      class="flex w-full max-w-150 flex-col space-y-2"
+    >
+      <Btn
+        color="primary"
+        label="추가 유언 작성하기"
+        size="large"
+        @click="goToWillForm"
+      />
+      <Btn
+        color="surface"
+        label="바로 유언장 보러가기"
+        size="large"
+        @click="goToResult"
+      />
+    </div>
+    <div v-else class="w-full max-w-150">
       <Btn
         color="primary"
         label="세액 및 절세 전략 확인하기"
@@ -78,117 +130,167 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import {
+  ref,
+  reactive,
+  onMounted,
+  onUnmounted,
+  withDefaults,
+  computed,
+} from 'vue';
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 import AssetCard from './_components/AssetCard.vue';
 import TabBtn from '../nohoo/_components/TabBtn.vue';
 import { fetchGiftPageData } from '@/api/gift/recipient';
 import { formatCurrency } from '@/utils/format';
+import { categories, categoryCodeMap } from '@/types/gift/constants';
 
-// types/gift/recipient.ts에서 필요한 타입들을 직접 임포트합니다.
-// 이제 `AssetStatusSummaryDto` 타입이 Vue 컴포넌트의 로직과 일치합니다.
+// 두 스토어를 모두 import
+import { useInheritanceStore } from '@/stores/inheritance';
+import { useGiftStore } from '@/stores/gift';
+import { useSimulationStore } from '@/stores/simulation'; // <-- useSimulationStore 추가
+
+import type { RecipientResponseDto } from '@/types/gift/recipient';
+
 import type {
-  AssetStatusSummaryDto,
-  RecipientResponseDto,
-} from '@/types/gift/recipient';
+  Asset,
+  Beneficiary,
+  Category,
+  DistributedAsset,
+} from '@/types/gift/inheritance';
 
-// 타입 정의
-interface Asset {
-  id: string;
-  name: string;
-  value: number;
-  selected: boolean;
-  beneficiary?: Beneficiary | null;
-  isMultipleBeneficiaries?: boolean;
-  distributionRatios?: { [beneficiaryId: string]: number };
-  [key: string]: any;
-}
+// 새로운 DTO 타입 import
+import type {
+  RecipientGiftRequestDto,
+  CategoryGiftRequestDto,
+  AssetGiftRequestDto,
+  SimulationRequestDto,
+} from '@/types/gift/simulation';
 
-interface Beneficiary {
-  id: string;
-  name: string;
-  relation: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-}
+const props = withDefaults(
+  defineProps<{
+    mode: 'gift' | 'inheritance';
+  }>(),
+  {
+    mode: 'gift',
+  }
+);
 
 const router = useRouter();
 
-// 카테고리 설정
-const categories: Category[] = [
-  { id: 'estate', name: '부동산' },
-  { id: 'deposits', name: '예금/적금' },
-  { id: 'cash', name: '현금' },
-  { id: 'stocks', name: '주식/펀드' },
-  { id: 'business', name: '사업체/지분' },
-  { id: 'etc', name: '기타' },
-];
+// mode에 따라 적절한 스토어를 사용하도록 computed 속성으로 묶습니다.
+const giftStore = useGiftStore();
+const inheritanceStore = useInheritanceStore();
+const simulationStore = useSimulationStore(); // <-- simulationStore 인스턴스 생성
 
-// 자산 카테고리 코드(숫자)를 카테고리 ID(문자열)로 매핑
-const categoryCodeMap: { [key: string]: string } = {
-  '1': 'estate',
-  '2': 'deposits',
-  '3': 'cash',
-  '4': 'stocks',
-  '5': 'business',
-  '6': 'etc',
-};
+const store = computed(() => {
+  return props.mode === 'gift' ? giftStore : inheritanceStore;
+});
 
-// 상태 관리
 const allAssets = reactive<Map<string, Asset[]>>(new Map());
 const activeTab = ref('estate');
 const beneficiaries = reactive<Beneficiary[]>([]);
 
-// 자산과 수증자 데이터 로드
 const loadAssetsAndBeneficiaries = async () => {
   try {
-    const apiResponse = await fetchGiftPageData();
-    const recipients: RecipientResponseDto[] = apiResponse.recipients;
-    const assetSummary: AssetStatusSummaryDto[] = apiResponse.assetSummary;
+    const apiResponse = await fetchGiftPageData(props.mode);
+    const recipients: RecipientResponseDto[] = apiResponse.recipients || [];
+    const assetCategories = apiResponse.assetCategories || [];
 
-    // 수증자 목록 업데이트
-    beneficiaries.splice(
-      0,
-      beneficiaries.length,
-      ...recipients.map((recipient) => ({
-        id: recipient.recipientId.toString(),
-        name: recipient.recipientName,
-        relation: recipient.relationship,
-      }))
-    );
+    const newBeneficiaries: Beneficiary[] = recipients.map((recipient) => ({
+      id: recipient.recipientId.toString(),
+      name: recipient.recipientName,
+      relation: recipient.relationship,
+    }));
 
-    // allAssets Map 초기화
-    allAssets.clear();
+    const newAllAssets = new Map<string, Asset[]>();
     categories.forEach((category) => {
-      allAssets.set(category.id, []);
+      newAllAssets.set(category.id, []);
     });
 
-    // 백엔드 필드 수정 요청하기 ->  name만 수정
-    assetSummary.forEach((summaryItem, index) => {
-      const categoryId = categoryCodeMap[summaryItem.assetCategoryCode];
-      if (categoryId) {
-        const newAsset: Asset = {
-          id: `${categoryId}-${index}`,
-          name: `${categoryCodeMap[summaryItem.assetCategoryCode]} 자산`,
-          value: summaryItem.amount,
-          selected: false,
-          beneficiary: null,
-          isMultipleBeneficiaries: false,
-          distributionRatios: {},
-        };
-        allAssets.get(categoryId)?.push(newAsset);
+    assetCategories.forEach((category: any) => {
+      const categoryId = categoryCodeMap[category.assetCategoryCode];
+      if (categoryId && category.assets) {
+        category.assets.forEach((asset: any) => {
+          const newAsset: Asset = {
+            id: `${categoryId}-${asset.assetId}`,
+            name: asset.assetName,
+            value: asset.amount,
+            selected: false,
+            beneficiary: null,
+            isMultipleBeneficiaries: false,
+            distributionRatios: {},
+          };
+          newAllAssets.get(categoryId)?.push(newAsset);
+        });
       }
     });
+
+    beneficiaries.splice(0, beneficiaries.length, ...newBeneficiaries);
+    allAssets.clear();
+    newAllAssets.forEach((value, key) => allAssets.set(key, value));
+
+    // `store.value`를 사용하여 현재 모드의 스토어에 데이터 저장
+    if (props.mode === 'gift') {
+      (giftStore as ReturnType<typeof useGiftStore>).setInitialData({
+        allAssets: newAllAssets,
+        beneficiaries: newBeneficiaries,
+      });
+    } else {
+      (
+        inheritanceStore as ReturnType<typeof useInheritanceStore>
+      ).setInitialData({
+        allAssets: newAllAssets,
+        beneficiaries: newBeneficiaries,
+      });
+    }
   } catch (error) {
     console.error('데이터 로드 실패:', error);
   }
 };
 
-// 자산 업데이트 핸들러
+const restoreStateFromStore = () => {
+  if (props.mode === 'gift') {
+    if (
+      (giftStore as ReturnType<typeof useGiftStore>).allAssets.size > 0 &&
+      (giftStore as ReturnType<typeof useGiftStore>).beneficiaries.length > 0
+    ) {
+      beneficiaries.splice(
+        0,
+        beneficiaries.length,
+        ...(giftStore as ReturnType<typeof useGiftStore>).beneficiaries
+      );
+      allAssets.clear();
+      (giftStore as ReturnType<typeof useGiftStore>).allAssets.forEach(
+        (value: Asset[], key: string) => {
+          allAssets.set(key, value);
+        }
+      );
+    }
+  } else {
+    if (
+      (inheritanceStore as ReturnType<typeof useInheritanceStore>).allAssets
+        .size > 0 &&
+      (inheritanceStore as ReturnType<typeof useInheritanceStore>).beneficiaries
+        .length > 0
+    ) {
+      beneficiaries.splice(
+        0,
+        beneficiaries.length,
+        ...(inheritanceStore as ReturnType<typeof useInheritanceStore>)
+          .beneficiaries
+      );
+      allAssets.clear();
+      (
+        inheritanceStore as ReturnType<typeof useInheritanceStore>
+      ).allAssets.forEach((value: Asset[], key: string) => {
+        allAssets.set(key, value);
+      });
+    }
+  }
+};
+
 const onAssetUpdate = (updatedAsset: Asset) => {
   Array.from(allAssets.values()).forEach((assets) => {
     const index = assets.findIndex((a) => a.id === updatedAsset.id);
@@ -196,12 +298,18 @@ const onAssetUpdate = (updatedAsset: Asset) => {
       assets.splice(index, 1, updatedAsset);
     }
   });
+
+  if (props.mode === 'gift') {
+    (giftStore as ReturnType<typeof useGiftStore>).setAllAssets(allAssets);
+  } else {
+    (inheritanceStore as ReturnType<typeof useInheritanceStore>).setAllAssets(
+      allAssets
+    );
+  }
 };
 
-// 수증자별 총 금액 계산
 const calculateTotalForBeneficiary = (beneficiaryId: string): number => {
   let total = 0;
-
   Array.from(allAssets.values())
     .flat()
     .forEach((asset) => {
@@ -214,11 +322,36 @@ const calculateTotalForBeneficiary = (beneficiaryId: string): number => {
         }
       }
     });
-
   return total;
 };
 
-// 총 증여 금액 계산
+const getAssetsForBeneficiary = (beneficiaryId: string) => {
+  const assets: Asset[] = [];
+  Array.from(allAssets.values())
+    .flat()
+    .forEach((asset) => {
+      if (asset.selected) {
+        if (asset.beneficiary?.id === beneficiaryId) {
+          assets.push(asset);
+        } else if (
+          asset.isMultipleBeneficiaries &&
+          asset.distributionRatios &&
+          asset.distributionRatios[beneficiaryId] > 0
+        ) {
+          assets.push({
+            ...asset,
+            name: `${asset.name} (지분 ${asset.distributionRatios[beneficiaryId]}%)`,
+            value: Math.floor(
+              (asset.value * (asset.distributionRatios[beneficiaryId] || 0)) /
+                100
+            ),
+          });
+        }
+      }
+    });
+  return assets;
+};
+
 const calculateGrandTotal = (): number => {
   return Array.from(allAssets.values())
     .flat()
@@ -226,7 +359,6 @@ const calculateGrandTotal = (): number => {
     .reduce((sum, asset) => sum + asset.value, 0);
 };
 
-// 탭 스크롤 처리
 const scrollToSection = (sectionId: string) => {
   const element = document.getElementById(sectionId);
   if (element) {
@@ -235,7 +367,6 @@ const scrollToSection = (sectionId: string) => {
   }
 };
 
-// 스크롤 시 활성 탭 업데이트
 const handleScroll = () => {
   const sections = categories
     .map((cat) => document.getElementById(cat.id))
@@ -254,32 +385,91 @@ const handleScroll = () => {
   }
 };
 
-// 결과 페이지로 이동
-const goToResult = () => {
-  const recipientSummaries = beneficiaries.map((beneficiary) => {
-    const giftAmount = calculateTotalForBeneficiary(beneficiary.id);
-    // 예상 증여세는 계산 로직이 없으므로 임시로 0으로 설정
-    return {
-      name: beneficiary.name,
-      giftAmount: giftAmount,
-      estimatedTax: 0, // 임시 값
-    };
-  });
+const createSimulationRequest = (): SimulationRequestDto => {
+  return {
+    simulationList: beneficiaries
+      .map((b) => {
+        const giftsForRecipient = Array.from(allAssets.values())
+          .flat()
+          .filter((asset) => asset.selected)
+          .flatMap((asset) => {
+            if (asset.beneficiary?.id === b.id) {
+              return [{ ...asset, amount: asset.value }];
+            }
+            if (
+              asset.isMultipleBeneficiaries &&
+              asset.distributionRatios &&
+              asset.distributionRatios[b.id] > 0
+            ) {
+              return [
+                {
+                  ...asset,
+                  amount: Math.floor(
+                    (asset.value * asset.distributionRatios[b.id]) / 100
+                  ),
+                },
+              ];
+            }
+            return [];
+          })
+          .reduce((acc, asset) => {
+            const categoryId = asset.id.split('-')[0];
+            const categoryCode = Object.keys(categoryCodeMap).find(
+              (key) => categoryCodeMap[key] === categoryId
+            );
 
-  const totalGiftTax = 0; // 임시 값
+            if (!categoryCode) return acc;
 
+            let category = acc.find(
+              (c) => c.assetCategoryCode === categoryCode
+            );
+            if (!category) {
+              category = { assetCategoryCode: categoryCode, assets: [] };
+              acc.push(category);
+            }
+            category.assets.push({
+              assetId: Number(asset.id.split('-')[1]),
+              giftAmount: asset.amount,
+            });
+            return acc;
+          }, [] as CategoryGiftRequestDto[]);
+
+        if (giftsForRecipient.length > 0) {
+          return {
+            recipientId: Number(b.id),
+            categoriesToGift: giftsForRecipient,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean) as RecipientGiftRequestDto[],
+  };
+};
+
+const goToWillForm = () => {
   router.push({
-    name: 'gift-result',
-    state: {
-      recipientSummaries: recipientSummaries,
-      totalGiftTax: totalGiftTax,
-    },
+    name: 'inheritance-will',
   });
 };
 
-// 생명주기 훅
+const goToResult = async () => {
+  if (props.mode === 'gift') {
+    const requestDto = createSimulationRequest();
+    await simulationStore.simulateGiftTax(requestDto);
+  }
+
+  router.push({
+    name: props.mode === 'gift' ? 'gift-result' : 'inheritance-result',
+  });
+};
+
 onMounted(() => {
-  loadAssetsAndBeneficiaries();
+  // `store.value`를 사용하여 데이터 존재 여부 확인
+  if (store.value.allAssets.size > 0) {
+    restoreStateFromStore();
+  } else {
+    loadAssetsAndBeneficiaries();
+  }
   window.addEventListener('scroll', handleScroll);
 });
 

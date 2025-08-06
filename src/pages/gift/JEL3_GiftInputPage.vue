@@ -1,5 +1,4 @@
 <template>
-  <!-- 자산 요약 카드 -->
   <section class="mb-8">
     <AssetSummaryCardBar
       v-if="transformedAssetSummary.length > 0"
@@ -9,65 +8,61 @@
     />
   </section>
 
-  <!-- 수증자 관리 섹션 -->
   <section>
-    <h2 class="text-primary-300 mb-2 text-2xl font-bold"
-      >수증자 정보 입력하기</h2
-    >
-    <p class="mb-4 text-sm">
-      누구에게 주실지 알려주세요.<br />받으실 분의 정보를 통해 정확한 세금
-      계산을 도와드릴 수 있어요
+    <h2 class="text-primary-300 mb-2 text-2xl font-bold">
+      {{ pageConfig.recipientTitle }}
+    </h2>
+    <p class="mb-4 text-sm whitespace-pre-line">
+      {{ pageConfig.recipientDescription }}
     </p>
 
     <div class="space-y-3">
-      <!-- 수증자 목록 -->
       <MultiBtnCard
         v-for="recipient in recipients"
         :key="recipient.recipientId"
         :title="recipient.recipientName"
-        :content="`${recipient.relationship} | ${recipient.isMarried ? '기혼' : '미혼'}`"
-        :tags="`${
+        :content="recipient.relationship"
+        :tags="
           recipient.hasPriorGift
-            ? formatCurrency(recipient.priorGiftAmount || 0) + ' 증여'
-            : '증여 이력 없음'
-        }`"
+            ? `${formatCurrency(recipient.priorGiftAmount || 0)} 증여`
+            : `증여 이력 없음`
+        "
         btnText1="수정"
         btnText2="삭제"
         @click:edit="editRecipient(recipient.recipientId)"
         @click:delete="confirmDeleteRecipient(recipient.recipientId)"
       />
 
-      <!-- 수증자 추가/수정 모달 -->
       <RecipientFormModal
         v-if="isRecipientModalOpen"
         :recipient="newRecipient"
         :is-editing="isEditing"
+        :mode="mode"
         @cancel="cancelRecipientModal"
         @confirm="handleRecipientConfirm"
       />
 
-      <!-- 삭제 확인 모달 -->
       <DeleteConfirmModal
         v-if="isDeleteModalOpen"
         :recipient-name="recipientToDelete?.recipientName || ''"
+        :mode="mode"
         @cancel="cancelDelete"
         @confirm="confirmDelete"
       />
 
-      <!-- 수증자 추가 버튼 -->
       <Btn
         @click="openRecipientModal"
         color="surface"
-        label="+ 수증자 추가하기"
+        :label="`+ ${pageConfig.addButtonLabel}`"
         size="large"
       />
     </div>
 
-    <!-- 다음 단계 버튼 -->
     <div class="mt-16 flex flex-col">
-      <p class="text-primary-300 mb-2 text-center font-semibold">
-        간단한 질문을 통해<br />
-        더 나은 절세 방법을 찾아드릴게요.
+      <p
+        class="text-primary-300 mb-2 text-center font-semibold whitespace-pre-line"
+      >
+        {{ pageConfig.nextStepMessage }}
       </p>
       <Btn
         @click="goToQuiz"
@@ -81,24 +76,30 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed, withDefaults, watch } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
 import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
 import RecipientFormModal from './_components/RecipientFormModal.vue';
 import DeleteConfirmModal from './_components/DeleteConfirmModal.vue';
+import AssetSummaryCardBar from '@/components/cards/AssetSummaryCardBar.vue';
+import { formatCurrency } from '@/utils/format';
+
+// 공통 API 함수들
 import {
   fetchGiftPageData,
   createRecipient,
   updateRecipient,
   deleteRecipient,
 } from '@/api/gift/recipient';
+
 import type {
   RecipientRequestDto,
   RecipientResponseDto,
   GiftPageResponseDto,
 } from '@/types/gift/recipient';
-import AssetSummaryCardBar from '@/components/cards/AssetSummaryCardBar.vue';
-import { formatCurrency } from '@/utils/format';
+
+import { useGiftStore } from '@/stores/gift';
+import { useInheritanceStore } from '@/stores/inheritance';
 
 // 타입 정의
 interface AssetInfoForCard {
@@ -106,12 +107,53 @@ interface AssetInfoForCard {
   amount: number;
 }
 
-interface AssetStatusSummaryDto {
-  assetCategoryCode: string;
-  amount: number;
+interface PageConfig {
+  recipientTitle: string;
+  recipientDescription: string;
+  addButtonLabel: string;
+  historyLabel: string;
+  nextStepMessage: string;
+  quizRouteName: string;
 }
 
 const router = useRouter();
+
+const props = withDefaults(defineProps<{ mode: 'gift' | 'inheritance' }>(), {
+  mode: 'gift',
+});
+
+const giftStore = useGiftStore();
+const inheritanceStore = useInheritanceStore();
+
+const store = computed(() => {
+  return props.mode === 'gift' ? giftStore : inheritanceStore;
+});
+
+// 페이지 설정
+const pageConfigs: Record<'gift' | 'inheritance', PageConfig> = {
+  gift: {
+    recipientTitle: '수증자 정보 입력하기',
+    recipientDescription: `누구에게 주실지 알려주세요.\n받으실 분의 정보를 통해 정확한 세금 계산을 도와드릴게요.`,
+    addButtonLabel: '수증자 추가하기',
+    historyLabel: '증여',
+    nextStepMessage:
+      '다음 단계에서는 간단한 클릭을 통해\n어떤 자산을 누구에게 증여할지 알려주세요.',
+    quizRouteName: 'gift-quiz',
+  },
+  inheritance: {
+    recipientTitle: '수증자 정보 입력하기',
+    recipientDescription: `누구에게 자산을 남길지 알려주세요.\n입력한 정보는 유언장 템플릿 작성에 활용돼요.`,
+    addButtonLabel: '수증자 추가하기',
+    historyLabel: '상속',
+    nextStepMessage:
+      '다음 단계에서는 간단한 클릭을 통해\n어떤 자산을 누구에게 상속할지 알려주세요.',
+    quizRouteName: 'inheritance-quiz',
+  },
+};
+
+const pageConfig = computed(() => {
+  return pageConfigs[props.mode] || pageConfigs.gift;
+});
 
 // 모달 상태
 const isRecipientModalOpen = ref(false);
@@ -119,13 +161,13 @@ const isDeleteModalOpen = ref(false);
 
 // 데이터 상태
 const recipients = ref<RecipientResponseDto[]>([]);
-const assetSummary = ref<any[]>([]);
+const assetCategories = ref<any[]>([]);
 const userName = ref<string>('사용자');
 
 // 총 자산 금액 계산
 const totalAssetAmount = computed(() => {
-  return assetSummary.value.reduce(
-    (sum, asset) => sum + (asset?.amount || 0),
+  return assetCategories.value.reduce(
+    (sum, category) => sum + (category?.totalAmount || 0),
     0
   );
 });
@@ -142,29 +184,17 @@ const categoryMap: { [key: string]: string } = {
 
 // 카테고리별 자산 합계 계산
 const transformedAssetSummary = computed<AssetInfoForCard[]>(() => {
-  if (!assetSummary.value || assetSummary.value.length === 0) {
+  if (!assetCategories.value || assetCategories.value.length === 0) {
     return [];
   }
 
-  const categoryTotals = assetSummary.value.reduce(
-    (acc: Record<string, number>, item: AssetStatusSummaryDto) => {
-      const categoryName = categoryMap[item.assetCategoryCode] || '기타';
-      const amount: number = item?.amount || 0;
-      acc[categoryName] = (acc[categoryName] || 0) + amount;
-      return acc;
-    },
-    {}
-  );
-
-  return Object.entries(categoryTotals).map(
-    ([category, amount]): AssetInfoForCard => ({
-      category,
-      amount: Number(amount),
-    })
-  );
+  return assetCategories.value.map((category) => ({
+    category: categoryMap[category.assetCategoryCode] || '기타',
+    amount: Number(category.totalAmount),
+  }));
 });
 
-// 수증자 초기값
+// 수증자/상속인 초기값
 const emptyRecipient: RecipientRequestDto = {
   relationship: '',
   recipientName: '',
@@ -179,52 +209,62 @@ const newRecipient = ref<RecipientRequestDto>({ ...emptyRecipient });
 const isEditing = ref(false);
 const selectedRecipientId = ref<number | null>(null);
 
-// 컴포넌트 마운트 시 데이터 로드
-onMounted(async () => {
-  await loadGiftPageData();
-});
-
 // 페이지 데이터 로드
-const loadGiftPageData = async () => {
+const loadPageData = async () => {
   try {
-    const data: GiftPageResponseDto = await fetchGiftPageData();
-    recipients.value = data.recipients;
-    assetSummary.value = data.assetSummary;
+    const data: GiftPageResponseDto = await fetchGiftPageData(props.mode);
+    recipients.value = data.recipients || [];
+    assetCategories.value = data.assetCategories || [];
   } catch (error) {
     console.error('데이터 로드 실패:', error);
   }
 };
 
-// 수증자 추가 모달 열기
+// mode가 변경될 때마다 데이터를 다시 로드
+watch(
+  () => props.mode,
+  async (newMode, oldMode) => {
+    if (newMode !== oldMode) {
+      await loadPageData();
+    }
+  },
+  { immediate: true } // 컴포넌트가 처음 로드될 때도 실행
+);
+
+// 수증자/상속인 추가 모달 열기
 const openRecipientModal = () => {
   newRecipient.value = { ...emptyRecipient };
   isEditing.value = false;
   isRecipientModalOpen.value = true;
 };
 
-// 수증자 모달 닫기
+// 모달 닫기
 const cancelRecipientModal = () => {
   isRecipientModalOpen.value = false;
   isEditing.value = false;
   selectedRecipientId.value = null;
 };
 
-// 수증자 저장/수정
+// 수증자/상속인 저장/수정
 const handleRecipientConfirm = async (recipientData: RecipientRequestDto) => {
   try {
     if (isEditing.value && selectedRecipientId.value !== null) {
-      await updateRecipient(selectedRecipientId.value, recipientData);
+      await updateRecipient(
+        selectedRecipientId.value,
+        recipientData,
+        props.mode
+      );
     } else {
-      await createRecipient(recipientData);
+      await createRecipient(recipientData, props.mode);
     }
-    await loadGiftPageData();
+    await loadPageData();
     cancelRecipientModal();
   } catch (error) {
-    console.error('수증자 저장/수정 실패:', error);
+    console.error('수증자/상속인 저장/수정 실패:', error);
   }
 };
 
-// 수증자 수정 모달 열기
+// 수증자/상속인 수정 모달 열기
 const editRecipient = (id: number) => {
   const recipient = recipients.value.find((r) => r.recipientId === id);
   if (recipient) {
@@ -255,15 +295,15 @@ const confirmDeleteRecipient = (id: number) => {
   }
 };
 
-// 수증자 삭제
+// 삭제
 const confirmDelete = async () => {
   if (selectedRecipientId.value !== null) {
     try {
-      await deleteRecipient(selectedRecipientId.value);
-      await loadGiftPageData();
+      await deleteRecipient(selectedRecipientId.value, props.mode);
+      await loadPageData();
       cancelDelete();
     } catch (error) {
-      console.error('수증자 삭제 실패:', error);
+      console.error('삭제 실패:', error);
     }
   }
 };
@@ -277,6 +317,18 @@ const cancelDelete = () => {
 
 // 다음 단계로 이동
 const goToQuiz = () => {
-  router.push({ name: 'gift-quiz' });
+  // 스토어의 데이터를 초기화하여 JEL4에서 항상 새로운 데이터를 불러오도록 함
+  if (props.mode === 'gift') {
+    (giftStore as ReturnType<typeof useGiftStore>).setInitialData({
+      allAssets: new Map(),
+      beneficiaries: [],
+    });
+  } else {
+    (inheritanceStore as ReturnType<typeof useInheritanceStore>).setInitialData({
+      allAssets: new Map(),
+      beneficiaries: [],
+    });
+  }
+  router.push({ name: pageConfig.value.quizRouteName });
 };
 </script>

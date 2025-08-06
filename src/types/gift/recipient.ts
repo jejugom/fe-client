@@ -25,5 +25,25 @@ export interface AssetStatusSummaryDto {
 /** 증여 페이지 응답 DTO (백엔드 GiftPageResponseDto와 매칭) */
 export interface GiftPageResponseDto {
   recipients: RecipientResponseDto[];
-  assetSummary: AssetStatusSummaryDto[];
+  assetCategories: any[]; // 실제 타입에 맞게 수정 필요
+}
+
+/** 증여 시뮬레이션 요청 DTO */
+export interface GiftSimulationRequest {
+  recipients: {
+    recipientId: number;
+    giftAmount: number;
+  }[];
+}
+
+/** 증여 시뮬레이션 응답 DTO */
+export interface GiftSimulationResponse {
+  totalGiftTax: number;
+  recipientSummaries: {
+    recipientId: number;
+    name: string;
+    giftAmount: number;
+    estimatedTax: number;
+  }[];
+  taxSavingStrategies: string[];
 }

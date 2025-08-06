@@ -317,6 +317,24 @@ const completeSelection = () => {
   if (canComplete()) {
     isExpanded.value = false;
     dropdownOpen.value = false;
+
+    // 모두에게 나눠서 분배 상태에서 100%를 한 명에게 할당했을 때 그 수증자 이름으로 처리
+    if (tempAsset.isMultipleBeneficiaries) {
+      const beneficiaryIdWith100 = Object.entries(
+        tempAsset.distributionRatios || {}
+      ).find(([, ratio]) => ratio === 100)?.[0];
+      if (beneficiaryIdWith100) {
+        tempAsset.isMultipleBeneficiaries = false;
+        tempAsset.distributionRatios = {};
+        const beneficiary = props.beneficiaries.find(
+          (b) => b.id === beneficiaryIdWith100
+        );
+        if (beneficiary) {
+          tempAsset.beneficiary = beneficiary;
+        }
+      }
+    }
+
     // 부모 컴포넌트에 변경된 최종 상태 전달
     emit('update-asset', tempAsset);
   }

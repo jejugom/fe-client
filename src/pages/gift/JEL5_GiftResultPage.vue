@@ -11,6 +11,7 @@
     @click="handleShareOrDownload"
   />
   <div class="mt-16">
+
     <p class="text-primary-300 mb-2 text-center font-semibold">
       궁금한 점이 생기셨다면,<br />
       은행에서 자세히 알려드릴게요
@@ -29,11 +30,14 @@
 import { ref, onMounted, nextTick } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { useRouter } from 'vue-router';
+import { useSimulationStore } from '@/stores/simulation'; // 변경
 import GiftSimulationResult from './_components/GiftSimulationResult.vue';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 const router = useRouter();
+// const giftStore = useGiftStore(); // 기존
+const simulationStore = useSimulationStore(); // 변경
 
 // 데스크탑/모바일 환경 구분
 const isMobile = ref(false);
@@ -124,4 +128,5 @@ const shareResult = async () => {
 const handleShareOrDownload = () => {
   shareResult();
 };
+
 </script>
