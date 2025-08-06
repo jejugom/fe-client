@@ -33,3 +33,5 @@ coverage
 storybook-static
 
 .env
+.env.development
+.env.production
