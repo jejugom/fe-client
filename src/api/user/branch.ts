@@ -23,7 +23,7 @@ export const branchApi = {
   },
 
   async setMyBranch(branchData: BranchRequest) {
-    const response = await api.patch('/api/user/branch', branchData);
+    const response = await api.patch('/api/users/me/branch', branchData);
     return response.data;
   },
 };

@@ -4,6 +4,7 @@
   </div>
 
   <div v-else class="space-y-16">
+
     <!-- 최신예약 1개 출력 -->
     <div v-if="bookingItems.length != 0">
       <RegisterCard :booking="bookingItems[0]" />

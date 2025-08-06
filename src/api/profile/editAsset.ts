@@ -18,7 +18,7 @@ export const ASSET_CATEGORY_MAP = {
   '6': '기타 자산',
 } as const;
 
-// 카테고리명을 코드로 변환하는 역매핑
+// 카테고리명을 코드로 변환하는 역매핑 (ASSET_CATEGORY_MAP과 일치)
 export const CATEGORY_NAME_TO_CODE = {
   부동산: '1',
   '예금/적금': '2',

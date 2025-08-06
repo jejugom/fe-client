@@ -165,21 +165,39 @@ watch(
 const selectBranch = async () => {
   const selected = branchModalRef.value?.getSelectedBranch?.();
   if (selected) {
-    const found = branchList.find((b) => b.name === selected); // 먼저 찾기
+    console.log('선택된 지점:', selected);
 
-    if (found) {
-      branchValue.value = selected;
-      registerStore.setBranch(selected);
-      registerStore.setBranchId(found.id); // 그 다음 id 설정
-      showBranchModal.value = false;
+    // 1. 정확한 이름 매칭 시도
+    let found = branchList.find((b) => b.name === selected);
 
-      try {
-        const slots = await fetchReservedSlots(found.id);
-        registerStore.setReservedSlots(slots);
-      } catch (e) {
-        console.error('예약 슬롯 조회 실패', e);
-      }
+    // 2. 정확한 매칭이 안 되면 포함 관계로 재시도
+    if (!found) {
+      found = branchList.find(
+        (b) => selected.includes(b.name) || b.name.includes(selected)
+      );
     }
+
+    // 3. 여전히 찾지 못하면 기본값으로 첫 번째 지점 사용
+    if (!found) {
+      console.warn('지점을 찾을 수 없어 기본값 사용:', selected);
+      found = branchList[0]; // 첫 번째 지점을 기본값으로 사용
+    }
+
+    console.log('매칭된 지점:', found);
+
+    branchValue.value = selected;
+    registerStore.setBranch(selected);
+    registerStore.setBranchId(found.id);
+    showBranchModal.value = false;
+
+    try {
+      const slots = await fetchReservedSlots(found.id);
+      registerStore.setReservedSlots(slots);
+    } catch (e) {
+      console.error('예약 슬롯 조회 실패', e);
+    }
+  } else {
+    console.log('선택된 지점이 없습니다');
   }
 };
 
@@ -239,19 +257,19 @@ const goToRegister = async () => {
     // 임시로 test 요청만 보냅니다.
     // !백엔드 서버 켜야 작동합니다!
     // api 요청에 로그인시 자동으로 jwt 토큰이 헤더에 포함됩니다.
-    const testResult = await smsApi.test();
-    if (testResult) {
-      console.log('SMS API 테스트 결과: ', testResult);
+    // const testResult = await smsApi.test();
+    // if (testResult) {
+    //   console.log('SMS API 테스트 결과: ', testResult);
 
-      router.push({
-        name: 'register-complete',
-        query: { bookingId: bookingResult?.bookingId },
-      });
+    //   router.push({
+    //     name: 'register-complete',
+    //     query: { bookingId: bookingResult?.bookingId },
+    //   });
 
-      console.log('예약 완료:', registerStore.getSummary());
-    } else {
-      alert('SMS API 테스트 실패: ' + testResult);
-    }
+    //   console.log('예약 완료:', registerStore.getSummary());
+    // } else {
+    //   alert('SMS API 테스트 실패: ' + testResult);
+    // }
 
     // SMS 전송 API - 구현 완료 - 추후 이 코드로 교체
     const result = await smsApi.send(smsData);
