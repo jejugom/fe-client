@@ -9,8 +9,15 @@ import App from './App.vue';
 import router from './router';
 import VueApexCharts from 'vue3-apexcharts';
 import VCalendar from 'v-calendar';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
 const app = createApp(App);
+
+// Pinia 인스턴스 생성
+const pinia = createPinia();
+
+// persist 플러그인 등록
+pinia.use(piniaPluginPersistedstate);
 
 // Kakao 지도 API 로드 함수 정의
 const kakaoAppKey = import.meta.env.VITE_KAKAO_MAP_KEY;
@@ -77,11 +84,13 @@ async function bootstrap() {
     console.error('카카오 지도 API 초기화 실패:', error);
   }
 
-  app.use(VueAwesomePaginate);
-  app.use(createPinia());
-  app.use(VCalendar, {});
+  // 플러그인 순서 중요: Pinia → Router → 기타
+  app.use(pinia);
   app.use(router);
+  app.use(VueAwesomePaginate);
+  app.use(VCalendar, {});
   app.component('apexchart', VueApexCharts);
+
   app.mount('#app');
 }
 
