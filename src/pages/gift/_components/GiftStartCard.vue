@@ -1,29 +1,51 @@
 <template>
   <div
-    class="border-primary-300 btn-pressed mb-4 flex cursor-pointer items-center gap-6 rounded-xl border p-4"
-    @click="onClick"
+    class="border-primary-100 overflow-hidden rounded-2xl border bg-white shadow-lg"
   >
-    <div class="aspect-square w-20 flex-shrink-0 overflow-hidden rounded-lg">
-      <img :src="imgSrc" :alt="altText" class="h-full w-full object-cover" />
-    </div>
-    <div>
-      <p class="text-primary-500 text-lg font-semibold">{{ title }}</p>
-      <p class="text-surface-500 mt-1">{{ description }}</p>
+    <div class="p-6">
+      <div class="mb-4 flex items-start gap-4">
+        <div
+          class="flex h-20 w-20 items-center justify-center rounded-xl bg-gradient-to-br"
+        >
+          <img :src="icon" :alt="`${title} 아이콘`" class="h-20 w-20" />
+        </div>
+        <div class="flex-1">
+          <p class="text-primary-500 mb-2 text-xl font-bold">{{ title }}</p>
+          <p class="text-surface-500">
+            {{ description }}
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <Btn
+          v-for="(btn, idx) in buttons"
+          :key="idx"
+          :color="btn.color"
+          :label="btn.label"
+          :size="btn.size || 'large'"
+          @click="btn.onClick"
+          class="w-full"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
-  imgSrc: string;
-  altText?: string;
+import Btn from '@/components/buttons/Btn.vue';
+
+interface ButtonProps {
+  label: string;
+  color: 'primary' | 'secondary' | 'secondary-stroke' | 'surface' | undefined;
+  size?: 'small' | 'medium' | 'large' | 'square';
+  onClick: () => void;
+}
+
+defineProps<{
+  icon: string;
   title: string;
   description: string;
+  buttons: ButtonProps[];
 }>();
-
-const emit = defineEmits<{
-  (e: 'click'): void;
-}>();
-
-const onClick = () => emit('click');
 </script>

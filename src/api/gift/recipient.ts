@@ -1,5 +1,3 @@
-// 커스텀 설정이 적용된 Axios 인스턴스를 가져옵니다.
-// 이렇게 해야 모든 요청에 인증 토큰이 자동으로 첨부됩니다.
 import api from '@/api';
 import type {
   RecipientRequestDto,
@@ -10,14 +8,25 @@ import type {
 const API_BASE = '/api/gift';
 
 /** 수증자 생성 */
-export const createRecipient = async (data: RecipientRequestDto) => {
-  const response = await api.post<{ recipientId: number }>(API_BASE, data);
+export const createRecipient = async (
+  data: RecipientRequestDto,
+  mode: 'gift' | 'inheritance'
+) => {
+  const response = await api.post<{ recipientId: number }>(
+    `${API_BASE}?mode=${mode}`,
+    data
+  );
+  console.log('수증자 생성 응답:', response.data);
   return response.data;
 };
 
 /** 증여 페이지 데이터 조회 */
-export const fetchGiftPageData = async () => {
-  const response = await api.get<GiftPageResponseDto>(API_BASE);
+export const fetchGiftPageData = async (mode: 'gift' | 'inheritance') => {
+  const cacheBuster = new Date().getTime();
+  const response = await api.get<GiftPageResponseDto>(
+    `${API_BASE}?mode=${mode}&t=${cacheBuster}`
+  );
+  console.log('증여 페이지 데이터:', response.data);
   return response.data;
 };
 
@@ -26,18 +35,25 @@ export const fetchRecipientById = async (recipientId: number) => {
   const response = await api.get<RecipientResponseDto>(
     `${API_BASE}/${recipientId}`
   );
+  console.log('수증자 상세 조회 응답:', response.data);
   return response.data;
 };
 
 /** 수증자 수정 */
 export const updateRecipient = async (
   recipientId: number,
-  data: RecipientRequestDto
+  data: RecipientRequestDto,
+  mode: 'gift' | 'inheritance'
 ) => {
-  await api.put(`${API_BASE}/${recipientId}`, data);
+  await api.put(`${API_BASE}/${recipientId}?mode=${mode}`, data);
+  console.log('수증자 수정 완료:', recipientId);
 };
 
 /** 수증자 삭제 */
-export const deleteRecipient = async (recipientId: number) => {
-  await api.delete(`${API_BASE}/${recipientId}`);
+export const deleteRecipient = async (
+  recipientId: number,
+  mode: 'gift' | 'inheritance'
+) => {
+  await api.delete(`${API_BASE}/${recipientId}?mode=${mode}`);
+  console.log('수증자 삭제 완료:', recipientId);
 };

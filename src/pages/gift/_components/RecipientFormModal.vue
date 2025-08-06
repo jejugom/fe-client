@@ -2,7 +2,7 @@
   <Modal
     @click1="$emit('cancel')"
     @click2="handleSubmit"
-    :title="isEditing ? '수증자 정보 수정' : '수증자 정보 입력'"
+    :title="isEditing ? '정보 수정' : '수증자 정보 입력'"
     leftLabel="그만두기"
     rightLabel="저장하기"
   >
@@ -103,8 +103,6 @@ import InputBox from '@/components/forms/InputBox.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import FormField from './FormField.vue';
 import type { RecipientRequestDto } from '@/types/gift/recipient';
-
-// 💡 format.ts에서 formatCurrency 함수를 import
 import { formatCurrency } from '@/utils/format';
 
 // Props & Emits
@@ -118,6 +116,7 @@ interface Emits {
   (e: 'confirm', recipient: RecipientRequestDto): void;
 }
 
+// `mode` prop 제거
 const props = withDefaults(defineProps<Props>(), {
   recipient: null,
   isEditing: false,
@@ -141,25 +140,18 @@ const formData = ref<RecipientRequestDto>(
   props.recipient ? { ...props.recipient } : createDefaultRecipient()
 );
 
-// 💡 만원 단위로 입력받을 별도의 반응형 변수 추가
 const priorGiftAmountInTenThousand = ref<string>('');
 
-// 💡 숫자 입력 처리 함수 수정
+// 숫자 입력 처리 함수
 const handleAmountInput = (e: Event) => {
   const target = e.target as HTMLInputElement;
   const raw = target.value.replace(/[^\d]/g, '');
-  // 만원 단위로 입력된 값을 원 단위로 변환하여 formData에 저장
   formData.value.priorGiftAmount = Number(raw) * 10000 || undefined;
-  // v-model에 바인딩된 변수에도 raw 값을 저장
   priorGiftAmountInTenThousand.value = raw;
 };
 
-// ... (formatAmount 함수는 utils/format.ts로 이동했으므로 삭제)
-
-// 더미 옵션 (기존 코드와 동일)
+// 더미 옵션
 const relationshipOptions = ['자녀', '배우자', '손자녀', '형제자매', '기타'];
-const maritalStatusOptions = ['미혼', '기혼'];
-const giftTaxPayerOptions = ['본인', '수증자'];
 
 // `hasPriorGift` 변경 시 `priorGiftAmount`와 `priorGiftAmountInTenThousand` 초기화
 watch(
@@ -167,7 +159,6 @@ watch(
   (newVal) => {
     if (newVal !== true) {
       formData.value.priorGiftAmount = undefined;
-      // 💡 만원 단위 변수도 초기화
       priorGiftAmountInTenThousand.value = '';
     }
   }
@@ -179,7 +170,6 @@ watch(
   (newRecipient) => {
     if (newRecipient) {
       formData.value = { ...newRecipient };
-      // 💡 원 단위 금액을 만원 단위로 변환하여 변수에 할당
       priorGiftAmountInTenThousand.value = newRecipient.priorGiftAmount
         ? String(newRecipient.priorGiftAmount / 10000)
         : '';
@@ -191,10 +181,11 @@ watch(
   { immediate: true }
 );
 
-// 제출 처리 함수 (기존 코드와 동일)
+// 제출 처리 함수
 const handleSubmit = () => {
   const missingFields: string[] = [];
 
+  // 모든 필드에 대한 유효성 검사
   if (!formData.value.recipientName.trim()) missingFields.push('이름');
   if (!formData.value.relationship) missingFields.push('관계');
   if (!formData.value.birthDate) missingFields.push('생년월일');
@@ -215,13 +206,6 @@ const handleSubmit = () => {
     return;
   }
 
-  // 제출할 데이터를 `RecipientRequestDto` 타입으로 변환
-  const submitData: RecipientRequestDto = {
-    ...formData.value,
-    isMarried: formData.value.isMarried as boolean,
-    hasPriorGift: formData.value.hasPriorGift as boolean,
-  };
-
-  emit('confirm', submitData);
+  emit('confirm', formData.value);
 };
 </script>

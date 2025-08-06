@@ -15,11 +15,13 @@ const giftRoutes: RouteRecordRaw[] = [
     path: '/gift/input',
     name: 'gift-input',
     component: () => import('@/pages/gift/JEL3_GiftInputPage.vue'),
+    props: { mode: 'gift' }, // props로 모드 전달
   },
   {
     path: '/gift/quiz',
     name: 'gift-quiz',
     component: () => import('@/pages/gift/JEL4_GiftQuizPage.vue'),
+    props: { mode: 'gift' }, // props로 모드 전달
   },
   {
     path: '/gift/faq',
