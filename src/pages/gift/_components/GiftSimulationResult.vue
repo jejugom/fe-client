@@ -3,10 +3,9 @@
     <div class="mb-6">
       <h3 class="mb-2 text-lg font-bold">예상 증여세 총액은?</h3>
       <p class="text-xl font-semibold text-red-300">
-        약 {{ formatCurrency(totalGiftTax) }} (수정)
+        약 {{ formatCurrency(totalGiftTax) }}
       </p>
     </div>
-
     <div class="mb-6">
       <h3 class="mb-2 text-lg font-semibold">수증자별 세금 요약</h3>
       <table class="border-surface-200 w-full border text-sm">
@@ -14,27 +13,26 @@
           <tr>
             <th class="border-surface-200 border p-2">수증자</th>
             <th class="border-surface-200 border p-2">증여금</th>
-            <th class="border-surface-200 border p-2">예상 증여세 (수정)</th>
+            <th class="border-surface-200 border p-2">예상 증여세</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(recipient, index) in recipientSummaries" :key="index">
             <td class="border-surface-200 border p-2">
-              {{ recipient.name }}
+              {{ recipient.recipientName }}
             </td>
             <td class="border-surface-200 border p-2">
-              {{ formatCurrency(recipient.giftAmount) }}
+              {{ formatCurrency(recipient.totalGiftAmount) }}
             </td>
             <td class="border-surface-200 border p-2">
-              {{ formatCurrency(recipient.estimatedTax) }}(수정)
+              {{ formatCurrency(recipient.estimatedTax) }}
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-
     <div class="mb-6">
-      <h3 class="mb-2 text-lg font-semibold">절세 전략 추천 (수정)</h3>
+      <h3 class="mb-2 text-lg font-semibold">절세 전략 추천</h3>
       <ul class="list-disc pl-5 text-sm">
         <li v-for="(strategy, index) in taxSavingStrategies" :key="index">
           {{ strategy }}
@@ -56,80 +54,84 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
-import { useRouter } from 'vue-router';
+
 import { formatCurrency } from '@/utils/format';
+import { useSimulationStore } from '@/stores/simulation';
+import type {
+  RecipientTaxDetailDto,
+  SimulationRequestDto,
+} from '@/types/gift/simulation';
 
 const apexchart = VueApexCharts;
-const router = useRouter();
+const simulationStore = useSimulationStore();
 
-// 라우터 state 대신 window.history.state를 통해 데이터에 접근
-interface RecipientSummary {
-  name: string;
-  giftAmount: number;
-  estimatedTax: number;
-}
+const totalGiftTax = computed(() => simulationStore.totalGiftTax);
+const recipientSummaries = computed(() => simulationStore.recipientSummaries);
+const taxSavingStrategies = computed(() => simulationStore.taxSavingStrategies);
 
-const historyState = window.history.state;
+// 차트 데이터 로직을 수정합니다.
+const chartSeries = computed(() => {
+  // recipientSummaries.value가 존재하고 데이터가 있을 때만 map()을 실행
+  if (!recipientSummaries.value || recipientSummaries.value.length === 0) {
+    return [];
+  }
+  return [
+    {
+      name: '증여금',
+      data: recipientSummaries.value.map(
+        (r: RecipientTaxDetailDto) => r.totalGiftAmount
+      ),
+    },
+    {
+      name: '예상 증여세',
+      data: recipientSummaries.value.map(
+        (r: RecipientTaxDetailDto) => r.estimatedTax
+      ),
+    },
+  ];
+});
 
-const totalGiftTax = ref(historyState.totalGiftTax || 0);
-const recipientSummaries = ref<RecipientSummary[]>(
-  historyState.recipientSummaries || []
-);
-
-// 절세 전략
-const taxSavingStrategies = ref([
-  '[전략 1] 증여 시기 분산 전략',
-  '[전략 2] 수증자 분산 전략',
-  '[전략 3] 자산 분할 증여 전략',
-  '[전략 4] 미성년자 증여 제한 전략',
-  '[전략 5] 증여자 세금 대납 방지 전략',
-  '[전략 6] 세법 변경 리스크 회피 전략',
-  '[전략 7] 배우자 공제 활용 전략',
-  '[전략 8] 자산별 수증자 매칭 전략',
-  '[전략 9] 전문가 상담 유도 전략',
-]);
-
-const chartSeries = computed(() => [
-  {
-    name: '증여금',
-    data: recipientSummaries.value.map((r) => r.giftAmount),
-  },
-  {
-    name: '예상 증여세',
-    data: recipientSummaries.value.map((r) => r.estimatedTax),
-  },
-]);
-const chartOptions = computed(() => ({
-  chart: { type: 'bar', height: 350, toolbar: { show: false } },
-  plotOptions: {
-    bar: { horizontal: false, columnWidth: '55%', endingShape: 'rounded' },
-  },
-  dataLabels: { enabled: false },
-  stroke: { show: true, width: 2, colors: ['transparent'] },
-  xaxis: {
-    categories: recipientSummaries.value.map((r) => r.name),
-  },
-  yaxis: {
-    labels: {
-      formatter(value: number) {
-        return value >= 1e8
-          ? (value / 1e8).toFixed(0) + '억 원'
-          : value >= 1e4
-            ? (value / 1e4).toFixed(0) + '만 원'
-            : formatCurrency(value);
+const chartOptions = computed(() => {
+  // recipientSummaries.value가 존재하고 데이터가 있을 때만 map()을 실행
+  if (!recipientSummaries.value || recipientSummaries.value.length === 0) {
+    return {}; // 빈 객체를 반환하여 에러 방지
+  }
+  return {
+    chart: { type: 'bar', height: 350, toolbar: { show: false } },
+    plotOptions: {
+      bar: { horizontal: false, columnWidth: '55%', endingShape: 'rounded' },
+    },
+    dataLabels: { enabled: false },
+    stroke: { show: true, width: 2, colors: ['transparent'] },
+    xaxis: {
+      categories: recipientSummaries.value.map(
+        (r: RecipientTaxDetailDto) => r.recipientName
+      ),
+    },
+    yaxis: {
+      labels: {
+        formatter(value: number) {
+          if (value >= 100000000) {
+            return `${(value / 100000000).toFixed(0)}억 원`;
+          }
+          if (value >= 10000) {
+            return `${(value / 10000).toFixed(0)}만 원`;
+          }
+          return formatCurrency(value);
+        },
       },
     },
-  },
-  fill: { opacity: 1 },
-  tooltip: {
-    y: {
-      formatter(val: number) {
-        return formatCurrency(val) + '원';
+    fill: { opacity: 1 },
+    tooltip: {
+      y: {
+        formatter(val: number) {
+          return `${formatCurrency(val)}`;
+        },
       },
     },
-  },
-  colors: ['#93C5FD', '#2563EB'],
-}));
+    colors: ['#93C5FD', '#2563EB'],
+  };
+});
 </script>

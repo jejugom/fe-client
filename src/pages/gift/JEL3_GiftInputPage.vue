@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { ref, onMounted, computed, withDefaults } from 'vue';
+import { ref, computed, withDefaults, watch } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
 import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
 import RecipientFormModal from './_components/RecipientFormModal.vue';
@@ -98,14 +98,12 @@ import type {
   GiftPageResponseDto,
 } from '@/types/gift/recipient';
 
+import { useGiftStore } from '@/stores/gift';
+import { useInheritanceStore } from '@/stores/inheritance';
+
 // 타입 정의
 interface AssetInfoForCard {
   category: string;
-  amount: number;
-}
-
-interface AssetStatusSummaryDto {
-  assetCategoryCode: string;
   amount: number;
 }
 
@@ -122,6 +120,13 @@ const router = useRouter();
 
 const props = withDefaults(defineProps<{ mode: 'gift' | 'inheritance' }>(), {
   mode: 'gift',
+});
+
+const giftStore = useGiftStore();
+const inheritanceStore = useInheritanceStore();
+
+const store = computed(() => {
+  return props.mode === 'gift' ? giftStore : inheritanceStore;
 });
 
 // 페이지 설정
@@ -156,13 +161,13 @@ const isDeleteModalOpen = ref(false);
 
 // 데이터 상태
 const recipients = ref<RecipientResponseDto[]>([]);
-const assetSummary = ref<any[]>([]);
+const assetCategories = ref<any[]>([]);
 const userName = ref<string>('사용자');
 
 // 총 자산 금액 계산
 const totalAssetAmount = computed(() => {
-  return assetSummary.value.reduce(
-    (sum, asset) => sum + (asset?.amount || 0),
+  return assetCategories.value.reduce(
+    (sum, category) => sum + (category?.totalAmount || 0),
     0
   );
 });
@@ -179,26 +184,14 @@ const categoryMap: { [key: string]: string } = {
 
 // 카테고리별 자산 합계 계산
 const transformedAssetSummary = computed<AssetInfoForCard[]>(() => {
-  if (!assetSummary.value || assetSummary.value.length === 0) {
+  if (!assetCategories.value || assetCategories.value.length === 0) {
     return [];
   }
 
-  const categoryTotals = assetSummary.value.reduce(
-    (acc: Record<string, number>, item: AssetStatusSummaryDto) => {
-      const categoryName = categoryMap[item.assetCategoryCode] || '기타';
-      const amount: number = item?.amount || 0;
-      acc[categoryName] = (acc[categoryName] || 0) + amount;
-      return acc;
-    },
-    {}
-  );
-
-  return Object.entries(categoryTotals).map(
-    ([category, amount]): AssetInfoForCard => ({
-      category,
-      amount: Number(amount),
-    })
-  );
+  return assetCategories.value.map((category) => ({
+    category: categoryMap[category.assetCategoryCode] || '기타',
+    amount: Number(category.totalAmount),
+  }));
 });
 
 // 수증자/상속인 초기값
@@ -216,21 +209,27 @@ const newRecipient = ref<RecipientRequestDto>({ ...emptyRecipient });
 const isEditing = ref(false);
 const selectedRecipientId = ref<number | null>(null);
 
-// 컴포넌트 마운트 시 데이터 로드
-onMounted(async () => {
-  await loadPageData();
-});
-
 // 페이지 데이터 로드
 const loadPageData = async () => {
   try {
-    const data: GiftPageResponseDto = await fetchGiftPageData();
-    recipients.value = data.recipients;
-    assetSummary.value = data.assetSummary;
+    const data: GiftPageResponseDto = await fetchGiftPageData(props.mode);
+    recipients.value = data.recipients || [];
+    assetCategories.value = data.assetCategories || [];
   } catch (error) {
     console.error('데이터 로드 실패:', error);
   }
 };
+
+// mode가 변경될 때마다 데이터를 다시 로드
+watch(
+  () => props.mode,
+  async (newMode, oldMode) => {
+    if (newMode !== oldMode) {
+      await loadPageData();
+    }
+  },
+  { immediate: true } // 컴포넌트가 처음 로드될 때도 실행
+);
 
 // 수증자/상속인 추가 모달 열기
 const openRecipientModal = () => {
@@ -250,9 +249,13 @@ const cancelRecipientModal = () => {
 const handleRecipientConfirm = async (recipientData: RecipientRequestDto) => {
   try {
     if (isEditing.value && selectedRecipientId.value !== null) {
-      await updateRecipient(selectedRecipientId.value, recipientData);
+      await updateRecipient(
+        selectedRecipientId.value,
+        recipientData,
+        props.mode
+      );
     } else {
-      await createRecipient(recipientData);
+      await createRecipient(recipientData, props.mode);
     }
     await loadPageData();
     cancelRecipientModal();
@@ -296,7 +299,7 @@ const confirmDeleteRecipient = (id: number) => {
 const confirmDelete = async () => {
   if (selectedRecipientId.value !== null) {
     try {
-      await deleteRecipient(selectedRecipientId.value);
+      await deleteRecipient(selectedRecipientId.value, props.mode);
       await loadPageData();
       cancelDelete();
     } catch (error) {
@@ -314,6 +317,18 @@ const cancelDelete = () => {
 
 // 다음 단계로 이동
 const goToQuiz = () => {
+  // 스토어의 데이터를 초기화하여 JEL4에서 항상 새로운 데이터를 불러오도록 함
+  if (props.mode === 'gift') {
+    (giftStore as ReturnType<typeof useGiftStore>).setInitialData({
+      allAssets: new Map(),
+      beneficiaries: [],
+    });
+  } else {
+    (inheritanceStore as ReturnType<typeof useInheritanceStore>).setInitialData({
+      allAssets: new Map(),
+      beneficiaries: [],
+    });
+  }
   router.push({ name: pageConfig.value.quizRouteName });
 };
 </script>
