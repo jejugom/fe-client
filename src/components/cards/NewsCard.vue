@@ -8,7 +8,7 @@
     />
 
     <a :href="newsItem.link" target="_blank">
-      <div class="text-primary-500 text-base font-semibold">{{
+      <div class="text-primary-500 mr-6 line-clamp-1 text-base font-semibold">{{
         newsItem.title
       }}</div>
       <div class="mt-2 line-clamp-2">{{ newsItem.summary }}</div>

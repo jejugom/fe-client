@@ -43,7 +43,7 @@ const route = useRoute();
 const tabs = [
   {
     name: 'nohoo',
-    label: '노후설계',
+    label: '노후투자',
     icon: TabNohoo,
     iconActive: TabNohooActive,
   },
@@ -61,7 +61,7 @@ const tabs = [
   },
   {
     name: 'event',
-    label: '혜택정보',
+    label: '생활편의',
     icon: TabEvent,
     iconActive: TabEventActive,
   },

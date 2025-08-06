@@ -2,10 +2,8 @@ import api from '@/api';
 
 // API 응답 데이터 구조에 맞게 인터페이스 정의
 export interface UserInfo {
-  userName: {
-    email: string;
-    userName: string;
-  };
+  userName: string;
+
   assetStatus: {
     assetCategoryCode: string;
     amount: number;
@@ -86,7 +84,7 @@ export interface News {
 }
 
 export interface ParsedApiResponse {
-  userInfo: UserInfo[];
+  userInfo: UserInfo;
   customRecommendPrdt: CustomRecommendPrdt[];
   timeDeposits: TimeDeposit[];
   savingsDeposits: SavingDeposit[];

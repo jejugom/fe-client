@@ -1,5 +1,5 @@
 <template>
-  <div class="gift-simulation-result mb-4 w-full">
+  <div class="gift-simulation-result w-full p-4">
     <div class="mb-6">
       <h3 class="mb-2 text-lg font-bold">예상 증여세 총액은?</h3>
       <p class="text-xl font-semibold text-red-300">
@@ -49,6 +49,13 @@
           :series="chartSeries"
         ></apexchart>
       </div>
+    </div>
+    <div class="mt-4 text-end">
+      <p class="text-surface-300 italic">
+        * 이 결과는 참고용 시뮬레이션이며, 실제 세액은 세무사 상담 후
+        확정됩니다.
+        <br />
+      </p>
     </div>
   </div>
 </template>

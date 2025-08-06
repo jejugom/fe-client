@@ -7,6 +7,11 @@ const profileRoutes: RouteRecordRaw[] = [
     component: () => import('@/pages/profile/MYL1_ProfilePage.vue'),
   },
   {
+    path: '/profile/register',
+    name: 'register-list',
+    component: () => import('@/pages/profile/MYL2_RegisterListPage.vue'),
+  },
+  {
     path: '/asset/edit',
     name: 'edit-asset',
     component: () => import('@/pages/profile/MYL2_EditAssetPage.vue'),

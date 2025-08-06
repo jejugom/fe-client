@@ -243,7 +243,7 @@ const goToRegister = async () => {
 
   // SMS 전송을 위한 예약 정보
   const smsData: SmsData = {
-    phoneNumber: '01099255708', // 실제로는 사용자 입력값 사용
+    phoneNumber: '01071100441', // 실제로는 사용자 입력값 사용
     productName: productName.value,
     branchName: branchValue.value,
     reservationDate: selectedReservation.value.date,

@@ -53,7 +53,7 @@
     transition: all 150ms ease-in-out;
   }
   .btn-pressed:active {
-    transform: scale(1.02);
+    transform: scale(0.95);
     opacity: 0.9;
     box-shadow: var(--shadow-xs);
     box-shadow: var(--shadow-up-xs);

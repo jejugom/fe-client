@@ -4,53 +4,51 @@
   </div>
 
   <div v-else class="space-y-16">
-    <!-- Info Box -->
-    <!-- 예약 내역이 2개 이상일 때는 슬라이드로 보여주기 -->
-    <Carousel v-if="bookingItems.length > 1" :items="bookingItems">
-      <template #default="{ item }">
-        <RegisterCard :booking="item" @updated="loadMyPageData" />
-      </template>
-    </Carousel>
 
-    <!-- 예약이 1개뿐일 때는 일반 렌더링 -->
-    <div v-else-if="bookingItems.length === 1">
-      <RegisterCard :booking="bookingItems[0]" @updated="loadMyPageData" />
+    <!-- 최신예약 1개 출력 -->
+    <div v-if="bookingItems.length != 0">
+      <RegisterCard :booking="bookingItems[0]" />
     </div>
 
-    <!-- 예약 내역이 없을 때 -->
+    <!-- 예약이 없는 경우 -->
     <div v-else class="py-8 text-center text-gray-500">
       예약 내역이 없습니다.
     </div>
 
-    <!-- 자산현황 파이차트 컴포넌트-->
-    <AssetSummaryCardPie
-      :userName="userName"
-      :assetAmount="assetAmount"
-      :assetInfo="assetInfo"
-    />
-
-    <!-- Menu Section -->
-    <div class="flex flex-col gap-4">
+    <div class="space-y-4">
+      <div class="text-primary-300 mb-4 text-2xl font-bold"
+        >내 자산 확인하기</div
+      >
+      <AssetSummaryCardPie
+        :userName="userName"
+        :assetAmount="assetAmount"
+        :assetInfo="assetSummary"
+      />
       <Btn
-        color="secondary"
-        :label="menu.title"
+        color="primary"
+        label="전체 자산 목록 확인하기"
         size="large"
+        @click="router.push({ name: 'edit-asset' })"
+      />
+      <AssetRankCard
+        :userName="userName"
+        :assetAmount="assetAmount"
+        :rankPercent="rankPercent"
+        :investmentRatio="investmentRatio"
+      />
+    </div>
+    <div class="flex flex-col items-start gap-4">
+      <div class="text-primary-300 mb-4 text-2xl font-bold">전체 메뉴</div>
+      <TextBtn
+        color="surface"
+        :label="menu.title"
+        size="small"
         v-for="menu in menuItems"
         :key="menu.id"
         @click="handleMenuClick(menu.id)"
       />
     </div>
-
-    <!-- 로그아웃 및 회원탈퇴 -->
-    <div
-      class="text-surface-300 mt-4 flex items-center justify-end gap-4 text-sm"
-    >
-      <div class="text-primary-300 cursor-pointer" @click="">사용방법 보기</div>
-      <div class="cursor-pointer underline" @click="handleLogout">로그아웃</div>
-      <p class="cursor-pointer underline" @click="showModal = true">회원탈퇴</p>
-    </div>
   </div>
-  <!-- 회원탈퇴 모달 -->
   <Modal
     v-if="showModal"
     @click1="cancelModal"
@@ -94,61 +92,28 @@ import Carousel from '@/components/carousel/Carousel.vue';
 import RegisterCard from './_components/RegisterCard.vue';
 import { mypageApi } from '@/api/user/mypage';
 import InputBox from '@/components/forms/InputBox.vue';
+import AssetRankCard from './_components/AssetRankCard.vue';
+import TextBtn from '@/components/buttons/TextBtn.vue';
 
 const myPageData = ref(null);
 const loading = ref(true);
 
-const userName = computed(() => myPageData.value?.userInfo.userName || '');
+const userName = ref('김철수'); // 더미 데이터
+const assetSummary = ref([
+  { category: '부동산', amount: 150000000 },
+  { category: '예금/적금', amount: 35000000 },
+  { category: '현금', amount: 5000000 },
+  { category: '주식/펀드', amount: 3000000 },
+  { category: '사업체/지분', amount: 2000000 },
+  { category: '기타', amount: 0 },
+]);
+
 const assetAmount = computed(() => {
-  if (!myPageData.value?.userInfo.assetStatus) return 0;
-  return myPageData.value.userInfo.assetStatus.reduce(
-    (total, asset) => total + asset.amount,
-    0
-  );
+  return assetSummary.value.reduce((total, asset) => total + asset.amount, 0);
 });
 
-// 자산 카테고리 코드를 프론트엔드 형식으로 변환
-const assetInfo = computed(() => {
-  // API 데이터가 로드되지 않았을 때 임시 더미 데이터로 차트 테스트
-  if (!myPageData.value?.userInfo.assetStatus) {
-    console.log('API 데이터 없어서 더미 데이터 사용');
-    return {
-      total: 195000000,
-      real_estate: 150000000,
-      deposit: 35000000,
-      cash: 5000000,
-      stock_fund: 3000000,
-      business_equity: 2000000,
-      etc: 0,
-    };
-  }
-
-  console.log('API 데이터:', myPageData.value.userInfo.assetStatus);
-
-  const assetMap = myPageData.value.userInfo.assetStatus.reduce(
-    (acc, asset) => {
-      acc[asset.assetCategoryCode] = asset.amount;
-      return acc;
-    },
-    {}
-  );
-
-  console.log('변환된 자산 맵:', assetMap);
-
-  // 현재 백엔드에서 오는 카테고리 코드에 따라 매핑
-  const result = {
-    total: assetAmount.value,
-    real_estate: assetMap['1'] || assetMap[1] || 0, // 카테고리 1: 부동산
-    deposit: assetMap['2'] || assetMap[2] || 0, // 카테고리 2: 예적금
-    cash: assetMap['3'] || assetMap[3] || 0, // 카테고리 3: 현금 ✓
-    stock_fund: assetMap['4'] || assetMap[4] || 0, // 카테고리 4: 주식/펀드 ✓
-    business_equity: assetMap['5'] || assetMap[5] || 0, // 카테고리 5: 사업지분 ✓
-    etc: assetMap['6'] || assetMap[6] || 0, // 카테고리 6: 기타
-  };
-
-  console.log('최종 자산 정보:', result);
-  return result;
-});
+const rankPercent = ref(9.7);
+const investmentRatio = ref(61);
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -170,10 +135,15 @@ const confirmWithdrawal = () => {
 };
 
 const menuItems = ref([
-  { id: 'asset', title: '내 자산 확인하고 고치기' },
+  { id: 'asset', title: '내 자산 고치기' },
+  { id: 'register', title: '예약 내역 확인 및 수정하기' },
+  { id: 'asset-start', title: '자산 재연동하기' },
   { id: 'calculation', title: '자산 다시 연결하기' },
   { id: 'investment-reset', title: '내 투자 성향 다시 선택하기' },
   { id: 'revenue', title: '내 은행 지점 바꾸기' },
+  { id: 'tutorial', title: '사용 방법 보기' },
+  { id: 'logout', title: '로그아웃' },
+  { id: 'withdrawal', title: '회원 탈퇴' },
 ]);
 
 const handleMenuClick = (menuId) => {
@@ -200,6 +170,23 @@ const handleMenuClick = (menuId) => {
         query: { from: 'profile' },
       });
       break;
+    case 'tutorial':
+      router.push({
+        name: 'asset-tutorial',
+      });
+      break;
+    case 'logout':
+      handleLogout();
+      break;
+    case 'withdrawal':
+      showModal.value = true;
+      break;
+    case 'register':
+      router.push({ name: 'register-list' });
+      break;
+    default:
+      console.warn(`Unknown menu item: ${menuId}`);
+      break;
   }
 };
 
@@ -210,33 +197,25 @@ const handleLogout = () => {
   router.push({ name: 'home' });
 };
 
-const bookingItems = computed(() => {
-  if (!myPageData.value?.bookingInfo) return [];
-
-  return myPageData.value.bookingInfo.map((booking) => ({
-    id: booking.bookingId,
-    date: new Date(booking.date).toISOString().split('T')[0], // timestamp를 YYYY-MM-DD 형식으로 변환
-    time: booking.time,
-    bank_name: '국민은행', // 백엔드에서 지점명 조회 필요시 추가 API 호출 필요
-    prdt_name: booking.finPrdtCode, // 상품명 조회 필요시 추가 API 호출 필요
-  }));
-});
-
-// 페이지 로드시 데이터 가져오기
-const loadMyPageData = async () => {
-  try {
-    loading.value = true;
-    myPageData.value = await mypageApi.getMyPageData();
-  } catch (error) {
-    console.error('마이페이지 데이터 로드 실패:', error);
-  } finally {
-    loading.value = false;
-  }
-};
+const bookingItems = ref([
+  {
+    id: 1,
+    date: '2025-08-05',
+    time: '14:30',
+    bank_name: 'KB국민은행',
+    prdt_name: 'KB마이핏적금',
+  },
+  {
+    id: 2,
+    date: '2025-09-10',
+    time: '10:00',
+    bank_name: '신한은행',
+    prdt_name: '쏠편한 정기예금',
+  },
+]);
 
 onMounted(() => {
-  loadMyPageData();
+  // API 호출 대신 더미 데이터를 즉시 할당하고 로딩 상태를 변경
+  loading.value = false;
 });
-
-// API 데이터로 렌더링 완료
 </script>
