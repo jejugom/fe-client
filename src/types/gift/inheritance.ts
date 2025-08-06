@@ -1,5 +1,3 @@
-// src/types/inheritance.ts
-
 export interface Asset {
   id: string;
   name: string;
