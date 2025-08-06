@@ -66,7 +66,7 @@ const shareResult = async () => {
     const canvas = await html2canvas(pdfRef.value, {
       scale: 2,
       useCORS: true,
-      allowTaint: true,
+      // allowTaint: true,
     });
     const imgData = canvas.toDataURL('image/png');
 

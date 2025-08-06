@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, Text } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { fetchEventData } from '@/api/event/event';
 import NewsCard from '@/components/cards/NewsCard.vue';
 import IconCard from '@/components/cards/IconCard.vue';
