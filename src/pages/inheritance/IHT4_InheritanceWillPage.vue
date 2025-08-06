@@ -14,7 +14,6 @@
         </h2>
         <textarea
           v-model="localWillContent"
-          @input="updateWillContent"
           class="border-primary-300 w-full rounded-lg border p-4 text-base"
           rows="10"
           placeholder="예) 본 유언장은 저의 자유로운 의사에 따라 작성된 것으로, 가족 간의 이해를 부탁드립니다. 제가 남긴 자산이 가족의 행복을 위해 사용되기를 바랍니다."
@@ -58,11 +57,6 @@ watch(
   },
   { immediate: true }
 );
-
-// 유언 내용 업데이트 함수
-const updateWillContent = () => {
-  inheritanceStore.setAdditionalWillContent(localWillContent.value);
-};
 
 const goBack = () => {
   // 현재 작성중인 유언 내용을 Store에 저장하고 뒤로가기

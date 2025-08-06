@@ -15,8 +15,9 @@
 
       <section class="mb-8">
         <ul class="space-y-1 text-sm">
-          <li><strong>유언자 </strong> 홍길동</li>
-          <li><strong>생년월일:</strong> 1950년 5월 1일</li>
+          <li><strong>유언자 성명:</strong> {{ testator.name }}</li>
+          <li><strong>생년월일:</strong> {{ testator.birth }}</li>
+          <li><strong>이메일:</strong> {{ testator.email }}</li>
         </ul>
       </section>
 
@@ -77,7 +78,7 @@
         <p class="mb-2 text-center text-sm"
           >작성일자: 서기 {{ formattedDate }}</p
         >
-        <p class="text-center text-sm">유언자: 홍길동 (인)</p>
+        <p class="text-center text-sm">유언자: {{ testator.name }} (인)</p>
       </section>
     </div>
 
@@ -106,9 +107,13 @@ import { useRouter } from 'vue-router';
 import { formatCurrency } from '@/utils/format';
 import Btn from '@/components/buttons/Btn.vue';
 import { useInheritanceStore } from '@/stores/inheritance';
+import { fetchWillTestator } from '@/api/gift/simulation';
+import type { TestatorInfo } from '@/types/gift/simulation';
 
 const router = useRouter();
 const inheritanceStore = useInheritanceStore();
+
+const testator = ref<TestatorInfo>({ email: '', name: '', birth: '' });
 
 const distributedAssets = computed(() => inheritanceStore.distributedAssets);
 const additionalWillContent = computed(
@@ -127,29 +132,12 @@ const goToRegister = () => {
   });
 };
 
-onMounted(() => {
-  console.log('=== InheritanceResultPage 마운트됨 ===');
-  console.log('Store에서 가져온 distributedAssets:', distributedAssets.value);
-  console.log(
-    'Store에서 가져온 additionalWillContent:',
-    additionalWillContent.value
-  );
-
-  if (distributedAssets.value.length === 0) {
-    console.warn('⚠️ 유언장에 표시할 자산이 없습니다.');
-  }
-
-  // mode 속성이 삭제되었으므로, 해당 로그는 제거합니다.
-  console.log('Store 전체 상태:', {
-    distributedAssets: inheritanceStore.distributedAssets,
-    recipientSummaries: inheritanceStore.recipientSummaries,
-    additionalWillContent: inheritanceStore.additionalWillContent,
-    totalGiftTax: inheritanceStore.totalGiftTax,
-  });
-
-  const routerState = window.history.state;
-  if (routerState) {
-    console.log('Router state:', routerState);
+onMounted(async () => {
+  try {
+    const data = await fetchWillTestator();
+    testator.value = data;
+  } catch (error) {
+    console.error('유언자 정보 로드 실패:', error);
   }
 });
 </script>
