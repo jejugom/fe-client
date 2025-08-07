@@ -12,7 +12,7 @@
       <InheritanceSimulationResult
         :testator="testator"
         :distributedAssets="distributedAssets"
-        :additionalWillContent="additionalWillContent"
+        v-model:additionalWillContent="localWillContent"
         :formattedDate="formattedDate"
       />
     </div>
@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, nextTick } from 'vue';
+import { computed, onMounted, ref, nextTick, watch, type ComputedRef } from 'vue';
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 import { useInheritanceStore } from '@/stores/inheritance';
@@ -51,16 +51,19 @@ import type { TestatorInfo } from '@/types/gift/simulation';
 import InheritanceSimulationResult from './_components/InheritanceSimulationResult.vue';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import type { DistributedAsset } from '@/types/gift/inheritance';
 
 const router = useRouter();
 const inheritanceStore = useInheritanceStore();
 
 const testator = ref<TestatorInfo>({ email: '', name: '', birth: '' });
+const localWillContent = ref(inheritanceStore.additionalWillContent);
 
-const distributedAssets = computed(() => inheritanceStore.distributedAssets);
-const additionalWillContent = computed(
-  () => inheritanceStore.additionalWillContent
-);
+const distributedAssets: ComputedRef<DistributedAsset[]> = computed(() => inheritanceStore.distributedAssets);
+
+watch(localWillContent, (newContent) => {
+  inheritanceStore.setAdditionalWillContent(newContent);
+});
 
 const formattedDate = computed(() => {
   const date = new Date();

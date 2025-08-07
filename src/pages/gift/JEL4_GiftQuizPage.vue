@@ -154,7 +154,11 @@ import { useSimulationStore } from '@/stores/simulation'; // <-- useSimulationSt
 
 import type { RecipientResponseDto } from '@/types/gift/recipient';
 
-import type { Asset, Beneficiary } from '@/types/gift/inheritance';
+import type {
+  Asset,
+  Beneficiary,
+  DistributedAsset,
+} from '@/types/gift/inheritance';
 
 // 새로운 DTO 타입 import
 import type {
@@ -445,7 +449,78 @@ const createSimulationRequest = (): SimulationRequestDto => {
   };
 };
 
+const setInheritanceStoreData = () => {
+  // 상속 모드일 때 distributedAssets와 recipientSummaries를 스토어에 저장
+  const distributed: DistributedAsset[] = [];
+  Array.from(allAssets.values())
+    .flat()
+    .filter(
+      (asset) =>
+        asset.selected && (asset.beneficiary || asset.isMultipleBeneficiaries)
+    ) // Only consider selected assets that have a beneficiary or are for multiple beneficiaries
+    .forEach((asset) => {
+      const foundCategory = categories.find(
+        (c) => c.id === asset.id.split('-')[0]
+      );
+      const categoryName = foundCategory?.name ?? '기타';
+
+      if (asset.isMultipleBeneficiaries && asset.distributionRatios) {
+        // Handle multiple beneficiaries
+        for (const beneficiaryId in asset.distributionRatios) {
+          const ratio = asset.distributionRatios[beneficiaryId];
+          if (ratio > 0) {
+            const foundRecipient = beneficiaries.find(
+              (b) => b.id === beneficiaryId
+            );
+            if (foundRecipient) {
+              distributed.push({
+                recipient: {
+                  name: foundRecipient.name,
+                  relation: foundRecipient.relation,
+                },
+                category: categoryName,
+                description: `${asset.name} (지분 ${ratio}%)`, // Add ratio to description
+                amount: Math.floor((asset.value * ratio) / 100),
+              });
+            }
+          }
+        }
+      } else if (asset.beneficiary) {
+        // Handle single beneficiary
+        const currentBeneficiary = asset.beneficiary; // Type narrowing
+        const foundRecipient = beneficiaries.find(
+          (b) => b.id === currentBeneficiary.id
+        );
+        if (foundRecipient) {
+          distributed.push({
+            recipient: {
+              name: foundRecipient.name,
+              relation: foundRecipient.relation,
+            },
+            category: categoryName,
+            description: asset.name,
+            amount: asset.value,
+          });
+        }
+      }
+    });
+
+  const recipientSummary = beneficiaries.map((b) => ({
+    recipientId: Number(b.id),
+    name: b.name,
+    giftAmount: calculateTotalForBeneficiary(b.id),
+    estimatedTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
+  }));
+
+  inheritanceStore.setInheritanceData({
+    distributedAssets: distributed,
+    recipientSummaries: recipientSummary,
+    totalGiftTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
+  });
+};
+
 const goToWillForm = () => {
+  setInheritanceStoreData(); // 데이터 저장 함수 호출
   router.push({
     name: 'inheritance-will',
   });
@@ -457,6 +532,78 @@ const goToResult = async () => {
     if (props.mode === 'gift') {
       const requestDto = createSimulationRequest();
       await simulationStore.simulateGiftTax(requestDto);
+    } else if (props.mode === 'inheritance') {
+      // '바로 유언장 보러가기'를 눌렀을 때 추가 유언을 무시하고 초기화
+      inheritanceStore.setAdditionalWillContent('');
+
+      // 상속 모드일 때 distributedAssets와 recipientSummaries를 스토어에 저장
+      const distributed: DistributedAsset[] = [];
+      Array.from(allAssets.values())
+        .flat()
+        .filter(
+          (asset) =>
+            asset.selected &&
+            (asset.beneficiary || asset.isMultipleBeneficiaries)
+        ) // Only consider selected assets that have a beneficiary or are for multiple beneficiaries
+        .forEach((asset) => {
+          const foundCategory = categories.find(
+            (c) => c.id === asset.id.split('-')[0]
+          );
+          const categoryName = foundCategory?.name ?? '기타';
+
+          if (asset.isMultipleBeneficiaries && asset.distributionRatios) {
+            // Handle multiple beneficiaries
+            for (const beneficiaryId in asset.distributionRatios) {
+              const ratio = asset.distributionRatios[beneficiaryId];
+              if (ratio > 0) {
+                const foundRecipient = beneficiaries.find(
+                  (b) => b.id === beneficiaryId
+                );
+                if (foundRecipient) {
+                  distributed.push({
+                    recipient: {
+                      name: foundRecipient.name,
+                      relation: foundRecipient.relation,
+                    },
+                    category: categoryName,
+                    description: `${asset.name} (지분 ${ratio}%)`, // Add ratio to description
+                    amount: Math.floor((asset.value * ratio) / 100),
+                  });
+                }
+              }
+            }
+          } else if (asset.beneficiary) {
+            // Handle single beneficiary
+            const currentBeneficiary = asset.beneficiary; // Type narrowing
+            const foundRecipient = beneficiaries.find(
+              (b) => b.id === currentBeneficiary.id
+            );
+            if (foundRecipient) {
+              distributed.push({
+                recipient: {
+                  name: foundRecipient.name,
+                  relation: foundRecipient.relation,
+                },
+                category: categoryName,
+                description: asset.name,
+                amount: asset.value,
+              });
+            }
+          }
+        });
+
+      const recipientSummary = beneficiaries.map((b) => ({
+        recipientId: Number(b.id),
+        name: b.name,
+        giftAmount: calculateTotalForBeneficiary(b.id),
+        estimatedTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
+      }));
+
+      inheritanceStore.setInheritanceData({
+        distributedAssets: distributed,
+        recipientSummaries: recipientSummary,
+        totalGiftTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
+      });
     }
 
     router.push({
