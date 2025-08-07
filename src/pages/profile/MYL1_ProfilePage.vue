@@ -4,7 +4,6 @@
   </div>
 
   <div v-else class="space-y-16">
-
     <!-- 최신예약 1개 출력 -->
     <div v-if="bookingItems.length != 0">
       <RegisterCard :booking="bookingItems[0]" />
@@ -91,6 +90,7 @@ import Modal from '@/components/modals/Modal.vue';
 import Carousel from '@/components/carousel/Carousel.vue';
 import RegisterCard from './_components/RegisterCard.vue';
 import { mypageApi } from '@/api/user/mypage';
+import { getAssetCategoryName } from '@/utils/format';
 import InputBox from '@/components/forms/InputBox.vue';
 import AssetRankCard from './_components/AssetRankCard.vue';
 import TextBtn from '@/components/buttons/TextBtn.vue';
@@ -98,21 +98,35 @@ import TextBtn from '@/components/buttons/TextBtn.vue';
 const myPageData = ref(null);
 const loading = ref(true);
 
-const userName = ref('김철수'); // 더미 데이터
-const assetSummary = ref([
-  { category: '부동산', amount: 150000000 },
-  { category: '예금/적금', amount: 35000000 },
-  { category: '현금', amount: 5000000 },
-  { category: '주식/펀드', amount: 3000000 },
-  { category: '사업체/지분', amount: 2000000 },
-  { category: '기타', amount: 0 },
-]);
+const userName = computed(() => {
+  return myPageData.value?.userInfo?.userName || '';
+});
+
+const assetSummary = computed(() => {
+  if (!myPageData.value?.userInfo?.assetStatus) return [];
+  
+  console.log('Raw asset data:', myPageData.value.userInfo.assetStatus);
+  
+  const mapped = myPageData.value.userInfo.assetStatus.map(asset => {
+    const category = getAssetCategoryName(asset.assetCategoryCode);
+    console.log(`Mapping ${asset.assetCategoryCode} -> ${category}`);
+    return {
+      category,
+      amount: asset.amount
+    };
+  });
+  
+  console.log('Mapped asset data:', mapped);
+  return mapped;
+});
 
 const assetAmount = computed(() => {
   return assetSummary.value.reduce((total, asset) => total + asset.amount, 0);
 });
 
-const rankPercent = ref(9.7);
+const rankPercent = computed(() => {
+  return myPageData.value?.assetPercentile || 0;
+});
 const investmentRatio = ref(61);
 
 const router = useRouter();
@@ -138,7 +152,7 @@ const menuItems = ref([
   { id: 'asset', title: '내 자산 고치기' },
   { id: 'register', title: '예약 내역 확인 및 수정하기' },
   { id: 'asset-start', title: '자산 재연동하기' },
-  { id: 'calculation', title: '자산 다시 연결하기' },
+  // { id: 'calculation', title: '자산 다시 연결하기' },
   { id: 'investment-reset', title: '내 투자 성향 다시 선택하기' },
   { id: 'revenue', title: '내 은행 지점 바꾸기' },
   { id: 'tutorial', title: '사용 방법 보기' },
@@ -197,25 +211,36 @@ const handleLogout = () => {
   router.push({ name: 'home' });
 };
 
-const bookingItems = ref([
-  {
-    id: 1,
-    date: '2025-08-05',
-    time: '14:30',
-    bank_name: 'KB국민은행',
-    prdt_name: 'KB마이핏적금',
-  },
-  {
-    id: 2,
-    date: '2025-09-10',
-    time: '10:00',
-    bank_name: '신한은행',
-    prdt_name: '쏠편한 정기예금',
-  },
-]);
+// Transform booking data from API to match RegisterCard expectations
+const transformBookingData = (bookingInfo) => {
+  return bookingInfo.map(booking => {
+    const date = new Date(booking.date);
+    const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    
+    return {
+      id: booking.bookingId,
+      date: formattedDate,
+      time: booking.time,
+      bank_name: `지점 ID: ${booking.branchId}`, // TODO: 실제 지점명으로 변환 필요
+      prdt_name: booking.finPrdtCode // TODO: 실제 상품명으로 변환 필요
+    };
+  });
+};
 
-onMounted(() => {
-  // API 호출 대신 더미 데이터를 즉시 할당하고 로딩 상태를 변경
-  loading.value = false;
+const bookingItems = computed(() => {
+  if (!myPageData.value?.bookingInfo) return [];
+  return transformBookingData(myPageData.value.bookingInfo);
+});
+
+onMounted(async () => {
+  try {
+    loading.value = true;
+    myPageData.value = await mypageApi.getMyPageData();
+  } catch (error) {
+    console.error('마이페이지 데이터 로딩 실패:', error);
+    // TODO: 에러 처리 로직 추가
+  } finally {
+    loading.value = false;
+  }
 });
 </script>

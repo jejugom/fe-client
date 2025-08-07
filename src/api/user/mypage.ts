@@ -25,6 +25,7 @@ export interface BookingInfo {
 export interface MyPageResponse {
   userInfo: MyPageUserInfo;
   bookingInfo: BookingInfo[];
+  assetPercentile: number;
 }
 
 export interface BookingUpdateRequest {
