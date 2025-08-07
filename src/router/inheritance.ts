@@ -5,7 +5,7 @@ const inheritanceRoutes: RouteRecordRaw[] = [
     path: '/inheritance/start',
     name: 'inheritance-start',
     component: () =>
-      import('@/pages/inheritance/IHT1_InheritanceStartPage.vue'),
+      import('@/pages/inheritance/IHL1_InheritanceStartPage.vue'),
   },
   {
     path: '/inheritance/input',
@@ -22,13 +22,13 @@ const inheritanceRoutes: RouteRecordRaw[] = [
   {
     path: '/inheritance/will',
     name: 'inheritance-will',
-    component: () => import('@/pages/inheritance/IHT4_InheritanceWillPage.vue'),
+    component: () => import('@/pages/inheritance/IHL4_InheritanceWillPage.vue'),
   },
   {
     path: '/inheritance/result',
     name: 'inheritance-result',
     component: () =>
-      import('@/pages/inheritance/IHT5_InheritanceResultPage.vue'),
+      import('@/pages/inheritance/IHL5_InheritanceResultPage.vue'),
   },
 ];
 
