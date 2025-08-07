@@ -8,86 +8,26 @@
       작성해야 합니다.
     </p>
 
-    <div class="border-surface-300 mb-4 border p-8">
-      <div class="border-surface-300 mb-8 border-b pb-2">
-        <h2 class="text-center text-base font-bold">유언장</h2>
-      </div>
-
-      <section class="mb-8">
-        <ul class="space-y-1 text-sm">
-          <li><strong>유언자 성명:</strong> {{ testator.name }}</li>
-          <li><strong>생년월일:</strong> {{ testator.birth }}</li>
-          <li><strong>이메일:</strong> {{ testator.email }}</li>
-        </ul>
-      </section>
-
-      <section class="mb-8">
-        <h3 class="mb-2 text-base font-bold">유언 사항</h3>
-        <p class="mb-4 text-sm">
-          본인은 다음과 같이 저의 사망 이후 재산을 분배할 것을 유언합니다.
-        </p>
-
-        <div class="overflow-x-auto border border-black">
-          <table class="w-full table-fixed">
-            <thead>
-              <tr class="border-b border-black bg-gray-100 text-left">
-                <th class="w-1/5 px-4 py-2 font-bold">상속자</th>
-                <th class="w-1/5 px-4 py-2 font-bold">자산 종류</th>
-                <th class="w-2/5 px-4 py-2 font-bold">자산 이름</th>
-
-                <th class="w-1/5 px-4 py-2 font-bold">금액</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(item, index) in distributedAssets"
-                :key="index"
-                class="border-t border-black"
-              >
-                <td class="px-4 py-2">{{ item.recipient.name }}</td>
-                <td class="px-4 py-2">{{ item.category }}</td>
-                <td class="px-4 py-2">{{ item.description }}</td>
-
-                <td class="px-4 py-2 text-right">{{
-                  formatCurrency(item.amount)
-                }}</td>
-              </tr>
-              <tr v-if="distributedAssets.length === 0">
-                <td
-                  colspan="4"
-                  class="px-4 py-2 text-center text-sm text-gray-500"
-                >
-                  분배된 자산이 없습니다.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="mb-8">
-        <h3 class="mb-2 text-base font-bold">추가 유언</h3>
-        <div>
-          <p class="text-sm whitespace-pre-wrap">
-            {{ additionalWillContent || '작성된 추가 유언이 없습니다.' }}
-          </p>
-        </div>
-      </section>
-
-      <section class="border-surface-300 mt-12 border-t pt-4">
-        <p class="mb-2 text-center text-sm"
-          >작성일자: 서기 {{ formattedDate }}</p
-        >
-        <p class="text-center text-sm">유언자: {{ testator.name }} (인)</p>
-      </section>
+    <div ref="pdfRef" class="mb-4">
+      <InheritanceSimulationResult
+        :testator="testator"
+        :distributedAssets="distributedAssets"
+        :additionalWillContent="additionalWillContent"
+        :formattedDate="formattedDate"
+      />
     </div>
 
     <div class="flex flex-col">
-      <Btn color="secondary" label="가족에게 공유하기" size="large" />
+      <Btn
+        color="secondary"
+        :label="isMobile ? '결과 공유하기 (PDF)' : '결과 PDF 다운로드'"
+        size="large"
+        @click="handleShareOrDownload"
+      />
       <div class="mt-16 flex flex-col">
         <p class="text-primary-300 mb-2 text-center font-semibold">
-          궁금한 점이 생기셨다면,<br />
-          은행에서 자세히 알려드릴게요
+          정식 유언장 작성 또는 상속 절차 상담을 받고 싶으시다면,<br />
+          은행에 방문하셔서 꼭 전문가와 상담해보세요.
         </p>
 
         <Btn
@@ -102,13 +42,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
-import { formatCurrency } from '@/utils/format';
 import Btn from '@/components/buttons/Btn.vue';
 import { useInheritanceStore } from '@/stores/inheritance';
 import { fetchWillTestator } from '@/api/gift/simulation';
 import type { TestatorInfo } from '@/types/gift/simulation';
+import InheritanceSimulationResult from './_components/InheritanceSimulationResult.vue';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const router = useRouter();
 const inheritanceStore = useInheritanceStore();
@@ -132,7 +74,81 @@ const goToRegister = () => {
   });
 };
 
+const isMobile = ref(false);
+
+const checkDeviceType = () => {
+  isMobile.value = /Mobi|Android/i.test(navigator.userAgent);
+};
+
+const pdfRef = ref<HTMLElement | null>(null);
+
+const shareResult = async () => {
+  if (!pdfRef.value) return;
+
+  await nextTick();
+  await document.fonts.ready;
+
+  try {
+    const canvas = await html2canvas(pdfRef.value, {
+      scale: 2,
+      useCORS: true,
+    });
+    const imgData = canvas.toDataURL('image/png');
+
+    const pdf = new jsPDF({
+      orientation: 'p',
+      unit: 'px',
+      format: [canvas.width, canvas.height],
+    });
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+
+    pdf.setTextColor(200);
+    pdf.setFontSize(20);
+    pdf.text('NoHudorak', canvas.width / 2, canvas.height / 2, {
+      align: 'center',
+      angle: 45,
+    });
+
+    const pdfBlob = pdf.output('blob');
+    const file = new File([pdfBlob], '유언장_결과.pdf', {
+      type: 'application/pdf',
+    });
+
+    if (isMobile.value && navigator.canShare?.({ files: [file] })) {
+      await navigator.share({
+        title: '유언장 결과',
+        text: '유언장 결과를 PDF로 확인해보세요.',
+        files: [file],
+      });
+    } else {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(pdfBlob);
+      link.download = '유언장_결과.pdf';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+
+      alert(
+        isMobile.value
+          ? '공유 기능을 사용할 수 없어 PDF를 다운로드합니다.'
+          : '결과 PDF가 다운로드되었습니다.'
+      );
+    }
+  } catch (error) {
+    console.error('PDF 생성/공유 실패:', error);
+    alert('결과를 공유하거나 저장하는 데 실패했습니다.');
+  }
+};
+
+const handleShareOrDownload = () => {
+  shareResult();
+};
+
 onMounted(async () => {
+  checkDeviceType();
+  window.addEventListener('resize', checkDeviceType);
   try {
     const data = await fetchWillTestator();
     testator.value = data;
