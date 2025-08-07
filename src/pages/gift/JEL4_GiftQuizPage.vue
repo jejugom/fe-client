@@ -145,6 +145,7 @@ import TabBtn from '../nohoo/_components/TabBtn.vue';
 import { fetchGiftPageData } from '@/api/gift/recipient';
 import { formatCurrency } from '@/utils/format';
 import { categories, categoryCodeMap } from '@/types/gift/constants';
+import { useLoadingStore } from '@/stores/loading';
 
 // 두 스토어를 모두 import
 import { useInheritanceStore } from '@/stores/inheritance';
@@ -153,18 +154,12 @@ import { useSimulationStore } from '@/stores/simulation'; // <-- useSimulationSt
 
 import type { RecipientResponseDto } from '@/types/gift/recipient';
 
-import type {
-  Asset,
-  Beneficiary,
-  Category,
-  DistributedAsset,
-} from '@/types/gift/inheritance';
+import type { Asset, Beneficiary } from '@/types/gift/inheritance';
 
 // 새로운 DTO 타입 import
 import type {
   RecipientGiftRequestDto,
   CategoryGiftRequestDto,
-  AssetGiftRequestDto,
   SimulationRequestDto,
 } from '@/types/gift/simulation';
 
@@ -178,11 +173,12 @@ const props = withDefaults(
 );
 
 const router = useRouter();
+const loadingStore = useLoadingStore();
 
-// mode에 따라 적절한 스토어를 사용하도록 computed 속성으로 묶습니다.
+// mode에 따라 적절한 스토어를 사용하도록 computed 속성으로 묶음
 const giftStore = useGiftStore();
 const inheritanceStore = useInheritanceStore();
-const simulationStore = useSimulationStore(); // <-- simulationStore 인스턴스 생성
+const simulationStore = useSimulationStore(); //
 
 const store = computed(() => {
   return props.mode === 'gift' ? giftStore : inheritanceStore;
@@ -193,6 +189,7 @@ const activeTab = ref('estate');
 const beneficiaries = reactive<Beneficiary[]>([]);
 
 const loadAssetsAndBeneficiaries = async () => {
+  loadingStore.startLoading();
   try {
     const apiResponse = await fetchGiftPageData(props.mode);
     const recipients: RecipientResponseDto[] = apiResponse.recipients || [];
@@ -247,6 +244,8 @@ const loadAssetsAndBeneficiaries = async () => {
     }
   } catch (error) {
     console.error('데이터 로드 실패:', error);
+  } finally {
+    loadingStore.stopLoading();
   }
 };
 
@@ -453,14 +452,21 @@ const goToWillForm = () => {
 };
 
 const goToResult = async () => {
-  if (props.mode === 'gift') {
-    const requestDto = createSimulationRequest();
-    await simulationStore.simulateGiftTax(requestDto);
-  }
+  loadingStore.startLoading();
+  try {
+    if (props.mode === 'gift') {
+      const requestDto = createSimulationRequest();
+      await simulationStore.simulateGiftTax(requestDto);
+    }
 
-  router.push({
-    name: props.mode === 'gift' ? 'gift-result' : 'inheritance-result',
-  });
+    router.push({
+      name: props.mode === 'gift' ? 'gift-result' : 'inheritance-result',
+    });
+  } catch (error) {
+    console.error('시뮬레이션 실패:', error);
+  } finally {
+    loadingStore.stopLoading();
+  }
 };
 
 onMounted(() => {
