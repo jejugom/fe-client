@@ -45,3 +45,9 @@ export const smsApi = {
     return response.data;
   },
 };
+
+// 내 지점 수정
+export async function updateUserBranch(data: { branchId: number }) {
+  const response = await api.patch('/api/user/branch', data);
+  return response.data;
+}
