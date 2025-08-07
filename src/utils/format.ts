@@ -18,3 +18,17 @@ export const formatCurrency = (amount: number): string => {
 
   return result.trim();
 };
+
+// 자산 카테고리 코드를 카테고리 이름으로 변환
+export const getAssetCategoryName = (assetCategoryCode: string): string => {
+  const categoryMap: Record<string, string> = {
+    '1': '부동산',
+    '2': '예금/적금',
+    '3': '현금',
+    '4': '주식/펀드',
+    '5': '사업체/지분',
+    '6': '기타',
+  };
+
+  return categoryMap[assetCategoryCode];
+};
