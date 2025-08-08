@@ -1,0 +1,440 @@
+<template>
+  <TabBtnGroup
+    :tabs="['맞춤', '예금', '적금', '펀드', '금', '주택담보', '신탁']"
+    v-model:selectedTab="selectedTab"
+  />
+  <div class="mt-8 flex flex-col gap-8">
+    <AdBox
+      :selectedTab="selectedTab"
+      :userName="userName"
+      :assetAmount="totalAsset"
+      :assetSummary="assetSummary"
+      :news="filteredNews"
+    />
+    <div v-if="selectedTab !== '금'" class="flex justify-end">
+      <SelectBox size="small" v-model="sortOption">
+        <option value="name">상품명순</option>
+        <option v-if="selectedTab === '맞춤'" value="score">맞춤점수순</option>
+        <option
+          v-if="selectedTab === '예금' || selectedTab === '적금'"
+          value="rate"
+          >최고금리순</option
+        >
+        <option v-if="selectedTab === '주택담보'" value="rate"
+          >최저금리순</option
+        >
+        <option v-if="selectedTab === '펀드'" value="rate">최고수익률순</option>
+      </SelectBox>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div
+        v-if="selectedTab !== '맞춤' && filteredProducts.length === 0"
+        class="text-surface-400 text-center text-base"
+      >
+        찾으신 조건으로는 상품이 아직 준비 중이에요!<br />조건을 조금
+        바꿔보시겠어요?
+      </div>
+      <div v-if="selectedTab === '맞춤'">
+        <p class="text-primary-300 text-2xl font-semibold">
+          딱 맞는 상품만 보여드릴게요</p
+        >
+        <p v-if="recommendationCommentParts" class="mt-2">
+          <span>{{ recommendationCommentParts.name }}</span>
+          님께는
+          <span class="text-gold font-semibold">{{
+            recommendationCommentParts.category
+          }}</span>
+          상품이 가장 많이 추천되었어요.
+        </p>
+      </div>
+      <BtnCard
+        v-for="product in selectedTab === '맞춤'
+          ? recommendedProducts
+          : filteredProducts"
+        :key="product.finPrdtCd"
+        :title="product.finPrdtNm"
+        :content="product.prdtFeature"
+        :tags="product.tags"
+        btnText="자세히 보기"
+        color="primary"
+        @click="goToDetail(product.finPrdtCd)"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import TabBtnGroup from './_components/TabBtnGroup.vue';
+import BtnCard from '@/components/cards/BtnCard.vue';
+import AdBox from './_components/AdBox.vue';
+import SelectBox from '@/components/forms/SelectBox.vue';
+import { useProductStore } from '@/stores/product';
+import {
+  fetchNohooData,
+  type ParsedApiResponse,
+  type News,
+  type UserInfo,
+} from '@/api/nohoo/nohoo';
+import { useLoadingStore } from '@/stores/loading';
+
+const router = useRouter();
+const productStore = useProductStore();
+const loadingStore = useLoadingStore();
+
+const data = ref<ParsedApiResponse | null>(null);
+const selectedTab = ref('맞춤');
+const sortOption = ref<'name' | 'score' | 'rate'>('name');
+const news = ref<News[]>([]);
+
+const PRODUCT_CATEGORY_MAP: Record<string, number> = {
+  예금: 1,
+  적금: 2,
+  주택담보: 3,
+  금: 4,
+  펀드: 5,
+  신탁: 6,
+};
+
+const CATEGORY_LABEL_MAP = Object.fromEntries(
+  Object.entries(PRODUCT_CATEGORY_MAP).map(([k, v]) => [String(v), k])
+);
+
+onMounted(async () => {
+  loadingStore.startLoading();
+  try {
+    const result = await fetchNohooData();
+
+    const {
+      userInfo = { userName: '', assetStatus: [] },
+      customRecommendPrdt = [],
+      allProducts = {},
+      news: newsArr = [],
+    } = result ?? {};
+
+    const {
+      deposit = [],
+      saving = [],
+      mortgage = [],
+      gold = [],
+      fund = [],
+      trust = [],
+    } = allProducts ?? {};
+
+    // 옵션 변환기
+    const mapTimeDepositOptions = (opts: any[] = []) =>
+      opts.map((o) => ({
+        saveTrm: o?.saveTrm ?? null, // (string|null) 허용
+        intrRate: Number(o?.intrRate ?? 0),
+        intrRate2: Number(o?.intrRate2 ?? 0),
+      }));
+
+    const mapSavingOptions = (opts: any[] = []) =>
+      opts.map((o) => ({
+        saveTrm: String(o?.saveTrm ?? ''), // string 강제
+        intrRate: Number(o?.intrRate ?? 0),
+        intrRate2: Number(o?.intrRate2 ?? 0),
+      }));
+
+    const mapMortgageOptions = (opts: any[] = []) =>
+      opts.map((o) => ({
+        mrtgTypeNm: String(o?.mrtgTypeNm ?? ''),
+        rpayTypeNm: String(o?.rpayTypeNm ?? ''),
+        lendRateTypeNm: String(o?.lendRateTypeNm ?? ''),
+        lendRateMin: String(o?.lendRateMin ?? ''),
+        lendRateMax: String(o?.lendRateMax ?? ''),
+      }));
+
+    const mapFundOptions = (opts: any[] = []) =>
+      opts.map((o) => ({
+        rate3mon: String(o?.rate3mon ?? ''), // null → ''
+        riskGrade: String(o?.riskGrade ?? ''),
+        priceStd: String(o?.priceStd ?? ''),
+      }));
+
+    // 스토어 저장
+    productStore.setAllProducts({
+      timeDeposits: (deposit as any[]).map((p) => ({
+        finPrdtCategory: '1',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: mapTimeDepositOptions(p?.optionList),
+      })),
+      savingsDeposits: (saving as any[]).map((p) => ({
+        finPrdtCategory: '2',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: mapSavingOptions(p?.optionList),
+      })),
+      mortgageLoan: (mortgage as any[]).map((p) => ({
+        finPrdtCategory: '3',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: mapMortgageOptions(p?.optionList),
+      })),
+      goldProducts: (gold as any[]).map((p) => ({
+        finPrdtCategory: '4',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: Array.isArray(p?.optionList) ? p.optionList : [],
+      })),
+      fundProducts: (fund as any[]).map((p) => ({
+        finPrdtCategory: '5',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: mapFundOptions(p?.optionList),
+      })),
+      trustProducts: (trust as any[]).map((p) => ({
+        finPrdtCategory: '6',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: Array.isArray(p?.optionList) ? p.optionList : [],
+      })),
+    });
+
+    // 화면에서 쓰는 데이터
+    data.value = {
+      userInfo,
+      customRecommendPrdt,
+      timeDeposits: deposit as any,
+      savingsDeposits: saving as any,
+      mortgageLoan: mortgage as any,
+      goldProducts: gold as any,
+      fundProducts: fund as any,
+      trustProducts: trust as any,
+      news: newsArr,
+    } as any;
+
+    // 뉴스
+    news.value = newsArr;
+  } catch (error) {
+    console.error('Nohoo 데이터 요청 실패', error);
+    loadingStore.setError(true);
+  } finally {
+    loadingStore.stopLoading();
+  }
+});
+
+const filteredNews = computed(() => {
+  const category = PRODUCT_CATEGORY_MAP[selectedTab.value];
+  if (category) {
+    return news.value.filter((item) => item.category === category);
+  }
+  return [];
+});
+const userInfo = computed<UserInfo | undefined>(() => data.value?.userInfo);
+const userName = computed(() => userInfo.value?.userName ?? '');
+const assetInfo = computed(() => userInfo.value?.assetStatus ?? []);
+const totalAsset = computed(() =>
+  assetInfo.value.reduce(
+    (acc: number, cur: { amount: number }) => acc + cur.amount,
+    0
+  )
+);
+
+// 자산 데이터를 카테고리별로 그룹화
+const ASSET_CATEGORY_MAP: Record<string, string> = {
+  '1': '부동산',
+  '2': '예금/적금',
+  '3': '현금',
+  '4': '주식/펀드',
+  '5': '사업체/지분',
+  '6': '기타 자산',
+};
+
+const assetSummary = computed(() =>
+  assetInfo.value.map(
+    (item: { assetCategoryCode: string; amount: number }) => ({
+      category: ASSET_CATEGORY_MAP[item.assetCategoryCode] ?? '기타',
+      amount: item.amount,
+    })
+  )
+);
+
+// 탭 전환 시 정렬 초기화
+watch(selectedTab, () => {
+  sortOption.value = 'name';
+});
+
+function hasOptionList(product: any): product is { optionList: any[] } {
+  return 'optionList' in product && Array.isArray(product.optionList);
+}
+
+// 추천 상품 목록
+const recommendedProducts = computed(() => {
+  const recommendItems = data.value?.customRecommendPrdt ?? [];
+
+  const products = productStore
+    .getProductsByRecommendIds(recommendItems)
+    .map((product) => {
+      const tags: string[] = [];
+
+      // 추천 점수도 붙여줌 (정렬용)
+      const score = Number(
+        recommendItems.find((r) => r.finPrdtCd === product.finPrdtCd)?.score ??
+          '0'
+      );
+      tags.push(`맞춤점수 ${(score * 100).toFixed(0)}점 `);
+
+      return { ...product, tags, score: Number(score) };
+    });
+
+  // 정렬 처리
+  if (sortOption.value === 'score') {
+    return products.sort((a, b) => b.score - a.score);
+  } else {
+    return products.sort((a, b) => a.finPrdtNm.localeCompare(b.finPrdtNm));
+  }
+});
+
+// 탭별 상품 필터링 및 정렬
+const filteredProducts = computed(() => {
+  const tab = selectedTab.value;
+  let products: any[] = [];
+
+  // 예금
+  if (tab === '예금') {
+    products = productStore.allProducts.timeDeposits.map((p) => {
+      const optionList = (p as any).optionList ?? [];
+      const option12 = optionList.find(
+        (opt: { saveTrm: string }) => opt.saveTrm === '12'
+      );
+      const tags = option12
+        ? ['12개월', `최고금리 ${(option12 as any).intrRate2.toFixed(2)}%`]
+        : [];
+
+      const maxRate = option12
+        ? (option12 as any).intrRate2
+        : Math.max(
+            ...(optionList.map(
+              (opt: { intrRate2: number }) => opt.intrRate2
+            ) ?? [0])
+          );
+
+      return { ...p, tags, maxRate };
+    });
+  }
+
+  // 적금
+  else if (tab === '적금') {
+    products = productStore.allProducts.savingsDeposits.map((p) => {
+      const optionList = (p as any).optionList ?? [];
+      const option12 = optionList.find(
+        (opt: { saveTrm: string }) => opt.saveTrm === '12'
+      );
+      const tags = option12
+        ? ['12개월', `최고금리 ${(option12 as any).intrRate2.toFixed(2)}%`]
+        : [];
+
+      const maxRate = option12
+        ? (option12 as any).intrRate2
+        : Math.max(
+            ...(optionList.map(
+              (opt: { intrRate2: number }) => opt.intrRate2
+            ) ?? [0])
+          );
+
+      return { ...p, tags, maxRate };
+    });
+  }
+
+  // 주택담보
+  else if (tab === '주택담보') {
+    products = productStore.allProducts.mortgageLoan.map((p) => {
+      const optionList = (p as any).optionList ?? [];
+      const minRate = Math.min(
+        ...(optionList.map((opt: { lendRateMin: string | null }) =>
+          parseFloat(opt.lendRateMin ?? '999')
+        ) ?? [999])
+      );
+
+      return {
+        ...p,
+
+        maxRate: minRate,
+      };
+    });
+  }
+
+  // 금 → 태그 비표시
+  else if (tab === '금') {
+    products = productStore.allProducts.goldProducts.map((p) => ({
+      ...p,
+      tags: [], // 태그 표시하지 않음
+    }));
+  } else if (tab === '펀드') {
+    products = productStore.allProducts.fundProducts.map((p) => {
+      const optionList = (p as any).optionList ?? [];
+      const maxReturn = Math.max(
+        ...(optionList.map((opt: { rate3mon: string | null }) =>
+          parseFloat(opt.rate3mon?.replace('%', '') || '0')
+        ) ?? [0])
+      );
+      return {
+        ...p,
+
+        maxRate: maxReturn,
+      };
+    });
+  } else if (tab === '신탁') {
+    products = productStore.allProducts.trustProducts.map((p) => ({
+      ...p,
+      tags: [], // 태그 표시하지 않음
+    }));
+  }
+
+  // 정렬
+  return sortOption.value === 'rate'
+    ? tab === '주택담보'
+      ? products.sort((a, b) => a.maxRate - b.maxRate)
+      : products.sort((a, b) => b.maxRate - a.maxRate)
+    : products.sort((a, b) => a.finPrdtNm.localeCompare(b.finPrdtNm));
+});
+
+// 가장 많이 추천된 카테고리 계산
+const mostRecommendedCategory = computed(() => {
+  const recommendItems = productStore.getProductsByRecommendIds(
+    data.value?.customRecommendPrdt ?? []
+  );
+
+  const counts: Record<string, number> = {};
+
+  recommendItems.forEach((item) => {
+    const category = item.finPrdtCategory;
+    if (!category) return;
+    counts[category] = (counts[category] || 0) + 1;
+  });
+
+  const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const topCategoryCode = sorted[0]?.[0]; // '1', '2' 등
+  const count = sorted[0]?.[1] ?? 0;
+
+  return {
+    categoryCode: topCategoryCode,
+    categoryLabel: CATEGORY_LABEL_MAP[topCategoryCode] ?? '기타',
+    count,
+  };
+});
+
+const recommendationCommentParts = computed(() => {
+  const { categoryLabel, count } = mostRecommendedCategory.value;
+  if (!count) return null;
+  return {
+    name: userName.value,
+    category: categoryLabel,
+  };
+});
+
+const goToDetail = (id: string) => {
+  if (!id) return;
+  router.push({ name: 'product-detail', params: { id } });
+};
+</script>
