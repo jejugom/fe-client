@@ -17,12 +17,12 @@
 
     <!-- 상품 기본 정보 -->
     <div class="flex flex-col gap-4">
-      <div class="text-base">
+      <div class="text-base" v-if="detail?.finPrdtNm">
         <p class="text-primary-300 mb-1 font-semibold">상품명</p>
         <p>{{ detail?.finPrdtNm }}</p>
       </div>
 
-      <div>
+      <div v-if="detail?.description">
         <p class="text-primary-300 mb-1 font-semibold">설명</p>
         <p class="whitespace-pre-line">{{
           detail?.description || '설명 없음'
