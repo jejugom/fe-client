@@ -60,7 +60,7 @@
       title="방문 날짜 및 시간 선택"
       leftLabel="취소"
       rightLabel="선택 완료"
-      @click="handleDateTimeModal"
+      @click1="showDateTimeModal = false"
       @click2="submitDateTime"
     >
       <DateTimeSelectModal
@@ -278,6 +278,7 @@ const selectBranch = async () => {
   try {
     const res = await fetchReservedSlots(found.id);
     registerStore.setReservedSlots(res?.reserved_slots ?? {});
+    await handleDateTimeModal();
   } catch (e) {
     console.error('예약 슬롯 조회 실패', e);
   }
@@ -327,7 +328,7 @@ const goToRegister = async () => {
       selectedReservation.value = { date: '', time: '' };
       registerStore.setDate('');
       registerStore.setTime('');
-      await handleDateTimeModal(); // 중요: await
+      await handleDateTimeModal();
       return;
     } else {
       console.error('예약 실패:', error.response?.data || error.message);

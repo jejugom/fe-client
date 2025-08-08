@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-8">
     <!-- 상단 대표 정보 -->
-    <DetailImg :items="topInfos" />
+    <DetailImg :items="topInfos" v-if="topInfos.length" />
 
     <!-- 추천 이유 -->
     <div class="stroke-secondary flex flex-col gap-2 rounded-xl px-6 py-4">
@@ -17,12 +17,12 @@
 
     <!-- 상품 기본 정보 -->
     <div class="flex flex-col gap-4">
-      <div class="text-base">
+      <div class="text-base" v-if="detail?.finPrdtNm">
         <p class="text-primary-300 mb-1 font-semibold">상품명</p>
         <p>{{ detail?.finPrdtNm }}</p>
       </div>
 
-      <div>
+      <div v-if="detail?.description">
         <p class="text-primary-300 mb-1 font-semibold">설명</p>
         <p class="whitespace-pre-line">{{
           detail?.description || '설명 없음'
@@ -228,6 +228,40 @@ onMounted(async () => {
   loadingStore.startLoading();
   try {
     const result = await fetchProductDetail(id);
+
+    // 옵션 안전 변환 (카테고리별)
+    if (Array.isArray(result?.optionList)) {
+      if (['1', '2'].includes(result.finPrdtCategory)) {
+        // 예금/적금
+        result.optionList = result.optionList.map((o: any) => ({
+          ...o,
+          saveTrm: o?.saveTrm ?? null, // '12' | null
+          intrRate: Number(o?.intrRate ?? 0),
+          intrRate2: Number(o?.intrRate2 ?? 0),
+        }));
+      } else if (result.finPrdtCategory === '3') {
+        // 주담대
+        result.optionList = result.optionList.map((o: any) => ({
+          ...o,
+          mrtgTypeNm: String(o?.mrtgTypeNm ?? ''),
+          rpayTypeNm: String(o?.rpayTypeNm ?? ''),
+          lendRateTypeNm: String(o?.lendRateTypeNm ?? ''),
+          lendRateMin: String(o?.lendRateMin ?? ''),
+          lendRateMax: String(o?.lendRateMax ?? ''),
+        }));
+      } else if (result.finPrdtCategory === '5') {
+        // 펀드
+        result.optionList = result.optionList.map((o: any) => ({
+          ...o,
+          rate3mon: String(o?.rate3mon ?? ''), // '5.12%' 같은 문자열 유지
+          riskGrade: String(o?.riskGrade ?? ''),
+          priceStd: String(o?.priceStd ?? ''),
+          totalFee: o?.totalFee != null ? String(o.totalFee) : undefined,
+        }));
+      }
+      // 금/신탁은 옵션 없거나 자유형이라 패스
+    }
+
     detail.value = result;
   } catch (e) {
     console.error('상품 상세 조회 실패', e);
