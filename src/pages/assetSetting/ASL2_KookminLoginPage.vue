@@ -1,18 +1,24 @@
 <template>
   <!-- 상단 안내 문구 (카드 밖) -->
 
-  <h1 class="text-primary-300 text-2xl font-bold"
-    >내 계좌를 불러오려면 로그인이 필요해요</h1
-  >
-  <div class="text-surface-500 mt-4">
-    <p>
-      <span class="text-gold font-semibold">국민은행</span>에 있는 내 자산을
-      불러오기 위해
-      <span class="text-gold font-semibold">국민은행</span> 홈페이지에
-      로그인해요.<br />
-      입력하신 정보는 오직 자산 확인 용도로만 사용돼요.<br />
-      안전하니 걱정 마시고 진행하셔도 됩니다.</p
+  <h1 class="text-primary-300 text-center text-2xl font-bold">
+    {{ authStore.userName || authStore.username }}님, 안녕하세요!
+  </h1>
+  <div class="text-surface-500 mt-4 text-center">
+    <p class="mb-4 text-lg font-semibold">더 정확한 서비스 제공을 위해서</p>
+    <p class="mb-6 text-lg font-semibold"
+      ><span class="text-primary-300">자산 연동</span>을 진행하겠습니다.</p
     >
+    <div class="text-sm">
+      <p>
+        <span class="text-gold font-semibold">국민은행</span>에 있는 내 자산을
+        불러오기 위해<br />
+        <span class="text-gold font-semibold">국민은행</span> 홈페이지에
+        로그인해요.<br /><br />
+        입력하신 정보는 오직 자산 확인 용도로만 사용돼요.<br />
+        안전하니 걱정 마시고 진행하셔도 됩니다.
+      </p>
+    </div>
   </div>
 
   <!-- 중앙 입력 카드 -->
@@ -26,20 +32,25 @@
     />
   </div>
 
-  <BtnSet
-    label1="이전으로"
-    label2="다음으로"
-    type="type2"
-    @click2="handleAssetSync"
-  />
+  <div class="flex gap-2 text-lg font-semibold">
+    <Btn color="surface" label="건너뛰기" size="large" @click="handleSkip" />
+    <Btn 
+      :color="isFormFilled ? 'primary' : 'disabled'" 
+      label="연동하기" 
+      size="large" 
+      :disabled="!isFormFilled"
+      @click="handleAssetSync" 
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { computed } from 'vue';
+import { useAuthStore } from '@/stores/auth';
 
-import BtnSet from '@/components/buttons/BtnSet.vue';
+import Btn from '@/components/buttons/Btn.vue';
 import LoginForm from './_components/LoginForm.vue';
 import { codefApi } from '@/api/asset/codef';
 import { useLoadingStore } from '@/stores/loading';
@@ -47,6 +58,7 @@ import { useLoadingStore } from '@/stores/loading';
 const route = useRoute();
 const router = useRouter();
 const loadingStore = useLoadingStore();
+const authStore = useAuthStore();
 
 const credentials = ref({
   id: '',
@@ -60,7 +72,33 @@ const isFormFilled = computed(
     credentials.value.password.trim() !== ''
 );
 
+// 건너뛰기 버튼 처리
+const handleSkip = () => {
+  router.push({ name: 'asset-custom-quiz' });
+};
+
+// Enter 키 이벤트 처리
+const handleKeyPress = (event: KeyboardEvent) => {
+  if (event.key === 'Enter' && isFormFilled.value) {
+    handleAssetSync();
+  }
+};
+
+// 컴포넌트 마운트 시 Enter 키 이벤트 등록
+onMounted(() => {
+  window.addEventListener('keypress', handleKeyPress);
+});
+
+// 컴포넌트 언마운트 시 Enter 키 이벤트 제거
+onUnmounted(() => {
+  window.removeEventListener('keypress', handleKeyPress);
+});
+
 const handleAssetSync = async () => {
+  if (!isFormFilled.value) {
+    alert('아이디와 비밀번호를 모두 입력해주세요.');
+    return;
+  }
   loadingStore.startLoading();
   try {
     // CODEF 국민은행 API 연동 요청 데이터
@@ -92,7 +130,7 @@ const handleAssetSync = async () => {
       router.push({ name: 'profile' });
     } else {
       // 회원가입 과정인 경우 -> 다음 스텝으로 이동
-      router.push({ name: 'asset-custom-start' });
+      router.push({ name: 'asset-custom-quiz' });
     }
   } catch (error: any) {
     console.error('자산 연동 실패:', error);

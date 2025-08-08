@@ -66,8 +66,14 @@ onMounted(async () => {
   try {
     loadingStore.startLoading();
     // 1. URL 쿼리 파라미터에서 토큰 정보 추출
-    const { token, refreshToken, isNew, state } = route.query;
+    const { token, refreshToken, isNew, isTendencyNotDefined, state } =
+      route.query;
     console.log('AuthSuccessPage received state:', state);
+    console.log('AuthSuccessPage received isNew:', isNew);
+    console.log(
+      'AuthSuccessPage received isTendencyNotDefined:',
+      isTendencyNotDefined
+    );
 
     // 2. 필수 토큰 정보 검증
     if (!token || !refreshToken) {
@@ -93,9 +99,17 @@ onMounted(async () => {
 
     if (isNew === 'true') {
       // 신규 회원 → 튜토리얼 페이지로 이동
+      console.log('신규 회원 - asset-tutorial로 이동');
+      router.replace({ name: 'asset-tutorial' });
+    } else if (isTendencyNotDefined === 'true') {
+      // 성향 미입력 회원 → 일단 튜토리얼 페이지로 이동 (추후 custom-quiz로 변경 고려)
+      console.log(
+        '성향 미입력 회원 - asset-tutorial로 이동 (추후 custom-quiz로 변경 고려)'
+      );
       router.replace({ name: 'asset-tutorial' });
     } else {
       // 기존 회원 → 원래 가려던 페이지 또는 홈페이지로 이동
+      console.log('기존 회원 -', nextRoute, '로 이동');
       router.replace({ name: nextRoute });
     }
   } catch (err) {
