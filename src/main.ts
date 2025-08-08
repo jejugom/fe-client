@@ -9,15 +9,14 @@ import App from './App.vue';
 import router from './router';
 import VueApexCharts from 'vue3-apexcharts';
 import VCalendar from 'v-calendar';
-import { createPersistedState } from 'pinia-plugin-persistedstate';
 
 const app = createApp(App);
 
 // Pinia 인스턴스 생성
 const pinia = createPinia();
-pinia.use(createPersistedState()); // Pinia 상태를 세션 스토리지에 저장
 
 // // persist 플러그인 등록
+// pinia.use(createPersistedState);
 
 // Kakao 지도 API 로드 함수 정의
 const kakaoAppKey = import.meta.env.VITE_KAKAO_MAP_KEY;
