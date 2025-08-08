@@ -111,7 +111,7 @@ export const useAuthStore = defineStore('auth', () => {
   const startKakaoLogin = (nextRouteName?: string) => {
     /** 인가코드 전달은 백엔드로 보냄. */
     // 113 line
-    let kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&response_type=code&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}`;
+    let kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&response_type=code&redirect_uri=${import.meta.env.VITE_KAKAO_REDIRECT_URI}&response_type=code`;
     if (nextRouteName) {
       kakaoAuthUrl += `&state=${encodeURIComponent(nextRouteName)}`; // Using 'state' parameter to pass the next route
     }
