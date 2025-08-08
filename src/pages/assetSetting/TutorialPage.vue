@@ -33,6 +33,6 @@ const router = useRouter();
 
 const handleStart = () => {
   console.log('시작하기 버튼 클릭됨');
-  router.push({ name: 'asset-start' });
+  router.push({ name: 'asset-kookmin-login' });
 };
 </script>
