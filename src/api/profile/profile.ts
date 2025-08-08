@@ -1,3 +1,18 @@
+import api from '@/api';
+
+export interface UserProfile {
+  email: string;
+  userName: string;
+  userPhone: string;
+  birth: string;
+}
+
+export interface UpdateUserProfileRequest {
+  userName?: string;
+  userPhone?: string;
+  birth?: string;
+}
+
 export interface BookingItem {
   id: string;
   date: string;
@@ -26,34 +41,14 @@ export interface ProfileData {
   };
 }
 
-export const api_data: ProfileData = {
-  user_info: {
-    name: '홍길동',
-    asset: 194940000,
+export const profileApi = {
+  async getUserProfile(): Promise<UserProfile> {
+    const response = await api.get('/api/user/me');
+    console.log('User profile fetched:', response.data);
+    return response.data;
   },
-  booking: {
-    gift_booking: {
-      id: 'G202507170001',
-      date: '2025-07-16',
-      time: '13:00',
-      bank_name: '국민은행 세종대점',
-      prdt_name: '증여/상속 상담',
-    },
-    prdt_booking: {
-      id: 'P202507170001',
-      date: '2025-07-16',
-      time: '13:00',
-      bank_name: '국민은행 세종대점',
-      prdt_name: '적금 상품1',
-    },
-  },
-  asset_info: {
-    total: 565000000,
-    real_estate: 1500000000,
-    deposit: 350000000,
-    cash: 15000000,
-    stock_fund: 300000000,
-    business_equity: 0,
-    etc: 0,
+
+  async updateUserProfile(data: UpdateUserProfileRequest): Promise<void> {
+    await api.patch('/api/user/me', data);
   },
 };

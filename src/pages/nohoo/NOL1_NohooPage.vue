@@ -199,7 +199,7 @@ const recommendedProducts = computed(() => {
         recommendItems.find((r) => r.finPrdtCd === product.finPrdtCd)?.score ??
           '0'
       );
-      tags.push(`맞춤점수 ${score}점 | `);
+      tags.push(`맞춤점수 ${(score * 100).toFixed(0)}점 | `);
 
       // 금리/기간 태그 설정 (예금/적금/주담대)
       if (
