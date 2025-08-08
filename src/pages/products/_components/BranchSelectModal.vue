@@ -36,6 +36,7 @@
     <div id="map-wrapper" class="relative mt-4 h-64 w-full">
       <div id="map" class="h-full w-full"></div>
 
+      <!-- 우측 상단 고정 버튼 -->
       <Btn
         label="현 지도에서 검색"
         size="small"
