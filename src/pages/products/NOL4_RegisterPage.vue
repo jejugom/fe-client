@@ -60,7 +60,7 @@
       title="방문 날짜 및 시간 선택"
       leftLabel="취소"
       rightLabel="선택 완료"
-      @click1="showDateTimeModal = false"
+      @click="handleDateTimeModal"
       @click2="submitDateTime"
     >
       <DateTimeSelectModal
@@ -99,6 +99,7 @@ import DateTimeSelectModal from './_components/DateTimeSelectModal.vue';
 import { useRegisterStore } from '@/stores/register';
 import { branchList } from '@/data/branchList';
 import { branchApi } from '@/api/user/branch';
+import { profileApi } from '@/api/profile/profile'; // profileApi 임포트
 import {
   fetchReservedSlots,
   postBooking,
@@ -125,6 +126,7 @@ const selectedReservation = ref({
   date: registerStore.date,
   time: registerStore.time,
 });
+const userPhoneNumber = ref(''); // 사용자 전화번호를 저장할 ref 추가
 
 const showBranchModal = ref(false);
 const showDateTimeModal = ref(false);
@@ -158,6 +160,27 @@ const isFormValid = computed(() => {
   );
 });
 
+// 상품명 쿼리 기반 설정
+watch(
+  () => route.params.id,
+  (id) => {
+    if (typeof id === 'string') {
+      if (id === 'gift') {
+        // guno: 증여 시뮬레이션에서 온 경우 '증여 시뮬레이션 결과'
+        registerStore.setProductName('증여 시나리오 설계');
+      } else if (id === 'inheritance') {
+        registerStore.setProductName('상속 시나리오 설계');
+      } else {
+        const product = productStore.getProductById(id);
+        if (product) {
+          registerStore.setProductName(product.finPrdtNm);
+        }
+      }
+    }
+  },
+  { immediate: true }
+);
+
 onMounted(async () => {
   try {
     const myBranch = await branchApi.getMyBranch();
@@ -174,7 +197,34 @@ onMounted(async () => {
   } catch (error) {
     console.error('내 지점 정보 조회 실패:', error);
   }
+
+  // 사용자 전화번호 가져오기
+  try {
+    const userProfile = await profileApi.getUserProfile();
+    if (userProfile && userProfile.userPhone) {
+      userPhoneNumber.value = userProfile.userPhone;
+    }
+  } catch (error) {
+    console.error('사용자 프로필 조회 실패:', error);
+  }
 });
+
+// 파일 상단 스코프에 추가
+const handleDateTimeModal = async () => {
+  if (!registerStore.branchId) {
+    alert('지점을 먼저 선택해주세요.');
+    return;
+  }
+  try {
+    const res = await fetchReservedSlots(registerStore.branchId);
+    const slots = res?.reserved_slots ?? {};
+    registerStore.setReservedSlots(slots);
+    showDateTimeModal.value = true;
+  } catch (err) {
+    console.error('예약 슬롯 조회 실패', err);
+    alert('예약 가능한 시간을 불러오는데 실패했습니다.');
+  }
+};
 
 const selectBranch = async () => {
   const selected = branchModalRef.value?.getSelectedBranch?.();
@@ -226,8 +276,8 @@ const selectBranch = async () => {
   showBranchModal.value = false;
 
   try {
-    const slots = await fetchReservedSlots(found.id);
-    registerStore.setReservedSlots(slots);
+    const res = await fetchReservedSlots(found.id);
+    registerStore.setReservedSlots(res?.reserved_slots ?? {});
   } catch (e) {
     console.error('예약 슬롯 조회 실패', e);
   }
@@ -266,13 +316,19 @@ const goToRegister = async () => {
     bookingResult = await postBooking(payload);
     console.log('예약 성공:', bookingResult);
   } catch (error: any) {
-    if (error.response?.data?.error === 'DUPLICATE_BOOKING') {
-      alert(error.response.data.detail);
-      selectedReservation.value.date = '';
-      selectedReservation.value.time = '';
+    if (
+      error.response?.status === 409 ||
+      error.response?.data?.error === 'DUPLICATE_BOOKING'
+    ) {
+      alert(
+        error.response?.data?.detail ??
+          '해당 시각은 이미 예약되어 있습니다. 다른 시간을 선택해주세요.'
+      );
+      selectedReservation.value = { date: '', time: '' };
       registerStore.setDate('');
       registerStore.setTime('');
-      handleDateTimeModal();
+      await handleDateTimeModal(); // 중요: await
+      return;
     } else {
       console.error('예약 실패:', error.response?.data || error.message);
       alert('예약 중 오류가 발생했습니다.');
@@ -284,33 +340,18 @@ const goToRegister = async () => {
 
   // SMS 전송을 위한 예약 정보
   const smsData: SmsData = {
-    phoneNumber: '01071100441', // 실제로는 사용자 입력값 사용
+    phoneNumber: userPhoneNumber.value, // 사용자 전화번호 사용
     productName: productName.value,
     branchName: branchValue.value,
     reservationDate: selectedReservation.value.date,
     reservationTime: selectedReservation.value.time,
-    // userName은 생략 - 백엔드에서 못받은 경우 "고객님"으로 처리
-    // 추후 프론트에서 보내줄지, 백엔드에서 로그인 정보 토대로 확인 가능한지 파악 후 수정
-    // branchAddress: 지점 주소 보내주는 것 프론트에서 보내줄지 백엔드에서 보내줄지 확인 후 수정
   };
 
   try {
-    // 임시로 test 요청만 보냅니다.
-    // !백엔드 서버 켜야 작동합니다!
-    // api 요청에 로그인시 자동으로 jwt 토큰이 헤더에 포함됩니다.
-    // const testResult = await smsApi.test();
-    // if (testResult) {
-    //   console.log('SMS API 테스트 결과: ', testResult);
-
-    //   router.push({
-    //     name: 'register-complete',
-    //     query: { bookingId: bookingResult?.bookingId },
-    //   });
-
-    //   console.log('예약 완료:', registerStore.getSummary());
-    // } else {
-    //   alert('SMS API 테스트 실패: ' + testResult);
-    // }
+    router.push({
+      name: 'register-complete',
+      query: { bookingId: bookingResult?.bookingId },
+    });
 
     // SMS 전송 API - 구현 완료 - 추후 이 코드로 교체
     const result = await smsApi.send(smsData);

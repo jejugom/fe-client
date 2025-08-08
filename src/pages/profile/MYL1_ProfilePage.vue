@@ -4,7 +4,6 @@
   </div>
 
   <div v-else class="space-y-16">
-
     <!-- 최신예약 1개 출력 -->
     <div v-if="bookingItems.length != 0">
       <RegisterCard :booking="bookingItems[0]" />
@@ -135,12 +134,12 @@ const confirmWithdrawal = () => {
 };
 
 const menuItems = ref([
-  { id: 'asset', title: '내 자산 고치기' },
-  { id: 'register', title: '예약 내역 확인 및 수정하기' },
-  { id: 'asset-start', title: '자산 재연동하기' },
-  { id: 'calculation', title: '자산 다시 연결하기' },
-  { id: 'investment-reset', title: '내 투자 성향 다시 선택하기' },
+  { id: 'profile', title: '내 정보 고치기' },
   { id: 'revenue', title: '내 은행 지점 바꾸기' },
+  { id: 'investment-reset', title: '내 투자 성향 다시 선택하기' },
+  { id: 'asset', title: '내 자산 고치기' },
+  { id: 'calculation', title: '자산 다시 연결하기' },
+  { id: 'register', title: '예약 내역 확인 및 고치기' },
   { id: 'tutorial', title: '사용 방법 보기' },
   { id: 'logout', title: '로그아웃' },
   { id: 'withdrawal', title: '회원 탈퇴' },
@@ -183,6 +182,9 @@ const handleMenuClick = (menuId) => {
       break;
     case 'register':
       router.push({ name: 'register-list' });
+      break;
+    case 'profile':
+      router.push({ name: 'edit-profile' });
       break;
     default:
       console.warn(`Unknown menu item: ${menuId}`);
