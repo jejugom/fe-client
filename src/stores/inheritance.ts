@@ -1,4 +1,4 @@
-import { defineStore, type StateTree } from 'pinia';
+import { defineStore } from 'pinia';
 import type {
   Asset,
   Beneficiary,
@@ -9,7 +9,7 @@ import type { PersistenceOptions } from 'pinia-plugin-persistedstate';
 
 export const useInheritanceStore = defineStore('inheritance', {
   state: () => ({
-    allAssets: new Map<string, Asset[]>(),
+    allAssets: new Map<string, Asset[]>() as Map<string, Asset[]>,
     beneficiaries: [] as Beneficiary[],
     distributedAssets: [] as DistributedAsset[],
     recipientSummaries: [] as RecipientSummary[],
@@ -50,32 +50,22 @@ export const useInheritanceStore = defineStore('inheritance', {
     },
   },
 
-  persist: {
-    // persist 속성에 타입 명시
+  persist: { // persist 속성에 타입 명시
     storage: localStorage,
     key: 'inheritance-state', // 키를 'inheritance-state'로 변경하여 다른 스토어와 분리 // 키를 'inheritance-state'로 변경하여 다른 스토어와 분리
-    paths: [
-      'allAssets',
-      'beneficiaries',
-      'distributedAssets',
-      'recipientSummaries',
-      'totalGiftTax',
-    ], // additionalWillContent 제외
+    paths: ['allAssets', 'beneficiaries', 'distributedAssets', 'recipientSummaries', 'totalGiftTax'], // additionalWillContent 제외
     serializer: {
-      serialize: (state: StateTree): string => {
-        const s = state as any;
-        const allAssetsArray = Array.from(
-          (s.allAssets as Map<string, Asset[]>).entries()
-        );
-        return JSON.stringify({ ...s, allAssets: allAssetsArray });
+      serialize: (state) => {
+        const allAssetsArray = Array.from(state.allAssets.entries());
+        return JSON.stringify({ ...state, allAssets: allAssetsArray });
       },
-      deserialize: (str: string): StateTree => {
+      deserialize: (str) => {
         const data = JSON.parse(str);
-        if (data?.allAssets) {
-          data.allAssets = new Map<string, Asset[]>(data.allAssets);
+        if (data.allAssets) {
+          data.allAssets = new Map(data.allAssets);
         }
-        return data as StateTree;
+        return data;
       },
     },
-  } satisfies PersistenceOptions, // 여기에 타입 캐스팅 추가
+  } as PersistenceOptions, // 여기에 타입 캐스팅 추가
 });

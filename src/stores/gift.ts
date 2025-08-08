@@ -1,4 +1,4 @@
-import { defineStore, type StateTree } from 'pinia';
+import { defineStore } from 'pinia';
 import type {
   Asset,
   Beneficiary,
@@ -35,22 +35,21 @@ export const useGiftStore = defineStore('gift', {
   },
 
   persist: {
-    key: 'gift-state',
+    // persist 속성에 타입 명시
     storage: localStorage,
+    key: 'gift-state',
     serializer: {
-      serialize: (state: StateTree): string => {
-        const s = state as any;
-        const allAssetsArray = Array.from(
-          (s.allAssets as Map<string, Asset[]>).entries()
-        );
-        return JSON.stringify({ ...s, allAssets: allAssetsArray });
+      serialize: (state) => {
+        const allAssetsArray = Array.from(state.allAssets.entries());
+        return JSON.stringify({ ...state, allAssets: allAssetsArray });
       },
-      deserialize: (str: string): StateTree => {
+      deserialize: (str) => {
         const data = JSON.parse(str);
-        if (data?.allAssets)
-          data.allAssets = new Map<string, Asset[]>(data.allAssets);
-        return data as StateTree;
+        if (data.allAssets) {
+          data.allAssets = new Map(data.allAssets);
+        }
+        return data;
       },
     },
-  } satisfies PersistenceOptions,
+  } as PersistenceOptions,
 });
