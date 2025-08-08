@@ -34,7 +34,8 @@ export const useGiftStore = defineStore('gift', {
     },
   },
 
-  persist: { // persist 속성에 타입 명시
+  persist: {
+    // persist 속성에 타입 명시
     storage: localStorage,
     key: 'gift-state',
     serializer: {
