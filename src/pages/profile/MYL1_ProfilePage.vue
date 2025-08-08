@@ -104,18 +104,18 @@ const userName = computed(() => {
 
 const assetSummary = computed(() => {
   if (!myPageData.value?.userInfo?.assetStatus) return [];
-  
+
   console.log('Raw asset data:', myPageData.value.userInfo.assetStatus);
-  
-  const mapped = myPageData.value.userInfo.assetStatus.map(asset => {
+
+  const mapped = myPageData.value.userInfo.assetStatus.map((asset) => {
     const category = getAssetCategoryName(asset.assetCategoryCode);
     console.log(`Mapping ${asset.assetCategoryCode} -> ${category}`);
     return {
       category,
-      amount: asset.amount
+      amount: asset.amount,
     };
   });
-  
+
   console.log('Mapped asset data:', mapped);
   return mapped;
 });
@@ -149,6 +149,9 @@ const confirmWithdrawal = () => {
 };
 
 const menuItems = ref([
+  { id: 'profile', title: '내 정보 고치기' },
+  { id: 'revenue', title: '내 은행 지점 바꾸기' },
+  { id: 'investment-reset', title: '내 투자 성향 다시 선택하기' },
   { id: 'asset', title: '내 자산 고치기' },
   { id: 'register', title: '예약 내역 확인 및 수정하기' },
   { id: 'asset-start', title: '자산 재연동하기' },
@@ -198,6 +201,9 @@ const handleMenuClick = (menuId) => {
     case 'register':
       router.push({ name: 'register-list' });
       break;
+    case 'profile':
+      router.push({ name: 'edit-profile' });
+      break;
     default:
       console.warn(`Unknown menu item: ${menuId}`);
       break;
@@ -213,16 +219,16 @@ const handleLogout = () => {
 
 // Transform booking data from API to match RegisterCard expectations
 const transformBookingData = (bookingInfo) => {
-  return bookingInfo.map(booking => {
+  return bookingInfo.map((booking) => {
     const date = new Date(booking.date);
     const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    
+
     return {
       id: booking.bookingId,
       date: formattedDate,
       time: booking.time,
       bank_name: `지점 ID: ${booking.branchId}`, // TODO: 실제 지점명으로 변환 필요
-      prdt_name: booking.finPrdtCode // TODO: 실제 상품명으로 변환 필요
+      prdt_name: booking.finPrdtCode, // TODO: 실제 상품명으로 변환 필요
     };
   });
 };

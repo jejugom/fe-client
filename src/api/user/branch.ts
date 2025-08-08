@@ -9,6 +9,7 @@ export interface BranchInfo {
   x: string;
   y: string;
   distance: string;
+  branchId: number; // 추가된 필드
 }
 
 // 지점 설정 요청 데이터 타입 (백엔드 DTO와 일치)
@@ -17,13 +18,15 @@ export interface BranchRequest {
 }
 
 export const branchApi = {
-  async getBranchByName(branchName: string): Promise<BranchInfo> {
-    const response = await api.get(`/api/branches/${encodeURIComponent(branchName)}`);
+  async getMyBranch(): Promise<BranchInfo> {
+    const response = await api.get('/api/user/branch');
     return response.data;
   },
 
+  
+
   async setMyBranch(branchData: BranchRequest) {
-    const response = await api.patch('/api/users/me/branch', branchData);
+    const response = await api.patch('/api/user/branch', branchData);
     return response.data;
   },
 };

@@ -21,6 +21,11 @@ const profileRoutes: RouteRecordRaw[] = [
     name: 'edit-branch',
     component: () => import('@/pages/profile/MYL2_EditBranchPage.vue'),
   },
+  {
+    path: '/profile/edit',
+    name: 'edit-profile',
+    component: () => import('@/pages/profile/MYL2_EditProfilePage.vue'),
+  },
 ];
 
 export default profileRoutes;
