@@ -66,9 +66,11 @@ import InputBox from '@/components/forms/InputBox.vue';
 import FaqCard from './_components/FaqCard.vue';
 import FaqTab from './_components/FaqTab.vue';
 import { getFaqList, type Faq } from '@/api/gift/faq';
+import { useLoadingStore } from '@/stores/loading';
 
 const faqData = ref<Faq[]>([]);
 const router = useRouter();
+const loadingStore = useLoadingStore();
 
 // 검색어 및 탭 상태
 const searchQuery = ref('');
@@ -110,21 +112,14 @@ const goToFaqDetail = (faqId: number) => {
 
 // FAQ 목록 가져오기
 onMounted(async () => {
+  loadingStore.startLoading();
   try {
     const res = await getFaqList();
-    faqData.value = res.data; // ✅ 백엔드 반환 형식에 맞춰 할당
+    faqData.value = res.data;
   } catch (error) {
     console.error('FAQ 목록 조회 실패:', error);
-  }
-});
-
-onMounted(async () => {
-  try {
-    const { data } = await getFaqList();
-    console.log('FAQ 응답:', data);
-    faqData.value = data;
-  } catch (err) {
-    console.error('FAQ API 에러:', err);
+  } finally {
+    loadingStore.stopLoading();
   }
 });
 </script>

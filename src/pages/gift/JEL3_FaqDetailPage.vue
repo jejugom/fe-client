@@ -57,9 +57,11 @@ import { ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 import { getFaqById, getFaqList, type Faq } from '@/api/gift/faq';
+import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
 const route = useRoute();
+const loadingStore = useLoadingStore();
 
 const currentFaq = ref<Faq | null>(null);
 const relatedFaqs = ref<Faq[]>([]);
@@ -67,6 +69,7 @@ const allFaqs = ref<Faq[]>([]); // 전체 목록 캐싱
 
 // FAQ 상세 + 관련 질문 계산
 const fetchFaqDetail = async (id: number) => {
+  loadingStore.startLoading();
   try {
     // 1) 상세 조회
     const { data } = await getFaqById(id);
@@ -98,6 +101,8 @@ const fetchFaqDetail = async (id: number) => {
     }
   } catch (err) {
     console.error('FAQ 상세조회 에러:', err);
+  } finally {
+    loadingStore.stopLoading();
   }
 };
 

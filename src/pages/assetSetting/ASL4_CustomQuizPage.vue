@@ -31,9 +31,11 @@ import { useRouter, useRoute } from 'vue-router';
 import QuizContent from './_components/QuizContent.vue';
 import QuizNavigation from './_components/QuizNavigation.vue';
 import { preferencesApi } from '@/api/user/preferences';
+import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
 const route = useRoute();
+const loadingStore = useLoadingStore();
 
 // 현재 질문 인덱스
 const currentQuestionIndex = ref(0);
@@ -110,6 +112,7 @@ const handleNextQuestion = async () => {
   if (isLastQuestion.value) {
     console.log('최종 답변:', finalAnswers.value);
     
+    loadingStore.startLoading();
     try {
       // 투자성향 질문 답변 API 호출
       const preferencesData = {
@@ -135,6 +138,8 @@ const handleNextQuestion = async () => {
     } catch (error) {
       console.error('투자성향 제출 실패:', error);
       alert('투자성향 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      loadingStore.stopLoading();
     }
   }
   // 마지막 질문이 아닌 경우

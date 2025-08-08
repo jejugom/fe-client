@@ -11,7 +11,6 @@
     @click="handleShareOrDownload"
   />
   <div class="mt-16">
-
     <p class="text-primary-300 mb-2 text-center font-semibold">
       궁금한 점이 생기셨다면,<br />
       은행에서 자세히 알려드릴게요
@@ -36,8 +35,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 const router = useRouter();
-// const giftStore = useGiftStore(); // 기존
-const simulationStore = useSimulationStore(); // 변경
+const simulationStore = useSimulationStore();
 
 // 데스크탑/모바일 환경 구분
 const isMobile = ref(false);
@@ -128,5 +126,4 @@ const shareResult = async () => {
 const handleShareOrDownload = () => {
   shareResult();
 };
-
 </script>
