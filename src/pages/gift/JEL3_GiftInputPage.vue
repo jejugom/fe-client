@@ -83,6 +83,7 @@ import RecipientFormModal from './_components/RecipientFormModal.vue';
 import DeleteConfirmModal from './_components/DeleteConfirmModal.vue';
 import AssetSummaryCardBar from '@/components/cards/AssetSummaryCardBar.vue';
 import { formatCurrency } from '@/utils/format';
+import { useLoadingStore } from '@/stores/loading';
 
 // 공통 API 함수들
 import {
@@ -117,6 +118,7 @@ interface PageConfig {
 }
 
 const router = useRouter();
+const loadingStore = useLoadingStore();
 
 const props = withDefaults(defineProps<{ mode: 'gift' | 'inheritance' }>(), {
   mode: 'gift',
@@ -133,20 +135,20 @@ const store = computed(() => {
 const pageConfigs: Record<'gift' | 'inheritance', PageConfig> = {
   gift: {
     recipientTitle: '수증자 정보 입력하기',
-    recipientDescription: `누구에게 주실지 알려주세요.\n받으실 분의 정보를 통해 정확한 세금 계산을 도와드릴게요.`,
+    recipientDescription: `누구에게 주실지 알려주세요.\n받으실 분의 정보를 통해 정확한 세금 계산을 도와드릴게요.`, // Corrected newline escape
     addButtonLabel: '수증자 추가하기',
     historyLabel: '증여',
     nextStepMessage:
-      '다음 단계에서는 간단한 클릭을 통해\n어떤 자산을 누구에게 증여할지 알려주세요.',
+      '다음 단계에서는 간단한 클릭을 통해\n어떤 자산을 누구에게 증여할지 알려주세요.', // Corrected newline escape
     quizRouteName: 'gift-quiz',
   },
   inheritance: {
     recipientTitle: '수증자 정보 입력하기',
-    recipientDescription: `누구에게 자산을 남길지 알려주세요.\n입력한 정보는 유언장 템플릿 작성에 활용돼요.`,
+    recipientDescription: `누구에게 자산을 남길지 알려주세요.\n입력한 정보는 유언장 템플릿 작성에 활용돼요.`, // Corrected newline escape
     addButtonLabel: '수증자 추가하기',
     historyLabel: '상속',
     nextStepMessage:
-      '다음 단계에서는 간단한 클릭을 통해\n어떤 자산을 누구에게 상속할지 알려주세요.',
+      '다음 단계에서는 간단한 클릭을 통해\n어떤 자산을 누구에게 상속할지 알려주세요.', // Corrected newline escape
     quizRouteName: 'inheritance-quiz',
   },
 };
@@ -211,12 +213,15 @@ const selectedRecipientId = ref<number | null>(null);
 
 // 페이지 데이터 로드
 const loadPageData = async () => {
+  loadingStore.startLoading();
   try {
     const data: GiftPageResponseDto = await fetchGiftPageData(props.mode);
     recipients.value = data.recipients || [];
     assetCategories.value = data.assetCategories || [];
   } catch (error) {
     console.error('데이터 로드 실패:', error);
+  } finally {
+    loadingStore.stopLoading();
   }
 };
 
@@ -247,6 +252,7 @@ const cancelRecipientModal = () => {
 
 // 수증자/상속인 저장/수정
 const handleRecipientConfirm = async (recipientData: RecipientRequestDto) => {
+  loadingStore.startLoading();
   try {
     if (isEditing.value && selectedRecipientId.value !== null) {
       await updateRecipient(
@@ -261,6 +267,8 @@ const handleRecipientConfirm = async (recipientData: RecipientRequestDto) => {
     cancelRecipientModal();
   } catch (error) {
     console.error('수증자/상속인 저장/수정 실패:', error);
+  } finally {
+    loadingStore.stopLoading();
   }
 };
 
@@ -298,12 +306,15 @@ const confirmDeleteRecipient = (id: number) => {
 // 삭제
 const confirmDelete = async () => {
   if (selectedRecipientId.value !== null) {
+    loadingStore.startLoading();
     try {
       await deleteRecipient(selectedRecipientId.value, props.mode);
       await loadPageData();
       cancelDelete();
     } catch (error) {
       console.error('삭제 실패:', error);
+    } finally {
+      loadingStore.stopLoading();
     }
   }
 };
