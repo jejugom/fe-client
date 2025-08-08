@@ -1,78 +1,78 @@
 import api from '@/api';
 
-// API 응답 데이터 구조에 맞게 인터페이스 정의
+// ===== 타입 =====
 export interface UserInfo {
   userName: string;
-
-  assetStatus: {
-    assetCategoryCode: string;
-    amount: number;
-  }[];
+  assetStatus: { assetCategoryCode: string; amount: number }[];
 }
 
 export interface CustomRecommendPrdt {
   finPrdtCd: string;
-  score: string;
+  score: string; // 백엔드가 문자열로 줌
 }
 
 export interface TimeDepositOption {
   saveTrm: string | null;
-  intrRate: number;
-  intrRate2: number;
+  intrRate?: number | null;
+  intrRate2?: number | null;
 }
-
 export interface TimeDeposit {
   finPrdtCd: string;
   finPrdtNm: string;
-  prdtFeature: string;
-  optionList: TimeDepositOption[];
+  prdtFeature: string | null;
+  optionList?: TimeDepositOption[];
 }
 
 export interface SavingDepositOption {
-  saveTrm: string;
-  intrRate: number;
-  intrRate2: number;
+  saveTrm: string | null;
+  intrRate?: number | null;
+  intrRate2?: number | null;
 }
-
 export interface SavingDeposit {
   finPrdtCd: string;
   finPrdtNm: string;
-  prdtFeature: string;
-  optionList: SavingDepositOption[];
+  prdtFeature: string | null;
+  optionList?: SavingDepositOption[];
 }
 
 export interface MortgageLoanOption {
-  mrtgTypeNm: string;
-  rpayTypeNm: string;
-  lendRateTypeNm: string;
-  lendRateMin: string;
-  lendRateMax: string;
+  mrtgTypeNm?: string | null;
+  rpayTypeNm?: string | null;
+  lendRateTypeNm?: string | null;
+  lendRateMin?: string | null;
+  lendRateMax?: string | null;
 }
-
 export interface MortgageLoan {
   finPrdtCd: string;
   finPrdtNm: string;
-  prdtFeature: string;
-  optionList: MortgageLoanOption[];
+  prdtFeature: string | null;
+  optionList?: MortgageLoanOption[];
 }
 
 export interface GoldProduct {
   finPrdtCd: string;
   finPrdtNm: string;
-  prdtFeature: string;
+  prdtFeature: string | null;
+  optionList?: any[];
 }
 
 export interface FundOption {
-  rate3mon: string;
-  riskGrade: string;
-  priceStd: string;
+  rate3mon?: string | null; // "12.34%" 혹은 null
+  riskGrade?: string | null;
+  priceStd?: string | null;
 }
-
 export interface FundProduct {
   finPrdtCd: string;
   finPrdtNm: string;
-  prdtFeature: string;
-  optionList: FundOption[];
+  prdtFeature: string | null;
+  optionList?: FundOption[];
+}
+
+export interface TrustProduct {
+  finPrdtCd: string;
+  finPrdtNm: string | null;
+  prdtFeature: string | null;
+  optionList?: any[];
 }
 
 export interface News {
@@ -84,16 +84,20 @@ export interface News {
 }
 
 export interface ParsedApiResponse {
-  userInfo: UserInfo;
-  customRecommendPrdt: CustomRecommendPrdt[];
-  timeDeposits: TimeDeposit[];
-  savingsDeposits: SavingDeposit[];
-  mortgageLoan: MortgageLoan[];
-  goldProducts: GoldProduct[];
-  fundProducts: FundProduct[];
-  news: News[];
+  userInfo?: UserInfo;
+  customRecommendPrdt?: CustomRecommendPrdt[];
+  allProducts?: {
+    gold?: GoldProduct[];
+    fund?: FundProduct[];
+    deposit?: TimeDeposit[];
+    trust?: TrustProduct[];
+    mortgage?: MortgageLoan[];
+    saving?: SavingDeposit[];
+  };
+  news?: News[];
 }
 
+// ===== API =====
 export async function fetchNohooData(): Promise<ParsedApiResponse> {
   const res = await api.get<ParsedApiResponse>(`/api/retirement`);
   console.log('Nohoo data fetched:', res.data);

@@ -1,6 +1,6 @@
 <template>
   <TabBtnGroup
-    :tabs="['맞춤', '예금', '적금', '펀드', '금', '주택담보']"
+    :tabs="['맞춤', '예금', '적금', '펀드', '금', '주택담보', '신탁']"
     v-model:selectedTab="selectedTab"
   />
   <div class="mt-8 flex flex-col gap-8">
@@ -69,7 +69,6 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import TabBtnGroup from './_components/TabBtnGroup.vue';
 import BtnCard from '@/components/cards/BtnCard.vue';
-import NewsCard from '@/components/cards/NewsCard.vue';
 import AdBox from './_components/AdBox.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import { useProductStore } from '@/stores/product';
@@ -96,6 +95,7 @@ const PRODUCT_CATEGORY_MAP: Record<string, number> = {
   주택담보: 3,
   금: 4,
   펀드: 5,
+  신탁: 6,
 };
 
 const CATEGORY_LABEL_MAP = Object.fromEntries(
@@ -106,32 +106,115 @@ onMounted(async () => {
   loadingStore.startLoading();
   try {
     const result = await fetchNohooData();
-    data.value = result;
-    news.value = result.news;
 
-    // API 응답 데이터를 store에 저장할 형식으로 매핑
+    const {
+      userInfo = { userName: '', assetStatus: [] },
+      customRecommendPrdt = [],
+      allProducts = {},
+      news: newsArr = [],
+    } = result ?? {};
+
+    const {
+      deposit = [],
+      saving = [],
+      mortgage = [],
+      gold = [],
+      fund = [],
+      trust = [],
+    } = allProducts ?? {};
+
+    // 옵션 변환기
+    const mapTimeDepositOptions = (opts: any[] = []) =>
+      opts.map((o) => ({
+        saveTrm: o?.saveTrm ?? null, // (string|null) 허용
+        intrRate: Number(o?.intrRate ?? 0),
+        intrRate2: Number(o?.intrRate2 ?? 0),
+      }));
+
+    const mapSavingOptions = (opts: any[] = []) =>
+      opts.map((o) => ({
+        saveTrm: String(o?.saveTrm ?? ''), // string 강제
+        intrRate: Number(o?.intrRate ?? 0),
+        intrRate2: Number(o?.intrRate2 ?? 0),
+      }));
+
+    const mapMortgageOptions = (opts: any[] = []) =>
+      opts.map((o) => ({
+        mrtgTypeNm: String(o?.mrtgTypeNm ?? ''),
+        rpayTypeNm: String(o?.rpayTypeNm ?? ''),
+        lendRateTypeNm: String(o?.lendRateTypeNm ?? ''),
+        lendRateMin: String(o?.lendRateMin ?? ''),
+        lendRateMax: String(o?.lendRateMax ?? ''),
+      }));
+
+    const mapFundOptions = (opts: any[] = []) =>
+      opts.map((o) => ({
+        rate3mon: String(o?.rate3mon ?? ''), // null → ''
+        riskGrade: String(o?.riskGrade ?? ''),
+        priceStd: String(o?.priceStd ?? ''),
+      }));
+
+    // 스토어 저장
     productStore.setAllProducts({
-      timeDeposits: result.timeDeposits.map((p) => ({
-        ...p,
-        finPrdtCategory: '1', // 예금 카테고리
+      timeDeposits: (deposit as any[]).map((p) => ({
+        finPrdtCategory: '1',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: mapTimeDepositOptions(p?.optionList),
       })),
-      savingsDeposits: result.savingsDeposits.map((p) => ({
-        ...p,
-        finPrdtCategory: '2', // 적금 카테고리
+      savingsDeposits: (saving as any[]).map((p) => ({
+        finPrdtCategory: '2',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: mapSavingOptions(p?.optionList),
       })),
-      mortgageLoan: result.mortgageLoan.map((p) => ({
-        ...p,
-        finPrdtCategory: '3', // 주택담보대출 카테고리
+      mortgageLoan: (mortgage as any[]).map((p) => ({
+        finPrdtCategory: '3',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: mapMortgageOptions(p?.optionList),
       })),
-      goldProducts: result.goldProducts.map((p) => ({
-        ...p,
-        finPrdtCategory: '4', // 금 상품 카테고리
+      goldProducts: (gold as any[]).map((p) => ({
+        finPrdtCategory: '4',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: Array.isArray(p?.optionList) ? p.optionList : [],
       })),
-      fundProducts: result.fundProducts.map((p) => ({
-        ...p,
-        finPrdtCategory: '5', // 펀드 카테고리
+      fundProducts: (fund as any[]).map((p) => ({
+        finPrdtCategory: '5',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: mapFundOptions(p?.optionList),
+      })),
+      trustProducts: (trust as any[]).map((p) => ({
+        finPrdtCategory: '6',
+        finPrdtCd: String(p?.finPrdtCd ?? ''),
+        finPrdtNm: String(p?.finPrdtNm ?? ''),
+        prdtFeature: String(p?.prdtFeature ?? ''),
+        optionList: Array.isArray(p?.optionList) ? p.optionList : [],
       })),
     });
+
+    // 화면에서 쓰는 데이터
+    data.value = {
+      userInfo,
+      customRecommendPrdt,
+      timeDeposits: deposit as any,
+      savingsDeposits: saving as any,
+      mortgageLoan: mortgage as any,
+      goldProducts: gold as any,
+      fundProducts: fund as any,
+      trustProducts: trust as any,
+      news: newsArr,
+    } as any;
+
+    // 뉴스
+    news.value = newsArr;
   } catch (error) {
     console.error('Nohoo 데이터 요청 실패', error);
     loadingStore.setError(true);
@@ -199,62 +282,7 @@ const recommendedProducts = computed(() => {
         recommendItems.find((r) => r.finPrdtCd === product.finPrdtCd)?.score ??
           '0'
       );
-      tags.push(`맞춤점수 ${(score * 100).toFixed(0)}점 | `);
-
-      // 금리/기간 태그 설정 (예금/적금/주담대)
-      if (
-        (product.finPrdtCategory === '1' || product.finPrdtCategory === '2') &&
-        'optionList' in product &&
-        Array.isArray(product.optionList) &&
-        product.optionList.length > 0
-      ) {
-        const options = product.optionList;
-
-        const option12 = options.find((opt: any) => opt.saveTrm === '12');
-
-        if (option12 && 'intrRate2' in option12) {
-          const maxRate = option12.intrRate2 ?? 0;
-          tags.push('12개월', `최고금리 ${maxRate.toFixed(2)}%`);
-        } else {
-          const saveTerms = options
-            .filter((opt: any) => opt.saveTrm !== null)
-            .map((opt: any) => `${opt.saveTrm}개월`);
-          const maxRate = Math.max(
-            ...options.map((opt: any) =>
-              'intrRate2' in opt ? opt.intrRate2 : 0
-            )
-          );
-          tags.push(...saveTerms, `최고금리 ${maxRate.toFixed(2)}%`);
-        }
-      }
-
-      if (
-        product.finPrdtCategory === '3' &&
-        'optionList' in product &&
-        Array.isArray(product.optionList) &&
-        product.optionList.length > 0
-      ) {
-        const minRate = Math.min(
-          ...product.optionList.map((opt: any) =>
-            parseFloat(opt.lendRateMin ?? '999')
-          )
-        );
-        tags.push(`최저금리 ${minRate.toFixed(2)}%`);
-      }
-
-      if (
-        product.finPrdtCategory === '5' &&
-        'optionList' in product &&
-        Array.isArray(product.optionList) &&
-        product.optionList.length > 0
-      ) {
-        const maxReturn = Math.max(
-          ...product.optionList.map((opt: any) =>
-            parseFloat(opt.rate3mon?.replace('%', '') || '0')
-          )
-        );
-        tags.push(`최고수익률 ${maxReturn.toFixed(2)}%`);
-      }
+      tags.push(`맞춤점수 ${(score * 100).toFixed(0)}점 `);
 
       return { ...product, tags, score: Number(score) };
     });
@@ -330,7 +358,7 @@ const filteredProducts = computed(() => {
 
       return {
         ...p,
-        tags: [`최저금리 ${minRate.toFixed(2)}%`],
+
         maxRate: minRate,
       };
     });
@@ -352,10 +380,15 @@ const filteredProducts = computed(() => {
       );
       return {
         ...p,
-        tags: [`수익률 ${maxReturn.toFixed(2)}%`],
+
         maxRate: maxReturn,
       };
     });
+  } else if (tab === '신탁') {
+    products = productStore.allProducts.trustProducts.map((p) => ({
+      ...p,
+      tags: [], // 태그 표시하지 않음
+    }));
   }
 
   // 정렬

@@ -73,5 +73,20 @@ const tabs = [
   },
 ];
 
-const isActive = (name: string) => route.name === name;
+const isActive = (name: string) => {
+  // 현재 라우트의 경로
+  const currentPath = route.path;
+
+  // 탭 이름에 해당하는 path prefix 정의
+  const pathMap: Record<string, string> = {
+    nohoo: '/nohoo',
+    gift: '/gift',
+    home: '/home',
+    event: '/event',
+    profile: '/profile',
+  };
+
+  const prefix = pathMap[name];
+  return currentPath.startsWith(prefix);
+};
 </script>
