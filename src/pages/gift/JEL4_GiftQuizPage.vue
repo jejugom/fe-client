@@ -145,6 +145,7 @@ import TabBtn from '../nohoo/_components/TabBtn.vue';
 import { fetchGiftPageData } from '@/api/gift/recipient';
 import { formatCurrency } from '@/utils/format';
 import { categories, categoryCodeMap } from '@/types/gift/constants';
+import { useLoadingStore } from '@/stores/loading';
 
 // 두 스토어를 모두 import
 import { useInheritanceStore } from '@/stores/inheritance';
@@ -156,7 +157,6 @@ import type { RecipientResponseDto } from '@/types/gift/recipient';
 import type {
   Asset,
   Beneficiary,
-  Category,
   DistributedAsset,
 } from '@/types/gift/inheritance';
 
@@ -164,7 +164,6 @@ import type {
 import type {
   RecipientGiftRequestDto,
   CategoryGiftRequestDto,
-  AssetGiftRequestDto,
   SimulationRequestDto,
 } from '@/types/gift/simulation';
 
@@ -178,11 +177,12 @@ const props = withDefaults(
 );
 
 const router = useRouter();
+const loadingStore = useLoadingStore();
 
-// mode에 따라 적절한 스토어를 사용하도록 computed 속성으로 묶습니다.
+// mode에 따라 적절한 스토어를 사용하도록 computed 속성으로 묶음
 const giftStore = useGiftStore();
 const inheritanceStore = useInheritanceStore();
-const simulationStore = useSimulationStore(); // <-- simulationStore 인스턴스 생성
+const simulationStore = useSimulationStore(); //
 
 const store = computed(() => {
   return props.mode === 'gift' ? giftStore : inheritanceStore;
@@ -193,6 +193,7 @@ const activeTab = ref('estate');
 const beneficiaries = reactive<Beneficiary[]>([]);
 
 const loadAssetsAndBeneficiaries = async () => {
+  loadingStore.startLoading();
   try {
     const apiResponse = await fetchGiftPageData(props.mode);
     const recipients: RecipientResponseDto[] = apiResponse.recipients || [];
@@ -247,6 +248,8 @@ const loadAssetsAndBeneficiaries = async () => {
     }
   } catch (error) {
     console.error('데이터 로드 실패:', error);
+  } finally {
+    loadingStore.stopLoading();
   }
 };
 
@@ -446,21 +449,171 @@ const createSimulationRequest = (): SimulationRequestDto => {
   };
 };
 
+const setInheritanceStoreData = () => {
+  // 상속 모드일 때 distributedAssets와 recipientSummaries를 스토어에 저장
+  const distributed: DistributedAsset[] = [];
+  Array.from(allAssets.values())
+    .flat()
+    .filter(
+      (asset) =>
+        asset.selected && (asset.beneficiary || asset.isMultipleBeneficiaries)
+    ) // Only consider selected assets that have a beneficiary or are for multiple beneficiaries
+    .forEach((asset) => {
+      const foundCategory = categories.find(
+        (c) => c.id === asset.id.split('-')[0]
+      );
+      const categoryName = foundCategory?.name ?? '기타';
+
+      if (asset.isMultipleBeneficiaries && asset.distributionRatios) {
+        // Handle multiple beneficiaries
+        for (const beneficiaryId in asset.distributionRatios) {
+          const ratio = asset.distributionRatios[beneficiaryId];
+          if (ratio > 0) {
+            const foundRecipient = beneficiaries.find(
+              (b) => b.id === beneficiaryId
+            );
+            if (foundRecipient) {
+              distributed.push({
+                recipient: {
+                  name: foundRecipient.name,
+                  relation: foundRecipient.relation,
+                },
+                category: categoryName,
+                description: `${asset.name} (지분 ${ratio}%)`, // Add ratio to description
+                amount: Math.floor((asset.value * ratio) / 100),
+              });
+            }
+          }
+        }
+      } else if (asset.beneficiary) {
+        // Handle single beneficiary
+        const currentBeneficiary = asset.beneficiary; // Type narrowing
+        const foundRecipient = beneficiaries.find(
+          (b) => b.id === currentBeneficiary.id
+        );
+        if (foundRecipient) {
+          distributed.push({
+            recipient: {
+              name: foundRecipient.name,
+              relation: foundRecipient.relation,
+            },
+            category: categoryName,
+            description: asset.name,
+            amount: asset.value,
+          });
+        }
+      }
+    });
+
+  const recipientSummary = beneficiaries.map((b) => ({
+    recipientId: Number(b.id),
+    name: b.name,
+    giftAmount: calculateTotalForBeneficiary(b.id),
+    estimatedTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
+  }));
+
+  inheritanceStore.setInheritanceData({
+    distributedAssets: distributed,
+    recipientSummaries: recipientSummary,
+    totalGiftTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
+  });
+};
+
 const goToWillForm = () => {
+  setInheritanceStoreData(); // 데이터 저장 함수 호출
   router.push({
     name: 'inheritance-will',
   });
 };
 
 const goToResult = async () => {
-  if (props.mode === 'gift') {
-    const requestDto = createSimulationRequest();
-    await simulationStore.simulateGiftTax(requestDto);
-  }
+  loadingStore.startLoading();
+  try {
+    if (props.mode === 'gift') {
+      const requestDto = createSimulationRequest();
+      await simulationStore.simulateGiftTax(requestDto);
+    } else if (props.mode === 'inheritance') {
+      // '바로 유언장 보러가기'를 눌렀을 때 추가 유언을 무시하고 초기화
+      inheritanceStore.setAdditionalWillContent('');
 
-  router.push({
-    name: props.mode === 'gift' ? 'gift-result' : 'inheritance-result',
-  });
+      // 상속 모드일 때 distributedAssets와 recipientSummaries를 스토어에 저장
+      const distributed: DistributedAsset[] = [];
+      Array.from(allAssets.values())
+        .flat()
+        .filter(
+          (asset) =>
+            asset.selected &&
+            (asset.beneficiary || asset.isMultipleBeneficiaries)
+        ) // Only consider selected assets that have a beneficiary or are for multiple beneficiaries
+        .forEach((asset) => {
+          const foundCategory = categories.find(
+            (c) => c.id === asset.id.split('-')[0]
+          );
+          const categoryName = foundCategory?.name ?? '기타';
+
+          if (asset.isMultipleBeneficiaries && asset.distributionRatios) {
+            // Handle multiple beneficiaries
+            for (const beneficiaryId in asset.distributionRatios) {
+              const ratio = asset.distributionRatios[beneficiaryId];
+              if (ratio > 0) {
+                const foundRecipient = beneficiaries.find(
+                  (b) => b.id === beneficiaryId
+                );
+                if (foundRecipient) {
+                  distributed.push({
+                    recipient: {
+                      name: foundRecipient.name,
+                      relation: foundRecipient.relation,
+                    },
+                    category: categoryName,
+                    description: `${asset.name} (지분 ${ratio}%)`, // Add ratio to description
+                    amount: Math.floor((asset.value * ratio) / 100),
+                  });
+                }
+              }
+            }
+          } else if (asset.beneficiary) {
+            // Handle single beneficiary
+            const currentBeneficiary = asset.beneficiary; // Type narrowing
+            const foundRecipient = beneficiaries.find(
+              (b) => b.id === currentBeneficiary.id
+            );
+            if (foundRecipient) {
+              distributed.push({
+                recipient: {
+                  name: foundRecipient.name,
+                  relation: foundRecipient.relation,
+                },
+                category: categoryName,
+                description: asset.name,
+                amount: asset.value,
+              });
+            }
+          }
+        });
+
+      const recipientSummary = beneficiaries.map((b) => ({
+        recipientId: Number(b.id),
+        name: b.name,
+        giftAmount: calculateTotalForBeneficiary(b.id),
+        estimatedTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
+      }));
+
+      inheritanceStore.setInheritanceData({
+        distributedAssets: distributed,
+        recipientSummaries: recipientSummary,
+        totalGiftTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
+      });
+    }
+
+    router.push({
+      name: props.mode === 'gift' ? 'gift-result' : 'inheritance-result',
+    });
+  } catch (error) {
+    console.error('시뮬레이션 실패:', error);
+  } finally {
+    loadingStore.stopLoading();
+  }
 };
 
 onMounted(() => {

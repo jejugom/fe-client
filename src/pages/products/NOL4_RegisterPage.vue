@@ -149,7 +149,9 @@ watch(
     if (typeof id === 'string') {
       if (id === 'gift') {
         // guno: 증여 시뮬레이션에서 온 경우 '증여 시뮬레이션 결과'
-        registerStore.setProductName('증여 시뮬레이션 결과');
+        registerStore.setProductName('증여 시나리오 설계');
+      } else if (id === 'inheritance') {
+        registerStore.setProductName('상속 시나리오 설계');
       } else {
         const product = productStore.getProductById(id);
         if (product) {

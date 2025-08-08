@@ -42,9 +42,11 @@ import { computed } from 'vue';
 import BtnSet from '@/components/buttons/BtnSet.vue';
 import LoginForm from './_components/LoginForm.vue';
 import { codefApi } from '@/api/asset/codef';
+import { useLoadingStore } from '@/stores/loading';
 
 const route = useRoute();
 const router = useRouter();
+const loadingStore = useLoadingStore();
 
 const credentials = ref({
   id: '',
@@ -59,6 +61,7 @@ const isFormFilled = computed(
 );
 
 const handleAssetSync = async () => {
+  loadingStore.startLoading();
   try {
     // CODEF 국민은행 API 연동 요청 데이터
     const requestData = {
@@ -104,6 +107,8 @@ const handleAssetSync = async () => {
     } else {
       alert('자산 연동 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
+  } finally {
+    loadingStore.stopLoading();
   }
 };
 </script>
