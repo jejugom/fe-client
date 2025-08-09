@@ -1,9 +1,9 @@
 <template>
   <div
     :class="[
-      'btn-pressed flex h-31.5 w-full items-center justify-between gap-6 rounded-lg border px-4 py-4',
-      color === 'primary' && 'border-primary-300',
-      color === 'secondary' && 'border-gold',
+      'btn-pressed flex h-36 w-full justify-between gap-6 rounded-lg bg-white px-4 py-4',
+      color === 'primary' && 'stroke-primary',
+      color === 'secondary' && 'stroke-secondary',
       color === 'surface' && 'border-surface-300',
       $attrs.class,
     ]"
@@ -11,54 +11,54 @@
     @click="onClick"
   >
     <!-- 글자부분 -->
-    <div class="flex w-7/10 flex-col">
+    <div class="grid w-8/10 grid-rows-[30%_50%_20%]">
       <!-- 제목 -->
       <div
-        :class="[
-          'truncate overflow-hidden text-lg font-semibold',
-          color === 'primary' && 'text-primary-500',
-          color === 'secondary' && 'text-secondary-500',
-          color === 'surface' && 'text-surface-500',
-        ]"
-        >{{ title }}</div
+        class="row-[1] flex items-center truncate text-lg font-semibold"
+        :class="{
+          'text-primary-500': color === 'primary',
+          'text-secondary-500': color === 'secondary',
+          'text-surface-500': color === 'surface',
+        }"
       >
+        {{ title }}
+      </div>
 
       <!-- 내용 -->
-      <ul
-        class="text-surface-500 mt-2 mb-1 list-disc overflow-hidden pl-5 text-sm"
-        v-if="contentList.length"
-      >
+      <ul v-if="contentList.length" class="row-[2] list-disc space-y-1">
         <li
-          v-for="(item, index) in contentList"
-          :key="index"
-          class="leading-snug"
+          v-for="(item, idx) in contentList"
+          :key="idx"
+          class="line-clamp-2 leading-snug"
         >
           {{ item }}
         </li>
       </ul>
 
       <!-- 태그 -->
-      <div class="flex flex-wrap gap-1 pt-1">
+      <div class="row-[3] flex gap-1">
         <span
           v-for="tag in parsedTags"
           :key="tag"
-          class="text-surface-300 text-sm"
+          class="text-gold font-semibold"
         >
           {{ tag }}
         </span>
       </div>
     </div>
     <!-- 버튼부분 -->
-    <div
-      :class="[
-        'flex h-20 w-15 items-center rounded-lg text-center text-lg font-semibold',
-        color === 'primary' && 'bg-primary-100 text-primary-500',
-        color === 'secondary' && 'bg-secondary-100 text-secondary-500',
-        color === 'surface' && 'border-surface-300 text-surface-300 border',
-      ]"
-      >{{ btnText }}</div
-    >
-  </div>
+    <div class="flex h-full items-center">
+      <div
+        :class="[
+          'flex h-20 w-15 items-center rounded-lg text-center text-lg font-semibold',
+          color === 'primary' && 'bg-primary-100 text-primary-500',
+          color === 'secondary' && 'bg-secondary-100 text-secondary-500',
+          color === 'surface' && 'border-surface-300 text-surface-300 border',
+        ]"
+        >{{ btnText }}</div
+      >
+    </div></div
+  >
 </template>
 
 <script setup lang="ts">

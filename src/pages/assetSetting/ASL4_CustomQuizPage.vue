@@ -1,9 +1,9 @@
 <!-- 투자성향질문 -->
 <template>
-  <h1 class="text-primary-300 mb-2 text-2xl font-bold"
+  <h1 class="text-primary-500 mb-2 text-2xl font-bold"
     >자산 관리, 어떻게 시작할까요?</h1
   >
-  <div class="text-base">
+  <div>
     몇가지 쉬운 질문에 답해주시면 고객님께 알맞은 서비스만 골라드릴게요
   </div>
 
@@ -111,7 +111,7 @@ const handleNextQuestion = async () => {
   // 마지막 질문인 경우
   if (isLastQuestion.value) {
     console.log('최종 답변:', finalAnswers.value);
-    
+
     loadingStore.startLoading();
     try {
       // 투자성향 질문 답변 API 호출

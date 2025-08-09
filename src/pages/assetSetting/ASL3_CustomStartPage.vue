@@ -2,7 +2,7 @@
 <template>
   <div class="flex min-h-[calc(80vh-9rem)] items-center">
     <div
-      class="stroke-primary px-auto my-auto flex w-full flex-col items-center justify-center gap-16 rounded-xl bg-white py-15"
+      class="card-design px-auto my-auto flex w-full flex-col items-center justify-center gap-16 py-15"
     >
       <div class="text-center">
         <p class="mb-8 text-lg font-semibold">자산 연동이 완료됐습니다!</p>

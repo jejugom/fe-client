@@ -1,9 +1,8 @@
 <template>
-  <div class="border-primary-300 flex flex-col gap-4 rounded-xl border p-4">
+  <div class="card-design flex flex-col gap-4">
     <div class="text-lg font-semibold">
-      {{ userName }} 님은 전체 사용자 중 상위
-      <span class="text-primary-300">{{ rankPercent }}</span
-      >% 자산 보유자예요
+      {{ userName }} 님은 상위
+      <span class="text-primary-300">{{ rankPercent }}% </span>자산 보유자예요
     </div>
 
     <!-- 반원형 게이지 -->

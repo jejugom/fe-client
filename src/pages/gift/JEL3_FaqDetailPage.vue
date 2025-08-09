@@ -1,46 +1,53 @@
 <template>
   <!-- 타이틀 -->
-  <h2 class="text-primary-300 mb-2 text-2xl font-bold">상속·증여</h2>
-  <p class="text-primary-300 mb-8 text-xl font-semibold">자주 묻는 질문</p>
+  <h2 class="text-primary-500 mb-8 text-2xl font-bold"
+    >많이 물어보신 질문이에요</h2
+  >
 
-  <div v-if="currentFaq">
+  <div v-if="currentFaq" class="card-design">
     <!-- 카테고리 -->
     <div class="mb-4">
-      <span class="text-primary-500 text-lg font-semibold">
+      <span
+        class="rounded-lg px-4 py-2 text-xl font-semibold"
+        :class="{
+          'bg-secondary-100': currentFaq.category === '상속',
+          'bg-primary-100': currentFaq.category === '증여',
+        }"
+      >
         {{ currentFaq.category === '증여' ? '증여' : '상속' }}
       </span>
     </div>
 
     <!-- 질문 -->
-    <h3 class="text-primary-500 mb-6 text-lg font-semibold">
+    <h3 class="text-primary-500 mb-8 text-lg font-semibold">
       {{ currentFaq.title }}
     </h3>
 
     <!-- 답변 -->
     <div
-      class="text-surface-600 mb-16 space-y-4 text-sm leading-relaxed"
+      class="text-surface-600 faq-content mb-16 space-y-4 text-base leading-relaxed"
       v-html="currentFaq.content"
     />
 
     <!-- 관련 질문 -->
-    <div class="mb-16">
-      <h4 class="mb-3 text-lg font-semibold">관련 질문</h4>
+    <div>
+      <h4 class="mb-4 text-lg font-semibold">관련 질문</h4>
       <div class="space-y-2">
         <div
           v-for="related in relatedFaqs"
           :key="related.faqId"
           @click="goToFaqDetail(related.faqId)"
-          class="border-surface-200 bg-surface-50 cursor-pointer rounded-xl border px-4 py-4"
+          class="btn-pressed border-surface-200 rounded-lg border bg-white px-4 py-4"
         >
-          <p class="text-surface-500 text-sm">{{ related.title }}</p>
+          <p>{{ related.title }}</p>
         </div>
       </div>
     </div>
   </div>
 
   <!-- 하단 설명과 버튼 -->
-  <div>
-    <p class="text-primary-300 mb-2 text-center font-semibold">
+  <div class="mt-16">
+    <p class="text-primary-500 mb-2 text-center font-semibold">
       나는 세금 얼마나 나올까?
     </p>
     <Btn
@@ -119,3 +126,54 @@ const goToFaqDetail = (id: number) =>
   router.push({ name: 'gift-detail', params: { id } });
 const goToStart = () => router.push({ name: 'gift-start' });
 </script>
+
+<style scoped>
+/* 공통 폰트/간격 */
+.faq-content {
+  --tw-leading: var(--leading-relaxed) /* 1.625 */;
+  line-height: var(--leading-relaxed);
+  font-size: 1rem;
+}
+
+/* 문단 스타일 */
+.faq-content :deep(p) {
+  text-indent: 0.5em; /* 첫 문단 들여쓰기 */
+}
+
+/* 굵은 글씨 강조 */
+.faq-content :deep(strong) {
+  font-weight: semibold;
+}
+
+/* 리스트 스타일 */
+.faq-content :deep(ul) {
+  list-style-type: disc;
+  padding-left: 1rem;
+}
+.faq-content :deep(ol) {
+  list-style-type: decimal;
+  padding-left: 1rem;
+}
+
+.faq-content :deep(li) {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* 표 스타일 */
+.faq-content :deep(table) {
+  font-size: 1rem;
+  border-collapse: collapse;
+  width: 100%;
+}
+.faq-content :deep(th),
+.faq-content :deep(td) {
+  border: 1px solid #dedede;
+  padding: 0.5rem;
+  text-align: center;
+}
+.faq-content :deep(th) {
+  background-color: #17314c;
+  color: white;
+}
+</style>

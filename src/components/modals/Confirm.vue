@@ -14,10 +14,7 @@
         aria-modal="true"
       >
         <!-- 제목 -->
-        <div
-          v-if="title"
-          class="text-primary-300 text-center text-2xl font-bold"
-        >
+        <div v-if="title" class="text-primary-300 text-left text-xl font-bold">
           {{ title }}
         </div>
 

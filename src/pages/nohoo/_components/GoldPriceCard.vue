@@ -1,11 +1,9 @@
 <template>
-  <div
-    class="border-primary-300 flex flex-col gap-2 rounded-xl border pt-4 pr-4"
-  >
+  <div class="card-design flex flex-col gap-2 p-0 pt-4 pr-4">
     <div class="ml-4 flex items-center justify-between font-semibold">
       <span class="text-lg">
         {{ Math.round(currentPrice).toLocaleString() }}
-        <span class="font-regular text-surface-300 text-sm"> (원/돈)</span>
+        <span class="font-regular text-surface-300 text-base"> (원/돈)</span>
       </span>
       <span :class="priceDiff > 0 ? 'text-red-300' : 'text-blue-300'">
         {{ priceDiff > 0 ? '▲' : '▼' }}
@@ -173,7 +171,7 @@ const chartOptions = computed(() => ({
         day: 'MM/dd',
       },
       style: {
-        fontSize: '11px',
+        fontSize: '10px',
       },
     },
     tooltip: {

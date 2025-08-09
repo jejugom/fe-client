@@ -2,13 +2,14 @@
   <div class="space-y-16">
     <div class="space-y-4">
       <div class="flex items-end justify-between">
-        <div class="text-primary-300 text-2xl font-bold"
+        <div class="text-primary-500 text-2xl font-bold"
           >오늘의 금융시장은?</div
         >
         <TextBtn
           @click="toggleShowMore"
           color="primary"
           size="medium"
+          class="text-surface-300"
           :label="showMore ? '접기' : '더보기'"
       /></div>
 
@@ -27,7 +28,7 @@
       <div class="flex justify-center"> </div>
     </div>
     <div class="space-y-4">
-      <div class="text-primary-300 text-2xl font-bold">매일매일 NHDR PLAY</div>
+      <div class="text-primary-500 text-2xl font-bold">매일매일 NHDR PLAY</div>
       <IconCard
         class="max-h-20"
         color="primary"
@@ -43,14 +44,15 @@
       </IconCard>
     </div>
     <div class="space-y-4">
-      <div class="text-primary-300 text-2xl font-bold">챌린지 현황</div>
-      <ChallengeState />
-      <Btn
-        color="primary"
-        label="보상 선택하기"
-        size="large"
-        @click="router.push({ name: 'event-reward' })"
-      />
+      <div class="text-primary-500 text-2xl font-bold">챌린지 현황</div>
+      <ChallengeState>
+        <Btn
+          color="primary"
+          label="보상 선택하기"
+          size="large"
+          @click="router.push({ name: 'event-reward' })"
+        />
+      </ChallengeState>
     </div>
   </div>
 </template>

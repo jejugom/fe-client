@@ -3,8 +3,8 @@
     <!-- 시간 선택 -->
     <div class="mt-4">
       <h3 class="text-primary-300 mb-2 text-base font-semibold">시간 선택</h3>
-      
-      <div class="grid grid-cols-4 gap-2 text-sm">
+
+      <div class="grid grid-cols-4 gap-2 text-base">
         <Btn
           v-for="time in businessHours"
           :key="time"
@@ -60,7 +60,7 @@ const businessHours = [
 // 예약 수정 시 현재 시간 이후만 선택 가능한 시간 계산 (주석처리)
 // const availableTimes = computed(() => {
 //   const now = new Date();
-//   
+//
 //   return businessHours.map((time) => {
 //     const [hour, minute] = time.split(':').map(Number);
 //     const timeDate = new Date();
@@ -68,10 +68,10 @@ const businessHours = [
 
 //     // 현재 시간 이후만 선택 가능
 //     const isPast = timeDate <= now;
-//     
-//     return { 
-//       time, 
-//       isDisabled: isPast 
+//
+//     return {
+//       time,
+//       isDisabled: isPast
 //     };
 //   });
 // });

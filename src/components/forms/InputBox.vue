@@ -2,7 +2,7 @@
   <input
     :type="type"
     :class="[
-      'border-surface-300 input-focus focus:ring-gold focus:border-gold rounded-lg border px-3 text-base focus:ring-1 focus:outline-none',
+      'border-surface-300 input-focus focus:ring-gold focus:border-gold rounded-lg border bg-white px-3 text-base focus:ring-1 focus:outline-none',
       size === 'large' && 'h-13 w-full',
       size === 'medium' && 'h-13 w-68',
       size === 'small' && 'h-10 w-25',

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="mb-2 flex items-end justify-between">
-      <span class="text-primary-300 text-lg font-semibold">{{ title }}</span>
+      <span class="text-primary-500 text-lg font-semibold">{{ title }}</span>
       <span v-if="explain" class="text-surface-300">{{ explain }}</span>
     </div>
     <InputBox
