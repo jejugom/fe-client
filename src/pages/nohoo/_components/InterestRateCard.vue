@@ -7,7 +7,7 @@
       <span class="text-lg">{{ currentRate.toFixed(2) }} % </span>
       <span
         :class="rateDiff > 0 ? 'text-red-300' : 'text-blue-300'"
-        class="text-sm"
+        class="text-base"
       >
         {{ rateDiff > 0 ? '▲' : '▼' }} {{ Math.abs(rateDiff).toFixed(2) }}%
       </span>

@@ -8,7 +8,7 @@
       <h3 class="text-primary-500 mb-2 text-xl font-bold">
         {{ index + 1 }}. {{ item.title }}
       </h3>
-      <p class="text-surface-500 text-sm" v-html="item.desc"></p>
+      <p class="text-surface-500 text-base" v-html="item.desc"></p>
     </div>
   </div>
 </template>

@@ -9,7 +9,7 @@
     <p class="mb-6 text-lg font-semibold"
       ><span class="text-primary-300">자산 연동</span>을 진행하겠습니다.</p
     >
-    <div class="text-sm">
+    <div class="text-base">
       <p>
         <span class="text-gold font-semibold">국민은행</span>에 있는 내 자산을
         불러오기 위해<br />
@@ -34,12 +34,12 @@
 
   <div class="flex gap-2 text-lg font-semibold">
     <Btn color="surface" label="건너뛰기" size="large" @click="handleSkip" />
-    <Btn 
-      :color="isFormFilled ? 'primary' : 'disabled'" 
-      label="연동하기" 
-      size="large" 
+    <Btn
+      :color="isFormFilled ? 'primary' : 'disabled'"
+      label="연동하기"
+      size="large"
       :disabled="!isFormFilled"
-      @click="handleAssetSync" 
+      @click="handleAssetSync"
     />
   </div>
 </template>

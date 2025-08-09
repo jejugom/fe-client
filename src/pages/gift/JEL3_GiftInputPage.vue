@@ -12,7 +12,7 @@
     <h2 class="text-primary-300 mb-2 text-2xl font-bold">
       {{ pageConfig.recipientTitle }}
     </h2>
-    <p class="mb-4 text-sm whitespace-pre-line">
+    <p class="mb-4 text-base whitespace-pre-line">
       {{ pageConfig.recipientDescription }}
     </p>
 
@@ -335,10 +335,12 @@ const goToQuiz = () => {
       beneficiaries: [],
     });
   } else {
-    (inheritanceStore as ReturnType<typeof useInheritanceStore>).setInitialData({
-      allAssets: new Map(),
-      beneficiaries: [],
-    });
+    (inheritanceStore as ReturnType<typeof useInheritanceStore>).setInitialData(
+      {
+        allAssets: new Map(),
+        beneficiaries: [],
+      }
+    );
   }
   router.push({ name: pageConfig.value.quizRouteName });
 };

@@ -4,14 +4,14 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div>
         <h1 class="text-primary-600 text-2xl font-bold">보상 선택하기</h1>
-        <p class="text-surface-500 mt-1 text-sm"
+        <p class="text-surface-500 mt-1 text-base"
           >모은 포인트로 원하는 보상을 교환하세요.</p
         >
       </div>
 
       <!-- 내 포인트 -->
       <div
-        class="border-surface-200 rounded-xl border bg-white px-4 py-2 text-sm"
+        class="border-surface-200 rounded-xl border bg-white px-4 py-2 text-base"
       >
         보유 포인트:
         <b class="text-primary-600 tabular-nums">{{ points }}</b
@@ -35,10 +35,10 @@
       class="border-surface-200 mb-6 grid grid-cols-1 gap-3 rounded-2xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-4"
     >
       <div class="flex items-center gap-2">
-        <label class="text-surface-600 text-sm">카테고리</label>
+        <label class="text-surface-600 text-base">카테고리</label>
         <select
           v-model="filter.category"
-          class="border-surface-300 w-full rounded-lg border bg-white px-3 py-2 text-sm"
+          class="border-surface-300 w-full rounded-lg border bg-white px-3 py-2 text-base"
         >
           <option value="ALL">전체</option>
           <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
@@ -46,10 +46,10 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <label class="text-surface-600 text-sm">정렬</label>
+        <label class="text-surface-600 text-base">정렬</label>
         <select
           v-model="sort"
-          class="border-surface-300 w-full rounded-lg border bg-white px-3 py-2 text-sm"
+          class="border-surface-300 w-full rounded-lg border bg-white px-3 py-2 text-base"
         >
           <option value="popular">인기순</option>
           <option value="low">낮은 포인트순</option>
@@ -63,7 +63,7 @@
           v-model.trim="filter.keyword"
           type="text"
           placeholder="보상명 검색 (예: 커피, 기프티콘)"
-          class="border-surface-300 w-full rounded-lg border bg-white px-3 py-2 text-sm"
+          class="border-surface-300 w-full rounded-lg border bg-white px-3 py-2 text-base"
         />
       </div>
     </div>
@@ -97,12 +97,12 @@
             >
           </div>
 
-          <p class="text-surface-600 line-clamp-2 min-h-[2.5rem] text-sm">
+          <p class="text-surface-600 line-clamp-2 min-h-[2.5rem] text-base">
             {{ r.desc }}
           </p>
 
           <div class="mt-auto flex items-center justify-between">
-            <div class="text-sm">
+            <div class="text-base">
               <span class="font-semibold tabular-nums">{{ r.point }}</span
               >P
               <span
@@ -113,7 +113,7 @@
             </div>
 
             <button
-              class="rounded-lg px-3 py-2 text-sm text-white transition-colors"
+              class="rounded-lg px-3 py-2 text-base text-white transition-colors"
               :class="
                 canRedeem(r)
                   ? 'bg-primary-500 hover:bg-primary-600'
@@ -135,7 +135,7 @@
         <h2 class="text-lg font-semibold">내 교환 내역</h2>
       </div>
 
-      <div v-if="history.length === 0" class="text-surface-600 p-4 text-sm">
+      <div v-if="history.length === 0" class="text-surface-600 p-4 text-base">
         아직 교환한 보상이 없어요.
       </div>
 
@@ -178,7 +178,7 @@
             >을(를) <b class="tabular-nums">{{ confirmTarget.point }}</b
             >P로 교환할까요?
           </p>
-          <p class="text-surface-500 mt-2 text-sm">
+          <p class="text-surface-500 mt-2 text-base">
             교환 후 잔여 포인트:
             <b class="tabular-nums">{{ points - confirmTarget.point }}</b
             >P
@@ -186,13 +186,13 @@
         </div>
         <div class="border-surface-200 flex justify-end gap-2 border-t p-3">
           <button
-            class="border-surface-300 hover:bg-surface-50 rounded-lg border bg-white px-4 py-2 text-sm"
+            class="border-surface-300 hover:bg-surface-50 rounded-lg border bg-white px-4 py-2 text-base"
             @click="confirmTarget = null"
           >
             취소
           </button>
           <button
-            class="bg-primary-500 hover:bg-primary-600 rounded-lg px-4 py-2 text-sm text-white"
+            class="bg-primary-500 hover:bg-primary-600 rounded-lg px-4 py-2 text-base text-white"
             @click="redeem"
           >
             교환하기

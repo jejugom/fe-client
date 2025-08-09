@@ -18,7 +18,7 @@
 
       <div
         v-if="availableTimes.length > 0"
-        class="grid grid-cols-4 gap-2 text-sm"
+        class="grid grid-cols-4 gap-2 text-base"
       >
         <Btn
           v-for="{ time, isReserved } in availableTimes"

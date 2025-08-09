@@ -4,16 +4,16 @@
     <div class="mb-6 flex items-end justify-between gap-4">
       <div>
         <h1 class="text-primary-600 text-2xl font-bold">숫자 빨리 누르기</h1>
-        <p class="text-surface-500 mt-1 text-sm"
+        <p class="text-surface-500 mt-1 text-base"
           >1부터 순서대로 눌러서 기록을 갱신해보세요!</p
         >
       </div>
 
       <!-- 난이도 -->
       <div class="flex items-center gap-2">
-        <label class="text-surface-500 text-sm">난이도</label>
+        <label class="text-surface-500 text-base">난이도</label>
         <select
-          class="border-surface-200 focus:ring-primary-300 rounded-lg border bg-white px-3 py-2 text-sm outline-none focus:ring-2"
+          class="border-surface-200 focus:ring-primary-300 rounded-lg border bg-white px-3 py-2 text-base outline-none focus:ring-2"
           v-model.number="gridSize"
           :disabled="started"
           aria-label="난이도 선택"
@@ -71,7 +71,7 @@
       </button>
 
       <span
-        class="ml-auto text-sm"
+        class="ml-auto text-base"
         :class="
           finished
             ? 'text-emerald-600'

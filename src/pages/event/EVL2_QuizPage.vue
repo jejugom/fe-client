@@ -4,7 +4,7 @@
     <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
       <div>
         <h1 class="text-primary-600 text-2xl font-bold">금융지식 퀴즈</h1>
-        <p class="text-surface-500 mt-1 text-sm">
+        <p class="text-surface-500 mt-1 text-base">
           객관식 문제를 풀고 금융 상식을 레벨업하세요!
         </p>
       </div>
@@ -12,7 +12,7 @@
       <!-- 옵션 -->
       <div class="flex items-center gap-3">
         <select
-          class="border-surface-300 focus:ring-primary-300 rounded-lg border bg-white px-3 py-2 text-sm focus:ring-2"
+          class="border-surface-300 focus:ring-primary-300 rounded-lg border bg-white px-3 py-2 text-base focus:ring-2"
           v-model="selectedCategory"
           :disabled="started"
           aria-label="카테고리 선택"
@@ -22,7 +22,7 @@
         </select>
 
         <select
-          class="border-surface-300 focus:ring-primary-300 rounded-lg border bg-white px-3 py-2 text-sm focus:ring-2"
+          class="border-surface-300 focus:ring-primary-300 rounded-lg border bg-white px-3 py-2 text-base focus:ring-2"
           v-model="selectedDifficulty"
           :disabled="started"
           aria-label="난이도 선택"
@@ -80,7 +80,7 @@
         초기화
       </button>
 
-      <label class="ml-auto flex items-center gap-2 text-sm select-none">
+      <label class="ml-auto flex items-center gap-2 text-base select-none">
         <input
           type="checkbox"
           class="size-4"
@@ -97,7 +97,7 @@
       class="border-surface-200 rounded-2xl border bg-white p-6 shadow-sm"
     >
       <div class="mb-4 flex items-center justify-between gap-3">
-        <div class="text-sm">
+        <div class="text-base">
           <span
             class="bg-surface-100 text-surface-700 rounded-md px-2 py-1 font-medium"
             >{{ currentQuestion.category }}</span
@@ -118,7 +118,7 @@
               :style="{ width: timeLeftPct + '%' }"
             />
           </div>
-          <span class="text-surface-600 text-sm tabular-nums"
+          <span class="text-surface-600 text-base tabular-nums"
             >{{ timeLeft }}s</span
           >
         </div>
@@ -143,7 +143,7 @@
       </div>
 
       <!-- feedback -->
-      <div class="mt-4 min-h-6 text-sm">
+      <div class="mt-4 min-h-6 text-base">
         <p
           v-if="answered"
           :class="isCorrect ? 'text-emerald-600' : 'text-rose-600'"
@@ -191,7 +191,7 @@
         >
       </p>
 
-      <div class="mx-auto mt-5 grid max-w-md grid-cols-2 gap-3 text-sm">
+      <div class="mx-auto mt-5 grid max-w-md grid-cols-2 gap-3 text-base">
         <div class="bg-surface-50 rounded-lg border p-3">
           정답: <b class="text-emerald-600">{{ correctCount }}</b>
         </div>

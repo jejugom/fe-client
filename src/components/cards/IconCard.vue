@@ -22,7 +22,7 @@
     </div>
 
     <!-- 텍스트 -->
-    <div class="text-primary-300 flex flex-col gap-1">
+    <div class="text-primary-500 flex flex-col gap-1 text-sm">
       <div>{{ content1 }}</div>
       <div class="text-primary-500 text-2xl font-bold">{{ title }}</div>
       <div>{{ content2 }}</div>

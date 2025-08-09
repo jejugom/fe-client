@@ -8,7 +8,7 @@
       @click="showTimeModal = true"
     />
 
-    <div class="text-surface-500 space-y-1 text-sm">
+    <div class="text-surface-500 space-y-1 text-base">
       <div>
         <span class="font-semibold">방문 날짜 :</span> {{ formattedDate }}
       </div>

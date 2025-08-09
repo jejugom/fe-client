@@ -18,7 +18,7 @@
 
     <!-- 답변 -->
     <div
-      class="text-surface-600 mb-16 space-y-4 text-sm leading-relaxed"
+      class="text-surface-600 mb-16 space-y-4 text-base leading-relaxed"
       v-html="currentFaq.content"
     />
 
@@ -32,7 +32,7 @@
           @click="goToFaqDetail(related.faqId)"
           class="border-surface-200 bg-surface-50 cursor-pointer rounded-xl border px-4 py-4"
         >
-          <p class="text-surface-500 text-sm">{{ related.title }}</p>
+          <p class="text-surface-500 text-base">{{ related.title }}</p>
         </div>
       </div>
     </div>

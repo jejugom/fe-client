@@ -6,13 +6,13 @@
         <h1 class="text-primary-600 text-2xl font-bold"
           >근처 공원 방문 챌린지</h1
         >
-        <p class="text-surface-500 mt-1 text-sm">
+        <p class="text-surface-500 mt-1 text-base">
           가까운 공원을 찾아가서 <b>100m 이내</b>에서 체크인하세요!
         </p>
       </div>
 
       <div
-        class="border-surface-200 rounded-xl border bg-white px-4 py-2 text-sm"
+        class="border-surface-200 rounded-xl border bg-white px-4 py-2 text-base"
       >
         목표: <b>{{ goalCount }}</b> 곳
         <span class="text-surface-400 mx-2">|</span>
@@ -51,7 +51,7 @@
       <div class="flex flex-col gap-3">
         <div class="border-surface-200 rounded-xl border bg-white p-4">
           <div class="mb-2 flex items-center justify-between">
-            <div class="text-surface-600 text-sm">
+            <div class="text-surface-600 text-base">
               내 위치:
               <span class="tabular-nums">
                 {{
@@ -63,13 +63,13 @@
             </div>
             <div class="flex items-center gap-2">
               <button
-                class="border-surface-300 hover:bg-surface-50 rounded-lg border bg-white px-3 py-1.5 text-sm active:translate-y-[1px]"
+                class="border-surface-300 hover:bg-surface-50 rounded-lg border bg-white px-3 py-1.5 text-base active:translate-y-[1px]"
                 @click="locate"
               >
                 내 위치 새로고침
               </button>
               <button
-                class="border-surface-300 hover:bg-surface-50 rounded-lg border bg-white px-3 py-1.5 text-sm active:translate-y-[1px]"
+                class="border-surface-300 hover:bg-surface-50 rounded-lg border bg-white px-3 py-1.5 text-base active:translate-y-[1px]"
                 @click="searchParks"
                 :disabled="!myPos"
               >
@@ -95,7 +95,7 @@
 
     <!-- 공원 리스트 -->
     <div class="border-surface-200 rounded-2xl border bg-white">
-      <div class="border-surface-200 text-surface-600 border-b p-4 text-sm">
+      <div class="border-surface-200 text-surface-600 border-b p-4 text-base">
         반경 {{ (searchRadius / 1000).toFixed(1) }}km 내 검색 결과
         <span class="text-surface-300 mx-2">|</span>
         총 <b>{{ parks.length }}</b> 곳
@@ -121,7 +121,7 @@
                 {{ p.checked ? '완료' : '미방문' }}
               </span>
             </div>
-            <div class="text-surface-600 mt-1 text-sm">
+            <div class="text-surface-600 mt-1 text-base">
               거리:
               <span class="font-medium tabular-nums">{{
                 formatDistance(p.distance)
@@ -131,13 +131,13 @@
 
           <div class="flex items-center gap-2">
             <button
-              class="border-surface-300 hover:bg-surface-50 rounded-lg border bg-white px-3 py-2 text-sm"
+              class="border-surface-300 hover:bg-surface-50 rounded-lg border bg-white px-3 py-2 text-base"
               @click="panTo(p)"
             >
               지도에서 보기
             </button>
             <button
-              class="rounded-lg px-3 py-2 text-sm text-white"
+              class="rounded-lg px-3 py-2 text-base text-white"
               :class="
                 canCheckIn(p)
                   ? 'bg-primary-500 hover:bg-primary-600'

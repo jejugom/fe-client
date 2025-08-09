@@ -20,7 +20,7 @@
         </div>
         <div class="flex-1">
           <h3 class="text-surface-500 font-semibold">{{ service.title }}</h3>
-          <p class="text-surface-400 text-sm">{{ service.description }}</p>
+          <p class="text-surface-400 text-base">{{ service.description }}</p>
         </div>
       </div>
     </div>
