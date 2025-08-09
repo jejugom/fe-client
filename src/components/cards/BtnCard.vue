@@ -11,38 +11,36 @@
     @click="onClick"
   >
     <!-- 글자부분 -->
-    <div class="flex w-8/10 flex-col">
+    <div class="grid w-8/10 grid-rows-[30%_50%_20%]">
       <!-- 제목 -->
       <div
-        :class="[
-          'truncate overflow-hidden text-lg font-semibold',
-          color === 'primary' && 'text-primary-500',
-          color === 'secondary' && 'text-secondary-500',
-          color === 'surface' && 'text-surface-500',
-        ]"
-        >{{ title }}</div
+        class="row-[1] flex items-center truncate text-lg font-semibold"
+        :class="{
+          'text-primary-500': color === 'primary',
+          'text-secondary-500': color === 'secondary',
+          'text-surface-500': color === 'surface',
+        }"
       >
+        {{ title }}
+      </div>
 
       <!-- 내용 -->
-      <ul
-        class="text-surface-500 mt-2 mb-1 list-disc overflow-hidden pl-5 text-base"
-        v-if="contentList.length"
-      >
+      <ul v-if="contentList.length" class="row-[2] list-disc space-y-1">
         <li
-          v-for="(item, index) in contentList"
-          :key="index"
-          class="leading-snug"
+          v-for="(item, idx) in contentList"
+          :key="idx"
+          class="line-clamp-2 leading-snug"
         >
           {{ item }}
         </li>
       </ul>
 
       <!-- 태그 -->
-      <div class="flex flex-wrap gap-1 pt-1">
+      <div class="row-[3] flex gap-1">
         <span
           v-for="tag in parsedTags"
           :key="tag"
-          class="text-surface-300 text-base"
+          class="text-gold font-semibold"
         >
           {{ tag }}
         </span>

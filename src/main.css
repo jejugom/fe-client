@@ -87,14 +87,14 @@
 
   .stroke-primary {
     box-shadow:
-      0.5px 0.5px 2px 0px oklch(0.2959 0.0476 259.03 / 0.25),
-      -0.5px -0.5px 2px 0px oklch(0.2959 0.0476 259.03 / 0.25);
+      0.5px 0.5px 2px 0px #3674b53f,
+      -0.5px -0.5px 2px 0px #3674b53f;
   }
 
   .stroke-secondary {
     box-shadow:
-      0.5px 0.5px 2px 0px oklch(0.4453 0.09126 84.9532 / 25%),
-      -0.5px -0.5px 2px 0px oklch(0.4453 0.09126 84.9532 / 25%);
+      0.5px 0.5px 2px 0px #d1a8433f,
+      -0.5px -0.5px 2px 0px #d1a8433f;
   }
 
   .stroke-surface {

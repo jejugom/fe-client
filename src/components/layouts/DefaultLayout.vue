@@ -1,10 +1,12 @@
 <template>
-  <div class="bg-surface-100 relative flex min-h-screen flex-col items-center">
+  <div
+    class="bg-secondary-100 relative flex min-h-screen flex-col items-center"
+  >
     <!-- 상단 고정 헤더 -->
     <Header class="sticky top-0 z-50 w-full max-w-[600px]" />
 
     <!-- 본문 영역 -->
-    <main class="bg-surface-100 w-full max-w-[600px] flex-1 p-5">
+    <main class="w-full max-w-[600px] flex-1 bg-[#fcfcfc] p-5">
       <router-view />
       <LoadingPage v-if="loadingStore.isLoading" />
       <FailPage v-else-if="loadingStore.hasError" />

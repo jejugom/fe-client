@@ -11,17 +11,17 @@
 
     <div class="stroke-primary rounded-lg bg-white p-4">
       <div class="flex flex-col gap-6">
+        <!-- 상품 기본 정보 -->
+
+        <div class="text-lg font-semibold" v-if="detail?.finPrdtNm">
+          <p class="text-primary-500 mb-1 font-semibold">상품명</p>
+          <p>{{ detail?.finPrdtNm }}</p>
+        </div>
+
         <!-- 성향 점수 -->
         <div v-if="detail?.tendency !== undefined" class="text-base">
           <p class="text-primary-500 mb-1 font-semibold">성향 점수</p>
           <p>{{ detail.tendency }}</p>
-        </div>
-
-        <!-- 상품 기본 정보 -->
-
-        <div class="text-base" v-if="detail?.finPrdtNm">
-          <p class="text-primary-500 mb-1 font-semibold">상품명</p>
-          <p>{{ detail?.finPrdtNm }}</p>
         </div>
 
         <div v-if="detail?.description">
@@ -192,7 +192,7 @@
     </div>
 
     <!-- 가입 예약 버튼 -->
-    <div class="stroke-primary rounded-lg bg-white p-4">
+    <div class="">
       <p class="text-primary-500 mb-2 text-center font-semibold">
         은행에서 상담받고 가입하실 수 있어요
       </p>

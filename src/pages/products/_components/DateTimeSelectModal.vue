@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 날짜 선택 -->
-    <h3 class="text-primary-300 mb-2 text-base font-semibold"> 날짜 선택 </h3>
+    <h3 class="text-primary-500 mb-2 font-semibold"> 날짜 선택 </h3>
     <div class="flex w-full justify-center">
       <VCalendar
         is-expanded
@@ -14,12 +14,9 @@
 
     <!-- 시간 선택 -->
     <div v-if="selectedDate" class="mt-8">
-      <h3 class="text-primary-300 mb-2 text-base font-semibold"> 시간 선택 </h3>
+      <h3 class="text-primary-500 mb-2 font-semibold"> 시간 선택 </h3>
 
-      <div
-        v-if="availableTimes.length > 0"
-        class="grid grid-cols-4 gap-2 text-base"
-      >
+      <div v-if="availableTimes.length > 0" class="grid grid-cols-4 gap-2">
         <Btn
           v-for="{ time, isReserved } in availableTimes"
           :key="time"

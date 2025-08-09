@@ -1,10 +1,12 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-16">
     <!-- 상단 대표 정보 -->
     <DetailImg v-if="detailItems.length" :items="detailItems" />
 
     <!-- 입력폼 -->
-    <div class="flex flex-col gap-4">
+    <div
+      class="stroke-primary relative left-1/2 flex w-screen max-w-150 -translate-x-1/2 flex-col gap-4 bg-white px-4 py-8"
+    >
       <ReserveInputBox
         title="상품명"
         type="text"
@@ -32,7 +34,7 @@
 
     <!-- 예약 완료 버튼 -->
     <div>
-      <p class="text-primary-300 mb-2 text-center font-semibold">
+      <p class="text-primary-500 mb-2 text-center font-semibold">
         위 내용을 모두 확인하셨다면 지금 바로 버튼을 눌러주세요!
       </p>
       <Btn

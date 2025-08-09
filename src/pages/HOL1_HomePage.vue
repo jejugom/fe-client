@@ -10,13 +10,13 @@
     <!-- 비로그인 사용자를 대상 로그인 유도 -->
     <div
       v-if="!authStore.isLogin"
-      class="border-primary-300 mb-8 rounded-lg border bg-white p-4"
+      class="stroke-primary rounded-lg bg-white p-4"
     >
       <div class="space-y-4">
-        <div class="text-primary-300 text-xl font-semibold">
+        <div class="text-primary-300 text-xl font-bold">
           노후도락에 오신 것을 환영합니다!
         </div>
-        <p class="text-surface-500 text-base">
+        <p class="text-surface-500">
           카카오로 로그인해서 맞춤형 금융 서비스를 시작해보세요
         </p>
         <!-- 카카오 로그인 버튼 - auth store를 통해 OAuth2.0 플로우 시작 -->
@@ -46,7 +46,7 @@
     <!-- 로그인된 사용자를 위한 개인화된 인사 및 자산 정보 -->
     <div
       v-if="authStore.isLogin && homeData"
-      class="stroke-primary q relative mb-2 rounded-lg bg-white p-4"
+      class="stroke-primary relative rounded-lg bg-white p-4"
       @click="goToEditAsset"
     >
       <!-- 우측 상단 고정 아이콘 -->
@@ -69,7 +69,7 @@
 
     <!-- 맞춤형 서비스 카드 -->
     <section class="">
-      <h2 class="text-primary-500 mb-4 text-2xl font-bold"
+      <h2 class="text-primary-300 mb-4 text-2xl font-bold"
         >지금 필요한 것만, 딱 맞게 준비해요</h2
       >
       <div class="space-y-4">
@@ -79,7 +79,7 @@
           :title="card.title"
           :content1="card.content1"
           :content2="card.content2"
-          color="primary"
+          color="secondary"
           class=""
           @click="handlers[card.onClick]"
         >
@@ -91,7 +91,7 @@
     </section>
 
     <div>
-      <h2 class="text-primary-500 mb-4 text-2xl font-bold"
+      <h2 class="text-primary-300 mb-4 text-2xl font-bold"
         >가장 가까운 골든라이프</h2
       >
       <div class="h-30 w-full bg-white"></div>

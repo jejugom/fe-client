@@ -21,14 +21,17 @@
 
     <div
       v-if="errorMessage"
-      class="bg-secondary-100 my-2 w-full p-2 text-base text-red-500"
+      class="stroke-secondary bg-secondary-100 my-2 w-full rounded-lg p-4 text-red-300"
     >
       {{ errorMessage }}
     </div>
 
-    <div v-if="selectedBranch" class="bg-secondary-100 my-2 w-full p-2">
+    <div
+      v-if="selectedBranch"
+      class="stroke-secondary bg-secondary-100 my-2 w-full rounded-lg p-4"
+    >
       선택한 지점:
-      <span class="text-secondary-500 font-semibold">
+      <span class="font-semibold">
         {{ selectedBranch }}
       </span>
     </div>
