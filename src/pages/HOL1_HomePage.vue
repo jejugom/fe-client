@@ -6,7 +6,7 @@
   - 로그인: 개인화된 인사말, 자산 정보, 맞춤형 서비스 제공
 -->
 <template>
-  <div>
+  <div class="flex flex-col gap-16">
     <!-- 비로그인 사용자를 대상 로그인 유도 -->
     <div
       v-if="!authStore.isLogin"
@@ -46,8 +46,15 @@
     <!-- 로그인된 사용자를 위한 개인화된 인사 및 자산 정보 -->
     <div
       v-if="authStore.isLogin && homeData"
-      class="border-primary-300 mb-2 rounded-xl border bg-white p-4"
+      class="stroke-primary q relative mb-2 rounded-xl bg-white p-4"
+      @click="goToEditAsset"
     >
+      <!-- 우측 상단 고정 아이콘 -->
+      <img
+        :src="ArrowIcon"
+        class="absolute top-4 right-4 h-6 w-6"
+        alt="arrow icon"
+      />
       <div class="text-primary-300 mb-4 text-lg font-semibold">
         {{ homeData.userSummary.name }}님
         <span class="text-surface-500">안녕하세요!</span>
@@ -60,19 +67,9 @@
       </div>
     </div>
 
-    <!-- 자산 관리 버튼 - 로그인된 사용자에게만 표시 -->
-    <Btn
-      v-if="authStore.isLogin"
-      class="mb-8"
-      color="secondary"
-      label="자산 추가 등록·수정"
-      size="large"
-      @click="goToEditAsset"
-    />
-
     <!-- 맞춤형 서비스 카드 -->
-    <section class="mb-16">
-      <h2 class="text-primary-300 mb-4 text-2xl font-bold"
+    <section class="">
+      <h2 class="text-primary-500 mb-4 text-2xl font-bold"
         >지금 필요한 것만, 딱 맞게 준비해요</h2
       >
       <div class="space-y-4">
@@ -82,8 +79,8 @@
           :title="card.title"
           :content1="card.content1"
           :content2="card.content2"
-          color="secondary"
-          class="border-secondary-300 border shadow-none"
+          color="primary"
+          class=""
           @click="handlers[card.onClick]"
         >
           <template #icon>
@@ -93,22 +90,18 @@
       </div>
     </section>
 
-    <!-- 금융상품 캐러셀 -->
-    <section class="mb-16">
-      <h2 class="text-primary-300 mb-4 text-2xl font-bold">
-        내가 쓸 돈, 미리 챙겨두는 3가지 방법
-      </h2>
-      <Top3Products :items="slides" />
-    </section>
-
-    <!-- 광고 배너 -->
-    <Banner class="mb-16" />
+    <div>
+      <h2 class="text-primary-500 mb-4 text-2xl font-bold"
+        >가장 가까운 골든라이프</h2
+      >
+      <div class="h-30 w-full bg-white"></div>
+    </div>
 
     <!-- 하단 서비스 특징 -->
-    <section class="border-secondary-300 rounded-xl border p-4 text-center">
+    <section class="stroke-primary rounded-xl bg-white p-4 text-center">
       <div class="mb-4 p-4">
-        <p class="text-primary-300 mb-4 text-2xl font-semibold"
-          >노후도락과 함께 챙겨드립니다</p
+        <p class="text-primary-300 mb-4 text-2xl font-bold"
+          >노후도락이 함께 챙겨드립니다</p
         >
         <p class="text-surface-400 text-base">
           자산은 얼마나 있는지, 어떤 상품이 나에게 좋은지<br />
@@ -156,6 +149,7 @@ import Home5 from '@/assets/images/Home5.svg';
 import Home6 from '@/assets/images/Home6.svg';
 import KakaoLoginBtn from '@/assets/images/kakao_login_medium_wide.png';
 import Banner from '@/components/cards/Banner.vue';
+import ArrowIcon from '@/assets/icons/Arrow45.svg';
 
 /** Vue Router 인스턴스 - 페이지 네비게이션용 */
 const router = useRouter();
