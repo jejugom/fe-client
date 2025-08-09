@@ -11,7 +11,7 @@
 
       <!-- 내 포인트 -->
       <div
-        class="border-surface-200 rounded-xl border bg-white px-4 py-2 text-base"
+        class="border-surface-200 rounded-lg border bg-white px-4 py-2 text-base"
       >
         보유 포인트:
         <b class="text-primary-600 tabular-nums">{{ points }}</b
@@ -32,7 +32,7 @@
 
     <!-- 필터/검색 -->
     <div
-      class="border-surface-200 mb-6 grid grid-cols-1 gap-3 rounded-2xl border bg-white p-4 sm:grid-cols-2 lg:grid-cols-4"
+      class="border-surface-200 mb-6 grid grid-cols-1 gap-3 rounded-lg border bg-white p-4 sm:grid-cols-2 lg:grid-cols-4"
     >
       <div class="flex items-center gap-2">
         <label class="text-surface-600 text-base">카테고리</label>
@@ -75,7 +75,7 @@
       <div
         v-for="r in filteredRewards"
         :key="r.id"
-        class="group border-surface-200 relative flex flex-col overflow-hidden rounded-2xl border bg-white"
+        class="group border-surface-200 relative flex flex-col overflow-hidden rounded-lg border bg-white"
       >
         <div class="bg-surface-100 h-36 w-full">
           <img
@@ -92,7 +92,7 @@
               {{ r.name }}
             </h3>
             <span
-              class="bg-surface-100 text-surface-600 shrink-0 rounded-md px-2 py-0.5 text-xs"
+              class="bg-surface-100 text-surface-600 shrink-0 rounded-lg px-2 py-0.5 text-xs"
               >{{ r.category }}</span
             >
           </div>
@@ -107,7 +107,7 @@
               >P
               <span
                 v-if="r.stock === 0"
-                class="ml-2 rounded-md bg-rose-100 px-2 py-0.5 text-xs text-rose-700"
+                class="ml-2 rounded-lg bg-rose-100 px-2 py-0.5 text-xs text-rose-700"
                 >품절</span
               >
             </div>
@@ -130,7 +130,7 @@
     </div>
 
     <!-- 교환 내역 -->
-    <div class="border-surface-200 mt-10 rounded-2xl border bg-white">
+    <div class="border-surface-200 mt-10 rounded-lg border bg-white">
       <div class="border-surface-200 border-b p-4">
         <h2 class="text-lg font-semibold">내 교환 내역</h2>
       </div>
@@ -167,7 +167,7 @@
       class="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4"
     >
       <div
-        class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl"
+        class="w-full max-w-md overflow-hidden rounded-lg bg-white shadow-xl"
       >
         <div class="border-surface-200 border-b p-4">
           <h3 class="text-lg font-semibold">교환 확인</h3>

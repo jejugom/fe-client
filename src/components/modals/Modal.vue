@@ -9,7 +9,7 @@
 
       <!-- 모달 박스 -->
       <div
-        class="stroke-primary relative z-10 rounded-2xl bg-white px-4 py-8"
+        class="stroke-primary relative z-10 rounded-lg bg-white px-4 py-8"
         role="dialog"
         aria-modal="true"
       >

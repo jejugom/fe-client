@@ -30,7 +30,7 @@
           v-for="related in relatedFaqs"
           :key="related.faqId"
           @click="goToFaqDetail(related.faqId)"
-          class="border-surface-200 bg-surface-50 cursor-pointer rounded-xl border px-4 py-4"
+          class="border-surface-200 bg-surface-50 cursor-pointer rounded-lg border px-4 py-4"
         >
           <p class="text-surface-500 text-base">{{ related.title }}</p>
         </div>

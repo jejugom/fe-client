@@ -1,6 +1,6 @@
 <template>
   <div
-    class="border-primary-300 flex flex-col gap-2 rounded-xl border pt-4 pr-4"
+    class="border-primary-300 flex flex-col gap-2 rounded-lg border pt-4 pr-4"
   >
     <div class="ml-4 flex items-center justify-between font-semibold">
       <span class="text-lg">

@@ -37,17 +37,17 @@
 
     <!-- Top stats -->
     <div class="mb-4 grid grid-cols-3 gap-3">
-      <div class="border-surface-200 rounded-xl border bg-white p-3">
+      <div class="border-surface-200 rounded-lg border bg-white p-3">
         <div class="text-surface-500 text-xs">문항 수</div>
         <div class="text-xl font-semibold">{{ quizCount }}문항</div>
       </div>
-      <div class="border-surface-200 rounded-xl border bg-white p-3">
+      <div class="border-surface-200 rounded-lg border bg-white p-3">
         <div class="text-surface-500 text-xs">진행도</div>
         <div class="text-xl font-semibold tabular-nums">
           {{ currentIndex + 1 }}/{{ quizCount }}
         </div>
       </div>
-      <div class="border-surface-200 rounded-xl border bg-white p-3">
+      <div class="border-surface-200 rounded-lg border bg-white p-3">
         <div class="text-surface-500 text-xs">최고 점수</div>
         <div class="text-xl font-semibold tabular-nums">
           {{ bestScore ?? '-' }}점
@@ -66,7 +66,7 @@
     <!-- Controls -->
     <div class="mb-5 flex items-center gap-3">
       <button
-        class="bg-primary-500 hover:bg-primary-600 rounded-xl px-4 py-2 text-white shadow-sm active:translate-y-[1px] disabled:opacity-50"
+        class="bg-primary-500 hover:bg-primary-600 rounded-lg px-4 py-2 text-white shadow-sm active:translate-y-[1px] disabled:opacity-50"
         @click="startQuiz"
         :disabled="started && !finished"
       >
@@ -74,7 +74,7 @@
       </button>
 
       <button
-        class="border-surface-300 text-surface-700 hover:bg-surface-50 rounded-xl border bg-white px-4 py-2 active:translate-y-[1px]"
+        class="border-surface-300 text-surface-700 hover:bg-surface-50 rounded-lg border bg-white px-4 py-2 active:translate-y-[1px]"
         @click="reset"
       >
         초기화
@@ -94,16 +94,16 @@
     <!-- Question Card -->
     <div
       v-if="started && !finished"
-      class="border-surface-200 rounded-2xl border bg-white p-6 shadow-sm"
+      class="border-surface-200 rounded-lg border bg-white p-6 shadow-sm"
     >
       <div class="mb-4 flex items-center justify-between gap-3">
         <div class="text-base">
           <span
-            class="bg-surface-100 text-surface-700 rounded-md px-2 py-1 font-medium"
+            class="bg-surface-100 text-surface-700 rounded-lg px-2 py-1 font-medium"
             >{{ currentQuestion.category }}</span
           >
           <span
-            class="ml-2 rounded-md px-2 py-1 text-xs"
+            class="ml-2 rounded-lg px-2 py-1 text-xs"
             :class="difficultyBadgeClass(currentQuestion.difficulty)"
           >
             {{ difficultyLabel(currentQuestion.difficulty) }}
@@ -133,7 +133,7 @@
           v-for="(choice, i) in currentQuestion.choices"
           :key="i"
           @click="choose(i)"
-          class="rounded-xl border p-3 text-left transition focus:ring-2 focus:outline-none"
+          class="rounded-lg border p-3 text-left transition focus:ring-2 focus:outline-none"
           :class="choiceClass(i)"
           :disabled="answered"
         >
@@ -159,14 +159,14 @@
 
       <div class="mt-6 flex justify-end gap-2">
         <button
-          class="border-surface-300 text-surface-700 hover:bg-surface-50 rounded-xl border bg-white px-4 py-2"
+          class="border-surface-300 text-surface-700 hover:bg-surface-50 rounded-lg border bg-white px-4 py-2"
           @click="skip"
           :disabled="answered"
         >
           건너뛰기
         </button>
         <button
-          class="bg-primary-500 hover:bg-primary-600 rounded-xl px-4 py-2 text-white disabled:opacity-50"
+          class="bg-primary-500 hover:bg-primary-600 rounded-lg px-4 py-2 text-white disabled:opacity-50"
           @click="next"
           :disabled="!answered"
         >
@@ -178,7 +178,7 @@
     <!-- Result -->
     <div
       v-if="finished"
-      class="border-surface-200 rounded-2xl border bg-white p-6 text-center shadow-sm"
+      class="border-surface-200 rounded-lg border bg-white p-6 text-center shadow-sm"
     >
       <h3 class="mb-2 text-xl font-bold">결과</h3>
       <p class="text-surface-600">
@@ -201,7 +201,7 @@
       </div>
 
       <button
-        class="bg-primary-500 hover:bg-primary-600 mt-6 rounded-xl px-4 py-2 text-white"
+        class="bg-primary-500 hover:bg-primary-600 mt-6 rounded-lg px-4 py-2 text-white"
         @click="startQuiz"
       >
         다시 풀기
@@ -211,7 +211,7 @@
     <!-- Empty state -->
     <div
       v-if="!started && !finished"
-      class="text-surface-500 rounded-2xl border border-dashed p-10 text-center"
+      class="text-surface-500 rounded-lg border border-dashed p-10 text-center"
     >
       옵션을 고르고 <b>시작하기</b>를 눌러 주세요.
     </div>

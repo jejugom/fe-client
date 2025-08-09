@@ -47,7 +47,7 @@
       </section>
     </div>
 
-    <div class="border-primary-300 my-16 rounded-xl border bg-white p-4">
+    <div class="border-primary-300 my-16 rounded-lg border bg-white p-4">
       <template v-if="mode === 'gift'">
         <div class="text-primary-300 mb-2 text-lg font-semibold">
           수증자별 증여 금액

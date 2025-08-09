@@ -3,7 +3,7 @@
     <div
       v-for="(item, index) in guideList"
       :key="index"
-      class="border-primary-100 rounded-2xl border bg-white p-6 shadow-md"
+      class="border-primary-100 rounded-lg border bg-white p-6 shadow-md"
     >
       <h3 class="text-primary-500 mb-2 text-xl font-bold">
         {{ index + 1 }}. {{ item.title }}

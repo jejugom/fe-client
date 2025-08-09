@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-8 rounded-2xl bg-white p-6 shadow-xs">
+  <div class="mb-8 rounded-lg bg-white p-6 shadow-xs">
     <h2 class="text-surface-500 mb-6 text-center text-lg font-bold">
       이용 절차
     </h2>

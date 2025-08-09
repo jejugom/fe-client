@@ -10,7 +10,7 @@
     <!-- 비로그인 사용자를 대상 로그인 유도 -->
     <div
       v-if="!authStore.isLogin"
-      class="border-primary-300 mb-8 rounded-xl border bg-white p-4"
+      class="border-primary-300 mb-8 rounded-lg border bg-white p-4"
     >
       <div class="space-y-4">
         <div class="text-primary-300 text-xl font-semibold">
@@ -46,7 +46,7 @@
     <!-- 로그인된 사용자를 위한 개인화된 인사 및 자산 정보 -->
     <div
       v-if="authStore.isLogin && homeData"
-      class="stroke-primary q relative mb-2 rounded-xl bg-white p-4"
+      class="stroke-primary q relative mb-2 rounded-lg bg-white p-4"
       @click="goToEditAsset"
     >
       <!-- 우측 상단 고정 아이콘 -->
@@ -98,9 +98,9 @@
     </div>
 
     <!-- 하단 서비스 특징 -->
-    <section class="stroke-primary rounded-xl bg-white p-4 text-center">
+    <section class="stroke-primary rounded-lg bg-white p-4 text-center">
       <div class="mb-4 p-4">
-        <p class="text-primary-300 mb-4 text-2xl font-bold"
+        <p class="text-primary-500 mb-4 text-2xl font-bold"
           >노후도락이 함께 챙겨드립니다</p
         >
         <p class="text-surface-400 text-base">

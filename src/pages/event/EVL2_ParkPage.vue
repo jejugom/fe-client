@@ -12,7 +12,7 @@
       </div>
 
       <div
-        class="border-surface-200 rounded-xl border bg-white px-4 py-2 text-base"
+        class="border-surface-200 rounded-lg border bg-white px-4 py-2 text-base"
       >
         목표: <b>{{ goalCount }}</b> 곳
         <span class="text-surface-400 mx-2">|</span>
@@ -42,14 +42,14 @@
     <!-- 지도 -->
     <div class="mb-6 grid gap-6 lg:grid-cols-2">
       <div
-        class="border-surface-200 h-[380px] overflow-hidden rounded-2xl border bg-white"
+        class="border-surface-200 h-[380px] overflow-hidden rounded-lg border bg-white"
       >
         <div ref="mapRef" class="h-full w-full"></div>
       </div>
 
       <!-- 내 위치/리프레시 -->
       <div class="flex flex-col gap-3">
-        <div class="border-surface-200 rounded-xl border bg-white p-4">
+        <div class="border-surface-200 rounded-lg border bg-white p-4">
           <div class="mb-2 flex items-center justify-between">
             <div class="text-surface-600 text-base">
               내 위치:
@@ -86,7 +86,7 @@
         <!-- 목표 완료 축하 -->
         <div
           v-if="checkedCount >= goalCount"
-          class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800"
+          class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-emerald-800"
         >
           🎉 축하합니다! 목표를 달성했어요. 계속 더 모아볼까요?
         </div>
@@ -94,7 +94,7 @@
     </div>
 
     <!-- 공원 리스트 -->
-    <div class="border-surface-200 rounded-2xl border bg-white">
+    <div class="border-surface-200 rounded-lg border bg-white">
       <div class="border-surface-200 text-surface-600 border-b p-4 text-base">
         반경 {{ (searchRadius / 1000).toFixed(1) }}km 내 검색 결과
         <span class="text-surface-300 mx-2">|</span>
@@ -111,7 +111,7 @@
             <div class="flex items-center gap-2">
               <span class="text-base font-semibold">{{ p.name }}</span>
               <span
-                class="rounded-md px-2 py-0.5 text-xs"
+                class="rounded-lg px-2 py-0.5 text-xs"
                 :class="
                   p.checked
                     ? 'bg-surface-200 text-surface-600'

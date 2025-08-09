@@ -1,6 +1,6 @@
 <template>
   <div
-    class="border-surface-200 flex h-15 w-full items-center gap-4 rounded-xl border bg-white px-3 py-5"
+    class="border-surface-200 flex h-15 w-full items-center gap-4 rounded-lg border bg-white px-3 py-5"
     @click="$emit('click')"
   >
     <!-- 카테고리 -->

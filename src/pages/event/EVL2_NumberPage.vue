@@ -27,15 +27,15 @@
 
     <!-- Stats -->
     <div class="mb-4 grid grid-cols-3 gap-3">
-      <div class="border-surface-200 rounded-xl border bg-white p-3">
+      <div class="border-surface-200 rounded-lg border bg-white p-3">
         <div class="text-surface-500 text-xs">다음 숫자</div>
         <div class="text-xl font-semibold">{{ nextNumber }}</div>
       </div>
-      <div class="border-surface-200 rounded-xl border bg-white p-3">
+      <div class="border-surface-200 rounded-lg border bg-white p-3">
         <div class="text-surface-500 text-xs">경과 시간</div>
         <div class="text-xl font-semibold tabular-nums">{{ timeText }}</div>
       </div>
-      <div class="border-surface-200 rounded-xl border bg-white p-3">
+      <div class="border-surface-200 rounded-lg border bg-white p-3">
         <div class="text-surface-500 text-xs"
           >최고 기록 ({{ gridSize }}×{{ gridSize }})</div
         >
@@ -57,7 +57,7 @@
     <div class="mb-5 flex items-center gap-3">
       <button
         @click="startGame"
-        class="bg-primary-500 hover:bg-primary-600 rounded-xl px-4 py-2 text-white shadow-sm active:translate-y-[1px] disabled:opacity-50"
+        class="bg-primary-500 hover:bg-primary-600 rounded-lg px-4 py-2 text-white shadow-sm active:translate-y-[1px] disabled:opacity-50"
         :disabled="started && !finished"
       >
         {{ finished ? '다시 시작' : started ? '진행 중…' : '시작하기' }}
@@ -65,7 +65,7 @@
 
       <button
         @click="resetGame"
-        class="border-surface-300 text-surface-700 hover:bg-surface-50 rounded-xl border bg-white px-4 py-2 active:translate-y-[1px]"
+        class="border-surface-300 text-surface-700 hover:bg-surface-50 rounded-lg border bg-white px-4 py-2 active:translate-y-[1px]"
       >
         초기화
       </button>
@@ -100,7 +100,7 @@
         role="gridcell"
         :aria-label="`${n}번 버튼`"
         @click="onCellClick(n, $event)"
-        class="aspect-square rounded-xl border text-lg font-semibold shadow-sm transition select-none focus:ring-2 focus:outline-none"
+        class="aspect-square rounded-lg border text-lg font-semibold shadow-sm transition select-none focus:ring-2 focus:outline-none"
         :class="cellClass(n)"
       >
         {{ n }}

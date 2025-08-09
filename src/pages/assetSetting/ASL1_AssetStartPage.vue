@@ -2,7 +2,7 @@
 <template>
   <div class="flex min-h-[calc(80vh-9rem)] items-center">
     <div
-      class="stroke-primary px-auto my-auto flex w-full flex-col items-center justify-center gap-16 rounded-xl bg-white py-15"
+      class="stroke-primary px-auto my-auto flex w-full flex-col items-center justify-center gap-16 rounded-lg bg-white py-15"
     >
       <h1 class="text-primary-300 text-2xl font-bold">
         {{ authStore.userName || authStore.username }}님, 안녕하세요!

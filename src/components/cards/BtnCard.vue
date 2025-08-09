@@ -1,9 +1,9 @@
 <template>
   <div
     :class="[
-      'btn-pressed flex h-31.5 w-full items-center justify-between gap-6 rounded-lg border px-4 py-4',
-      color === 'primary' && 'border-primary-300',
-      color === 'secondary' && 'border-gold',
+      'btn-pressed flex h-31.5 w-full items-center justify-between gap-6 rounded-lg bg-white px-4 py-4',
+      color === 'primary' && 'stroke-primary',
+      color === 'secondary' && 'stroke-secondary',
       color === 'surface' && 'border-surface-300',
       $attrs.class,
     ]"

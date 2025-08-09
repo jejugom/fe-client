@@ -4,7 +4,7 @@
     <DetailImg :items="topInfos" v-if="topInfos.length" />
 
     <!-- 추천 이유 -->
-    <div class="stroke-secondary flex flex-col gap-2 rounded-xl px-6 py-4">
+    <div class="stroke-secondary flex flex-col gap-2 rounded-lg px-6 py-4">
       <span class="text-secondary-500 text-lg font-semibold">추천 이유</span>
       <span>{{ detail?.recReason || '추천 사유 없음' }}</span>
     </div>

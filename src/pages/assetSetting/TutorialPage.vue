@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-primary-100 min-h-screen rounded-3xl px-4 py-8">
+  <div class="bg-primary-100 min-h-screen rounded-lg px-4 py-8">
     <div class="mx-auto max-w-md">
       <TutorialHeader />
       <ServiceIntro />

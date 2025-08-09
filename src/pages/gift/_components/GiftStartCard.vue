@@ -1,11 +1,11 @@
 <template>
   <div
-    class="border-primary-100 overflow-hidden rounded-2xl border bg-white shadow-lg"
+    class="border-primary-100 overflow-hidden rounded-lg border bg-white shadow-lg"
   >
     <div class="p-6">
       <div class="mb-4 flex items-start gap-4">
         <div
-          class="flex h-20 w-20 items-center justify-center rounded-xl bg-gradient-to-br"
+          class="flex h-20 w-20 items-center justify-center rounded-lg bg-gradient-to-br"
         >
           <img :src="icon" :alt="`${title} 아이콘`" class="h-20 w-20" />
         </div>

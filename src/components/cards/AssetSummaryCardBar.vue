@@ -1,5 +1,5 @@
 <template>
-  <div class="border-primary-300 flex flex-col gap-2 rounded-xl border p-4">
+  <div class="stroke-primary flex flex-col gap-2 rounded-lg bg-white p-4">
     <div class="font-semibold">
       <div class="text-lg"> 지금까지 모은 자산은 이렇게 구성돼 있어요 </div>
       <div>총 {{ assetAmount?.toLocaleString() }} 원</div>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="stroke-secondary flex flex-col items-center justify-center gap-8 rounded-xl bg-white px-6 py-8"
+    class="stroke-secondary flex flex-col items-center justify-center gap-8 rounded-lg bg-white px-6 py-8"
   >
     <div class="text-center text-lg font-semibold"
       >예약이 잘 완료되었습니다.<br />방문 예정일에 맞춰 은행에서<br />
