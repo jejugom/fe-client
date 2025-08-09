@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-8 text-base">
-    <div class="text-primary-300 text-2xl font-bold"
+    <div class="text-primary-500 text-2xl font-bold"
       >은행 방문 예약이 완료되었어요</div
     >
 
@@ -17,7 +17,7 @@
 
       <!-- 필요 서류 -->
       <div class="mt-8">
-        <span class="text-primary-300 flex gap-1 font-semibold"
+        <span class="text-primary-500 flex gap-1 font-semibold"
           >은행 방문 시, 아래 서류를
           <p class="text-gold">꼭!</p> 챙겨주세요</span
         >

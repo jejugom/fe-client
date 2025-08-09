@@ -5,7 +5,7 @@
 
     <!-- 입력폼 -->
     <div
-      class="card-design relative left-1/2 flex w-screen max-w-150 -translate-x-1/2 flex-col py-8"
+      class="stroke-primary relative left-1/2 mt-[-18px] flex w-screen max-w-150 -translate-x-1/2 flex-col gap-4 bg-white px-4 py-8"
     >
       <ReserveInputBox
         title="상품명"

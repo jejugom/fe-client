@@ -3,9 +3,9 @@
     <div
       v-for="(item, index) in guideList"
       :key="index"
-      class="card-design h-28"
+      class="card-design flex h-36 flex-col justify-center"
     >
-      <h3 class="text-primary-500 mb-2 text-xl font-bold">
+      <h3 class="text-primary-300 mb-2 text-xl font-bold">
         {{ index + 1 }}. {{ item.title }}
       </h3>
       <p class="text-surface-500 text-base" v-html="item.desc"></p>
