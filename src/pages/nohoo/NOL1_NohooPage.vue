@@ -1,6 +1,6 @@
 <template>
   <TabBtnGroup
-    :tabs="['맞춤', '예금', '적금', '펀드', '금', '주택담보', '신탁']"
+    :tabs="['맞춤', '금', '예금', '적금', '펀드', '주택담보', '신탁']"
     v-model:selectedTab="selectedTab"
   />
   <div class="mt-12 flex flex-col gap-8">

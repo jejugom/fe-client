@@ -66,7 +66,7 @@
 
     <!-- 맞춤형 서비스 카드 -->
     <section class="">
-      <h2 class="text-primary-300 mb-4 text-2xl font-bold"
+      <h2 class="text-primary-500 mb-4 text-2xl font-bold"
         >지금 필요한 것만, 딱 맞게 준비해요</h2
       >
       <div class="space-y-4">
@@ -88,7 +88,7 @@
     </section>
 
     <div>
-      <h2 class="text-primary-300 mb-4 text-2xl font-bold"
+      <h2 class="text-primary-500 mb-4 text-2xl font-bold"
         >가장 가까운 골든라이프</h2
       >
       <div class="h-30 w-full bg-white"></div>

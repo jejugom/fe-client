@@ -1,9 +1,9 @@
 <template>
-  <div class="mb-8 space-y-6">
+  <div class="mb-16 space-y-6">
     <div
       v-for="(item, index) in guideList"
       :key="index"
-      class="border-primary-100 rounded-lg border bg-white p-6 shadow-md"
+      class="card-design h-28"
     >
       <h3 class="text-primary-500 mb-2 text-xl font-bold">
         {{ index + 1 }}. {{ item.title }}
