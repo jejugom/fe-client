@@ -102,6 +102,15 @@
       0.5px 0.5px 2px 0px oklch(0.209 0 0 / 0.25),
       -0.5px -0.5px 2px 0px oklch(0.209 0 0 / 0.25);
   }
+
+  .card-design {
+    box-shadow:
+      0.5px 0.5px 2px 0px #3674b53f,
+      -0.5px -0.5px 2px 0px #3674b53f;
+    border-radius: 8px;
+    background-color: white;
+    padding: 16px;
+  }
 }
 
 @font-face {

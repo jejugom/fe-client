@@ -5,31 +5,32 @@
     >
 
     <!-- 예약 정보 -->
-
-    <div class="flex flex-col gap-4">
-      <InfoRow
-        v-for="(item, index) in infoRows"
-        :key="index"
-        :label="item.label"
-        :value="item.value"
-      />
-    </div>
-
-    <!-- 필요 서류 -->
-    <div>
-      <span class="text-primary-300 font-semibold"
-        >은행 방문 시, 아래 서류를 챙겨주세요</span
-      >
-      <ul class="mt-4 list-disc pl-5">
-        <li
-          v-for="(doc, index) in data?.docInfo?.requiredDocuments || []"
+    <div class="card-design py-8">
+      <div class="flex flex-col gap-4">
+        <InfoRow
+          v-for="(item, index) in infoRows"
           :key="index"
-        >
-          {{ doc }}
-        </li>
-      </ul>
-    </div>
+          :label="item.label"
+          :value="item.value"
+        />
+      </div>
 
+      <!-- 필요 서류 -->
+      <div class="mt-8">
+        <span class="text-primary-300 flex gap-1 font-semibold"
+          >은행 방문 시, 아래 서류를
+          <p class="text-gold">꼭!</p> 챙겨주세요</span
+        >
+        <ul class="mt-4 list-disc pl-5">
+          <li
+            v-for="(doc, index) in data?.docInfo?.requiredDocuments || []"
+            :key="index"
+          >
+            {{ doc }}
+          </li>
+        </ul>
+      </div>
+    </div>
     <ReserveCompleteBox />
   </div>
 </template>

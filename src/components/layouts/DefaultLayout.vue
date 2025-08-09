@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="bg-secondary-100 relative flex min-h-screen flex-col items-center"
-  >
+  <div class="bg-surface-200 relative flex min-h-screen flex-col items-center">
     <!-- 상단 고정 헤더 -->
     <Header class="sticky top-0 z-50 w-full max-w-[600px]" />
 
