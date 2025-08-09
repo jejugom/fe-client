@@ -14,10 +14,7 @@
         aria-modal="true"
       >
         <!-- 제목 -->
-        <div
-          v-if="title"
-          class="text-primary-300 text-center text-2xl font-bold"
-        >
+        <div v-if="title" class="text-primary-300 text-left text-xl font-bold">
           {{ title }}
         </div>
 
@@ -32,7 +29,7 @@
             color="primary"
             label="확인"
             size="medium"
-            @click="emit('click2')"
+            @click="emit('click')"
           />
         </div>
       </div>
@@ -51,8 +48,7 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'click1'): void;
-  (e: 'click2'): void;
+  (e: 'click'): void;
 }>();
 
 onMounted(() => {

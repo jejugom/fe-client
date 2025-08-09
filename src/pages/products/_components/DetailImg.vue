@@ -1,5 +1,7 @@
 <template>
-  <div class="relative left-1/2 mt-[-18px] w-screen max-w-150 -translate-x-1/2">
+  <div
+    class="relative left-1/2 mt-[-1.125rem] w-screen max-w-150 -translate-x-1/2"
+  >
     <div
       class="bg-secondary-100 flex h-50 w-full items-center justify-center gap-8 p-8"
     >

@@ -171,7 +171,7 @@ const chartOptions = computed(() => ({
         day: 'MM/dd',
       },
       style: {
-        fontSize: '11px',
+        fontSize: '10px',
       },
     },
     tooltip: {

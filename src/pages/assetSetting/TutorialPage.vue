@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-primary-100 relative left-1/2 mt-[-18px] min-h-screen w-screen max-w-150 -translate-x-1/2 rounded-lg px-4 py-8"
+    class="bg-primary-100 relative left-1/2 mt-[-1.125rem] min-h-screen w-screen max-w-150 -translate-x-1/2 rounded-lg px-4 py-8"
   >
     <div class="mx-auto max-w-md">
       <TutorialHeader />

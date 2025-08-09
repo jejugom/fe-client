@@ -37,7 +37,7 @@
         label="전체 자산 목록 확인하기"
         size="large"
         @click="router.push({ name: 'edit-asset' })"
-        class="mt-[-8px]"
+        class="mt-[-0.5rem]"
       />
     </div>
     <div class="flex flex-col items-start gap-4">

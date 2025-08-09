@@ -1,5 +1,7 @@
 <template>
-  <div class="relative left-1/2 mt-[-16px] w-screen max-w-150 -translate-x-1/2">
+  <div
+    class="relative left-1/2 mt-[-1.125rem] w-screen max-w-150 -translate-x-1/2"
+  >
     <div class="bg-white px-4 py-8">
       <h2 class="text-primary-500 mb-4 text-center text-2xl font-bold"
         >증여세 시뮬레이션 결과</h2
