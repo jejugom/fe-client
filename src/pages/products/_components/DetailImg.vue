@@ -1,12 +1,12 @@
 <template>
-  <div class="relative left-1/2 w-screen max-w-150 -translate-x-1/2">
+  <div class="relative left-1/2 mt-[-18px] w-screen max-w-150 -translate-x-1/2">
     <div
       class="bg-secondary-100 flex h-50 w-full items-center justify-center gap-8 p-8"
     >
       <div
         v-for="(item, idx) in items"
         :key="idx"
-        class="flex w-24 flex-col items-center justify-between"
+        class="flex w-32 flex-col items-center justify-between"
       >
         <img
           v-if="getIcon(item.label)"
