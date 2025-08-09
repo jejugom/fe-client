@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'btn-pressed flex h-31.5 w-full items-center justify-between gap-6 rounded-lg bg-white px-4 py-4',
+      'btn-pressed flex h-36 w-full justify-between gap-6 rounded-lg bg-white px-4 py-4',
       color === 'primary' && 'stroke-primary',
       color === 'secondary' && 'stroke-secondary',
       color === 'surface' && 'border-surface-300',
@@ -11,7 +11,7 @@
     @click="onClick"
   >
     <!-- 글자부분 -->
-    <div class="flex w-7/10 flex-col">
+    <div class="flex w-8/10 flex-col">
       <!-- 제목 -->
       <div
         :class="[
@@ -49,16 +49,18 @@
       </div>
     </div>
     <!-- 버튼부분 -->
-    <div
-      :class="[
-        'flex h-20 w-15 items-center rounded-lg text-center text-lg font-semibold',
-        color === 'primary' && 'bg-primary-100 text-primary-500',
-        color === 'secondary' && 'bg-secondary-100 text-secondary-500',
-        color === 'surface' && 'border-surface-300 text-surface-300 border',
-      ]"
-      >{{ btnText }}</div
-    >
-  </div>
+    <div class="flex h-full items-center">
+      <div
+        :class="[
+          'flex h-20 w-15 items-center rounded-lg text-center text-lg font-semibold',
+          color === 'primary' && 'bg-primary-100 text-primary-500',
+          color === 'secondary' && 'bg-secondary-100 text-secondary-500',
+          color === 'surface' && 'border-surface-300 text-surface-300 border',
+        ]"
+        >{{ btnText }}</div
+      >
+    </div></div
+  >
 </template>
 
 <script setup lang="ts">
