@@ -94,7 +94,7 @@
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { useRouter } from 'vue-router';
-import Confirm from '@/components/modals/Confirm.vue';
+// import Confirm from '@/components/modals/Confirm.vue';
 import Modal from '@/components/modals/Modal.vue';
 import { useRewardStore } from '@/stores/reward';
 
