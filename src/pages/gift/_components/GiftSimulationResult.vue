@@ -1,159 +1,162 @@
 <template>
-  <div>
-    <div class="mb-6">
-      <div
-        class="border-primary-100 bg-primary-100 relative overflow-hidden rounded-2xl border p-6 shadow-xl"
+  <div class="relative left-1/2 mt-[-16px] w-screen max-w-150 -translate-x-1/2">
+    <div class="bg-white px-4 py-8">
+      <h2 class="text-primary-500 mb-4 text-center text-2xl font-bold"
+        >증여세 시뮬레이션 결과</h2
       >
-        <div class="relative">
-          <h3 class="text-primary-500 mb-2 text-lg">예상 증여세 총액</h3>
-          <p class="text-primary-500 text-3xl font-bold">
-            {{ formatCurrency(totalGiftTax) }}
-          </p>
-          <div class="text-primary-500 mt-4 mb-4 flex items-center text-sm">
-            어떻게 계산되었는지 궁금하신가요? 🤔
+      <div class="mb-16">
+        <div
+          class="shadow-up-xs border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
+        >
+          <div class="relative">
+            <h3 class="text-primary-500 mb-2 text-xl font-semibold"
+              >예상 증여세 총액</h3
+            >
+            <p class="text-primary-500 text-3xl font-bold">
+              {{ formatCurrency(totalGiftTax) }}
+            </p>
+            <div class="text-primary-500 mt-4 mb-4 flex items-center">
+              어떻게 계산되었는지 궁금하신가요? 🤔
+            </div>
+            <Btn
+              color="surface"
+              label="증여세 계산 방법 보러가기"
+              size="large"
+              @click="goToTaxInfo"
+            />
           </div>
-          <Btn
-            color="surface"
-            label="증여세 계산 방법 보러가기"
-            size="large"
-            @click="goToTaxInfo"
-          />
         </div>
       </div>
-    </div>
 
-    <div class="mb-6">
-      <!-- 수증자별 세금 요약표 -->
-      <div class="bg-primary-100 rounded-2xl p-6 shadow-xl">
-        <div class="mb-2 flex items-center">
-          <h3 class="text-primary-500 text-lg">수증자별 세금 요약표</h3>
-        </div>
-
-        <div class="mb-4 overflow-hidden rounded-lg bg-white">
-          <table class="w-full">
-            <thead>
-              <tr>
-                <th
-                  class="border-primary-100 text-primary-500 border-b px-4 py-3 text-center font-semibold"
-                >
-                  수증자
-                </th>
-                <th
-                  class="border-primary-100 text-primary-500 border-b text-center font-semibold"
-                >
-                  증여금
-                </th>
-                <th
-                  class="border-primary-100 text-primary-500 border-b text-center font-semibold"
-                >
-                  예상 증여세
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-primary-100 divide-y">
-              <tr v-for="(recipient, index) in recipientSummaries" :key="index">
-                <td>
-                  <div class="text-center">
-                    <div class="text-primary-500">
-                      {{ recipient.recipientName }}
-                    </div>
-                  </div>
-                </td>
-                <td class="px-4 py-3 text-center">
-                  <div class="text-primary-500 font-semibold">
-                    {{ formatCurrency(recipient.totalGiftAmount) }}
-                  </div>
-                </td>
-                <td class="px-4 py-3 text-center">
-                  <div class="text-primary-500 font-semibold">
-                    {{ formatCurrency(recipient.estimatedTax) }}
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- 수증자별 증여금, 증여세 비교 차트 -->
-        <div class="mb-2 flex items-center">
-          <h3 class="text-primary-500 text-lg">수증자별 증여금, 증여세 비교</h3>
-        </div>
-        <div class="rounded-xl bg-white p-6">
-          <div v-if="chartSeries.length > 0">
-            <apexchart
-              type="bar"
-              :options="chartOptions"
-              :series="chartSeries"
-              height="300"
-            ></apexchart>
+      <div class="mb-16">
+        <!-- 수증자별 세금 요약표 -->
+        <div
+          class="shadow-up-xs border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
+        >
+          <div class="mb-2 flex items-center">
+            <h3 class="text-primary-500 text-xl font-semibold"
+              >수증자별 세금 요약표</h3
+            >
           </div>
-          <div
-            v-else
-            class="text-primary-500 flex h-64 items-center justify-center"
-          >
-            <div class="text-center">
-              <svg
-                class="text-primary-500 mx-auto h-12 w-12"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
-              <p class="mt-2">차트 데이터를 불러오는 중...</p>
+
+          <div class="mb-8 overflow-hidden bg-white text-sm">
+            <table class="w-full">
+              <thead>
+                <tr>
+                  <th
+                    class="bg-primary-500 border border-white px-2 py-4 text-center font-semibold text-white"
+                  >
+                    수증자
+                  </th>
+                  <th
+                    class="bg-primary-500 border border-white px-2 py-4 text-center font-semibold text-white"
+                  >
+                    증여금
+                  </th>
+                  <th
+                    class="bg-primary-500 border border-white px-2 py-4 text-center font-semibold text-white"
+                  >
+                    예상 증여세
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-surface-200 divide-y">
+                <tr
+                  v-for="(recipient, index) in recipientSummaries"
+                  :key="index"
+                >
+                  <td>
+                    <div class="text-center">
+                      <div class="text-primary-500">
+                        {{ recipient.recipientName }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-2 py-4 text-center">
+                    <div class="text-primary-500 font-semibold">
+                      {{ formatCurrency(recipient.totalGiftAmount) }}
+                    </div>
+                  </td>
+                  <td class="px-2 py-4 text-center">
+                    <div class="text-primary-500 font-semibold">
+                      {{ formatCurrency(recipient.estimatedTax) }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 수증자별 증여금, 증여세 비교 차트 -->
+          <div class="mb-2 flex items-center">
+            <h3 class="text-primary-500 text-xl font-semibold"
+              >수증자별 증여금, 증여세 비교</h3
+            >
+          </div>
+          <div class="rounded-xl bg-white p-6">
+            <div v-if="chartSeries.length > 0">
+              <apexchart
+                type="bar"
+                :options="chartOptions"
+                :series="chartSeries"
+                height="300"
+              ></apexchart>
+            </div>
+            <div
+              v-else
+              class="text-primary-500 flex h-64 items-center justify-center"
+            >
+              <div class="text-center">
+                <svg
+                  class="text-primary-500 mx-auto h-12 w-12"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+                <p class="mt-2">차트 데이터를 불러오는 중...</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 유형별 절세 전략 추천 -->
-    <div class="mb-4 grid gap-6">
-      <div class="bg-primary-100 rounded-2xl p-6 shadow-xl">
-        <div class="mb-2 flex items-center">
-          <h3 class="text-primary-500 text-lg">유형별 절세 전략 추천</h3>
-        </div>
-
+      <!-- 유형별 절세 전략 추천 -->
+      <div class="">
         <div
-          v-for="(strategy, index) in taxSavingStrategies"
-          :key="index"
-          class="group flex items-start rounded-lg px-3 py-3"
+          class="shadow-up-xs border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
         >
-          <!-- 숫자 인덱스 -->
-          <div
-            class="bg-primary-500 mr-4 flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold text-white"
-          >
-            {{ index + 1 }}
-          </div>
-
-          <!-- 전략 내용 -->
-          <div class="flex-1">
-            <p class="text-primary-500 text-sm">
-              {{ strategy }}
-            </p>
-          </div>
-
-          <!-- 화살표 아이콘 -->
-          <!-- <div class="ml-2">
-            <svg
-              class="text-primary-500 h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div class="mb-2 flex items-center">
+            <h3 class="text-primary-500 text-xl font-semibold"
+              >유형별 절세 전략 추천</h3
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </div> -->
+          </div>
+
+          <div
+            v-for="(strategy, index) in taxSavingStrategies"
+            :key="index"
+            class="group mx-1 mb-4 flex items-start"
+          >
+            <!-- 숫자 인덱스 -->
+            <div
+              class="bg-primary-500 mt-2 mr-4 flex h-7 w-7 items-center justify-center rounded-full font-bold text-white"
+            >
+              {{ index + 1 }}
+            </div>
+
+            <!-- 전략 내용 -->
+            <div class="flex-1">
+              <p class="">
+                {{ strategy }}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
