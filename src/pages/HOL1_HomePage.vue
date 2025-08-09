@@ -8,10 +8,7 @@
 <template>
   <div class="flex flex-col gap-16">
     <!-- 비로그인 사용자를 대상 로그인 유도 -->
-    <div
-      v-if="!authStore.isLogin"
-      class="stroke-primary rounded-lg bg-white p-4"
-    >
+    <div v-if="!authStore.isLogin" class="card-design">
       <div class="space-y-4">
         <div class="text-primary-300 text-xl font-bold">
           노후도락에 오신 것을 환영합니다!
@@ -46,7 +43,7 @@
     <!-- 로그인된 사용자를 위한 개인화된 인사 및 자산 정보 -->
     <div
       v-if="authStore.isLogin && homeData"
-      class="stroke-primary relative rounded-lg bg-white p-4"
+      class="card-design relative"
       @click="goToEditAsset"
     >
       <!-- 우측 상단 고정 아이콘 -->
@@ -98,7 +95,7 @@
     </div>
 
     <!-- 하단 서비스 특징 -->
-    <section class="stroke-primary rounded-lg bg-white p-4 text-center">
+    <section class="card-design text-center">
       <div class="mb-4 p-4">
         <p class="text-primary-500 mb-4 text-2xl font-bold"
           >노후도락이 함께 챙겨드립니다</p

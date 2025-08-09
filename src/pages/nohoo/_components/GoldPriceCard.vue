@@ -1,5 +1,5 @@
 <template>
-  <div class="stroke-primary flex flex-col gap-2 rounded-lg bg-white pt-4 pr-4">
+  <div class="card-design flex flex-col gap-2 p-0 pt-4 pr-4">
     <div class="ml-4 flex items-center justify-between font-semibold">
       <span class="text-lg">
         {{ Math.round(currentPrice).toLocaleString() }}

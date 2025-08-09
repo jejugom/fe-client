@@ -4,12 +4,12 @@
     <DetailImg :items="topInfos" v-if="topInfos.length" />
 
     <!-- 추천 이유 -->
-    <div class="stroke-primary flex flex-col gap-2 rounded-lg bg-white p-4">
+    <div class="card-design flex flex-col gap-2">
       <span class="text-primary-500 text-lg font-semibold">추천 이유</span>
       <span>{{ detail?.recReason || '추천 사유 없음' }}</span>
     </div>
 
-    <div class="stroke-primary rounded-lg bg-white p-4">
+    <div class="card-design">
       <div class="flex flex-col gap-6">
         <!-- 상품 기본 정보 -->
 

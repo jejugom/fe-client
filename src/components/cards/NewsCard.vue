@@ -1,5 +1,5 @@
 <template>
-  <div class="stroke-primary btn-pressed relative rounded-lg bg-white p-4">
+  <div class="card-design btn-pressed relative">
     <!-- 우측 상단 고정 아이콘 -->
     <img
       :src="ArrowIcon"

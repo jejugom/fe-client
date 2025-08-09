@@ -23,7 +23,7 @@
 
   <!-- 중앙 입력 카드 -->
   <div
-    class="stroke-primary px-auto my-16 flex flex-col items-center justify-center gap-3 rounded-lg py-8"
+    class="card-design px-auto my-16 flex flex-col items-center justify-center gap-3 py-8"
   >
     <!-- 입력 필드 -->
     <LoginForm
