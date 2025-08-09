@@ -14,7 +14,7 @@
     <img
       :src="ArrowIcon"
       alt=""
-      class="ml-2 h-4 w-4 shrink-0"
+      class="btn-pressed ml-2 h-4 w-4 shrink-0"
       @click="$emit('click')"
     />
   </div>

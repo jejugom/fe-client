@@ -1,10 +1,11 @@
 <template>
   <div class="card-design relative">
     <!-- 우측 상단 고정 아이콘 -->
-    <img
-      :src="ArrowIcon"
-      class="absolute top-4 right-4 h-6 w-6"
-      alt="arrow icon"
+    <TextBtn
+      color="surface"
+      label="수정하기 ➜"
+      size="small"
+      class="absolute right-4 bottom-4"
       @click="showTimeModal = true"
     />
 
@@ -61,6 +62,7 @@ import Btn from '@/components/buttons/Btn.vue';
 import Modal from '@/components/modals/Modal.vue';
 import BookingTimeSelectModal from './BookingTimeSelectModal.vue';
 import { mypageApi } from '@/api/user/mypage';
+import TextBtn from '@/components/buttons/TextBtn.vue';
 
 const props = defineProps<{
   booking: BookingItem;

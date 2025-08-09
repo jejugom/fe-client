@@ -47,11 +47,13 @@
       @click="goToEditAsset"
     >
       <!-- 우측 상단 고정 아이콘 -->
-      <img
-        :src="ArrowIcon"
-        class="absolute top-4 right-4 h-6 w-6"
-        alt="arrow icon"
+      <TextBtn
+        color="surface"
+        label="더보기 ➜"
+        size="small"
+        class="absolute top-4 right-4"
       />
+
       <div class="text-primary-300 mb-4 text-lg font-semibold">
         {{ homeData.userSummary.name }}님
         <span class="text-surface-500">안녕하세요!</span>
@@ -147,6 +149,7 @@ import Home6 from '@/assets/images/Home6.svg';
 import KakaoLoginBtn from '@/assets/images/kakao_login_medium_wide.png';
 import Banner from '@/components/cards/Banner.vue';
 import ArrowIcon from '@/assets/icons/Arrow45.svg';
+import TextBtn from '@/components/buttons/TextBtn.vue';
 
 /** Vue Router 인스턴스 - 페이지 네비게이션용 */
 const router = useRouter();
