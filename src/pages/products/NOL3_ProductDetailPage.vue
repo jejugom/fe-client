@@ -99,15 +99,15 @@
       <table class="w-full table-auto border-collapse overflow-hidden text-center text-sm">
         <thead class="bg-surface-100 font-semibold">
           <tr>
-            <th class="border-surface-200 border px-4 py-2">3개월 수익률</th>
-            <th class="border-surface-200 border px-4 py-2">위험 등급</th>
+            <th class="border-surface-200 border px-4 py-2">순자산 (운용펀드기준)</th>
+            <th class="border-surface-200 border px-4 py-2">환매 수수료</th>
             <th class="border-surface-200 border px-4 py-2">기준가</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(opt, idx) in fundOptions" :key="idx">
-            <td class="border-surface-200 border px-4 py-2">{{ opt.rate3mon }}</td>
-            <td class="border-surface-200 border px-4 py-2">{{ opt.riskGrade }}</td>
+            <td class="border-surface-200 border px-4 py-2">{{ opt.assetTotal }}</td>
+            <td class="border-surface-200 border px-4 py-2">{{ opt.feeRedemp =='없음' ? '매입금액의 1% 이하' : opt.feeRedemp }}</td>
             <td class="border-surface-200 border px-4 py-2">{{ opt.priceStd }}</td>
           </tr>
         </tbody>
@@ -308,10 +308,21 @@ const topInfos = computed(() => {
         { label: '가입방법', value: d.joinWay ?? '-' },
       ];
     case '5':
+      const riskGradeMap: Record<number, string> = {
+        1: '매우 높은 위험',
+        2: '높은 위험',
+        3: '다소 높은 위험',
+        4: '다소 낮은 위험',
+        5: '낮은 위험',
+        6: '매우 낮은 위험'
+      };
       return [
-        { label: '3개월 수익률', value: fundOptions.value[0]?.rate3mon?.toString() ?? '-' },
-        { label: '위험등급', value: fundOptions.value[0]?.riskGrade ?? '-' },
-        { label: '총보수', value: fundOptions.value[0]?.totalFee?.toString() ?? '-' },
+        { label: '3개월 수익률', value: fundOptions.value[0]?.rate3mon?.toString() + '%' ?? '-' },
+        {
+          label: '위험등급',
+          value: riskGradeMap[fundOptions.value[0]?.riskGrade] ?? '-'
+        },
+        { label: '총보수', value: fundOptions.value[0]?.totalFee?.toString() + '%' ?? '-' },
       ];
     default:
       return [];
