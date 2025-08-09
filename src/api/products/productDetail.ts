@@ -44,8 +44,26 @@ export interface ProductDetail {
   currency?: string;
 }
 
-export async function fetchProductDetail(id: string): Promise<ProductDetail> {
-  const res = await api.get<ProductDetail>(`/api/retirement/${id}`);
-  console.log('Product detail response:', res.data);
+// 기존 타입들 그대로 두고, 아래 2개 추가/수정
+
+export interface FundDailyReturn {
+  recordDate: string;
+  returnRate: number;
+}
+
+// 백엔드가 product만 주거나 { product, fundReturn }로 주는 두 케이스를 모두 허용
+export type ProductDetailApiResponse =
+  | ProductDetail
+  | { product: ProductDetail; fundReturn?: FundDailyReturn[] };
+
+// 반환 타입을 위 유니온으로 변경
+export async function fetchProductDetail(id: string): Promise<ProductDetailApiResponse> {
+  const res = await api.get(`/api/retirement/${id}`);
   return res.data;
+}
+
+// (별도 호출 쓰는 경우) named export 준비
+export async function fetchFundReturn(id: string, range = '3m'): Promise<FundDailyReturn[]> {
+  const res = await api.get<FundDailyReturn[]>(`/api/retirement/${id}/returns`, { params: { range } });
+  return res.data ?? [];
 }
