@@ -409,8 +409,6 @@ async function checkIn(p: Park) {
   saveCheckedIds(ids);
   p.checked = true;
 
-  p.checked = true;
-
   // 목표 달성 시 보상 기록
   rewardStore.complete('park');
 
