@@ -1,7 +1,14 @@
 <template>
-  <h2 class="text-primary-300 mb-8 text-2xl font-bold">증여 시뮬레이션 결과</h2>
+  <h2 class="text-primary-500 mb-4 text-center text-2xl font-bold"
+    >증여세 시뮬레이션 결과</h2
+  >
+  <p class="text-primary-500 mb-4 text-center"
+    >이 결과는 <strong>참고용 시뮬레이션</strong>이며, 실제 세액은 세무사 상담
+    후 확정됩니다. <br />정확한 세액 계산과 절세 전략 수립을 위해서는 전문가와의
+    상담을 권장합니다.</p
+  >
 
-  <div ref="pdfRef" class="mb-4">
+  <div ref="pdfRef">
     <GiftSimulationResult />
   </div>
   <Btn
@@ -10,7 +17,7 @@
     size="large"
     @click="handleShareOrDownload"
   />
-  <div class="mt-16">
+  <div class="mt-8">
     <p class="text-primary-300 mb-2 text-center font-semibold">
       궁금한 점이 생기셨다면,<br />
       은행에서 자세히 알려드릴게요
