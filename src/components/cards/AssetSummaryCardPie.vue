@@ -1,5 +1,5 @@
 <template>
-  <div class="border-primary-300 flex flex-col gap-2 rounded-lg border p-4">
+  <div class="card-design flex flex-col gap-2">
     <div class="font-semibold">
       <div class="text-lg">
         {{ userName }}님은

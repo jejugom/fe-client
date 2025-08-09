@@ -5,7 +5,10 @@
 
   <div v-else class="space-y-16">
     <!-- 최신예약 1개 출력 -->
-    <div v-if="bookingItems.length != 0">
+    <div v-if="bookingItems.length > 0">
+      <div class="text-primary-500 mb-4 text-2xl font-bold"
+        >예약 일정이 곧 다가와요!</div
+      >
       <RegisterCard :booking="bookingItems[0]" />
     </div>
 
@@ -15,9 +18,15 @@
     </div>
 
     <div class="space-y-4">
-      <div class="text-primary-300 mb-4 text-2xl font-bold"
+      <div class="text-primary-500 mb-4 text-2xl font-bold"
         >내 자산 확인하기</div
       >
+      <AssetRankCard
+        :userName="userName"
+        :assetAmount="assetAmount"
+        :rankPercent="rankPercent"
+        :investmentRatio="investmentRatio"
+      />
       <AssetSummaryCardPie
         :userName="userName"
         :assetAmount="assetAmount"
@@ -28,22 +37,17 @@
         label="전체 자산 목록 확인하기"
         size="large"
         @click="router.push({ name: 'edit-asset' })"
-      />
-      <AssetRankCard
-        :userName="userName"
-        :assetAmount="assetAmount"
-        :rankPercent="rankPercent"
-        :investmentRatio="investmentRatio"
+        class="mt-[-8px]"
       />
     </div>
     <div class="flex flex-col items-start gap-4">
-      <div class="text-primary-300 mb-4 text-2xl font-bold">전체 메뉴</div>
-      <TextBtn
-        color="surface"
-        :label="menu.title"
-        size="small"
+      <div class="text-primary-500 text-2xl font-bold">전체 메뉴</div>
+      <MenuBtn
         v-for="menu in menuItems"
         :key="menu.id"
+        color="surface"
+        size="small"
+        :label="menu.title"
         @click="handleMenuClick(menu.id)"
       />
     </div>
@@ -93,7 +97,7 @@ import { mypageApi } from '@/api/user/mypage';
 import { getAssetCategoryName } from '@/utils/format';
 import InputBox from '@/components/forms/InputBox.vue';
 import AssetRankCard from './_components/AssetRankCard.vue';
-import TextBtn from '@/components/buttons/TextBtn.vue';
+import MenuBtn from './_components/MenuBtn.vue';
 
 const myPageData = ref(null);
 const loading = ref(true);

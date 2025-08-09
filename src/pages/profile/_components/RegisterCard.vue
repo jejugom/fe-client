@@ -1,5 +1,5 @@
 <template>
-  <div class="border-secondary-300 relative rounded-lg border p-4">
+  <div class="card-design relative">
     <!-- 우측 상단 고정 아이콘 -->
     <img
       :src="ArrowIcon"
