@@ -36,7 +36,10 @@
       </span>
     </div>
 
-    <div id="map-wrapper" class="relative mt-4 h-64 w-full">
+    <div
+      id="map-wrapper"
+      class="stroke-secondary relative mt-4 h-64 w-full rounded-lg"
+    >
       <div id="map" class="h-full w-full"></div>
 
       <!-- 우측 상단 고정 버튼 -->

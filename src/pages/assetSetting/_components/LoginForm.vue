@@ -1,18 +1,18 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center gap-2">
-      <label class="text-surface-500 w-14 text-right">아이디</label>
-      <InputBox 
-        :model-value="credentials.id" 
+      <label class="w-14 text-right font-semibold">아이디</label>
+      <InputBox
+        :model-value="credentials.id"
         @update:model-value="updateCredentials('id', $event)"
-        placeholder="ID" 
-        size="medium" 
-        type="text" 
+        placeholder="ID"
+        size="medium"
+        type="text"
       />
     </div>
 
     <div class="flex items-center gap-2">
-      <label class="text-surface-500 w-14 text-right">비밀번호</label>
+      <label class="w-14 text-right font-semibold">비밀번호</label>
       <InputBox
         :model-value="credentials.password"
         @update:model-value="updateCredentials('password', $event)"
@@ -45,7 +45,7 @@ const emit = defineEmits<{
 const updateCredentials = (field: keyof Credentials, value: string) => {
   emit('update:credentials', {
     ...props.credentials,
-    [field]: value
+    [field]: value,
   });
 };
 </script>

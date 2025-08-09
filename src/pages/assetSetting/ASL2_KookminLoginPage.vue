@@ -1,47 +1,49 @@
 <template>
   <!-- 상단 안내 문구 (카드 밖) -->
-
-  <h1 class="text-primary-300 text-center text-2xl font-bold">
-    {{ authStore.userName || authStore.username }}님, 안녕하세요!
-  </h1>
-  <div class="text-surface-500 mt-4 text-center">
-    <p class="mb-4 text-lg font-semibold">더 정확한 서비스 제공을 위해서</p>
-    <p class="mb-6 text-lg font-semibold"
-      ><span class="text-primary-300">자산 연동</span>을 진행하겠습니다.</p
-    >
-    <div class="text-base">
-      <p>
-        <span class="text-gold font-semibold">국민은행</span>에 있는 내 자산을
-        불러오기 위해<br />
-        <span class="text-gold font-semibold">국민은행</span> 홈페이지에
-        로그인해요.<br /><br />
+  <div class="card-design">
+    <h1 class="text-primary-500 mb-8 text-center text-2xl font-bold">
+      {{ authStore.userName }}님, 안녕하세요!
+    </h1>
+    <div class="flex flex-col items-center gap-4 text-center">
+      <div>
+        <p class="text-lg font-semibold">더 정확한 서비스 제공을 위해서</p>
+        <p class="mb-4 text-lg font-semibold"
+          ><span class="text-primary-300">자산 연동</span>을 진행하겠습니다.</p
+        >
+      </div>
+      <div>
+        <p>
+          <span class="text-gold font-semibold">국민은행</span>에 있는 내 자산을
+          불러오기 위해<br />
+          <span class="text-gold font-semibold">국민은행</span> 홈페이지에
+          로그인해요.
+        </p>
+      </div>
+      <div>
         입력하신 정보는 오직 자산 확인 용도로만 사용돼요.<br />
         안전하니 걱정 마시고 진행하셔도 됩니다.
-      </p>
+      </div>
+    </div>
+
+    <!-- 중앙 입력 카드 -->
+    <div
+      class="px-auto mt-8 mb-4 flex flex-col items-center justify-center gap-4"
+    >
+      <!-- 입력 필드 -->
+      <LoginForm
+        :credentials="credentials"
+        @update:credentials="credentials = $event"
+      />
     </div>
   </div>
-
-  <!-- 중앙 입력 카드 -->
-  <div
-    class="card-design px-auto my-16 flex flex-col items-center justify-center gap-3 py-8"
-  >
-    <!-- 입력 필드 -->
-    <LoginForm
-      :credentials="credentials"
-      @update:credentials="credentials = $event"
-    />
-  </div>
-
-  <div class="flex gap-2 text-lg font-semibold">
-    <Btn color="surface" label="건너뛰기" size="large" @click="handleSkip" />
-    <Btn
-      :color="isFormFilled ? 'primary' : 'disabled'"
-      label="연동하기"
-      size="large"
-      :disabled="!isFormFilled"
-      @click="handleAssetSync"
-    />
-  </div>
+  <BtnSet
+    label1="건너뛰기"
+    label2="연동하기"
+    @click1="handleSkip"
+    @click2="handleAssetSync"
+    type="type2"
+    class="mt-16"
+  />
 </template>
 
 <script setup lang="ts">
@@ -54,6 +56,7 @@ import Btn from '@/components/buttons/Btn.vue';
 import LoginForm from './_components/LoginForm.vue';
 import { codefApi } from '@/api/asset/codef';
 import { useLoadingStore } from '@/stores/loading';
+import BtnSet from '@/components/buttons/BtnSet.vue';
 
 const route = useRoute();
 const router = useRouter();
