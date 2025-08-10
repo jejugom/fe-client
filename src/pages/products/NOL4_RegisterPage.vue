@@ -382,8 +382,13 @@ const submitDateTime = () => {
   dateTimeModalRef.value?.submitSelection();
 };
 
+// 현재 예약 흐름: gift/inheritance면 gift, 아니면 nohoo
+const flow = computed<'gift' | 'nohoo'>(() => {
+  const id = route.params.id as string;
+  return id === 'gift' || id === 'inheritance' ? 'gift' : 'nohoo';
+});
+
 // 예약 완료 처리
-// guno: axios post 로 인해 async 처리
 const goToRegister = async () => {
   if (!isFormValid.value) {
     openAlert('모든 값을 올바르게 입력해주세요.', '입력 오류');
@@ -397,12 +402,9 @@ const goToRegister = async () => {
     time: registerStore.time,
   };
 
-  console.log('예약 정보:', payload);
-
   let bookingResult: { bookingId: string } | null = null;
   try {
     bookingResult = await postBooking(payload);
-    console.log('예약 성공:', bookingResult);
   } catch (error: any) {
     if (
       error.response?.status === 409 ||
@@ -417,47 +419,40 @@ const goToRegister = async () => {
       await handleDateTimeModal();
       return;
     } else {
-      console.error('예약 실패:', error.response?.data || error.message);
       openAlert('예약 중 오류가 발생했습니다. 다시 시도해주세요.', '예약 실패');
     }
-    return; // 예약 실패 시 함수 종료
+    return;
   }
 
-  // --- SMS 전송 로직 추가 ---
-
-  // SMS 전송을 위한 예약 정보
-  const smsData: SmsData = {
-    phoneNumber: userPhoneNumber.value, // 사용자 전화번호 사용
-    productName: productName.value,
-    branchName: branchValue.value,
-    reservationDate: selectedReservation.value.date,
-    reservationTime: selectedReservation.value.time,
-  };
-
+  // SMS 전송 (성공/실패와 관계없이 완료 페이지로 이동해도 되면 try/catch 밖으로 빼도 OK)
   try {
-    router.push({
-      name: 'register-complete',
-      query: { bookingId: bookingResult?.bookingId },
+    const result = await smsApi.send({
+      phoneNumber: userPhoneNumber.value,
+      productName: productName.value,
+      branchName: branchValue.value,
+      reservationDate: selectedReservation.value.date,
+      reservationTime: selectedReservation.value.time,
     });
 
-    // SMS 전송 API - 구현 완료 - 추후 이 코드로 교체
-    const result = await smsApi.send(smsData);
-    if (result.success) {
-      console.log('SMS 전송 성공:', result);
-      registerStore.$reset(); // 예약 완료 후 store 비우기
-      router.push({ name: 'register-complete' });
-    } else {
+    if (!result.success) {
       openAlert('SMS 전송에 실패했습니다. 다시 시도해주세요.', 'SMS 전송 실패');
-      // 오류 페이지 라우터 푸시
     }
   } catch (error) {
-    console.error('SMS API 오류:', error);
     openAlert(
       'SMS 전송 중 오류가 발생했습니다. 다시 시도해주세요.',
       'SMS 전송 실패'
     );
-    // 오류 페이지 라우터 푸시
   }
+
+  // ✅ 완료 페이지 이동: from=gift | nohoo 함께 전달
+  registerStore.$reset();
+  router.push({
+    name: 'register-complete',
+    query: {
+      bookingId: bookingResult?.bookingId,
+      from: flow.value, // <-- 여기 중요
+    },
+  });
 };
 
 // 페이지 이탈 방지 로직
