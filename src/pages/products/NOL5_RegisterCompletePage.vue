@@ -4,8 +4,6 @@
       >은행 방문 예약이 완료되었어요</div
     >
 
-    <!-- 예약 정보 -->
-
     <div class="flex flex-col gap-4">
       <InfoRow
         v-for="(item, index) in infoRows"
@@ -15,7 +13,6 @@
       />
     </div>
 
-    <!-- 필요 서류 -->
     <div>
       <span class="text-primary-300 font-semibold"
         >은행 방문 시, 아래 서류를 챙겨주세요</span
@@ -47,18 +44,20 @@ import { useLoadingStore } from '@/stores/loading';
 
 const route = useRoute();
 
-const bookingId = ref('');
+const bookingCodeFromQuery = ref('');
 const data = ref<Register | null>(null);
 const loadingStore = useLoadingStore();
 
 onMounted(async () => {
-  const id = route.query.bookingId as string;
-  if (!id) return;
+  // URL 쿼리 파라미터에서 bookingId 대신 bookingCode를 가져옵니다.
+  const code = route.query.bookingCode as string;
+  if (!code) return;
 
-  bookingId.value = id;
+  bookingCodeFromQuery.value = code;
   loadingStore.startLoading();
   try {
-    const result = await fetchReservedDetail(id);
+    // API 호출 시 ID 대신 bookingCode를 사용합니다. (백엔드 API도 수정 필요)
+    const result = await fetchReservedDetail(code);
     data.value = result;
   } catch (e) {
     console.error('예약 상세 조회 실패', e);
@@ -79,7 +78,8 @@ const infoRows = computed(() => {
     { label: '상품명', value: data.value.prodName },
     { label: '지점명', value: data.value.branchName },
     { label: '날짜/시간', value: formattedDateTime.value },
-    { label: '예약 번호', value: data.value.bookingId },
+    // 사용자에게 보여주는 예약 번호를 bookingCode로 변경합니다.
+    { label: '예약 번호', value: data.value.bookingCode },
   ];
 });
 </script>

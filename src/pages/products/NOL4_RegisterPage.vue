@@ -312,7 +312,7 @@ const goToRegister = async () => {
 
   console.log('예약 정보:', payload);
 
-  let bookingResult: { bookingId: string } | null = null;
+  let bookingResult: { bookingCode: string; docInfo: any } | null = null;
   try {
     bookingResult = await postBooking(payload);
     console.log('예약 성공:', bookingResult);
@@ -351,7 +351,7 @@ const goToRegister = async () => {
   try {
     router.push({
       name: 'register-complete',
-      query: { bookingId: bookingResult?.bookingId },
+      query: { bookingCode: bookingResult?.bookingCode },
     });
 
     // SMS 전송 API - 구현 완료 - 추후 이 코드로 교체
