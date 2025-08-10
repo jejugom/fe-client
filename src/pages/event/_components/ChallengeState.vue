@@ -1,6 +1,6 @@
 <!-- src/pages/event/_components/ChallengeState.vue -->
 <template>
-  <div class="border-primary-300 space-y-3 rounded-lg border p-4">
+  <div class="card-design space-y-4">
     <div class="flex justify-between">
       <div class="text-lg font-semibold">
         <span class="text-primary-300">{{ userName }}</span> 님의 골든라이프
@@ -12,10 +12,8 @@
         >
       </div>
     </div>
-
     <div>
-      <h3 class="text-primary-300 mb-2 text-base font-semibold">완료 리워드</h3>
-
+      <h3 class="text-primary-500 mb-2 font-semibold">완료 리워드</h3>
       <div class="flex justify-around">
         <div
           v-for="item in items"
@@ -31,6 +29,7 @@
         </div>
       </div>
     </div>
+    <slot />
   </div>
 </template>
 

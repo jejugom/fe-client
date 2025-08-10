@@ -4,7 +4,7 @@
     <label class="text-primary-500 mb-1 text-base font-semibold">
       {{ label }}
     </label>
-    <p v-if="description" class="text-primary-500 mb-1 text-sm">
+    <p v-if="description" class="text-primary-500 mb-1 text-base">
       {{ description }}
     </p>
 
