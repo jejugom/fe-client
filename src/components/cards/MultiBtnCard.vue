@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'border-surface-200 flex h-31.5 w-full items-center justify-between gap-6 rounded-lg border bg-white p-4',
+      'card-design flex items-center justify-between gap-6',
       $attrs.class,
     ]"
     v-bind="$attrs"
