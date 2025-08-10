@@ -1,19 +1,28 @@
 <template>
   <!-- 자산 카드 컴포넌트 -->
-  <div class="border-surface-200 overflow-hidden rounded-lg border">
+  <div class="card-design overflow-hidden">
     <!-- 상단 영역: 자산 정보 + 버튼 -->
-    <div class="flex items-center justify-between p-4">
-      <div class="flex-1">
+    <div class="flex items-center justify-between">
+      <img
+        :src="`/src/assets/images/${category.id.charAt(0).toUpperCase() + category.id.slice(1)}.svg`"
+        :alt="category.name"
+        class="mr-6 h-10 w-10"
+      />
+      <div class="my-2 flex-1">
+        <!-- 카테고리 이름 -->
+        <div class="text-primary-300 mb-2 text-base">{{ category.name }}</div>
         <!-- 자산 이름 -->
-        <div class="text-surface-500 font-semibold">{{ tempAsset.name }}</div>
+        <div class="text-primary-500 mb-2 text-xl font-semibold">{{
+          tempAsset.name
+        }}</div>
         <!-- 자산 금액 -->
-        <div class="text-surface-500 text-base">
+        <div class="text-primary-500 text-base">
           {{ formatCurrency(tempAsset.value) }}
         </div>
         <!-- 선택된 수증자 정보 (펼치기 전 상태에서만 표시) -->
         <div
           v-if="tempAsset.selected && !isExpanded"
-          class="text-primary-300 text-base"
+          class="text-primary-300 mt-2 text-base"
         >
           {{ getSelectedBeneficiaryInfo(tempAsset) }}
         </div>
@@ -28,14 +37,16 @@
             v-if="tempAsset.selected"
             label="삭제"
             color="surface"
-            size="small"
+            size="square"
             @click="showDeleteModal"
+            class="w-20"
           />
           <!-- 선택 or 변경 버튼 -->
           <Btn
             :label="tempAsset.selected ? '변경' : '선택'"
             :color="tempAsset.selected ? 'surface' : 'primary'"
-            size="small"
+            size="square"
+            class="w-20"
             @click="togglePanel"
           />
         </template>
@@ -47,14 +58,16 @@
             <Btn
               label="취소"
               color="surface"
-              size="small"
+              size="square"
+              class="w-20"
               @click="cancelSelection"
             />
             <!-- 완료 버튼 (조건 만족 시만 활성화) -->
             <Btn
               :disabled="!canComplete()"
               :color="canComplete() ? 'primary' : 'surface'"
-              size="small"
+              size="square"
+              class="w-20"
               @click="completeSelection"
             >
               완료
@@ -68,7 +81,7 @@
     <div v-if="isExpanded" class="border-surface-200 border-t">
       <div class="p-4">
         <!-- 수증자 선택 영역 -->
-        <div class="mb-4 flex flex-col gap-4 md:flex-row md:items-start">
+        <div class="my-4 flex flex-col gap-4 md:flex-row md:items-start">
           <h4 class="text-surface-500 text-base font-semibold md:w-32">
             수증자 선택
           </h4>
@@ -109,7 +122,7 @@
                 class="cursor-pointer p-3"
                 @click="selectMultipleBeneficiaries"
               >
-                <span class="text-surface-500">모두에게 나눠서 분배</span>
+                <span class="text-surface-500">여러 명에게 분배</span>
               </div>
             </div>
           </div>
@@ -228,9 +241,16 @@ interface Beneficiary {
   relation: string;
 }
 
+interface Category {
+  id: string;
+  name: string;
+}
+
 interface Props {
   asset: Asset;
   beneficiaries: Beneficiary[];
+  category: Category;
+  mode: 'gift' | 'inheritance';
 }
 
 interface Emits {
@@ -353,10 +373,11 @@ const cancelSelection = () => {
 // 선택된 수증자 정보 표시용 문자열 생성
 const getSelectedBeneficiaryInfo = (asset: Asset): string => {
   if (asset.isMultipleBeneficiaries) {
-    return '모든 수증자에게 분배';
+    return '여러 명에게 분배';
   }
   if (asset.beneficiary) {
-    return asset.beneficiary.name;
+    const suffix = props.mode === 'gift' ? '에게 증여' : '에게 상속';
+    return `${asset.beneficiary.name}${suffix}`;
   }
   return '';
 };
@@ -364,7 +385,7 @@ const getSelectedBeneficiaryInfo = (asset: Asset): string => {
 // 드롭다운 표시용 텍스트
 const getDropdownText = (asset: Asset): string => {
   if (asset.isMultipleBeneficiaries) {
-    return '모두에게 나눠서 분배';
+    return '여러 명에게 분배';
   }
   if (asset.beneficiary) {
     return `${asset.beneficiary.name} (${asset.beneficiary.relation})`;
