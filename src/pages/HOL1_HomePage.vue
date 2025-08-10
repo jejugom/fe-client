@@ -89,15 +89,8 @@
       </div>
     </section>
 
-    <div>
-      <h2 class="text-primary-500 mb-4 text-2xl font-bold"
-        >가장 가까운 골든라이프</h2
-      >
-      <div class="h-30 w-full bg-white"></div>
-    </div>
-
     <!-- 가장 가까운 골든라이프 -->
-    <section v-if="nearestBranch" class="mb-16">
+    <section v-if="nearestBranch">
       <div class="text-primary-500 mb-2 text-2xl font-bold">
         가장 가까운 골든라이프
       </div>
@@ -118,7 +111,7 @@
         <Btn
           color="surface"
           size="small"
-          label="지도"
+          label="찾아가기"
           @click="openMap(nearestBranch)"
         />
       </div>

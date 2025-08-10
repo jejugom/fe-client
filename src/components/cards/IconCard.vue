@@ -12,7 +12,7 @@
     <!-- 우측 상단 고정 아이콘 -->
     <TextBtn
       color="surface"
-      label="보러가기 ➜"
+      label="하러가기 ➜"
       size="small"
       class="absolute top-4 right-4"
     />

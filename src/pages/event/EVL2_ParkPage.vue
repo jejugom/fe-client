@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-secondary-100 relative left-1/2 mt-[-2.5rem] w-screen max-w-150 -translate-x-1/2 pb-16"
+    class="bg-secondary-100 relative left-1/2 mt-[-1.125rem] w-screen max-w-150 -translate-x-1/2 pb-16"
   >
     <div class="space-y-8 p-4">
       <!-- 제목 -->
@@ -77,7 +77,7 @@
       </div>
     </div>
 
-    <Modal
+    <Confirm
       v-if="showConfirm"
       :title="confirmTitle"
       leftLabel="계속있기"
@@ -86,7 +86,7 @@
       @click2="onConfirmYes"
     >
       <p class="text-center whitespace-pre-line">{{ confirmMessage }}</p>
-    </Modal>
+    </Confirm>
   </div>
 </template>
 
@@ -94,8 +94,7 @@
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { useRouter } from 'vue-router';
-// import Confirm from '@/components/modals/Confirm.vue';
-import Modal from '@/components/modals/Modal.vue';
+import Confirm from '@/components/modals/Confirm.vue';
 import { useRewardStore } from '@/stores/reward';
 
 const rewardStore = useRewardStore();

@@ -1,7 +1,7 @@
 <!-- src/pages/event/_components/ChallengeState.vue -->
 <template>
-  <div class="card-design space-y-4">
-    <div class="flex justify-between">
+  <div class="card-design space-y-4 py-8">
+    <!-- <div class="flex justify-between">
       <div class="text-lg font-semibold">
         <span class="text-primary-300">{{ userName }}</span> 님의 골든라이프
       </div>
@@ -11,9 +11,9 @@
           >{{ points.toLocaleString() }} P</div
         >
       </div>
-    </div>
+    </div> -->
     <div>
-      <h3 class="text-primary-500 mb-2 font-semibold">완료 리워드</h3>
+      <!-- <h3 class="text-primary-500 mb-2 font-semibold">완료 리워드</h3> -->
       <div class="flex justify-around">
         <div
           v-for="item in items"

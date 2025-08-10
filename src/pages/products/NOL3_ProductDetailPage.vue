@@ -192,7 +192,7 @@
     </div>
 
     <!-- 가입 예약 버튼 -->
-    <div class="">
+    <div class="mt-8">
       <p class="text-primary-500 mb-2 text-center font-semibold">
         은행에서 상담받고 가입하실 수 있어요
       </p>
