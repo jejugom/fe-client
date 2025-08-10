@@ -1,94 +1,81 @@
 <template>
-  <div class="mx-auto max-w-2xl p-6">
+  <div class="mx-auto max-w-3xl p-6">
     <!-- Header -->
-    <div class="mb-6 flex items-end justify-between gap-4">
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 class="text-primary-600 text-2xl font-bold">숫자 빨리 누르기</h1>
-        <p class="text-surface-500 mt-1 text-base"
-          >1부터 순서대로 눌러서 기록을 갱신해보세요!</p
-        >
+        <h1 class="text-primary-500 text-2xl font-bold">숫자 빨리 누르기</h1>
+        <p class="text-surface-500 mt-1 text-base">
+          1부터 순서대로 눌러서 기록을 갱신해보세요!
+        </p>
       </div>
 
       <!-- 난이도 -->
       <div class="flex items-center gap-2">
         <label class="text-surface-500 text-base">난이도</label>
-        <select
-          class="border-surface-200 focus:ring-primary-300 rounded-lg border bg-white px-3 py-2 text-base outline-none focus:ring-2"
-          v-model.number="gridSize"
+        <SelectBox
+          size="small"
+          v-model="gridSize"
           :disabled="started"
           aria-label="난이도 선택"
         >
-          <option :value="4">4×4</option>
-          <option :value="5">5×5</option>
-          <option :value="6">6×6</option>
-        </select>
+          <option :value="4">쉬움</option>
+          <option :value="5">보통</option>
+          <option :value="6">어려움</option>
+        </SelectBox>
       </div>
     </div>
 
+    <!-- Controls -->
+    <div class="mb-3 grid grid-cols-2 gap-3">
+      <Btn
+        color="primary"
+        size="large"
+        :label="finished ? '다시 시작' : started ? '진행 중…' : '시작하기'"
+        :disabled="started && !finished"
+        @click="startGame"
+      />
+
+      <Btn color="surface" size="large" label="멈추기" @click="resetGame" />
+    </div>
+
+    <!-- Progress bar -->
+    <div class="bg-surface-200 mb-3 h-2 w-full overflow-hidden rounded-full">
+      <div
+        class="bg-primary-500 h-full transition-[width]"
+        :style="{ width: progress + '%' }"
+      />
+    </div>
+
     <!-- Stats -->
-    <div class="mb-4 grid grid-cols-3 gap-3">
-      <div class="border-surface-200 rounded-lg border bg-white p-3">
-        <div class="text-surface-500 text-xs">다음 숫자</div>
-        <div class="text-xl font-semibold">{{ nextNumber }}</div>
+    <div class="mb-5 grid grid-cols-3 gap-3">
+      <div
+        class="border-surface-200 rounded-lg border bg-white p-3 text-center"
+      >
+        <div class="text-surface-500 text-base">다음 숫자</div>
+        <div class="text-xl font-semibold">{{ displayNextNumber }}</div>
       </div>
-      <div class="border-surface-200 rounded-lg border bg-white p-3">
-        <div class="text-surface-500 text-xs">경과 시간</div>
+      <div
+        class="border-surface-200 rounded-lg border bg-white p-3 text-center"
+      >
+        <div class="text-surface-500 text-base">경과 시간</div>
         <div class="text-xl font-semibold tabular-nums">{{ timeText }}</div>
       </div>
-      <div class="border-surface-200 rounded-lg border bg-white p-3">
-        <div class="text-surface-500 text-xs"
-          >최고 기록 ({{ gridSize }}×{{ gridSize }})</div
-        >
+      <div
+        class="border-surface-200 rounded-lg border bg-white p-3 text-center"
+      >
+        <div class="text-surface-500 text-base">최고 기록</div>
         <div class="text-xl font-semibold tabular-nums">
           {{ bestText ?? '-' }}
         </div>
       </div>
     </div>
 
-    <!-- Progress bar -->
-    <div class="bg-surface-200 mb-4 h-2 w-full overflow-hidden rounded-full">
-      <div
-        class="bg-primary-400 h-full transition-[width]"
-        :style="{ width: progress + '%' }"
-      />
-    </div>
-
-    <!-- Controls -->
-    <div class="mb-5 flex items-center gap-3">
-      <button
-        @click="startGame"
-        class="bg-primary-500 hover:bg-primary-600 rounded-lg px-4 py-2 text-white shadow-sm active:translate-y-[1px] disabled:opacity-50"
-        :disabled="started && !finished"
-      >
-        {{ finished ? '다시 시작' : started ? '진행 중…' : '시작하기' }}
-      </button>
-
-      <button
-        @click="resetGame"
-        class="border-surface-300 text-surface-700 hover:bg-surface-50 rounded-lg border bg-white px-4 py-2 active:translate-y-[1px]"
-      >
-        초기화
-      </button>
-
-      <span
-        class="ml-auto text-base"
-        :class="
-          finished
-            ? 'text-emerald-600'
-            : wrongBlink
-              ? 'text-rose-600'
-              : 'text-surface-500'
-        "
-      >
-        {{ statusText }}
-      </span>
-    </div>
-
-    <!-- Grid -->
+    <!-- 게임 -->
     <div
-      class="grid gap-2"
+      class="relative mb-8 grid gap-2"
       :style="{
         gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
+        zIndex: started ? 9999 : 'auto',
       }"
       role="grid"
       :aria-rowcount="gridSize"
@@ -100,23 +87,38 @@
         role="gridcell"
         :aria-label="`${n}번 버튼`"
         @click="onCellClick(n, $event)"
-        class="aspect-square rounded-lg border text-lg font-semibold shadow-sm transition select-none focus:ring-2 focus:outline-none"
+        class="relative aspect-square rounded-lg border text-lg font-semibold shadow-sm transition select-none focus:ring-2 focus:outline-none"
         :class="cellClass(n)"
+        :style="{
+          zIndex: started ? (n === nextNumber ? 10005 : 10000) : 'auto',
+        }"
       >
-        {{ n }}
+        {{ n === 0 ? '✓' : n }}
       </button>
     </div>
 
-    <!-- Tip -->
-    <p class="text-surface-400 mt-5 text-center text-xs">
-      팁: 시작을 누르고 바로 <span class="font-semibold">1</span>부터
-      눌러보세요. 오답은 빨갛게 깜빡여요.
-    </p>
+    <!-- Status (only show when there's meaningful feedback) -->
+    <div v-if="started" class="text-center">
+      <span
+        class="text-lg font-semibold"
+        :class="
+          finished
+            ? 'text-emerald-600'
+            : wrongBlink
+              ? 'text-rose-600'
+              : 'text-surface-500'
+        "
+      >
+        {{ statusText }}
+      </span>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import Btn from '@/components/buttons/Btn.vue';
+import SelectBox from '@/components/forms/SelectBox.vue';
 
 /** ---------- 상태 ---------- */
 const gridSize = ref<number>(4); // 4,5,6
@@ -132,6 +134,7 @@ let rafId: number | null = null;
 
 // 피드백
 const wrongBlink = ref<boolean>(false);
+const wrongNumber = ref<number | null>(null);
 
 /** ---------- 유틸 ---------- */
 function shuffle<T>(arr: T[]): T[] {
@@ -142,11 +145,6 @@ function shuffle<T>(arr: T[]): T[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
-}
-
-function fmt(ms: number): string {
-  if (!ms || ms < 0) return '0.000';
-  return (ms / 1000).toFixed(3);
 }
 
 const bestKey = computed(() => `evl2_best_${gridSize.value}`);
@@ -201,6 +199,7 @@ function resetGame() {
   started.value = false;
   finished.value = false;
   wrongBlink.value = false;
+  wrongNumber.value = null;
   stopTimer();
   elapsedMs.value = 0;
   nextNumber.value = 1;
@@ -210,10 +209,16 @@ function resetGame() {
 function onCellClick(n: number, e: MouseEvent) {
   if (!started.value || finished.value) return;
 
+  // 다른 숫자를 누르면 이전 오답 표시 제거
+  if (wrongNumber.value !== null) {
+    wrongNumber.value = null;
+    wrongBlink.value = false;
+  }
+
   if (n !== nextNumber.value) {
     // 오답 피드백
     wrongBlink.value = true;
-    setTimeout(() => (wrongBlink.value = false), 150);
+    wrongNumber.value = n;
     (e.currentTarget as HTMLButtonElement)?.classList.add('shake');
     setTimeout(
       () => (e.currentTarget as HTMLButtonElement)?.classList.remove('shake'),
@@ -238,6 +243,11 @@ function onCellClick(n: number, e: MouseEvent) {
 }
 
 /** ---------- 파생값 ---------- */
+function fmt(ms: number): string {
+  if (!ms || ms < 0) return '0.000';
+  return (ms / 1000).toFixed(3);
+}
+
 const timeText = computed(() => fmt(elapsedMs.value));
 const bestText = computed(() =>
   bestMs.value == null ? null : fmt(bestMs.value)
@@ -246,11 +256,20 @@ const bestText = computed(() =>
 const progress = computed(() => {
   const total = gridSize.value * gridSize.value;
   const done = nextNumber.value - 1;
-  return Math.min(100, Math.round((done / total) * 100));
+  const percentage = Math.min(100, Math.round((done / total) * 100));
+  return percentage;
+});
+
+const displayNextNumber = computed(() => {
+  const total = gridSize.value * gridSize.value;
+  if (finished.value || nextNumber.value > total) {
+    return '끝났습니다!';
+  }
+  return nextNumber.value;
 });
 
 const statusText = computed(() => {
-  if (finished.value) return `클리어! 기록 ${timeText.value}s`;
+  if (finished.value) return `잘하셨어요! 기록은${timeText.value}초 입니다!`;
   if (wrongBlink.value) return '오답!';
   if (started.value) return '진행 중…';
   return '대기 중';
@@ -259,11 +278,14 @@ const statusText = computed(() => {
 /** ---------- 셀 클래스 ---------- */
 function cellClass(n: number) {
   if (n === 0)
-    return 'border-surface-200 bg-surface-100 text-surface-300 pointer-events-none';
+    return 'border-surface-200 bg-surface-100 text-surface-300 pointer-events-none z-0';
+  // 틀린 숫자 빨간 테두리
+  if (n === wrongNumber.value)
+    return 'border-red-500 bg-white text-red-500 focus:ring-red-300 z-50';
   // 다음 숫자 하이라이트
   if (n === nextNumber.value)
-    return 'border-primary-300 bg-primary-50 text-primary-700 hover:bg-primary-100 focus:ring-primary-300';
-  return 'border-surface-200 bg-white text-surface-700 hover:bg-surface-50 focus:ring-primary-300';
+    return 'border-primary-300 bg-primary-50 text-primary-700 focus:ring-primary-300 z-50';
+  return 'border-surface-200 bg-white text-surface-700 focus:ring-primary-300 z-50';
 }
 
 /** ---------- 워처 & 라이프사이클 ---------- */
@@ -272,7 +294,9 @@ watch(gridSize, () => {
   resetGame();
 });
 
-onBeforeUnmount(() => stopTimer());
+onBeforeUnmount(() => {
+  stopTimer();
+});
 
 // 초기화
 loadBest();
@@ -300,5 +324,19 @@ setupBoard();
 }
 .shake {
   animation: shake 0.18s ease-in-out;
+}
+
+/* 게임 버튼 포커스 시 z-index 유지 */
+button[role="gridcell"]:focus {
+  z-index: 10006 !important;
+}
+
+/* 다음 버튼 하이라이트 시 z-index 유지 */
+button[role="gridcell"].bg-primary-50 {
+  z-index: 10005 !important;
+}
+
+button[role="gridcell"].bg-primary-50:focus {
+  z-index: 10006 !important;
 }
 </style>
