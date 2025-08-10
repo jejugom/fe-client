@@ -116,6 +116,10 @@ export const useProductStore = defineStore('product', {
       return all.find((p) => p.finPrdtCd === id);
     },
     getProductsByRecommendIds(recommendItems: CustomRecommendProduct[]) {
+      console.log('🔍 getProductsByRecommendIds 호출됨');
+      console.log('📋 추천 아이템들:', recommendItems);
+      console.log('🏪 현재 스토어 상태:', this.allProducts);
+      
       const recommendedProducts: (
         | TimeDepositProduct
         | SavingDepositProduct
@@ -124,12 +128,19 @@ export const useProductStore = defineStore('product', {
         | FundProduct
         | TrustProduct
       )[] = [];
+      
       recommendItems.forEach((item) => {
+        console.log(`🔎 상품 코드 ${item.finPrdtCd} 검색 중...`);
         const product = this.getProductById(item.finPrdtCd);
         if (product) {
+          console.log(`✅ 상품 찾음:`, product);
           recommendedProducts.push(product);
+        } else {
+          console.log(`❌ 상품 못찾음: ${item.finPrdtCd}`);
         }
       });
+      
+      console.log('📦 최종 추천 상품 목록:', recommendedProducts);
       return recommendedProducts;
     },
   },
