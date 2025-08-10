@@ -44,7 +44,7 @@ import { useLoadingStore } from '@/stores/loading';
 
 const route = useRoute();
 
-const bookingCodeFromQuery = ref('');
+const bookingCode = ref('');
 const data = ref<Register | null>(null);
 const loadingStore = useLoadingStore();
 
@@ -53,10 +53,10 @@ onMounted(async () => {
   const code = route.query.bookingCode as string;
   if (!code) return;
 
-  bookingCodeFromQuery.value = code;
+  bookingCode.value = code;
   loadingStore.startLoading();
   try {
-    // API 호출 시 ID 대신 bookingCode를 사용합니다. (백엔드 API도 수정 필요)
+    // API 호출 시 ID 대신 bookingCode를 사용 (백엔드 NHDR-229 Merge 후 사용가능)
     const result = await fetchReservedDetail(code);
     data.value = result;
   } catch (e) {
@@ -78,7 +78,7 @@ const infoRows = computed(() => {
     { label: '상품명', value: data.value.prodName },
     { label: '지점명', value: data.value.branchName },
     { label: '날짜/시간', value: formattedDateTime.value },
-    // 사용자에게 보여주는 예약 번호를 bookingCode로 변경합니다.
+    // 사용자에게 보여주는 예약 번호를 bookingCode로 변경
     { label: '예약 번호', value: data.value.bookingCode },
   ];
 });
