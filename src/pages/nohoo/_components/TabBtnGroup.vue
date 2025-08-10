@@ -1,8 +1,8 @@
 <template>
   <div
-    class="fixed top-[calc(4rem)] left-1/2 z-20 box-border w-full max-w-150 -translate-x-1/2 bg-white px-5 pt-4"
+    class="border-b-surface-200 fixed top-[calc(4rem)] left-1/2 z-20 box-border w-full max-w-150 -translate-x-1/2 border-b bg-white px-5 pt-4"
   >
-    <div class="flex flex-col">
+    <div class="scrollbar-hide flex overflow-x-auto">
       <div class="flex gap-2">
         <TabBtn
           v-for="tab in tabs"
@@ -12,7 +12,6 @@
           @click="selectTab(tab)"
         />
       </div>
-      <div class="bg-surface-200 h-0.5 w-full" />
     </div>
   </div>
 </template>
@@ -34,3 +33,13 @@ const selectTab = (tab: string) => {
   emit('update:selectedTab', tab);
 };
 </script>
+
+<style scoped>
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Webkit */
+}
+</style>

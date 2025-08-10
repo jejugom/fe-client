@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="shadow-up-xs relative flex h-20 items-center justify-around bg-white px-5 text-sm"
+    class="shadow-up-xs relative flex h-20 items-center justify-around bg-white px-5 text-base"
   >
     <router-link
       v-for="tab in tabs"

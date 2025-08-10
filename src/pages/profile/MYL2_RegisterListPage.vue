@@ -4,13 +4,13 @@
   </div>
 
   <div v-else class="space-y-4">
-    <div class="text-secondary-500 mb-2 text-lg font-semibold">
-      예약하신 방문 내용을 확인하세요
+    <div class="text-primary-500 mb-4 text-2xl font-bold">
+      예약 일정이 곧 다가와요!
     </div>
 
     <!-- 예약 내역이 있는 경우 -->
     <div v-if="sortedBookings.length > 0" class="space-y-4">
-      <RegisterCard 
+      <RegisterCard
         v-for="booking in sortedBookings"
         :key="booking.id"
         :booking="booking"
@@ -19,8 +19,15 @@
     </div>
 
     <!-- 예약 내역이 없는 경우 -->
-    <div v-else class="py-8 text-center text-gray-500">
-      예약 내역이 없습니다.
+    <div v-else class="text-primary-500 py-8 text-center font-semibold">
+      예약 내역이 없습니다. 다양한 금융 상품을 예약해 보세요!
+      <Btn
+        color="primary"
+        label="맞춤 상품 확인하기"
+        size="large"
+        class="mt-4"
+        @click="router.push({ name: 'nohoo' })"
+      />
     </div>
   </div>
 </template>
@@ -29,22 +36,26 @@
 import { ref, computed, onMounted } from 'vue';
 import RegisterCard from './_components/RegisterCard.vue';
 import { mypageApi } from '@/api/user/mypage';
+import Btn from '@/components/buttons/Btn.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const myPageData = ref(null);
 const loading = ref(true);
 
 // Transform booking data from API to match RegisterCard expectations
 const transformBookingData = (bookingInfo) => {
-  return bookingInfo.map(booking => {
+  return bookingInfo.map((booking) => {
     const date = new Date(booking.date);
     const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    
+
     return {
       id: booking.bookingId,
       date: formattedDate,
       time: booking.time,
       bank_name: `지점 ID: ${booking.branchId}`, // TODO: 실제 지점명으로 변환 필요
-      prdt_name: booking.finPrdtCode // TODO: 실제 상품명으로 변환 필요
+      prdt_name: booking.finPrdtCode, // TODO: 실제 상품명으로 변환 필요
     };
   });
 };

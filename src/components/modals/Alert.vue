@@ -14,10 +14,7 @@
         aria-modal="true"
       >
         <!-- 제목 -->
-        <div
-          v-if="title"
-          class="text-primary-300 text-center text-2xl font-bold"
-        >
+        <div v-if="title" class="text-primary-300 text-left text-xl font-bold">
           {{ title }}
         </div>
 
@@ -28,12 +25,11 @@
 
         <!-- 고정 버튼 (중앙 정렬 추가) -->
         <div class="flex justify-center">
-          <BtnSet
-            :label1="leftLabel"
-            :label2="rightLabel"
-            @click1="emit('click1')"
-            @click2="emit('click2')"
-            type="type1"
+          <Btn
+            color="primary"
+            label="확인"
+            size="medium"
+            @click="emit('click')"
           />
         </div>
       </div>
@@ -43,7 +39,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue';
-import BtnSet from '@/components/buttons/BtnSet.vue';
+import Btn from '@/components/buttons/Btn.vue';
 
 defineProps<{
   title?: string;
@@ -52,8 +48,7 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'click1'): void;
-  (e: 'click2'): void;
+  (e: 'click'): void;
 }>();
 
 onMounted(() => {

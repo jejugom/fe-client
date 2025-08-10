@@ -9,10 +9,10 @@
       color === 'surface' &&
         'text-surface-500 border-surface-200 border bg-white',
       color === 'disabled' && 'text-surface-500 bg-surface-200',
-      size === 'small' && 'h-8 w-20 text-sm',
+      size === 'small' && 'h-8 w-20 text-base',
       size === 'medium' && 'h-15 w-72 text-lg',
       size === 'large' && 'h-15 w-full text-lg',
-      size === 'square' && 'h-13 w-13 text-sm',
+      size === 'square' && 'h-13 w-13 text-base',
       $attrs.class,
     ]"
     v-bind="$attrs"
