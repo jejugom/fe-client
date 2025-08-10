@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="stroke-primary mt-8 flex h-120 flex-col gap-8 rounded-xl px-8 py-16"
-  >
+  <div class="card-design mt-8 flex h-120 flex-col gap-8 px-8 py-16">
     <div class="flex flex-col items-center text-center">
       <h1 class="text-primary-500 mb-4 text-lg font-semibold">
         Q{{ currentQuestionIndex + 1 }}.
@@ -19,11 +17,7 @@
         v-for="(option, index) in question.options"
         :key="index"
         :label="option"
-        :color="
-          selectedAnswer === index
-            ? 'secondary-stroke'
-            : 'surface'
-        "
+        :color="selectedAnswer === index ? 'secondary-stroke' : 'surface'"
         size="medium"
         class="w-full"
         @click="selectAnswer(index)"

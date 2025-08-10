@@ -1,68 +1,175 @@
 <template>
-  <div class="gift-simulation-result w-full p-4">
-    <div class="mb-6">
-      <h3 class="mb-2 text-lg font-bold">예상 증여세 총액은?</h3>
-      <p class="text-xl font-semibold text-red-300">
-        약 {{ formatCurrency(totalGiftTax) }}
-      </p>
-    </div>
-    <div class="mb-6">
-      <h3 class="mb-2 text-lg font-semibold">수증자별 세금 요약</h3>
-      <table class="border-surface-200 w-full border text-sm">
-        <thead class="bg-primary-100">
-          <tr>
-            <th class="border-surface-200 border p-2">수증자</th>
-            <th class="border-surface-200 border p-2">증여금</th>
-            <th class="border-surface-200 border p-2">예상 증여세</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(recipient, index) in recipientSummaries" :key="index">
-            <td class="border-surface-200 border p-2">
-              {{ recipient.recipientName }}
-            </td>
-            <td class="border-surface-200 border p-2">
-              {{ formatCurrency(recipient.totalGiftAmount) }}
-            </td>
-            <td class="border-surface-200 border p-2">
-              {{ formatCurrency(recipient.estimatedTax) }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="mb-6">
-      <h3 class="mb-2 text-lg font-semibold">절세 전략 추천</h3>
-      <ul class="list-disc pl-5 text-sm">
-        <li v-for="(strategy, index) in taxSavingStrategies" :key="index">
-          {{ strategy }}
-        </li>
-      </ul>
-    </div>
-
-    <div class="mb-2">
-      <h3 class="mb-2 text-lg font-semibold">증여금 vs 증여세 비교</h3>
-      <div class="mt-4">
-        <apexchart
-          type="bar"
-          :options="chartOptions"
-          :series="chartSeries"
-        ></apexchart>
+  <div
+    class="relative left-1/2 mt-[-1.125rem] w-screen max-w-150 -translate-x-1/2"
+  >
+    <div class="bg-white px-4 py-8">
+      <h2 class="text-primary-500 mb-4 text-center text-2xl font-bold"
+        >증여세 시뮬레이션 결과</h2
+      >
+      <div class="mb-16">
+        <div
+          class="shadow-up-xs border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
+        >
+          <div class="relative">
+            <h3 class="text-primary-500 mb-2 text-xl font-semibold"
+              >예상 증여세 총액</h3
+            >
+            <p class="text-primary-500 text-3xl font-bold">
+              {{ formatCurrency(totalGiftTax) }}
+            </p>
+            <div class="text-primary-500 mt-4 mb-4 flex items-center">
+              어떻게 계산되었는지 궁금하신가요? 🤔
+            </div>
+            <Btn
+              color="surface"
+              label="증여세 계산 방법 보러가기"
+              size="large"
+              @click="goToTaxInfo"
+            />
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="mt-4 text-end">
-      <p class="text-surface-300 italic">
-        * 이 결과는 참고용 시뮬레이션이며, 실제 세액은 세무사 상담 후
-        확정됩니다.
-        <br />
-      </p>
+
+      <div class="mb-16">
+        <!-- 수증자별 세금 요약표 -->
+        <div
+          class="shadow-up-xs border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
+        >
+          <div class="mb-2 flex items-center">
+            <h3 class="text-primary-500 text-xl font-semibold"
+              >수증자별 세금 요약표</h3
+            >
+          </div>
+
+          <div class="mb-8 overflow-hidden bg-white text-sm">
+            <table class="w-full">
+              <thead>
+                <tr>
+                  <th
+                    class="bg-primary-500 border border-white px-2 py-4 text-center font-semibold text-white"
+                  >
+                    수증자
+                  </th>
+                  <th
+                    class="bg-primary-500 border border-white px-2 py-4 text-center font-semibold text-white"
+                  >
+                    증여금
+                  </th>
+                  <th
+                    class="bg-primary-500 border border-white px-2 py-4 text-center font-semibold text-white"
+                  >
+                    예상 증여세
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-surface-200 divide-y">
+                <tr
+                  v-for="(recipient, index) in recipientSummaries"
+                  :key="index"
+                >
+                  <td>
+                    <div class="text-center">
+                      <div class="text-primary-500">
+                        {{ recipient.recipientName }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-2 py-4 text-center">
+                    <div class="text-primary-500 font-semibold">
+                      {{ formatCurrency(recipient.totalGiftAmount) }}
+                    </div>
+                  </td>
+                  <td class="px-2 py-4 text-center">
+                    <div class="text-primary-500 font-semibold">
+                      {{ formatCurrency(recipient.estimatedTax) }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 수증자별 증여금, 증여세 비교 차트 -->
+          <div class="mb-2 flex items-center">
+            <h3 class="text-primary-500 text-xl font-semibold"
+              >수증자별 증여금, 증여세 비교</h3
+            >
+          </div>
+          <div class="rounded-xl bg-white p-6">
+            <div v-if="chartSeries.length > 0">
+              <apexchart
+                type="bar"
+                :options="chartOptions"
+                :series="chartSeries"
+                height="300"
+              ></apexchart>
+            </div>
+            <div
+              v-else
+              class="text-primary-500 flex h-64 items-center justify-center"
+            >
+              <div class="text-center">
+                <svg
+                  class="text-primary-500 mx-auto h-12 w-12"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+                <p class="mt-2">차트 데이터를 불러오는 중...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 유형별 절세 전략 추천 -->
+      <div class="">
+        <div
+          class="shadow-up-xs border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
+        >
+          <div class="mb-2 flex items-center">
+            <h3 class="text-primary-500 text-xl font-semibold"
+              >유형별 절세 전략 추천</h3
+            >
+          </div>
+
+          <div
+            v-for="(strategy, index) in taxSavingStrategies"
+            :key="index"
+            class="group mx-1 mb-4 flex items-start"
+          >
+            <!-- 숫자 인덱스 -->
+            <div
+              class="bg-primary-500 mt-2 mr-4 flex h-7 w-7 items-center justify-center rounded-full font-bold text-white"
+            >
+              {{ index + 1 }}
+            </div>
+
+            <!-- 전략 내용 -->
+            <div class="flex-1">
+              <p class="">
+                {{ strategy }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import VueApexCharts from 'vue3-apexcharts';
+import Btn from '@/components/buttons/Btn.vue';
 
 import { formatCurrency } from '@/utils/format';
 import { useSimulationStore } from '@/stores/simulation';
@@ -73,6 +180,11 @@ import type {
 
 const apexchart = VueApexCharts;
 const simulationStore = useSimulationStore();
+const router = useRouter();
+
+const goToTaxInfo = () => {
+  router.push({ name: 'GiftTaxInfo' });
+};
 
 const totalGiftTax = computed(() => simulationStore.totalGiftTax);
 const recipientSummaries = computed(() => simulationStore.recipientSummaries);

@@ -1,9 +1,9 @@
 <template>
   <TabBtnGroup
-    :tabs="['맞춤', '예금', '적금', '펀드', '금', '주택담보', '신탁']"
+    :tabs="['맞춤', '금', '예금', '적금', '펀드', '주택담보', '신탁']"
     v-model:selectedTab="selectedTab"
   />
-  <div class="mt-8 flex flex-col gap-8">
+  <div class="mt-12 flex flex-col gap-8">
     <AdBox
       :selectedTab="selectedTab"
       :userName="userName"
@@ -11,23 +11,27 @@
       :assetSummary="assetSummary"
       :news="filteredNews"
     />
-    <div v-if="selectedTab !== '금'" class="flex justify-end">
-      <SelectBox size="small" v-model="sortOption">
-        <option value="name">상품명순</option>
-        <option v-if="selectedTab === '맞춤'" value="score">맞춤점수순</option>
-        <option
-          v-if="selectedTab === '예금' || selectedTab === '적금'"
-          value="rate"
-          >최고금리순</option
-        >
-        <option v-if="selectedTab === '주택담보'" value="rate"
-          >최저금리순</option
-        >
-        <option v-if="selectedTab === '펀드'" value="rate">최고수익률순</option>
-      </SelectBox>
-    </div>
 
     <div class="flex flex-col gap-4">
+      <div v-if="selectedTab !== '금'" class="flex justify-end">
+        <SelectBox size="small" v-model="sortOption">
+          <option value="name">상품명순</option>
+          <option v-if="selectedTab === '맞춤'" value="score"
+            >맞춤점수순</option
+          >
+          <option
+            v-if="selectedTab === '예금' || selectedTab === '적금'"
+            value="rate"
+            >최고금리순</option
+          >
+          <option v-if="selectedTab === '주택담보'" value="rate"
+            >최저금리순</option
+          >
+          <option v-if="selectedTab === '펀드'" value="rate"
+            >최고수익률순</option
+          >
+        </SelectBox>
+      </div>
       <div
         v-if="selectedTab !== '맞춤' && filteredProducts.length === 0"
         class="text-surface-400 text-center text-base"
@@ -36,7 +40,7 @@
         바꿔보시겠어요?
       </div>
       <div v-if="selectedTab === '맞춤'">
-        <p class="text-primary-300 text-2xl font-semibold">
+        <p class="text-primary-500 text-2xl font-bold">
           딱 맞는 상품만 보여드릴게요</p
         >
         <p v-if="recommendationCommentParts" class="mt-2">

@@ -1,33 +1,39 @@
 <template>
   <div>
-    <h1 class="text-primary-300 mb-3 text-2xl font-bold">추가 유언 작성하기</h1>
-    <p class="text-surface-600 mb-8">
-      유언장 템플릿의 하단 부분에 들어갈 내용을 자유롭게 작성해 주세요.<br />
-      가족에게 남기고 싶은 따뜻한 말이나 유언의 배경 등을 적을 수 있습니다.<br />
-      작성하신 추가 유언 내용은 저장됩니다.
+    <h1 class="text-primary-500 mb-4 text-2xl font-bold">추가 유언 작성하기</h1>
+    <p class="mb-8 leading-relaxed">
+      <span class="block indent-2">
+        유언장 템플릿의 하단 부분에 들어갈 내용을 자유롭게 작성해 주세요.
+      </span>
+      <span class="block indent-2">
+        가족에게 남기고 싶은 따뜻한 말이나 유언의 배경 등을 적을 수 있습니다.
+      </span>
+      <span class="block indent-2">
+        작성하신 추가 유언 내용은 저장됩니다.
+      </span>
     </p>
 
-    <div class="space-y-6">
+    <div class="space-y-8">
       <div>
         <h2 class="text-primary-300 mb-2 text-xl font-bold">
           남기고 싶은 유언
         </h2>
         <textarea
           v-model="localWillContent"
-          class="border-primary-300 w-full rounded-lg border p-4 text-base"
+          class="border-surface-300 input-focus focus:ring-gold focus:border-gold w-full rounded-lg border bg-white p-4 text-base focus:ring-1 focus:outline-none"
           rows="8"
           placeholder="예) 본 유언장은 저의 자유로운 의사에 따라 작성된 것으로, 가족 간의 이해를 부탁드립니다. 제가 남긴 자산이 가족의 행복을 위해 사용되기를 바랍니다."
         ></textarea>
       </div>
     </div>
 
-    <div class="mt-12 flex space-x-4">
-      <Btn color="surface" label="이전으로" size="large" @click="goBack" />
-      <Btn
-        color="primary"
-        label="저장하고 결과 보기"
-        size="large"
-        @click="saveAndGoToResult"
+    <div class="mt-16">
+      <BtnSet
+        label1="이전으로"
+        label2="저장하고 결과보기"
+        type="type2"
+        @click1="goBack"
+        @click2="saveAndGoToResult"
       />
     </div>
   </div>
@@ -38,6 +44,7 @@ import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 import { useInheritanceStore } from '@/stores/inheritance';
+import BtnSet from '@/components/buttons/BtnSet.vue';
 
 const inheritanceStore = useInheritanceStore();
 const router = useRouter();

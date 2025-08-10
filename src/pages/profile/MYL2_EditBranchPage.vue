@@ -3,25 +3,25 @@
 
   <!-- 현재 위치 표시 -->
   <div class="mb-8">
-    <h2 class="text-primary-300 mb-2 text-2xl font-bold">
+    <h2 class="text-primary-500 mb-2 text-2xl font-bold">
       나의 국민은행 지점 설정
     </h2>
-    <p class="text-surface-500 font-semibold"
-      >현재 위치: {{ currentAddress }}</p
+    <p class="font-semibold">현재 위치: {{ currentAddress }}</p>
+    <!-- 현재 설정된 지점 표시 -->
+    <div
+      v-if="currentBranch"
+      class="stroke-primary bg-primary-100 my-2 w-full rounded-lg p-4"
     >
-  </div>
-
-  <!-- 현재 설정된 지점 표시 -->
-  <div v-if="currentBranch" class="bg-primary-100 mb-4 w-full rounded-lg p-3">
-    현재 설정된 지점:
-    <span class="text-primary-500 ml-2 text-base font-semibold">{{
-      currentBranch
-    }}</span>
+      현재 설정된 지점:
+      <span class="text-primary-500 ml-2 text-base font-semibold">{{
+        currentBranch
+      }}</span>
+    </div>
   </div>
 
   <!-- 검색 영역 -->
-  <div class="flex flex-col">
-    <div class="mb-6 flex items-center gap-2">
+  <div class="flex flex-col gap-4">
+    <div class="flex items-center gap-2">
       <InputBox
         placeholder="지점 입력 (예: 광진구)"
         size="medium"
@@ -35,12 +35,10 @@
     <!-- 선택된 지점 표시 -->
     <div
       v-if="displaySelectedBranchName"
-      class="bg-secondary-100 mb-4 w-full rounded-lg p-3"
+      class="stroke-secondary bg-secondary-100 w-full rounded-lg p-4"
     >
       선택한 지점:
-      <span class="text-secondary-500 ml-2 text-base font-semibold">{{
-        displaySelectedBranchName
-      }}</span>
+      <span class="font-semibold">{{ displaySelectedBranchName }}</span>
     </div>
 
     <!-- 지도 영역 -->
@@ -51,6 +49,7 @@
   <BtnSet
     label1="건너뛰기"
     label2="설정하기"
+    @click1="router.push({ name: 'profile' })"
     @click2="handleComplete"
     type="type2"
   />
@@ -95,7 +94,10 @@ const searchPlaces = () => {
 
           kakao.maps.event.addListener(marker, 'click', () => {
             displaySelectedBranchName.value = place.place_name; // UI에 표시될 전체 지점명
-            selectedBranch.value = place.place_name.replace(/KB국민은행\s*/g, '').replace(/점/g, '').trim(); // 로직에 사용될 간소화된 지점명
+            selectedBranch.value = place.place_name
+              .replace(/KB국민은행\s*/g, '')
+              .replace(/점/g, '')
+              .trim(); // 로직에 사용될 간소화된 지점명
           });
 
           bounds.extend(pos);
@@ -108,7 +110,10 @@ const searchPlaces = () => {
 };
 
 const normalizeBranchName = (name: string) => {
-  return name.replace(/KB국민은행\s*/g, '').replace(/점/g, '').trim();
+  return name
+    .replace(/KB국민은행\s*/g, '')
+    .replace(/점/g, '')
+    .trim();
 };
 
 const handleComplete = async () => {
@@ -131,7 +136,9 @@ const handleComplete = async () => {
 
       const response = await branchApi.setMyBranch({ branchId: branchData.id });
       console.log('지점 설정 성공:', response);
-      alert(`지점 "${displaySelectedBranchName.value}"이(가) 성공적으로 설정되었습니다.`);
+      alert(
+        `지점 "${displaySelectedBranchName.value}"이(가) 성공적으로 설정되었습니다.`
+      );
       currentBranch.value = displaySelectedBranchName.value; // 현재 지점 업데이트
     } catch (error) {
       console.error('지점 설정 실패:', error);

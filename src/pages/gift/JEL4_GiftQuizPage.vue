@@ -47,7 +47,7 @@
       </section>
     </div>
 
-    <div class="border-primary-300 my-16 rounded-xl border bg-white p-4">
+    <div class="border-primary-300 my-16 rounded-lg border bg-white p-4">
       <template v-if="mode === 'gift'">
         <div class="text-primary-300 mb-2 text-lg font-semibold">
           수증자별 증여 금액
@@ -62,7 +62,7 @@
             {{ formatCurrency(calculateTotalForBeneficiary(beneficiary.id)) }}
           </span>
         </div>
-        <div class="text-surface-500 text-sm">
+        <div class="text-surface-500 text-base">
           총 증여 금액: {{ formatCurrency(calculateGrandTotal()) }}
         </div>
       </template>
@@ -88,14 +88,14 @@
             <div
               v-for="asset in getAssetsForBeneficiary(beneficiary.id)"
               :key="asset.id"
-              class="text-surface-500 flex justify-between text-sm"
+              class="text-surface-500 flex justify-between text-base"
             >
               <span>{{ asset.name }}</span>
               <span>{{ formatCurrency(asset.value) }}</span>
             </div>
           </div>
         </div>
-        <div class="text-primary-300 text-right text-sm">
+        <div class="text-primary-300 text-right text-base">
           총 상속 자산: {{ formatCurrency(calculateGrandTotal()) }}
         </div>
       </template>

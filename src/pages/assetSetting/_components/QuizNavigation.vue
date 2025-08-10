@@ -6,7 +6,7 @@
     <!-- TODO: 프로필에서 넘어온 경우에는 설명 필요없음 -->
     <p
       v-if="isLastQuestion"
-      class="text-primary-300 mb-2 text-center font-semibold"
+      class="text-primary-500 mb-2 text-center font-semibold"
     >
       다음으로 나의 지점 설정을 도와드릴게요.
     </p>

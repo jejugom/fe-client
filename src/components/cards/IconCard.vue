@@ -10,10 +10,11 @@
     @click="onClick"
   >
     <!-- 우측 상단 고정 아이콘 -->
-    <img
-      :src="ArrowIcon"
-      class="absolute top-4 right-4 h-6 w-6"
-      alt="arrow icon"
+    <TextBtn
+      color="surface"
+      label="보러가기 ➜"
+      size="small"
+      class="absolute top-4 right-4"
     />
 
     <!-- 아이콘 영역 -->
@@ -22,7 +23,7 @@
     </div>
 
     <!-- 텍스트 -->
-    <div class="text-primary-300 flex flex-col gap-1">
+    <div class="text-primary-500 flex flex-col gap-1 text-sm">
       <div>{{ content1 }}</div>
       <div class="text-primary-500 text-2xl font-bold">{{ title }}</div>
       <div>{{ content2 }}</div>
@@ -31,6 +32,8 @@
 </template>
 <script setup lang="ts">
 import ArrowIcon from '@/assets/icons/Arrow45.svg';
+import TextBtn from '../buttons/TextBtn.vue';
+
 defineOptions({ inheritAttrs: false });
 defineProps<{
   title?: string;
