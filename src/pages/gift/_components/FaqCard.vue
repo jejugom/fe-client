@@ -1,6 +1,6 @@
 <template>
   <div
-    class="btn-pressed shadow-up-xs flex h-15 w-full items-center gap-4 rounded-lg bg-white p-0 shadow-xs"
+    class="btn-pressed flex h-15 w-full items-center gap-4 rounded-lg bg-white p-0 shadow-xs"
     @click="$emit('click')"
   >
     <!-- 카테고리 -->
