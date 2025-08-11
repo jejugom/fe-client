@@ -28,12 +28,18 @@
 
     <!-- 챌린지 현황 / 보상 -->
     <div class="space-y-4">
-      <div class="text-primary-500 text-2xl font-bold">챌린지 현황</div>
+      <div class="text-primary-500 text-2xl font-bold"
+        >오늘의 노후도락 PLAY 현황</div
+      >
       <ChallengeState :points="todayPoint">
         <Btn
           :color="rewardStore.allCompleted ? 'primary' : 'surface'"
           :disabled="!rewardStore.allCompleted"
-          label="보상 받기"
+          :label="
+            rewardStore.allCompleted
+              ? '포인트리로 전환하기'
+              : '오늘의 노후도락 PLAY를 완료해 주세요'
+          "
           size="large"
           @click="onClickClaim"
         />
@@ -77,9 +83,8 @@
     @click2="onConfirmYes"
   >
     <p class="text-center whitespace-pre-line">
-      오늘의 미션 보상을 받으시겠어요?
-      <br />
-      (확인 시 보상이 지급되고, 오늘의 미션 상태가 초기화됩니다)
+      오늘의 노후도락 PLAY를 포인트리로 변환하겠습니까? <br />
+      변환 후 노후도락 PLAY 현황은 초기화됩니다.
     </p>
   </Confirm>
 </template>
