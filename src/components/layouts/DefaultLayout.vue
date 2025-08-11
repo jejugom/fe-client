@@ -12,12 +12,16 @@
     </main>
 
     <!-- 하단 고정 탭바 -->
-    <TabBar class="sticky bottom-0 z-50 w-full max-w-[600px]" />
+    <TabBar
+      v-if="authStore.isLogin"
+      class="sticky bottom-0 z-50 w-full max-w-[600px]"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useLoadingStore } from '@/stores/loading';
+import { useAuthStore } from '@/stores/auth';
 import Header from './Header.vue';
 import TabBar from './TabBar.vue';
 import LoadingPage from '@/pages/etc/ETL1_LoadingPage.vue';
@@ -25,4 +29,5 @@ import FailPage from '@/pages/etc/ETL1_FailPage.vue';
 import Floating from './Floating.vue';
 
 const loadingStore = useLoadingStore();
+const authStore = useAuthStore();
 </script>

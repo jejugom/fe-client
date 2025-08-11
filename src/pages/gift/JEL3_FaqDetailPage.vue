@@ -4,7 +4,7 @@
     >많이 물어보신 질문이에요</h2
   >
 
-  <div v-if="currentFaq" class="card-design">
+  <div v-if="currentFaq" class="card-design py-8">
     <!-- 카테고리 -->
     <div class="mb-4">
       <span

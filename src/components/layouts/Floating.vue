@@ -3,7 +3,7 @@
     <!-- 텍스트 키우기 -->
     <button
       @click="increaseFont"
-      class="bg-primary-300 h-16 w-16 rounded-full px-4 py-2 font-semibold text-white shadow-md"
+      class="bg-primary-300 h-[64px] w-[64px] rounded-full p-[8px] text-[16px] font-semibold text-white shadow-md"
     >
       <p>글자</p>
       <p>+</p>
@@ -12,7 +12,7 @@
     <!-- 텍스트 줄이기 -->
     <button
       @click="decreaseFont"
-      class="bg-primary-300 h-16 w-16 rounded-full px-4 py-2 font-semibold text-white shadow-md"
+      class="bg-primary-300 h-[64px] w-[64px] rounded-full p-[8px] text-[16px] font-semibold text-white shadow-md"
     >
       <p>글자</p>
       <p>-</p>
@@ -21,7 +21,7 @@
     <!-- 위로 가기 -->
     <button
       @click="scrollToTop"
-      class="bg-gold h-16 w-16 rounded-full px-4 py-2 font-semibold text-white shadow-md"
+      class="bg-gold h-[64px] w-[64px] rounded-full p-[8px] text-[16px] font-semibold text-white shadow-md"
     >
       <p>맨위</p>
       <p>^</p>

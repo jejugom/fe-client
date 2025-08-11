@@ -183,7 +183,7 @@ const simulationStore = useSimulationStore();
 const router = useRouter();
 
 const goToTaxInfo = () => {
-  router.push({ name: 'GiftTaxInfo' });
+  router.push({ name: 'gift-taxinfo' });
 };
 
 const totalGiftTax = computed(() => simulationStore.totalGiftTax);
