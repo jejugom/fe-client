@@ -140,15 +140,19 @@
             </thead>
             <tbody>
               <tr v-for="(opt, idx) in fundOptions" :key="idx">
-                <td class="border-surface-200 border px-4 py-2">{{
-                  opt.assetTotal
-                }}</td>
-                <td class="border-surface-200 border px-4 py-2">{{
-                  opt.feeRedemp == '없음' ? '매입금액의 1% 이하' : opt.feeRedemp
-                }}</td>
-                <td class="border-surface-200 border px-4 py-2">{{
-                  opt.priceStd
-                }}</td>
+                <td class="border-surface-200 border px-4 py-2">
+                  {{ fmtNum(opt.assetTotal) }}
+                </td>
+                <td class="border-surface-200 border px-4 py-2">
+                  {{
+                    opt.feeRedemp && opt.feeRedemp !== '없음'
+                      ? opt.feeRedemp
+                      : '매입금액의 1% 이하'
+                  }}
+                </td>
+                <td class="border-surface-200 border px-4 py-2">
+                  {{ fmtNum(opt.priceStd) }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -221,6 +225,7 @@ import {
   type Option,
   type MortgageOption,
   type FundOption,
+  type FundDailyReturn,
 } from '@/api/products/productDetail';
 
 import DetailImg from './_components/DetailImg.vue';
@@ -244,45 +249,27 @@ onMounted(async () => {
   if (!id) return;
   loadingStore.startLoading();
   try {
-    const raw = await fetchProductDetail(id); // { product, fundReturn? } 또는 ProductDetail
-    const result: any = raw.product ?? raw;
+    const raw = await fetchProductDetail(id);
 
-    // 옵션 안전 변환 (기존 로직 유지)
-    if (Array.isArray(result?.optionList)) {
-      if (['1', '2'].includes(result.finPrdtCategory)) {
-        result.optionList = result.optionList.map((o: any) => ({
-          ...o,
-          saveTrm: o?.saveTrm ?? null,
-          intrRate: Number(o?.intrRate ?? 0),
-          intrRate2: Number(o?.intrRate2 ?? 0),
-        }));
-      } else if (result.finPrdtCategory === '3') {
-        result.optionList = result.optionList.map((o: any) => ({
-          ...o,
-          mrtgTypeNm: String(o?.mrtgTypeNm ?? ''),
-          rpayTypeNm: String(o?.rpayTypeNm ?? ''),
-          lendRateTypeNm: String(o?.lendRateTypeNm ?? ''),
-          lendRateMin: String(o?.lendRateMin ?? ''),
-          lendRateMax: String(o?.lendRateMax ?? ''),
-        }));
-      } else if (result.finPrdtCategory === '5') {
-        result.optionList = result.optionList.map((o: any) => ({
-          ...o,
-          rate3mon: String(o?.rate3mon ?? ''),
-          riskGrade: String(o?.riskGrade ?? ''),
-          priceStd: String(o?.priceStd ?? ''),
-          totalFee: o?.totalFee != null ? String(o.totalFee) : undefined,
-        }));
+    // 타입 가드: wrapper 케이스인지 확인
+    const isWrapped = (
+      v: any
+    ): v is {
+      rec?: number;
+      product: ProductDetail;
+      fundReturn?: FundDailyReturn[];
+    } => v && typeof v === 'object' && 'product' in v;
+
+    const product: ProductDetail = isWrapped(raw) ? raw.product : raw;
+    detail.value = product;
+
+    // 펀드면 fundReturn 설정 (wrapper에 있으면 그대로, 없으면 별도 API)
+    if (product.finPrdtCategory === '5') {
+      if (isWrapped(raw) && Array.isArray(raw.fundReturn)) {
+        fundReturn.value = raw.fundReturn;
+      } else {
+        fundReturn.value = await fetchFundReturn(product.finPrdtCd, '3m');
       }
-    }
-
-    detail.value = result;
-
-    // ★ 펀드면 3개월 수익률 로드 (서버가 같이 준 경우 우선 사용)
-    if (result?.finPrdtCategory === '5') {
-      fundReturn.value = Array.isArray(raw.fundReturn)
-        ? raw.fundReturn
-        : await fetchFundReturn(result.finPrdtCd, '3m');
     }
   } catch (e) {
     console.error('상품 상세 조회 실패', e);
@@ -368,6 +355,12 @@ const mortgageOptions = computed(() => {
   return [];
 });
 
+function fmtNum(v: unknown, unit = ''): string {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return '-';
+  return unit ? `${n}${unit}` : n.toLocaleString();
+}
+
 // 상단 대표 정보
 const topInfos = computed(() => {
   if (!detail.value) return [];
@@ -428,15 +421,23 @@ const topInfos = computed(() => {
       return [
         {
           label: '3개월 수익률',
-          value: fundOptions.value[0]?.rate3mon?.toString() + '%' ?? '-',
+          value: fundOptions.value[0]?.rate3mon
+            ? fundOptions.value[0]?.rate3mon + '%'
+            : '-',
         },
         {
           label: '위험등급',
-          value: riskGradeMap[fundOptions.value[0]?.riskGrade] ?? '-',
+          value:
+            fundOptions.value[0]?.rate3mon != null
+              ? `${fundOptions.value[0]!.rate3mon}%`
+              : '-',
         },
         {
           label: '총보수',
-          value: fundOptions.value[0]?.totalFee?.toString() + '%' ?? '-',
+          value:
+            fundOptions.value[0]?.totalFee != null
+              ? `${fundOptions.value[0]!.totalFee}%`
+              : '-',
         },
       ];
     default:
