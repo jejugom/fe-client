@@ -6,7 +6,7 @@
 
     <div class="space-y-8">
       <div
-        class="shadow-up-xs border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
+        class="border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
       >
         <h2 class="text-primary-500 mb-4 text-xl font-semibold"> 세율 구간 </h2>
         <p class="mb-4 text-base leading-relaxed">
@@ -98,7 +98,7 @@
       </div>
 
       <div
-        class="shadow-up-xs border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
+        class="border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
       >
         <h2 class="text-primary-500 mb-4 text-xl font-semibold">
           증여재산공제
@@ -160,7 +160,7 @@
       </div>
 
       <div
-        class="shadow-up-xs border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
+        class="border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
       >
         <!-- <h2 class="text-primary-500 mb-4 text-lg font-semibold">
           국세청 자료를 참고하세요
@@ -185,7 +185,7 @@
       </div>
 
       <div
-        class="shadow-up-xs border-surface-200 relative overflow-hidden rounded-lg border bg-red-100 p-4 shadow-xs"
+        class="border-surface-200 relative overflow-hidden rounded-lg border bg-red-100 p-4 shadow-xs"
       >
         <div class="flex items-start">
           <div class="mt-1 mr-3">
