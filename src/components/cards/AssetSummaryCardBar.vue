@@ -1,5 +1,5 @@
 <template>
-  <div class="card-design flex flex-col gap-2">
+  <div v-if="hasData" class="card-design flex flex-col gap-2">
     <div class="font-semibold">
       <div class="text-lg">지금까지 모은 자산은 이렇게 구성돼 있어요</div>
       <div>총 {{ displayTotal.toLocaleString() }} 원</div>
@@ -12,10 +12,23 @@
       :series="series"
     />
   </div>
+  <div v-else class="text-center">
+    <p class="text-lg">아직 자산 정보가 없어요</p>
+    <Btn
+      color="primary"
+      size="large"
+      label="자산 등록하기"
+      @click="router.push({ name: 'edit-asset' })"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, defineProps } from 'vue';
+import Btn from '../buttons/Btn.vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 type AssetItem = { category: string; amount: number };
 
@@ -24,6 +37,10 @@ const props = defineProps<{
   assetAmount: number; // 총액(선택), 없으면 assetInfo 합으로 계산
   assetInfo: AssetItem[];
 }>();
+
+const hasData = computed(
+  () => props.assetInfo.length > 0 && props.assetAmount > 0
+);
 
 // 총합 (prop.assetAmount가 신뢰 가능한 값이면 그걸 우선 사용)
 const calcTotal = computed(() => {

@@ -27,7 +27,7 @@
         color="primary"
         size="large"
         label="자산 등록하기"
-        @click="router.push('edit-asset')"
+        @click="router.push({ name: 'edit-asset' })"
       />
     </div>
   </div>
@@ -36,7 +36,9 @@
 <script setup lang="ts">
 import { computed, defineProps } from 'vue';
 import Btn from '../buttons/Btn.vue';
-import router from '@/router';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const props = defineProps<{
   userName: string;
