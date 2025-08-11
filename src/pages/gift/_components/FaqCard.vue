@@ -26,7 +26,7 @@ import { defineProps, defineEmits } from 'vue';
 
 defineProps<{
   id: number;
-  category: '상속' | '증여'; // ✅ 백엔드 데이터 그대로 사용
+  category: '상속' | '증여'; // 백엔드 데이터 그대로 사용
   question: string;
 }>();
 
