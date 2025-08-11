@@ -39,14 +39,14 @@
             color="surface"
             size="square"
             @click="showDeleteModal"
-            class="w-20"
+            class="w-16"
           />
           <!-- 선택 or 변경 버튼 -->
           <Btn
             :label="tempAsset.selected ? '변경' : '선택'"
             :color="tempAsset.selected ? 'surface' : 'primary'"
             size="square"
-            class="w-20"
+            class="w-16"
             @click="togglePanel"
           />
         </template>
@@ -59,7 +59,7 @@
               label="취소"
               color="surface"
               size="square"
-              class="w-20"
+              class="w-16"
               @click="cancelSelection"
             />
             <!-- 완료 버튼 (조건 만족 시만 활성화) -->
@@ -67,7 +67,7 @@
               :disabled="!canComplete()"
               :color="canComplete() ? 'primary' : 'surface'"
               size="square"
-              class="w-20"
+              class="w-16"
               @click="completeSelection"
             >
               완료
