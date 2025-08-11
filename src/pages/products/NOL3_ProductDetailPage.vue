@@ -10,7 +10,9 @@
         <span>{{ detail?.recReason }}</span>
       </div>
       <div v-if="detail?.prdtFeature" class="flex flex-col gap-2">
-        <span class="text-primary-500 text-lg font-semibold">한줄 특징</span>
+        <span class="text-primary-500 text-lg font-semibold"
+          >상품을 한줄로 설명하면?</span
+        >
         <span>{{ detail?.prdtFeature }}</span>
       </div>
     </div>
