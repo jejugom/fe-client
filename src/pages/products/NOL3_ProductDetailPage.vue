@@ -3,6 +3,12 @@
     <!-- 상단 대표 정보 -->
     <DetailImg :items="topInfos" v-if="topInfos.length" />
 
+    <!-- ★ 펀드: 3개월 일일 수익률 그래프 -->
+    <section v-if="isFund && fundReturn.length">
+      <p class="text-primary-300 mb-2 font-semibold">3개월 일일 수익률</p>
+      <FundReturnChart :fundReturn="fundReturn" />
+    </section>
+
     <!-- 추천 이유 -->
     <div class="card-design flex flex-col gap-2">
       <span class="text-primary-500 text-lg font-semibold">추천 이유</span>
@@ -125,24 +131,24 @@
         <div v-if="fundOptions.length">
           <p class="text-primary-500 mb-2 font-semibold">펀드 정보</p>
           <table
-            class="w-full table-auto border-collapse overflow-hidden text-center text-base"
+            class="w-full table-auto border-collapse overflow-hidden text-center text-sm"
           >
-            <thead class="bg-primary-100 font-semibold">
+            <thead class="bg-surface-100 font-semibold">
               <tr>
                 <th class="border-surface-200 border px-4 py-2"
-                  >3개월 수익률</th
+                  >순자산 (운용펀드기준)</th
                 >
-                <th class="border-surface-200 border px-4 py-2">위험 등급</th>
+                <th class="border-surface-200 border px-4 py-2">환매 수수료</th>
                 <th class="border-surface-200 border px-4 py-2">기준가</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(opt, idx) in fundOptions" :key="idx">
                 <td class="border-surface-200 border px-4 py-2">{{
-                  opt.rate3mon
+                  opt.assetTotal
                 }}</td>
                 <td class="border-surface-200 border px-4 py-2">{{
-                  opt.riskGrade
+                  opt.feeRedemp == '없음' ? '매입금액의 1% 이하' : opt.feeRedemp
                 }}</td>
                 <td class="border-surface-200 border px-4 py-2">{{
                   opt.priceStd
@@ -211,6 +217,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import {
   fetchProductDetail,
+  fetchFundReturn, // ★ 추가
   type ProductDetail,
   type Option,
   type MortgageOption,
@@ -218,39 +225,39 @@ import {
 } from '@/api/products/productDetail';
 
 import DetailImg from './_components/DetailImg.vue';
+import FundReturnChart from './_components/FundReturnChart.vue'; // ★ 추가
 import Btn from '@/components/buttons/Btn.vue';
 import { useRegisterStore } from '@/stores/register';
 import { useLoadingStore } from '@/stores/loading';
 
-// 라우트에서 id 추출
 const route = useRoute();
 const router = useRouter();
 
 const registerStore = useRegisterStore();
+const loadingStore = useLoadingStore();
 
 const detail = ref<ProductDetail | null>(null);
-
-const loadingStore = useLoadingStore();
+const fundReturn = ref<{ recordDate: string; returnRate: number }[]>([]); // ★ 추가
+const isFund = computed(() => detail.value?.finPrdtCategory === '5'); // ★ 추가
 
 onMounted(async () => {
   const id = route.params.id as string;
   if (!id) return;
   loadingStore.startLoading();
   try {
-    const result = await fetchProductDetail(id);
+    const raw = await fetchProductDetail(id); // { product, fundReturn? } 또는 ProductDetail
+    const result: any = raw.product ?? raw;
 
-    // 옵션 안전 변환 (카테고리별)
+    // 옵션 안전 변환 (기존 로직 유지)
     if (Array.isArray(result?.optionList)) {
       if (['1', '2'].includes(result.finPrdtCategory)) {
-        // 예금/적금
         result.optionList = result.optionList.map((o: any) => ({
           ...o,
-          saveTrm: o?.saveTrm ?? null, // '12' | null
+          saveTrm: o?.saveTrm ?? null,
           intrRate: Number(o?.intrRate ?? 0),
           intrRate2: Number(o?.intrRate2 ?? 0),
         }));
       } else if (result.finPrdtCategory === '3') {
-        // 주담대
         result.optionList = result.optionList.map((o: any) => ({
           ...o,
           mrtgTypeNm: String(o?.mrtgTypeNm ?? ''),
@@ -260,19 +267,24 @@ onMounted(async () => {
           lendRateMax: String(o?.lendRateMax ?? ''),
         }));
       } else if (result.finPrdtCategory === '5') {
-        // 펀드
         result.optionList = result.optionList.map((o: any) => ({
           ...o,
-          rate3mon: String(o?.rate3mon ?? ''), // '5.12%' 같은 문자열 유지
+          rate3mon: String(o?.rate3mon ?? ''),
           riskGrade: String(o?.riskGrade ?? ''),
           priceStd: String(o?.priceStd ?? ''),
           totalFee: o?.totalFee != null ? String(o.totalFee) : undefined,
         }));
       }
-      // 금/신탁은 옵션 없거나 자유형이라 패스
     }
 
     detail.value = result;
+
+    // ★ 펀드면 3개월 수익률 로드 (서버가 같이 준 경우 우선 사용)
+    if (result?.finPrdtCategory === '5') {
+      fundReturn.value = Array.isArray(raw.fundReturn)
+        ? raw.fundReturn
+        : await fetchFundReturn(result.finPrdtCd, '3m');
+    }
   } catch (e) {
     console.error('상품 상세 조회 실패', e);
     loadingStore.setError(true);
@@ -300,8 +312,8 @@ const etcNoteList = computed<string[]>(() => {
 const mtrtIntList = computed<string[]>(() => {
   if (!detail.value?.mtrtInt) return [];
   return String(detail.value.mtrtInt)
-    .split('\n') // 줄바꿈 기준 1차 분리
-    .flatMap((line) => line.split('-')) // "-" 기준 재분리
+    .split('\n')
+    .flatMap((line) => line.split('-'))
     .map((item) => String(item || '').trim())
     .filter((item) => item.length > 0);
 });
@@ -309,26 +321,24 @@ const mtrtIntList = computed<string[]>(() => {
 const spclCndList = computed(() => {
   if (!detail.value?.spclCnd) return [];
   return String(detail.value.spclCnd)
-    .split('\n') // 줄바꿈 기준 1차 분리
-    .flatMap((line) => line.split('-')) // "-" 기준 분리
+    .split('\n')
+    .flatMap((line) => line.split('-'))
     .map((item) => String(item || '').trim())
     .filter((item) => item.length > 0);
 });
 
-// 타입 가드 함수
+// 타입 가드
 function isOption(option: any): option is Option {
   return 'saveTrm' in option;
 }
-
 function isMortgageOption(option: any): option is MortgageOption {
   return 'mrtgTypeNm' in option;
 }
-
 function isFundOption(option: any): option is FundOption {
   return 'rate3mon' in option;
 }
 
-// 예금/적금 옵션을 위한 computed 속성
+// 옵션 computed
 const depositOptions = computed(() => {
   if (
     ['1', '2'].includes(detail.value?.finPrdtCategory ?? '') &&
@@ -339,7 +349,6 @@ const depositOptions = computed(() => {
   return [];
 });
 
-// 펀드 옵션을 위한 computed 속성
 const fundOptions = computed(() => {
   if (
     detail.value?.finPrdtCategory === '5' &&
@@ -350,7 +359,6 @@ const fundOptions = computed(() => {
   return [];
 });
 
-// 주담대 옵션을 위한 computed 속성
 const mortgageOptions = computed(() => {
   if (
     detail.value?.finPrdtCategory === '3' &&
@@ -361,14 +369,14 @@ const mortgageOptions = computed(() => {
   return [];
 });
 
-// 상단 대표 정보 생성
+// 상단 대표 정보
 const topInfos = computed(() => {
   if (!detail.value) return [];
   const d = detail.value;
 
   switch (d.finPrdtCategory) {
-    case '1': // 예금
-    case '2': // 적금
+    case '1':
+    case '2':
       const depositRates = depositOptions.value.map((o) => o.intrRate2);
       return [
         {
@@ -377,17 +385,13 @@ const topInfos = computed(() => {
             ? `${Math.max(...depositRates).toFixed(2)}%`
             : '-',
         },
-        {
-          label: '가입방법',
-          value: d.joinWay ?? '-',
-        },
+        { label: '가입방법', value: d.joinWay ?? '-' },
         {
           label: '가입제한',
           value: d.joinDeny === '1' ? '제한 있음' : '제한 없음',
         },
       ];
-
-    case '3': // 주담대
+    case '3':
       const minRates = mortgageOptions.value.map((o) =>
         parseFloat(o.lendRateMin ?? '999')
       );
@@ -407,39 +411,35 @@ const topInfos = computed(() => {
           value: mortgageOptions.value[0]?.lendRateTypeNm ?? '-',
         },
       ];
-
-    case '4': // 금
+    case '4':
       return [
-        {
-          label: '매매단위',
-          value: d.lot ?? '-',
-        },
-        {
-          label: '통화',
-          value: d.currency ?? '-',
-        },
-        {
-          label: '가입방법',
-          value: d.joinWay ?? '-',
-        },
+        { label: '매매단위', value: d.lot ?? '-' },
+        { label: '통화', value: d.currency ?? '-' },
+        { label: '가입방법', value: d.joinWay ?? '-' },
       ];
-
-    case '5': // 펀드
+    case '5':
+      const riskGradeMap: Record<number, string> = {
+        1: '매우 높은 위험',
+        2: '높은 위험',
+        3: '다소 높은 위험',
+        4: '다소 낮은 위험',
+        5: '낮은 위험',
+        6: '매우 낮은 위험',
+      };
       return [
         {
           label: '3개월 수익률',
-          value: fundOptions.value[0]?.rate3mon?.toString() ?? '-',
+          value: fundOptions.value[0]?.rate3mon?.toString() + '%' ?? '-',
         },
         {
           label: '위험등급',
-          value: fundOptions.value[0]?.riskGrade ?? '-',
+          value: riskGradeMap[fundOptions.value[0]?.riskGrade] ?? '-',
         },
         {
           label: '총보수',
-          value: fundOptions.value[0]?.totalFee?.toString() ?? '-',
+          value: fundOptions.value[0]?.totalFee?.toString() + '%' ?? '-',
         },
       ];
-
     default:
       return [];
   }
