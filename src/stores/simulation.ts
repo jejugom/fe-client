@@ -4,12 +4,13 @@ import type {
   SimulationRequestDto,
   SimulationResponseDto,
   RecipientTaxDetailDto,
+  TaxSavingStrategy,
 } from '@/types/gift/simulation';
 
 interface SimulationState {
   totalGiftTax: number;
   recipientSummaries: RecipientTaxDetailDto[];
-  taxSavingStrategies: string[];
+  taxSavingStrategies: TaxSavingStrategy[];
 }
 
 export const useSimulationStore = defineStore('simulation', {
