@@ -117,6 +117,8 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { useRewardStore } from '@/stores/reward';
+const rewardStore = useRewardStore();
 import Btn from '@/components/buttons/Btn.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 
@@ -239,6 +241,9 @@ function onCellClick(n: number, e: MouseEvent) {
     finished.value = true;
     stopTimer();
     saveBest(elapsedMs.value);
+
+    // !!! 종료 -> rewardStore 에 컴플리트 반영
+    rewardStore.complete('number');
   }
 }
 
@@ -327,16 +332,16 @@ setupBoard();
 }
 
 /* 게임 버튼 포커스 시 z-index 유지 */
-button[role="gridcell"]:focus {
+button[role='gridcell']:focus {
   z-index: 10006 !important;
 }
 
 /* 다음 버튼 하이라이트 시 z-index 유지 */
-button[role="gridcell"].bg-primary-50 {
+button[role='gridcell'].bg-primary-50 {
   z-index: 10005 !important;
 }
 
-button[role="gridcell"].bg-primary-50:focus {
+button[role='gridcell'].bg-primary-50:focus {
   z-index: 10006 !important;
 }
 </style>
