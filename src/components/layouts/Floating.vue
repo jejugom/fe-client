@@ -2,6 +2,7 @@
   <div class="fixed right-4 bottom-24 z-50 flex flex-col gap-3">
     <!-- 텍스트 키우기 -->
     <button
+      v-if="showFab"
       @click="increaseFont"
       class="bg-primary-300 h-[64px] w-[64px] rounded-full p-[8px] text-[16px] font-semibold text-white shadow-md"
     >
@@ -11,6 +12,7 @@
 
     <!-- 텍스트 줄이기 -->
     <button
+      v-if="showFab"
       @click="decreaseFont"
       class="bg-primary-300 h-[64px] w-[64px] rounded-full p-[8px] text-[16px] font-semibold text-white shadow-md"
     >
@@ -30,7 +32,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+// 숨길 라우트 name들
+const HIDDEN = new Set(['event-quiz', 'event-number', 'event-park']);
+
+// 보이기 여부
+const showFab = computed(() => !HIDDEN.has(route.name ?? ''));
 
 // 폰트 사이즈 px 단위 리스트
 const fontSizes = [10, 12, 14, 16, 18, 20];
