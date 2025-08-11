@@ -134,31 +134,38 @@
         <div
           class="custom-shadow border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8"
         >
-          <div class="mb-2 flex items-center">
-            <h3 class="text-primary-500 text-xl font-semibold"
-              >유형별 절세 전략 추천</h3
+          <div class="mb-2 flex items-center text-center">
+            <h3 class="text-primary-500 mb-4 text-xl font-semibold"
+              >절세 전략 추천</h3
             >
           </div>
 
-          <div
-            v-for="(strategy, index) in taxSavingStrategies"
-            :key="index"
-            class="group mx-1 mb-4 flex items-start"
+          <template
+            v-for="(item, itemIndex) in displayStrategies"
+            :key="itemIndex"
           >
-            <!-- 숫자 인덱스 -->
-            <div
-              class="bg-primary-500 mt-2 mr-4 flex h-7 w-7 items-center justify-center rounded-full font-bold text-white"
+            <h4
+              v-if="item.isHeader"
+              class="text-primary-300 mb-2 text-lg font-semibold"
             >
-              {{ index + 1 }}
-            </div>
+              {{ item.categoryName }}별
+            </h4>
+            <div v-else class="group mx-1 mb-4 flex items-start">
+              <!-- 숫자 인덱스 -->
+              <div
+                class="bg-primary-500 mt-2 mr-4 flex h-7 w-7 items-center justify-center rounded-full font-bold text-white"
+              >
+                {{ item.globalIndex }}
+              </div>
 
-            <!-- 전략 내용 -->
-            <div class="flex-1">
-              <p class="">
-                {{ strategy }}
-              </p>
+              <!-- 전략 내용 -->
+              <div class="flex-1">
+                <p class="">
+                  {{ item.strategy.content }}
+                </p>
+              </div>
             </div>
-          </div>
+          </template>
         </div>
       </div>
     </div>
@@ -176,6 +183,7 @@ import { useSimulationStore } from '@/stores/simulation';
 import type {
   RecipientTaxDetailDto,
   SimulationRequestDto,
+  TaxSavingStrategy,
 } from '@/types/gift/simulation';
 
 const apexchart = VueApexCharts;
@@ -189,6 +197,42 @@ const goToTaxInfo = () => {
 const totalGiftTax = computed(() => simulationStore.totalGiftTax);
 const recipientSummaries = computed(() => simulationStore.recipientSummaries);
 const taxSavingStrategies = computed(() => simulationStore.taxSavingStrategies);
+
+const displayStrategies = computed(() => {
+  let globalIndex = 0;
+  let lastCategory = '';
+  type DisplayItem =
+    | {
+        isHeader: true;
+        categoryName: string;
+        strategy?: never;
+        globalIndex?: never;
+      }
+    | {
+        isHeader: false;
+        categoryName?: never;
+        strategy: TaxSavingStrategy;
+        globalIndex: number;
+      };
+
+  const result: DisplayItem[] = [];
+
+  taxSavingStrategies.value.forEach((strategy) => {
+    if (strategy.ruleCategory !== lastCategory) {
+      result.push({
+        isHeader: true,
+        categoryName: strategy.ruleCategory,
+      });
+      lastCategory = strategy.ruleCategory;
+    }
+    result.push({
+      isHeader: false,
+      strategy: strategy,
+      globalIndex: ++globalIndex,
+    });
+  });
+  return result;
+});
 
 // 차트 데이터 로직을 수정합니다.
 const chartSeries = computed(() => {

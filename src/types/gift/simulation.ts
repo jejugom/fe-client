@@ -25,10 +25,16 @@ export interface RecipientTaxDetailDto {
   estimatedTax: number;
 }
 
+// New interface for tax saving strategies
+export interface TaxSavingStrategy {
+  ruleCategory: string;
+  content: string;
+}
+
 export interface SimulationResponseDto {
   totalEstimatedTax: number;
   recipientDetails: RecipientTaxDetailDto[];
-  taxSavingStrategies: string[];
+  taxSavingStrategies: TaxSavingStrategy[]; // Changed to new interface
 }
 
 export interface TestatorInfo {

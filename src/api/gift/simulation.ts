@@ -12,7 +12,10 @@ export const runGiftTaxSimulation = async (
   requestDto: SimulationRequestDto
 ): Promise<SimulationResponseDto> => {
   try {
-    const response = await api.post<SimulationResponseDto>(API_BASE, requestDto);
+    const response = await api.post<SimulationResponseDto>(
+      API_BASE,
+      requestDto
+    );
     console.log('증여세 시뮬레이션 응답:', response.data);
     return response.data;
   } catch (error) {
