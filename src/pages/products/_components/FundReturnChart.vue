@@ -32,18 +32,20 @@
     </div>
 
     <!-- 차트 -->
-    <apexchart
-      :key="mode"
-      type="line"
-      height="320"
-      :series="series"
-      :options="options"
-    ></apexchart>
+    <apexchart type="line" height="320" :series="series" :options="options" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import type { ApexOptions } from 'apexcharts';
+
+type TooltipCtx = {
+  series: number[][];
+  seriesIndex: number;
+  dataPointIndex: number;
+  w: any;
+};
 
 type Point = { recordDate: string; returnRate: number };
 const props = defineProps<{ fundReturn: Point[] }>();
@@ -164,6 +166,13 @@ const options = computed<any>(() => {
     return `${yy}.${mm}.${dd}`;
   };
 
+  const fmtMonthly = (v: number | string) => {
+    const date = new Date(Number(v));
+    const yy = String(date.getFullYear()).slice(2);
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    return `${yy}.${mm}`;
+  };
+
   return {
     chart: {
       type: 'line',
@@ -177,11 +186,10 @@ const options = computed<any>(() => {
     markers: { size: 0, hover: { size: 5 } },
     xaxis: {
       type: 'datetime',
-      tickAmount,
+      tickAmount: Math.max(3, Math.min(3, dailySeries.value.length)),
       labels: {
         datetimeUTC: false,
-        formatter: fmt,
-        rotate: -15,
+        formatter: fmtMonthly,
       },
       axisBorder: { show: false },
       axisTicks: { show: false },
@@ -224,8 +232,28 @@ const options = computed<any>(() => {
     },
     tooltip: {
       shared: true,
-      x: { format: fmt },
-      y: { formatter: (v: number) => `${(v ?? 0).toFixed(2)}%` },
+      custom: function ({
+        series,
+        seriesIndex,
+        dataPointIndex,
+        w,
+      }: TooltipCtx) {
+        const date = new Date(w.globals.seriesX[seriesIndex][dataPointIndex]);
+        const yy = String(date.getFullYear()).slice(2);
+        const mm = String(date.getMonth() + 1).padStart(2, '0');
+        const dd = String(date.getDate()).padStart(2, '0');
+
+        const dailyVal = series[0][dataPointIndex]?.toFixed(2) ?? '0.00';
+        const cumVal = series[1][dataPointIndex]?.toFixed(2) ?? '0.00';
+
+        return `
+      <div style="padding:8px 12px; border-radius:8px; background:rgba(255,255,255,0.9); box-shadow:0 2px 6px rgba(0,0,0,0.15); font-size:12px">
+        <div style="font-weight:bold; color:#555; margin-bottom:4px;">${yy}.${mm}.${dd}</div>
+        <div style="color:#3674b5;">● 일일 수익률: ${dailyVal}%</div>
+        <div style="color:#ffbc00;">● 누적 수익률: ${cumVal}%</div>
+      </div>
+    `;
+      },
     },
     annotations: {
       yaxis: [
@@ -259,11 +287,3 @@ const options = computed<any>(() => {
   };
 });
 </script>
-
-<style scoped>
-.apexcharts-series path,
-.apexcharts-series rect,
-.apexcharts-marker {
-  opacity: 1 !important;
-}
-</style>
