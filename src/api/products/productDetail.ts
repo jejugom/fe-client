@@ -9,7 +9,7 @@ export interface Option {
 
 export interface FundOption {
   rate3mon: number;
-  riskGrade: string;
+  riskGrade: number;
   priceStd: number;
   totalFee: number;
   assetTotal?: number | string;
@@ -44,6 +44,18 @@ export interface ProductDetail {
   iconInfo?: Record<string, string>;
   lot?: string;
   currency?: string;
+  dlyRate?: string;
+  erlyRpayFee?: string;
+  loanInciExpn?: string;
+  loanLmt?: string;
+  basePrice?: string;
+  depositProtection?: string;
+  fundStructure?: string;
+  fundType?: string;
+  saleStartDate?: string;
+  taxBenefit?: string;
+  trustFee?: string;
+  yieldRate?: string;
 }
 
 // 기존 타입들 그대로 두고, 아래 2개 추가/수정

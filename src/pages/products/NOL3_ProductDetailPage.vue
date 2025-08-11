@@ -4,9 +4,15 @@
     <DetailImg :items="topInfos" v-if="topInfos.length" />
 
     <!-- 추천 이유 -->
-    <div class="card-design flex flex-col gap-2">
-      <span class="text-primary-500 text-lg font-semibold">추천 이유</span>
-      <span>{{ detail?.recReason || '추천 사유 없음' }}</span>
+    <div class="card-design flex flex-col gap-4">
+      <div v-if="detail?.recReason" class="flex flex-col gap-2">
+        <span class="text-primary-500 text-lg font-semibold">추천 이유</span>
+        <span>{{ detail?.recReason }}</span>
+      </div>
+      <div v-if="detail?.prdtFeature" class="flex flex-col gap-2">
+        <span class="text-primary-500 text-lg font-semibold">한줄 특징</span>
+        <span>{{ detail?.prdtFeature }}</span>
+      </div>
     </div>
 
     <div class="card-design">
@@ -18,10 +24,17 @@
           <p>{{ detail?.finPrdtNm }}</p>
         </div>
 
-        <!-- 성향 점수 -->
+        <!-- 적합도 -->
         <div v-if="detail?.tendency !== undefined" class="text-base">
-          <p class="text-primary-500 mb-1 font-semibold">성향 점수</p>
-          <p>{{ detail.tendency }}</p>
+          <p class="text-primary-500 mb-1 font-semibold">적합도</p>
+          <p
+            ><span
+              :class="{
+                'text-gold text-lg font-semibold': displayScore > '50',
+              }"
+              >{{ displayScore }} </span
+            >%</p
+          >
         </div>
 
         <div v-if="detail?.description">
@@ -29,6 +42,127 @@
           <p class="whitespace-pre-line">{{
             detail?.description || '설명 없음'
           }}</p>
+        </div>
+
+        <div v-if="detail?.mtrtInt">
+          <p class="text-primary-500 mb-1 font-semibold">만기 후 이자율</p>
+          <ul class="list-disc space-y-1 pl-4">
+            <li
+              v-for="(item, idx) in mtrtIntList"
+              :key="idx"
+              class="leading-relaxed"
+              >{{ item! }}</li
+            >
+          </ul>
+        </div>
+
+        <div v-if="detail?.maxLimit">
+          <p class="text-primary-500 mb-1 font-semibold">최고한도</p>
+          <span>{{ detail.maxLimit }}</span>
+        </div>
+
+        <div v-if="detail?.spclCnd">
+          <p class="text-primary-500 mb-1 font-semibold">우대 조건</p>
+          <ul class="list-disc space-y-1 pl-4">
+            <li
+              v-for="(item, idx) in spclCndList"
+              :key="idx"
+              class="leading-relaxed"
+              >{{ item! }}</li
+            >
+          </ul>
+        </div>
+
+        <div v-if="detail?.lot">
+          <p class="text-primary-500 mb-1 font-semibold">매매단위</p>
+          <p class="tabular-nums">{{ detail.lot }}</p>
+        </div>
+
+        <div v-if="fundOptions.length > 0 && fundOptions[0].riskGrade">
+          <p class="text-primary-500 mb-1 font-semibold">위험 등급</p>
+          <p class="tabular-nums">{{ fundOptions[0].riskGrade }} 등급</p>
+        </div>
+
+        <div v-if="fundOptions.length > 0 && fundOptions[0].assetTotal">
+          <p class="text-primary-500 mb-1 font-semibold"
+            >순자산(운용펀드기준))</p
+          >
+          <p class="tabular-nums">{{ fmtNum(fundOptions[0].assetTotal) }} 원</p>
+        </div>
+
+        <div v-if="detail?.dlyRate">
+          <p class="text-primary-500 mb-1 font-semibold">연체이자율</p>
+          <p>{{ detail.dlyRate }}</p>
+        </div>
+        <div v-if="detail?.erlyRpayFee">
+          <p class="text-primary-500 mb-1 font-semibold">중도상환 수수료</p>
+          <p>{{ detail.erlyRpayFee }}</p>
+        </div>
+        <div v-if="detail?.loanInciExpn || detail?.loanLmt">
+          <p class="text-primary-500 mb-1 font-semibold">대출 관련</p>
+          <ul class="list-disc pl-4">
+            <li v-if="detail?.loanInciExpn"
+              >대출 부대 비용: {{ detail.loanInciExpn }}</li
+            >
+            <li v-if="detail?.loanLmt">대출 한도: {{ detail.loanLmt }}</li>
+          </ul>
+        </div>
+
+        <div v-if="detail?.basePrice">
+          <p class="text-primary-500 mb-1 font-semibold">기준가</p>
+          <p>{{ detail.basePrice }} 원</p>
+        </div>
+
+        <div v-if="detail?.depositProtection">
+          <p class="text-primary-500 mb-1 font-semibold">예금자 보호 여부</p>
+          <p>{{ detail.depositProtection }}</p>
+        </div>
+
+        <div v-if="detail?.dlyRate">
+          <p class="text-primary-500 mb-1 font-semibold">연체이자율</p>
+          <p>{{ detail.dlyRate }}</p>
+        </div>
+
+        <div v-if="detail?.fundStructure || detail?.fundType">
+          <p class="text-primary-500 mb-1 font-semibold">대출 관련</p>
+          <ul class="list-disc pl-4">
+            <li v-if="detail?.fundStructure"
+              >운용 구조: {{ detail.fundStructure }}</li
+            >
+            <li v-if="detail?.fundType"
+              >펀드/신탁 유형: {{ detail.fundType }}</li
+            >
+          </ul>
+        </div>
+
+        <div v-if="detail?.saleStartDate">
+          <p class="text-primary-500 mb-1 font-semibold">판매 시작일</p>
+          <p>{{ detail.saleStartDate }}</p>
+        </div>
+
+        <div v-if="detail?.taxBenefit">
+          <p class="text-primary-500 mb-1 font-semibold">세제 혜택 여부</p>
+          <p>{{ detail.taxBenefit }}</p>
+        </div>
+
+        <div v-if="detail?.trustFee">
+          <p class="text-primary-500 mb-1 font-semibold">신탁 수수료</p>
+          <p>{{ detail.trustFee }} </p>
+        </div>
+
+        <div v-if="detail?.yieldRate">
+          <p class="text-primary-500 mb-1 font-semibold">연 수익률</p>
+          <p>{{ detail.yieldRate }}%</p>
+        </div>
+
+        <div v-if="detail?.joinWay || detail?.joinMember || detail?.joinDeny">
+          <p class="text-primary-500 mb-1 font-semibold">가입 관련</p>
+          <ul class="list-disc pl-4">
+            <li v-if="detail?.joinWay">가입 방법: {{ detail.joinWay }}</li>
+            <li v-if="detail?.joinMember"
+              >가입 대상: {{ detail.joinMember }}</li
+            >
+          </ul>
         </div>
 
         <div v-if="detail?.etcNote">
@@ -43,51 +177,14 @@
           </ul>
         </div>
 
-        <div v-if="detail?.joinWay || detail?.joinMember || detail?.joinDeny">
-          <p class="text-primary-500 mb-1 font-semibold">가입 조건</p>
-          <ul class="list-disc pl-4">
-            <li v-if="detail?.joinWay">가입 방법: {{ detail.joinWay }}</li>
-            <li v-if="detail?.joinMember"
-              >가입 대상: {{ detail.joinMember }}</li
-            >
-            <li v-if="detail?.joinDeny"
-              >가입 제한:
-              {{ detail.joinDeny === '1' ? '제한 있음' : '제한 없음' }}</li
-            >
-          </ul>
-        </div>
-
-        <div v-if="detail?.korCoNm">
+        <!-- <div v-if="detail?.korCoNm">
           <p class="text-primary-500 mb-1 font-semibold">금융기관 정보</p>
           <ul class="list-disc pl-4">
             <li>은행명: {{ detail.korCoNm }}</li>
             <li>상품 코드: {{ detail.finPrdtCd }}</li>
           </ul>
-        </div>
+        </div> -->
 
-        <div v-if="detail?.mtrtInt">
-          <p class="text-primary-500 mb-1 font-semibold">중도 해지 이율</p>
-          <ul class="list-disc space-y-1 pl-4">
-            <li
-              v-for="(item, idx) in mtrtIntList"
-              :key="idx"
-              class="leading-relaxed"
-              >{{ item! }}</li
-            >
-          </ul>
-        </div>
-
-        <div v-if="detail?.spclCnd">
-          <p class="text-primary-500 mb-1 font-semibold">우대 조건</p>
-          <ul class="list-disc space-y-1 pl-4">
-            <li
-              v-for="(item, idx) in spclCndList"
-              :key="idx"
-              class="leading-relaxed"
-              >{{ item! }}</li
-            >
-          </ul>
-        </div>
         <!-- 옵션 테이블: 예금/적금 -->
         <div v-if="depositOptions.length">
           <p class="text-primary-500 mb-2 font-semibold">금리 정보</p>
@@ -97,6 +194,9 @@
             <thead class="bg-primary-100 font-semibold">
               <tr>
                 <th class="border-surface-200 border px-4 py-2">기간</th>
+                <th class="border-surface-200 border px-4 py-2">
+                  <span class="tabular-nums">금리유형</span>
+                </th>
                 <th class="border-surface-200 border px-4 py-2"
                   >기본 금리(%)</th
                 >
@@ -111,9 +211,12 @@
                   >{{ opt.saveTrm }}개월</td
                 >
                 <td class="border-surface-200 border px-4 py-2">{{
+                  opt.intrRateTypeNm
+                }}</td>
+                <td class="border-surface-200 border px-4 py-2 tabular-nums">{{
                   opt.intrRate.toFixed(2)
                 }}</td>
-                <td class="border-surface-200 border px-4 py-2">{{
+                <td class="border-surface-200 border px-4 py-2 tabular-nums">{{
                   opt.intrRate2.toFixed(2)
                 }}</td>
               </tr>
@@ -131,27 +234,25 @@
           >
             <thead class="bg-surface-100 font-semibold">
               <tr>
+                <th class="border-surface-200 border px-4 py-2">총보수(%)</th>
                 <th class="border-surface-200 border px-4 py-2"
-                  >순자산 (운용펀드기준)</th
+                  >3개월 수수료(%)</th
                 >
-                <th class="border-surface-200 border px-4 py-2">환매 수수료</th>
-                <th class="border-surface-200 border px-4 py-2">기준가</th>
+                <th class="border-surface-200 border px-4 py-2"
+                  >환매수수료(%)</th
+                >
               </tr>
             </thead>
             <tbody>
               <tr v-for="(opt, idx) in fundOptions" :key="idx">
                 <td class="border-surface-200 border px-4 py-2">
-                  {{ fmtNum(opt.assetTotal) }}
+                  {{ fmtNum(opt.totalFee) }}
                 </td>
                 <td class="border-surface-200 border px-4 py-2">
-                  {{
-                    opt.feeRedemp && opt.feeRedemp !== '없음'
-                      ? opt.feeRedemp
-                      : '매입금액의 1% 이하'
-                  }}
+                  {{ fmtNum(opt.rate3mon) }}
                 </td>
                 <td class="border-surface-200 border px-4 py-2">
-                  {{ fmtNum(opt.priceStd) }}
+                  {{ fmtNum(opt.feeRedemp) }}
                 </td>
               </tr>
             </tbody>
@@ -165,12 +266,11 @@
         <div v-if="mortgageOptions.length">
           <p class="text-primary-500 mb-2 font-semibold">대출 조건</p>
           <table
-            class="w-full table-auto border-collapse overflow-hidden text-center text-base"
+            class="w-full table-auto border-collapse overflow-x-auto text-center text-base"
           >
             <thead class="bg-primary-100 font-semibold">
               <tr>
                 <th class="border-surface-200 border px-4 py-2">담보 유형</th>
-                <th class="border-surface-200 border px-4 py-2">상환 방식</th>
                 <th class="border-surface-200 border px-4 py-2">금리 유형</th>
                 <th class="border-surface-200 border px-4 py-2">최저 금리</th>
                 <th class="border-surface-200 border px-4 py-2">최고 금리</th>
@@ -180,9 +280,6 @@
               <tr v-for="(opt, idx) in mortgageOptions" :key="idx">
                 <td class="border-surface-200 border px-4 py-2">{{
                   opt.mrtgTypeNm
-                }}</td>
-                <td class="border-surface-200 border px-4 py-2">{{
-                  opt.rpayTypeNm
                 }}</td>
                 <td class="border-surface-200 border px-4 py-2">{{
                   opt.lendRateTypeNm
@@ -241,8 +338,15 @@ const registerStore = useRegisterStore();
 const loadingStore = useLoadingStore();
 
 const detail = ref<ProductDetail | null>(null);
+const score = ref<number | null | undefined>(null);
 const fundReturn = ref<{ recordDate: string; returnRate: number }[]>([]); // ★ 추가
 const isFund = computed(() => detail.value?.finPrdtCategory === '5'); // ★ 추가
+
+const displayScore = computed(() => {
+  if (score.value === null || score.value === undefined) return 'N/A';
+  if (score.value < 0) return '0'; // 음수는 0으로 처리
+  return `${(score.value * 100).toFixed(1)}`;
+});
 
 onMounted(async () => {
   const id = route.params.id as string;
@@ -262,6 +366,16 @@ onMounted(async () => {
 
     const product: ProductDetail = isWrapped(raw) ? raw.product : raw;
     detail.value = product;
+    score.value = isWrapped(raw) ? raw.rec : null;
+    if (product.finPrdtCategory === '1' || product.finPrdtCategory === '2') {
+      const list = Array.isArray(product.optionList) ? product.optionList : [];
+      product.optionList = list.map((o: any) => ({
+        ...o,
+        intrRate: Number(o?.intrRate ?? 0),
+        intrRate2: Number(o?.intrRate2 ?? 0),
+        saveTrm: o?.saveTrm ?? '', // 안전 가드
+      }));
+    }
 
     // 펀드면 fundReturn 설정 (wrapper에 있으면 그대로, 없으면 별도 API)
     if (product.finPrdtCategory === '5') {
@@ -380,7 +494,7 @@ const topInfos = computed(() => {
         { label: '가입방법', value: d.joinWay ?? '-' },
         {
           label: '가입제한',
-          value: d.joinDeny === '1' ? '제한 있음' : '제한 없음',
+          value: d.joinMember === '제한없음' ? '누구나' : '제한 있음',
         },
       ];
     case '3':
@@ -428,8 +542,8 @@ const topInfos = computed(() => {
         {
           label: '위험등급',
           value:
-            fundOptions.value[0]?.rate3mon != null
-              ? `${fundOptions.value[0]!.rate3mon}%`
+            fundOptions.value[0]?.riskGrade != null
+              ? `${riskGradeMap[fundOptions.value[0]!.riskGrade]}`
               : '-',
         },
         {
@@ -438,6 +552,18 @@ const topInfos = computed(() => {
             fundOptions.value[0]?.totalFee != null
               ? `${fundOptions.value[0]!.totalFee}%`
               : '-',
+        },
+      ];
+    case '6':
+      return [
+        { label: '보호여부', value: d.depositProtection ?? '-' },
+        {
+          label: '기준가',
+          value: Number(d.basePrice).toFixed(0) + ' 원',
+        },
+        {
+          label: '가입방법',
+          value: d.joinWay ?? '-',
         },
       ];
     default:

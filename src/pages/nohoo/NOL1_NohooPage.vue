@@ -286,7 +286,7 @@ const recommendedProducts = computed(() => {
         recommendItems.find((r) => r.finPrdtCd === product.finPrdtCd)?.score ??
           '0'
       );
-      tags.push(`맞춤점수 ${(score * 100).toFixed(0)}점 `);
+      tags.push(`적합도 ${(score * 100).toFixed(1)}% `);
 
       return { ...product, tags, score: Number(score) };
     });

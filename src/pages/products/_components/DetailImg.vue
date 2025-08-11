@@ -46,15 +46,17 @@ defineProps<{
 const getIcon = (label: string): string | null => {
   if (label.includes('최고금리')) return InterestRate;
   if (label.includes('가입방법')) return SignUpRoom;
-  if (label.includes('담보유형')) return CollateralOil;
   if (label.includes('가입제한')) return SubscriptionRestriction;
   if (label.includes('대출금리')) return LoanRate;
-  if (label.includes('3개월 수익률')) return MothReturn;
-  if (label.includes('통화')) return Currency;
+  if (label.includes('담보유형')) return CollateralOil;
   if (label.includes('금리유형')) return RateType;
   if (label.includes('매매단위')) return UnitOfAccount;
-  if (label.includes('총보수')) return LoanRate;
+  if (label.includes('통화')) return Currency;
+  if (label.includes('3개월 수익률')) return MothReturn;
   if (label.includes('위험등급')) return SubscriptionRestriction;
-  return null;
+  if (label.includes('총보수')) return LoanRate;
+  if (label.includes('보호여부')) return null;
+  if (label.includes('기준가')) return null;
+  return null; // 기본값
 };
 </script>
