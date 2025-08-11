@@ -96,7 +96,7 @@ const news = ref<News[]>([]);
 const PRODUCT_CATEGORY_MAP: Record<string, number> = {
   예금: 1,
   적금: 2,
-  주택담보: 3,
+  주택담보대출: 3,
   금: 4,
   펀드: 5,
   신탁: 6,
@@ -286,7 +286,9 @@ const recommendedProducts = computed(() => {
         recommendItems.find((r) => r.finPrdtCd === product.finPrdtCd)?.score ??
           '0'
       );
-      tags.push(`적합도 ${(score * 100).toFixed(1)}% `);
+      tags.push(
+        `적합도 ${(score * 100).toFixed(1)}% | ${CATEGORY_LABEL_MAP[product.finPrdtCategory] ?? '기타'}`
+      );
 
       return { ...product, tags, score: Number(score) };
     });
