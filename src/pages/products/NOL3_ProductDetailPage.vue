@@ -3,12 +3,6 @@
     <!-- 상단 대표 정보 -->
     <DetailImg :items="topInfos" v-if="topInfos.length" />
 
-    <!-- ★ 펀드: 3개월 일일 수익률 그래프 -->
-    <section v-if="isFund && fundReturn.length">
-      <p class="text-primary-300 mb-2 font-semibold">3개월 일일 수익률</p>
-      <FundReturnChart :fundReturn="fundReturn" />
-    </section>
-
     <!-- 추천 이유 -->
     <div class="card-design flex flex-col gap-2">
       <span class="text-primary-500 text-lg font-semibold">추천 이유</span>
@@ -130,6 +124,8 @@
         <!-- 옵션 테이블: 펀드 -->
         <div v-if="fundOptions.length">
           <p class="text-primary-500 mb-2 font-semibold">펀드 정보</p>
+          <!-- ★ 펀드: 3개월 일일 수익률 그래프 -->
+
           <table
             class="w-full table-auto border-collapse overflow-hidden text-center text-sm"
           >
@@ -156,6 +152,9 @@
               </tr>
             </tbody>
           </table>
+          <section v-if="isFund && fundReturn.length" class="mt-8">
+            <FundReturnChart :fundReturn="fundReturn" />
+          </section>
         </div>
 
         <!-- 옵션 테이블: 주담대 -->
