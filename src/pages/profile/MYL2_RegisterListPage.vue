@@ -38,6 +38,7 @@ import RegisterCard from './_components/RegisterCard.vue';
 import { mypageApi } from '@/api/user/mypage';
 import Btn from '@/components/buttons/Btn.vue';
 import { useRouter } from 'vue-router';
+import { getBranchNameById, getProductNameByCodeWrapper } from '@/utils/bookingMapper';
 
 const router = useRouter();
 
@@ -54,8 +55,10 @@ const transformBookingData = (bookingInfo) => {
       id: booking.bookingId,
       date: formattedDate,
       time: booking.time,
-      bank_name: `지점 ID: ${booking.branchId}`, // TODO: 실제 지점명으로 변환 필요
-      prdt_name: booking.finPrdtCode, // TODO: 실제 상품명으로 변환 필요
+      bank_name: getBranchNameById(booking.branchId),
+      prdt_name: getProductNameByCodeWrapper(booking.finPrdtCode),
+      branchId: booking.branchId, // RegisterCard에서 사용할 원본 데이터
+      finPrdtCode: booking.finPrdtCode, // RegisterCard에서 사용할 원본 데이터
     };
   });
 };

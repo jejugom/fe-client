@@ -49,7 +49,7 @@ import { useLoadingStore } from '@/stores/loading';
 const route = useRoute();
 const router = useRouter();
 
-const bookingId = ref('');
+const bookingCode = ref('');
 const data = ref<Register | null>(null);
 const loadingStore = useLoadingStore();
 
@@ -72,13 +72,15 @@ function goBackToMain() {
 }
 
 onMounted(async () => {
-  const id = route.query.bookingId as string;
-  if (!id) return;
+  // URL 쿼리 파라미터에서 bookingId대신 bookingCode를 가져옵니다
+  const code = route.query.bookingCode as string;
+  if (!code) return;
 
-  bookingId.value = id;
+  bookingCode.value = code;
   loadingStore.startLoading();
   try {
-    const result = await fetchReservedDetail(id);
+    // API 호출 시 ID 대신 bookingCode를 사용
+    const result = await fetchReservedDetail(code);
     data.value = result;
   } catch (e) {
     console.error('예약 상세 조회 실패', e);
@@ -99,7 +101,7 @@ const infoRows = computed(() => {
     { label: '상품명', value: data.value.prodName },
     { label: '지점명', value: data.value.branchName },
     { label: '날짜/시간', value: formattedDateTime.value },
-    { label: '예약 번호', value: data.value.bookingId },
+    { label: '예약 번호', value: data.value.bookingCode }, // 사용자에게 보여주는 예약 번호를 bookingCode로 변경
   ];
 });
 </script>

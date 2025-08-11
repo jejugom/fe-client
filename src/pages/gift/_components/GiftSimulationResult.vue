@@ -8,7 +8,7 @@
       >
       <div class="mb-16">
         <div
-          class="border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
+          class="custom-shadow border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8"
         >
           <div class="relative">
             <h3 class="text-primary-500 mb-2 text-xl font-semibold"
@@ -33,7 +33,7 @@
       <div class="mb-16">
         <!-- 수증자별 세금 요약표 -->
         <div
-          class="border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
+          class="custom-shadow border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8"
         >
           <div class="mb-2 flex items-center">
             <h3 class="text-primary-500 text-xl font-semibold"
@@ -132,7 +132,7 @@
       <!-- 유형별 절세 전략 추천 -->
       <div class="">
         <div
-          class="border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8 shadow-xs"
+          class="custom-shadow border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8"
         >
           <div class="mb-2 flex items-center">
             <h3 class="text-primary-500 text-xl font-semibold"

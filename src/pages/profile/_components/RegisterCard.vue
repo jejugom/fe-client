@@ -14,10 +14,10 @@
         <span class="font-semibold">방문 날짜 :</span> {{ formattedDate }}
       </div>
       <div>
-        <span class="font-semibold">방문 장소 :</span> {{ booking.bank_name }}
+        <span class="font-semibold">방문 장소 :</span> {{ displayBankName }}
       </div>
       <div>
-        <span class="font-semibold">상담 내용 :</span> {{ booking.prdt_name }}
+        <span class="font-semibold">상담 내용 :</span> {{ displayProductName }}
       </div>
     </div>
   </div>
@@ -63,6 +63,7 @@ import Modal from '@/components/modals/Modal.vue';
 import BookingTimeSelectModal from './BookingTimeSelectModal.vue';
 import { mypageApi } from '@/api/user/mypage';
 import TextBtn from '@/components/buttons/TextBtn.vue';
+import { getBranchNameById, getProductNameByCodeWrapper } from '@/utils/bookingMapper';
 
 const props = defineProps<{
   booking: BookingItem;
@@ -91,6 +92,51 @@ const formattedDate = computed(() => {
   const hour12 = hour % 12 === 0 ? 12 : hour % 12;
 
   return `${year}년 ${month}월 ${day}일 ${ampm} ${hour12}시 ${minute}분`;
+});
+
+// 지점명과 상품명을 실제 이름으로 변환하는 computed
+const displayBankName = computed(() => {
+  // 1. 먼저 branchId 필드가 있는지 확인
+  if (props.booking.branchId !== undefined) {
+    return getBranchNameById(props.booking.branchId);
+  }
+  
+  // 2. bank_name이 숫자 형태의 ID인 경우 변환
+  if (typeof props.booking.bank_name === 'number') {
+    return getBranchNameById(props.booking.bank_name);
+  } else if (typeof props.booking.bank_name === 'string' && /^\d+$/.test(props.booking.bank_name)) {
+    return getBranchNameById(parseInt(props.booking.bank_name));
+  }
+  
+  // 3. 이미 지점명인 경우 그대로 사용
+  return props.booking.bank_name || '지점 정보 없음';
+});
+
+const displayProductName = computed(() => {
+  // 1. 먼저 finPrdtCode 필드가 있는지 확인
+  if (props.booking.finPrdtCode) {
+    return getProductNameByCodeWrapper(props.booking.finPrdtCode);
+  }
+  
+  // 2. prdt_name이 상품 코드 형태인 경우 변환
+  if (typeof props.booking.prdt_name === 'string') {
+    // 실제 DB 패턴에 맞는 상품 코드 검사
+    const codePatterns = [
+      /^[0-9A-Z]{4}$/, // 펀드 코드 (예: 1A81, 2A43)
+      /^DP\d+$/, // 예적금 코드 (예: DP01000029)
+      /^LN\d+$/, // 대출 코드 (예: LN200300000002)
+      /^C\d+$/, // 투자상품 코드 (예: C016622)
+      /^(gift|inheritance)$/ // 특수 상품
+    ];
+    
+    const isProductCode = codePatterns.some(pattern => pattern.test(props.booking.prdt_name));
+    if (isProductCode) {
+      return getProductNameByCodeWrapper(props.booking.prdt_name);
+    }
+  }
+  
+  // 3. 이미 상품명인 경우 그대로 사용
+  return props.booking.prdt_name || '상품 정보 없음';
 });
 
 // 시간 선택 처리

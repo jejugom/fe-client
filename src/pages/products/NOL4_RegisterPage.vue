@@ -402,7 +402,7 @@ const goToRegister = async () => {
     time: registerStore.time,
   };
 
-  let bookingResult: { bookingId: string } | null = null;
+  let bookingResult: { bookingCode: string; docInfo: any } | null = null;
   try {
     bookingResult = await postBooking(payload);
   } catch (error: any) {
@@ -444,13 +444,13 @@ const goToRegister = async () => {
     );
   }
 
-  // ✅ 완료 페이지 이동: from=gift | nohoo 함께 전달
+  // 완료 페이지 이동: from=gift | nohoo 함께 전달
   registerStore.$reset();
   router.push({
     name: 'register-complete',
     query: {
-      bookingId: bookingResult?.bookingId,
-      from: flow.value, // <-- 여기 중요
+      bookingCode: bookingResult?.bookingCode,
+      from: flow.value,
     },
   });
 };

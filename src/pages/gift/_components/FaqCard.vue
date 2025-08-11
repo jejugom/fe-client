@@ -1,6 +1,6 @@
 <template>
   <div
-    class="btn-pressed flex h-15 w-full items-center gap-4 rounded-lg bg-white p-0 shadow-xs"
+    class="btn-pressed custom-shadow flex h-15 w-full items-center gap-4 rounded-lg bg-white p-0"
     @click="$emit('click')"
   >
     <!-- 카테고리 -->
@@ -26,7 +26,7 @@ import { defineProps, defineEmits } from 'vue';
 
 defineProps<{
   id: number;
-  category: '상속' | '증여'; // ✅ 백엔드 데이터 그대로 사용
+  category: '상속' | '증여'; // 백엔드 데이터 그대로 사용
   question: string;
 }>();
 
