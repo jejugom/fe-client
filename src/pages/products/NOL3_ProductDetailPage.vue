@@ -493,7 +493,11 @@ const topInfos = computed(() => {
             ? `${Math.max(...depositRates).toFixed(2)}%`
             : '-',
         },
-        { label: '가입방법', value: d.joinWay ?? '-' },
+        {
+          label: '가입방법',
+          value:
+            d.joinWay?.trim().length > 5 ? '온오프라인' : (d.joinWay ?? '-'),
+        },
         {
           label: '가입제한',
           value: d.joinMember === '제한없음' ? '누구나' : '제한 있음',
@@ -523,7 +527,11 @@ const topInfos = computed(() => {
       return [
         { label: '매매단위', value: d.lot ?? '-' },
         { label: '통화', value: d.currency ?? '-' },
-        { label: '가입방법', value: d.joinWay ?? '-' },
+        {
+          label: '가입방법',
+          value:
+            d.joinWay?.trim().length > 5 ? '온오프라인' : (d.joinWay ?? '-'),
+        },
       ];
     case '5':
       const riskGradeMap: Record<number, string> = {
@@ -565,7 +573,8 @@ const topInfos = computed(() => {
         },
         {
           label: '가입방법',
-          value: d.joinWay ?? '-',
+          value:
+            d.joinWay?.trim().length > 5 ? '온오프라인' : (d.joinWay ?? '-'),
         },
       ];
     default:
