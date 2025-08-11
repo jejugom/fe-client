@@ -137,9 +137,13 @@ const handleAssetSync = async () => {
     }
   } catch (error: any) {
     console.error('자산 연동 실패:', error);
+    const detail = error?.response?.data?.detail as string;
 
+    if (detail && detail.includes('아이디/비밀번호')) {
+      alert('은행 아이디와 비밀번호가 올바르지 않습니다. 다시 확인해주세요.');
+    }
     // 에러 메시지 표시
-    if (error.code === 'ECONNABORTED') {
+   else if (error.code === 'ECONNABORTED') {
       alert('자산 연동 처리 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.');
     } else if (error.response?.status === 401) {
       alert('국민은행 로그인 정보가 올바르지 않습니다. 다시 확인해주세요.');
