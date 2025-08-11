@@ -74,19 +74,71 @@ const tabs = [
 ];
 
 const isActive = (name: string) => {
-  // 현재 라우트의 경로
-  const currentPath = route.path;
+  const currentName = route.name as string | undefined;
+  const params = route.params ?? {};
+  const query = route.query ?? {};
 
-  // 탭 이름에 해당하는 path prefix 정의
-  const pathMap: Record<string, string> = {
-    nohoo: '/nohoo',
-    gift: '/gift',
-    home: '/home',
-    event: '/event',
-    profile: '/profile',
+  // 라우트 name 기반 매핑
+  const nameMap: Record<string, string[]> = {
+    nohoo: ['nohoo', 'product-detail', 'register-product'],
+    gift: [
+      'gift',
+      'gift-start',
+      'gift-input',
+      'gift-quiz',
+      'gift-faq',
+      'gift-detail',
+      'gift-result',
+      'gift-taxinfo',
+      'inheritance-start',
+      'inheritance-input',
+      'inheritance-quiz',
+      'inheritance-will',
+      'inheritance-result',
+    ],
+    home: ['home'],
+    event: [
+      'event',
+      'event-quiz',
+      'event-number',
+      'event-park',
+      'event-reward',
+    ],
+    profile: [
+      'profile',
+      'register-list',
+      'edit-asset',
+      'edit-branch',
+      'edit-profile',
+      'asset-tutorial',
+      'asset-start',
+      'asset-kookmin-login',
+      'asset-custom-start',
+      'asset-custom-quiz',
+      'asset-signup-complete',
+    ],
   };
 
-  const prefix = pathMap[name];
-  return currentPath.startsWith(prefix);
+  // 예약 완료 페이지: from 쿼리 우선
+  if (currentName === 'register-complete') {
+    const from = (query.from as string) || '';
+    if (from === 'gift') return name === 'gift';
+    if (from === 'nohoo') return name === 'nohoo';
+
+    // from이 없으면 params.id로 백업 추론
+    const id = (params.id as string) || '';
+    const isGiftFlow = id === 'gift' || id === 'inheritance';
+    return name === (isGiftFlow ? 'gift' : 'nohoo');
+  }
+
+  // 예약 진행 페이지(공통): id로 흐름 판별
+  if (currentName === 'register-product' || currentName === 'register') {
+    const id = (params.id as string) || '';
+    const isGiftFlow = id === 'gift' || id === 'inheritance';
+    return name === (isGiftFlow ? 'gift' : 'nohoo');
+  }
+
+  // 그 외 일반 페이지는 name 매핑으로 판단
+  return !!nameMap[name]?.includes(currentName ?? '');
 };
 </script>

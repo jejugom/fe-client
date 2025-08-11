@@ -31,13 +31,13 @@
         </ul>
       </div>
     </div>
-    <ReserveCompleteBox />
+    <ReserveCompleteBox :primary-label="backLabel" @primary="goBackToMain" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import {
   fetchReservedDetail,
   type Register,
@@ -47,10 +47,29 @@ import InfoRow from './_components/InfoRow.vue';
 import { useLoadingStore } from '@/stores/loading';
 
 const route = useRoute();
+const router = useRouter();
 
 const bookingId = ref('');
 const data = ref<Register | null>(null);
 const loadingStore = useLoadingStore();
+
+// from 쿼리 기반 흐름 결정 (기본은 nohoo)
+const flow = computed<'gift' | 'nohoo'>(() => {
+  const f = (route.query.from as string) || '';
+  return f === 'gift' ? 'gift' : 'nohoo';
+});
+
+// 버튼 라벨 타겟
+const backLabel = computed(() =>
+  flow.value === 'gift' ? '증여설계로 돌아가기' : '노후투자로 돌아가기'
+);
+const backRouteName = computed(() =>
+  flow.value === 'gift' ? 'gift' : 'nohoo'
+);
+
+function goBackToMain() {
+  router.push({ name: backRouteName.value });
+}
 
 onMounted(async () => {
   const id = route.query.bookingId as string;

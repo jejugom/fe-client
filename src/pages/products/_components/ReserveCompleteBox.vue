@@ -7,9 +7,9 @@
     >
     <Btn
       color="primary"
-      label="메인 페이지로 돌아가기"
+      :label="primaryLabel"
       size="large"
-      @click="onClick"
+      @click="$emit('primary')"
     />
   </div>
 </template>
@@ -18,8 +18,7 @@
 import Btn from '@/components/buttons/Btn.vue';
 import router from '@/router';
 
-const onClick = () => {
-  // 홈페이지로 돌아가기 버튼 클릭 시 동작
-  router.push({ name: 'nohoo' });
-};
+defineProps<{
+  primaryLabel: string;
+}>();
 </script>

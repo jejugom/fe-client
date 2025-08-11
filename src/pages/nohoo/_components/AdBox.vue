@@ -47,6 +47,12 @@
       </div>
       <Banner v-else />
     </div>
+    <div v-if="selectedTab === '신탁'">
+      <div v-if="news.length > 0">
+        <NewsCard :newsItem="news[0]" />
+      </div>
+      <Banner v-else />
+    </div>
   </div>
 </template>
 

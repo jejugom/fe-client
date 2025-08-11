@@ -89,12 +89,33 @@
       </div>
     </section>
 
-    <div>
-      <h2 class="text-primary-500 mb-4 text-2xl font-bold"
-        >가장 가까운 골든라이프</h2
+    <!-- 가장 가까운 골든라이프 -->
+    <section v-if="nearestBranch">
+      <div class="text-primary-500 mb-2 text-2xl font-bold">
+        가장 가까운 골든라이프
+      </div>
+      <div
+        class="stroke-secondary bg-gold flex items-center justify-between rounded-lg p-4"
       >
-      <div class="h-30 w-full bg-white"></div>
-    </div>
+        <div>
+          <div class="text-lg font-semibold text-white">{{
+            nearestBranch.name
+          }}</div>
+          <div class="">
+            나와의 거리:
+            <span class="tabular-nums">{{
+              formatDistance(nearestBranch.distance)
+            }}</span>
+          </div>
+        </div>
+        <Btn
+          color="surface"
+          size="small"
+          label="찾아가기"
+          @click="openMap(nearestBranch)"
+        />
+      </div>
+    </section>
 
     <!-- 하단 서비스 특징 -->
     <section class="card-design text-center">
@@ -264,4 +285,87 @@ const features = [
     src: Home6,
   },
 ];
+
+declare const kakao: any;
+
+type Branch = {
+  name: string;
+  lat: number;
+  lng: number;
+  distance: number;
+  placeUrl: string;
+};
+
+const myPos = ref<{ lat: number; lng: number } | null>(null);
+const nearestBranch = ref<Branch | null>(null);
+
+/* 거리 계산 */
+function haversine(lat1: number, lng1: number, lat2: number, lng2: number) {
+  const R = 6371e3;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+function formatDistance(m: number) {
+  return m < 1000 ? `${Math.round(m)}m` : `${(m / 1000).toFixed(1)}km`;
+}
+
+/* 지도에서 보기 */
+function openMap(branch: Branch) {
+  window.open(branch.placeUrl, '_blank');
+}
+
+/* 카카오맵 검색 */
+function searchNearestBranch() {
+  if (!myPos.value) return;
+  const ps = new kakao.maps.services.Places();
+
+  ps.keywordSearch(
+    'KB골든라이프',
+    (data: any[], status: string) => {
+      if (status !== kakao.maps.services.Status.OK) {
+        console.error('검색 실패');
+        return;
+      }
+      const branches = data.map((item) => {
+        const lat = parseFloat(item.y);
+        const lng = parseFloat(item.x);
+        return {
+          name: item.place_name,
+          lat,
+          lng,
+          placeUrl: item.place_url,
+          distance: haversine(myPos.value!.lat, myPos.value!.lng, lat, lng),
+        };
+      });
+      // 거리순 정렬 후 가장 가까운 1곳만
+      branches.sort((a, b) => a.distance - b.distance);
+      nearestBranch.value = branches[0];
+    },
+    {
+      location: new kakao.maps.LatLng(myPos.value.lat, myPos.value.lng),
+      radius: 10000, // 10km 범위
+    }
+  );
+}
+
+/* 위치 + 검색 실행 */
+onMounted(() => {
+  if (!('geolocation' in navigator)) return;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      myPos.value = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      searchNearestBranch();
+    },
+    (err) => {
+      console.error('위치 조회 실패', err);
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+});
 </script>
