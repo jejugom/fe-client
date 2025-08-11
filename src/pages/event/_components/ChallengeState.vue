@@ -1,19 +1,13 @@
-<!-- src/pages/event/_components/ChallengeState.vue -->
 <template>
-  <div class="card-design space-y-4 py-8">
-    <!-- <div class="flex justify-between">
-      <div class="text-lg font-semibold">
-        <span class="text-primary-300">{{ userName }}</span> 님의 골든라이프
+  <div class="card-design space-y-4">
+    <div class="flex justify-end gap-2 font-semibold">
+      <div>내 포인트리</div>
+      <div>
+        <span class="text-primary-300">{{ fmtPoints }}</span> P
       </div>
-      <div class="text-end">
-        <div class="text-surface-300 font-semibold">내 포인트</div>
-        <div class="text-base font-semibold"
-          >{{ points.toLocaleString() }} P</div
-        >
-      </div>
-    </div> -->
+    </div>
+
     <div>
-      <!-- <h3 class="text-primary-500 mb-2 font-semibold">완료 리워드</h3> -->
       <div class="flex justify-around">
         <div
           v-for="item in items"
@@ -22,13 +16,14 @@
         >
           <img
             :src="item.done ? Trophy : TrophyGray"
-            alt="트로피 아이콘"
+            alt=""
             class="mb-1 h-16 w-16"
           />
           <span class="text-sm whitespace-pre-line">{{ item.label }}</span>
         </div>
       </div>
     </div>
+
     <slot />
   </div>
 </template>
@@ -37,13 +32,14 @@
 import { computed } from 'vue';
 import { useRewardStore } from '@/stores/reward';
 import Trophy from '@/assets/icons/PrizeCup.svg';
-import TrophyGray from '@/assets/icons/PrizeCupGray.svg'; // 회색 버전 하나 추가 추천
+import TrophyGray from '@/assets/icons/PrizeCupGray.svg';
+
+const props = defineProps<{
+  /** 보여줄 포인트 (부모가 내려줌). 없으면 0으로 처리 */
+  points?: number | null | undefined;
+}>();
 
 const reward = useRewardStore();
-
-// 사용자/포인트는 프로젝트 데이터에 맞게 교체
-const userName = '최승아';
-const points = 1000;
 
 const items = computed(() => [
   { id: 'quiz', label: '금융지식\nOX 퀴즈', done: reward.isCompleted('quiz') },
@@ -58,4 +54,10 @@ const items = computed(() => [
     done: reward.isCompleted('number'),
   },
 ]);
+
+// 숫자 보정 + 3자리 콤마
+const fmtPoints = computed(() => {
+  const n = Number(props.points ?? 0);
+  return Number.isFinite(n) ? n.toLocaleString() : '0';
+});
 </script>
