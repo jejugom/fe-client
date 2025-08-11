@@ -34,6 +34,7 @@ const radialChartOptions = computed(() => ({
   chart: {
     height: 250,
     type: 'radialBar',
+    fontFamily: 'Pretendard-Regular, Noto Sans KR, sans-serif',
     offsetY: -20,
     sparkline: { enabled: true },
   },
@@ -54,7 +55,7 @@ const radialChartOptions = computed(() => ({
         value: {
           show: true,
           fontSize: '24px',
-          fontFamily: 'Pretendard',
+          fontFamily: 'Pretendard-Semibold',
           fontWeight: 700,
           color: '#d1a843',
           offsetY: -10,

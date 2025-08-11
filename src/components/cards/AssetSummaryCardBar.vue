@@ -61,6 +61,7 @@ const colors = [
 const chartOptions = computed(() => ({
   chart: {
     type: 'bar',
+    fontFamily: 'Pretendard-Regular, Noto Sans KR, sans-serif',
     stacked: true,
     stackType: '100%', // 백분율 스택
     toolbar: { show: false },
