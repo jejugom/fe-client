@@ -24,6 +24,11 @@
             v-for="option in relationshipOptions"
             :key="option"
             :value="option"
+            :disabled="
+              option === '배우자' &&
+              spouseExists &&
+              !(isEditing && formData.relationship === '배우자')
+            "
           >
             {{ option }}
           </option>
@@ -40,16 +45,19 @@
       </FormField>
 
       <FormField label="결혼하셨나요?">
-        <SelectBox v-model="formData.isMarried" size="medium" class="w-full">
+        <SelectBox
+          v-model="formData.isMarried"
+          size="medium"
+          class="w-full"
+          :disabled="formData.relationship === '배우자'"
+        >
           <option disabled :value="null">선택하세요</option>
           <option :value="true">예</option>
           <option :value="false">아니오</option>
         </SelectBox>
       </FormField>
 
-      <FormField
-        :label="`최근 10년 내 ${formData.recipientName || '수증자'}에게 증여한 적 있나요?`"
-      >
+      <FormField :label="`최근 10년 내 수증자에게 증여한 적 있나요?`">
         <SelectBox v-model="formData.hasPriorGift" size="medium" class="w-full">
           <option disabled :value="null">선택하세요</option>
           <option :value="true">예</option>
@@ -94,16 +102,15 @@
       </FormField>
     </div>
   </Modal>
-  <Alert
-    v-if="showAlert"
-    @click="showAlert = false"
-    title="모든 필수 정보를 입력해 주세요"
-  >
-    <ul>
-      <li v-for="field in missingFieldsForAlert" :key="field">
-        - {{ field }}
-      </li>
-    </ul>
+  <Alert v-if="showAlert" @click="showAlert = false">
+    <div class="text-center">
+      <p class="mb-2 font-semibold">모든 필수 정보를 입력해 주세요:</p>
+      <ul class="list-none text-left">
+        <li v-for="field in missingFieldsForAlert" :key="field" class="ml-4">
+          - {{ field }}
+        </li>
+      </ul>
+    </div>
   </Alert>
 </template>
 
@@ -121,6 +128,7 @@ import { formatCurrency } from '@/utils/format';
 interface Props {
   recipient?: RecipientRequestDto | null;
   isEditing?: boolean;
+  spouseExists?: boolean;
 }
 
 interface Emits {
@@ -128,10 +136,10 @@ interface Emits {
   (e: 'confirm', recipient: RecipientRequestDto): void;
 }
 
-// `mode` prop 제거
 const props = withDefaults(defineProps<Props>(), {
   recipient: null,
   isEditing: false,
+  spouseExists: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -166,6 +174,16 @@ const handleAmountInput = (e: Event) => {
 
 // 더미 옵션
 const relationshipOptions = ['자녀', '배우자', '손자녀', '형제자매', '기타'];
+
+// 관계가 '배우자'로 변경될 때, 결혼 여부를 '예'로 자동 설정
+watch(
+  () => formData.value.relationship,
+  (newRelationship) => {
+    if (newRelationship === '배우자') {
+      formData.value.isMarried = true;
+    }
+  }
+);
 
 // `hasPriorGift` 변경 시 `priorGiftAmount`와 `priorGiftAmountInTenThousand` 초기화
 watch(

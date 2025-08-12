@@ -38,6 +38,7 @@
         :recipient="newRecipient"
         :is-editing="isEditing"
         :mode="mode"
+        :spouse-exists="spouseExists"
         @cancel="cancelRecipientModal"
         @confirm="handleRecipientConfirm"
       />
@@ -129,6 +130,10 @@ const inheritanceStore = useInheritanceStore();
 
 const store = computed(() => {
   return props.mode === 'gift' ? giftStore : inheritanceStore;
+});
+
+const spouseExists = computed(() => {
+  return recipients.value.some((r) => r.relationship === '배우자');
 });
 
 // 페이지 설정
