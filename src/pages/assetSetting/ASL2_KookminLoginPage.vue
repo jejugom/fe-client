@@ -44,6 +44,10 @@
     type="type2"
     class="mt-16"
   />
+  <!-- 아이디 오류 알럿 -->
+  <Alert v-if="alertOpen" @click="alertOpen = false">
+    <div class="text-center whitespace-pre-line">{{ alertMsg }}</div>
+  </Alert>
 </template>
 
 <script setup lang="ts">
@@ -51,12 +55,11 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
-
-import Btn from '@/components/buttons/Btn.vue';
 import LoginForm from './_components/LoginForm.vue';
 import { codefApi } from '@/api/asset/codef';
 import { useLoadingStore } from '@/stores/loading';
 import BtnSet from '@/components/buttons/BtnSet.vue';
+import Alert from '@/components/modals/Alert.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -67,6 +70,14 @@ const credentials = ref({
   id: '',
   password: '',
 });
+
+const alertOpen = ref(false);
+const alertMsg = ref('');
+
+function openAlert(msg: string) {
+  alertMsg.value = msg;
+  alertOpen.value = true;
+}
 
 // 모든 값이 채워졌는지 여부
 const isFormFilled = computed(
@@ -99,7 +110,7 @@ onUnmounted(() => {
 
 const handleAssetSync = async () => {
   if (!isFormFilled.value) {
-    alert('아이디와 비밀번호를 모두 입력해주세요.');
+    openAlert('아이디와 비밀번호를 모두 입력해주세요.');
     return;
   }
   loadingStore.startLoading();
@@ -140,17 +151,21 @@ const handleAssetSync = async () => {
     const detail = error?.response?.data?.detail as string;
 
     if (detail && detail.includes('아이디/비밀번호')) {
-      alert('은행 아이디와 비밀번호가 올바르지 않습니다. 다시 확인해주세요.');
+      openAlert(
+        '은행 아이디와 비밀번호가 올바르지 않습니다. 다시 확인해주세요.'
+      );
     }
     // 에러 메시지 표시
-   else if (error.code === 'ECONNABORTED') {
-      alert('자산 연동 처리 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.');
+    else if (error.code === 'ECONNABORTED') {
+      openAlert(
+        '자산 연동 처리 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.'
+      );
     } else if (error.response?.status === 401) {
-      alert('국민은행 로그인 정보가 올바르지 않습니다. 다시 확인해주세요.');
+      openAlert('국민은행 로그인 정보가 올바르지 않습니다. 다시 확인해주세요.');
     } else if (error.response?.status === 500) {
-      alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      openAlert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     } else {
-      alert('자산 연동 중 오류가 발생했습니다. 다시 시도해주세요.');
+      openAlert('자산 연동 중 오류가 발생했습니다. 다시 시도해주세요.');
     }
   } finally {
     loadingStore.stopLoading();
