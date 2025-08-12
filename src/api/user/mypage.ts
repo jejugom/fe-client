@@ -40,12 +40,14 @@ export const mypageApi = {
   },
 
   async updateBooking(bookingId: string, data: BookingUpdateRequest): Promise<void> {
-    const response = await api.patch(`/api/bookings/${bookingId}`, data);
-    return response.data;
+    await api.patch(`/api/bookings/${bookingId}`, data);
   },
 
   async deleteBooking(bookingId: string): Promise<void> {
-    const response = await api.delete(`/api/bookings/${bookingId}`);
-    return response.data;
+    await api.delete(`/api/bookings/${bookingId}`);
+  },
+
+  async deleteMe(): Promise<void> {
+    await api.delete('/api/user/me');
   },
 };
