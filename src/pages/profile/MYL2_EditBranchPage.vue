@@ -3,25 +3,25 @@
 
   <!-- 현재 위치 표시 -->
   <div class="mb-8">
-    <h2 class="text-primary-300 mb-2 text-2xl font-bold">
+    <h2 class="text-primary-500 mb-2 text-2xl font-bold">
       나의 국민은행 지점 설정
     </h2>
-    <p class="text-surface-500 font-semibold"
-      >현재 위치: {{ currentAddress }}</p
+    <p class="font-semibold">현재 위치: {{ currentAddress }}</p>
+    <!-- 현재 설정된 지점 표시 -->
+    <div
+      v-if="currentBranch"
+      class="stroke-primary bg-primary-100 my-2 w-full rounded-lg p-4"
     >
-  </div>
-
-  <!-- 현재 설정된 지점 표시 -->
-  <div v-if="currentBranch" class="bg-primary-100 mb-4 w-full rounded-lg p-3">
-    현재 설정된 지점:
-    <span class="text-primary-500 ml-2 text-base font-semibold">{{
-      currentBranch
-    }}</span>
+      현재 설정된 지점:
+      <span class="text-primary-500 ml-2 text-base font-semibold">{{
+        currentBranch
+      }}</span>
+    </div>
   </div>
 
   <!-- 검색 영역 -->
-  <div class="flex flex-col">
-    <div class="mb-6 flex items-center gap-2">
+  <div class="flex flex-col gap-4">
+    <div class="flex items-center gap-2">
       <InputBox
         placeholder="지점 입력 (예: 광진구)"
         size="medium"
@@ -35,12 +35,10 @@
     <!-- 선택된 지점 표시 -->
     <div
       v-if="displaySelectedBranchName"
-      class="bg-secondary-100 mb-4 w-full rounded-lg p-3"
+      class="stroke-secondary bg-secondary-100 w-full rounded-lg p-4"
     >
       선택한 지점:
-      <span class="text-secondary-500 ml-2 text-base font-semibold">{{
-        displaySelectedBranchName
-      }}</span>
+      <span class="font-semibold">{{ displaySelectedBranchName }}</span>
     </div>
 
     <!-- 지도 영역 -->
@@ -51,9 +49,22 @@
   <BtnSet
     label1="건너뛰기"
     label2="설정하기"
+    @click1="handleSkip"
     @click2="handleComplete"
     type="type2"
   />
+  <!-- 지점 설정 완료 -->
+  <Alert v-if="showSuccessAlert" @click="onAlertConfirm">
+    <p>
+      지점 "{{ displaySelectedBranchName }}"이(가) 성공적으로 설정되었습니다.
+    </p>
+  </Alert>
+  <!-- 지점 설정 실패 시 -->
+  <Alert v-if="showErrorAlert" @click="showErrorAlert = false">
+    <p>
+      {{ errorAlertMessage }}
+    </p>
+  </Alert>
 </template>
 
 <script setup lang="ts">
@@ -62,6 +73,7 @@ import { useRouter, useRoute } from 'vue-router';
 import InputBox from '@/components/forms/InputBox.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import BtnSet from '@/components/buttons/BtnSet.vue';
+import Alert from '@/components/modals/Alert.vue';
 import { branchApi } from '@/api/user/branch';
 import { branchList } from '@/data/branchList';
 
@@ -78,6 +90,9 @@ const currentAddress = ref('');
 const selectedBranch = ref('');
 const displaySelectedBranchName = ref(''); // UI에 표시될 전체 지점명
 const currentBranch = ref(''); // 현재 설정된 지점
+const showSuccessAlert = ref(false);
+const showErrorAlert = ref(false);
+const errorAlertMessage = ref('');
 let map: kakao.maps.Map;
 
 const searchPlaces = () => {
@@ -95,7 +110,10 @@ const searchPlaces = () => {
 
           kakao.maps.event.addListener(marker, 'click', () => {
             displaySelectedBranchName.value = place.place_name; // UI에 표시될 전체 지점명
-            selectedBranch.value = place.place_name.replace(/KB국민은행\s*/g, '').replace(/점/g, '').trim(); // 로직에 사용될 간소화된 지점명
+            selectedBranch.value = place.place_name
+              .replace(/KB국민은행\s*/g, '')
+              .replace(/점/g, '')
+              .trim(); // 로직에 사용될 간소화된 지점명
           });
 
           bounds.extend(pos);
@@ -108,45 +126,62 @@ const searchPlaces = () => {
 };
 
 const normalizeBranchName = (name: string) => {
-  return name.replace(/KB국민은행\s*/g, '').replace(/점/g, '').trim();
+  return name
+    .replace(/KB국민은행\s*/g, '')
+    .replace(/점/g, '')
+    .trim();
+};
+
+const onAlertConfirm = () => {
+  showSuccessAlert.value = false;
+  const from = q(route.query.from);
+  if (from === 'profile') {
+    router.push({ name: 'profile' });
+  } else {
+    router.push({ name: 'asset-signup-complete' });
+  }
+};
+
+const q = (v: unknown) =>
+  Array.isArray(v) ? String(v[0] ?? '') : v != null ? String(v) : '';
+
+const handleSkip = () => {
+  const from = q(route.query.from);
+
+  if (from === 'profile') {
+    router.push({ name: 'profile' });
+  } else {
+    router.push({ name: 'asset-signup-complete' });
+  }
 };
 
 const handleComplete = async () => {
+  if (!selectedBranch.value) {
+    errorAlertMessage.value = '지점을 선택해주세요.';
+    showErrorAlert.value = true;
+    return;
+  }
+
   try {
-    if (!selectedBranch.value) {
-      alert('지점을 선택해주세요.');
+    const branchData = branchList.find(
+      (b) => normalizeBranchName(b.name) === selectedBranch.value
+    );
+
+    if (!branchData) {
+      errorAlertMessage.value =
+        '선택한 지점을 찾을 수 없습니다. 다시 선택해주세요.';
+      showErrorAlert.value = true;
       return;
     }
 
-    try {
-      // branchList에서 selectedBranch.value에 해당하는 branchId를 찾습니다.
-      const branchData = branchList.find(
-        (b) => normalizeBranchName(b.name) === selectedBranch.value
-      );
-
-      if (!branchData) {
-        alert('선택한 지점을 찾을 수 없습니다. 다시 선택해주세요.');
-        return;
-      }
-
-      const response = await branchApi.setMyBranch({ branchId: branchData.id });
-      console.log('지점 설정 성공:', response);
-      alert(`지점 "${displaySelectedBranchName.value}"이(가) 성공적으로 설정되었습니다.`);
-      currentBranch.value = displaySelectedBranchName.value; // 현재 지점 업데이트
-    } catch (error) {
-      console.error('지점 설정 실패:', error);
-      alert('지점 설정 중 오류가 발생했습니다.');
-      return;
-    }
-
-    if (route.query.from === 'profile') {
-      router.push({ name: 'profile' });
-    } else {
-      router.push({ name: 'asset-signup-complete' });
-    }
+    await branchApi.setMyBranch({ branchId: branchData.id });
+    currentBranch.value = displaySelectedBranchName.value; // 현재 지점 업데이트
+    showSuccessAlert.value = true;
   } catch (error) {
-    console.error('지점 업데이트 실패:', error);
-    alert('지점 설정 중 오류가 발생했습니다. 다시 시도해주세요.');
+    console.error('지점 설정 실패:', error);
+    errorAlertMessage.value =
+      '지점 설정 중 오류가 발생했습니다. 다시 시도해주세요.';
+    showErrorAlert.value = true;
   }
 };
 

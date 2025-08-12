@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1 class="text-primary-300 mb-3 text-2xl font-bold">유언장</h1>
-    <p class="mb-8 text-sm">
+    <h1 class="text-primary-500 mb-2 text-2xl font-bold">유언장</h1>
+    <p class="mb-8 text-base leading-relaxed">
       작성하신 내용을 바탕으로 유언장 템플릿이 완성되었습니다.
       <br />
       아래 유언장은 참고용이며, 법적 효력을 갖기 위해서는 정식 절차에 따라
@@ -25,7 +25,7 @@
         @click="handleShareOrDownload"
       />
       <div class="mt-16 flex flex-col">
-        <p class="text-primary-300 mb-2 text-center font-semibold">
+        <p class="text-primary-500 mb-2 text-center font-semibold">
           정식 유언장 작성 또는 상속 절차 상담을 받고 싶으시다면,<br />
           은행에 방문하셔서 꼭 전문가와 상담해보세요.
         </p>
@@ -39,12 +39,23 @@
       </div>
     </div>
   </div>
+  <Alert v-if="showAlert" @click="showAlert = false">
+    <p>{{ alertMessage }}</p>
+  </Alert>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, nextTick, watch, type ComputedRef } from 'vue';
+import {
+  computed,
+  onMounted,
+  ref,
+  nextTick,
+  watch,
+  type ComputedRef,
+} from 'vue';
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
+import Alert from '@/components/modals/Alert.vue';
 import { useInheritanceStore } from '@/stores/inheritance';
 import { fetchWillTestator } from '@/api/gift/simulation';
 import type { TestatorInfo } from '@/types/gift/simulation';
@@ -59,7 +70,9 @@ const inheritanceStore = useInheritanceStore();
 const testator = ref<TestatorInfo>({ email: '', name: '', birth: '' });
 const localWillContent = ref(inheritanceStore.additionalWillContent);
 
-const distributedAssets: ComputedRef<DistributedAsset[]> = computed(() => inheritanceStore.distributedAssets);
+const distributedAssets: ComputedRef<DistributedAsset[]> = computed(
+  () => inheritanceStore.distributedAssets
+);
 
 watch(localWillContent, (newContent) => {
   inheritanceStore.setAdditionalWillContent(newContent);
@@ -78,6 +91,8 @@ const goToRegister = () => {
 };
 
 const isMobile = ref(false);
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 const checkDeviceType = () => {
   isMobile.value = /Mobi|Android/i.test(navigator.userAgent);
@@ -133,15 +148,15 @@ const shareResult = async () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href);
 
-      alert(
-        isMobile.value
-          ? '공유 기능을 사용할 수 없어 PDF를 다운로드합니다.'
-          : '결과 PDF가 다운로드되었습니다.'
-      );
+      alertMessage.value = isMobile.value
+        ? '공유 기능을 사용할 수 없어 PDF를 다운로드합니다.'
+        : '결과 PDF가 다운로드되었습니다.';
+      showAlert.value = true;
     }
   } catch (error) {
     console.error('PDF 생성/공유 실패:', error);
-    alert('결과를 공유하거나 저장하는 데 실패했습니다.');
+    alertMessage.value = '결과를 공유하거나 저장하는 데 실패했습니다.';
+    showAlert.value = true;
   }
 };
 

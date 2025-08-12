@@ -1,10 +1,10 @@
 <template>
-  <div class="mb-8 rounded-2xl bg-white p-6 shadow-xs">
-    <h2 class="text-surface-500 mb-6 text-center text-lg font-bold">
+  <div class="card-design mb-8 py-8">
+    <h2 class="text-primary-500 mb-8 text-center text-xl font-bold">
       노후도락이 제공하는 서비스
     </h2>
 
-    <div class="space-y-4">
+    <div class="mx-4 space-y-4">
       <div
         v-for="service in services"
         :key="service.id"
@@ -19,8 +19,8 @@
           <span class="text-xl">{{ service.emoji }}</span>
         </div>
         <div class="flex-1">
-          <h3 class="text-surface-500 font-semibold">{{ service.title }}</h3>
-          <p class="text-surface-400 text-sm">{{ service.description }}</p>
+          <h3 class="font-semibold">{{ service.title }}</h3>
+          <p class="text-surface-400">{{ service.description }}</p>
         </div>
       </div>
     </div>

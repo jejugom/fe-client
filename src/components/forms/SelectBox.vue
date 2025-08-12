@@ -1,7 +1,7 @@
 <template>
   <select
     :class="[
-      'border-surface-300 active:ring-gold active:border-gold rounded-lg border px-3 text-base active:ring-1 active:outline-none',
+      'active:ring-gold active:border-gold border-surface-300 rounded-lg border bg-white px-4 text-base active:ring-1 active:outline-none',
       size === 'large' && 'h-13 w-82.5',
       size === 'medium' && 'h-13 w-68',
       size === 'small' && 'h-10 w-25',

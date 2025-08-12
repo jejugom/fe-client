@@ -1,8 +1,12 @@
 <template>
-  <div
-    class="stroke-primary mt-8 flex h-120 flex-col gap-8 rounded-xl px-8 py-16"
-  >
-    <div class="flex flex-col items-center text-center">
+  <div class="card-design mt-8 flex h-120 flex-col gap-8 px-8 py-8">
+    <!-- 프로그레스바 -->
+    <ProgressBar
+      :currentQuestionIndex="currentQuestionIndex"
+      :totalQuestions="totalQuestions"
+    />
+
+    <div class="mt-4 flex flex-col items-center text-center">
       <h1 class="text-primary-500 mb-4 text-lg font-semibold">
         Q{{ currentQuestionIndex + 1 }}.
         {{ question.question }}
@@ -19,11 +23,7 @@
         v-for="(option, index) in question.options"
         :key="index"
         :label="option"
-        :color="
-          selectedAnswer === index
-            ? 'secondary-stroke'
-            : 'surface'
-        "
+        :color="selectedAnswer === index ? 'secondary-stroke' : 'surface'"
         size="medium"
         class="w-full"
         @click="selectAnswer(index)"
@@ -33,7 +33,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
+import ProgressBar from '@/components/progressbar/ProgressBar.vue';
 
 interface Question {
   question: string;
@@ -44,13 +46,14 @@ interface Props {
   question: Question;
   currentQuestionIndex: number;
   selectedAnswer: number | null;
+  totalQuestions: number;
 }
 
 interface Emits {
   (e: 'select-answer', index: number): void;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const selectAnswer = (index: number) => {

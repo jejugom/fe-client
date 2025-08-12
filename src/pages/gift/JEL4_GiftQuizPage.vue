@@ -1,147 +1,106 @@
 <template>
-  <div class="min-h-screen">
+  <h2 class="text-primary-500 mb-2 text-2xl font-bold"
+    >수증할 자산을 선택해주세요</h2
+  >
+  <p class="text-primary-500 mb-4 text-base"
+    >등록하신 수증자 중 선택하실 수 있습니다.<br />한 자산을 여러명에게 나눠서
+    분배도 가능합니다.</p
+  >
+  <div class="mb-16 space-y-4">
+    <template v-for="category in categories" :key="category.id">
+      <AssetCard
+        v-for="asset in allAssets.get(category.id) || []"
+        :key="asset.id"
+        :asset="asset"
+        :category="category"
+        :beneficiaries="beneficiaries"
+        :mode="mode"
+        @update-asset="onAssetUpdate"
+      />
+    </template>
+  </div>
+
+  <div class="text-primary-500 mb-4 text-2xl font-bold">
+    {{
+      mode === 'gift' ? '수증자별 증여 자산 요약' : '상속인별 상속 자산 요약'
+    }}
+  </div>
+  <div class="space-y-4">
+    <!-- 수증자별 자산 카드 -->
     <div
-      class="fixed top-[calc(4rem)] left-1/2 z-20 box-border w-full max-w-150 -translate-x-1/2 bg-white px-5 pt-4"
+      v-for="beneficiary in beneficiaries"
+      :key="beneficiary.id"
+      class="card-design bg-primary-100"
     >
-      <div class="flex gap-2 overflow-x-auto">
-        <TabBtn
-          v-for="category in categories"
-          :key="category.id"
-          :class="{
-            'bg-primary-100 border-primary-100': activeTab === category.id,
-            'border-surface-200 border': activeTab !== category.id,
-          }"
-          @click="scrollToSection(category.id)"
-        >
-          <img
-            :src="`/src/assets/images/${category.id}.svg`"
-            :alt="category.name"
-            class="h-6 w-6"
-          />
-        </TabBtn>
+      <!-- 수증자 정보 헤더 -->
+      <div class="flex items-center justify-between pb-4">
+        <span class="text-primary-500 text-base font-semibold">{{
+          beneficiary.name
+        }}</span>
+        <span class="text-primary-500 text-base font-semibold">{{
+          formatCurrency(calculateTotalForBeneficiary(beneficiary.id))
+        }}</span>
       </div>
-      <div class="bg-surface-200 h-0.5 w-full" />
-    </div>
 
-    <div>
-      <section
-        v-for="category in categories"
-        :key="category.id"
-        :id="category.id"
-        class="py-8"
-        :style="{ 'scroll-margin-top': '128px' }"
-      >
-        <h2 class="text-primary-300 mb-4 text-xl font-bold">
-          {{ category.name }}
-        </h2>
-
-        <div class="space-y-4">
-          <AssetCard
-            v-for="asset in allAssets.get(category.id) || []"
-            :key="asset.id"
-            :asset="asset"
-            :beneficiaries="beneficiaries"
-            @update-asset="onAssetUpdate"
-          />
-        </div>
-      </section>
-    </div>
-
-    <div class="border-primary-300 my-16 rounded-xl border bg-white p-4">
-      <template v-if="mode === 'gift'">
-        <div class="text-primary-300 mb-2 text-lg font-semibold">
-          수증자별 증여 금액
-        </div>
+      <!-- 자산 목록 -->
+      <div class="space-y-1 pl-2">
         <div
-          v-for="beneficiary in beneficiaries"
-          :key="beneficiary.id"
-          class="mb-2"
+          v-for="asset in getAssetsForBeneficiary(beneficiary.id)"
+          :key="asset.id"
+          class="text-primary-500 flex justify-between text-base"
         >
-          <span class="font-medium">{{ beneficiary.name }}: </span>
-          <span>
-            {{ formatCurrency(calculateTotalForBeneficiary(beneficiary.id)) }}
+          <span
+            >{{ asset.name }}
+            <span v-if="(asset as any).stake" class="text-gold font-semibold">
+              (지분 {{ (asset as any).stake }}%)
+            </span>
           </span>
+          <span>{{ formatCurrency(asset.value) }}</span>
         </div>
-        <div class="text-surface-500 text-sm">
-          총 증여 금액: {{ formatCurrency(calculateGrandTotal()) }}
-        </div>
-      </template>
-
-      <template v-else-if="mode === 'inheritance'">
-        <div class="text-primary-300 mb-4 text-lg font-semibold">
-          상속인별 상속 자산 요약
-        </div>
-        <div
-          v-for="beneficiary in beneficiaries"
-          :key="beneficiary.id"
-          class="border-primary-100 mb-4 border-b pb-2 last:mb-0 last:border-b-0"
-        >
-          <div class="mb-2 flex items-center justify-between">
-            <div class="text-primary-500 text-base font-semibold">
-              {{ beneficiary.name }}
-            </div>
-            <div class="text-primary-500 text-base font-semibold">
-              {{ formatCurrency(calculateTotalForBeneficiary(beneficiary.id)) }}
-            </div>
-          </div>
-          <div class="pl-2">
-            <div
-              v-for="asset in getAssetsForBeneficiary(beneficiary.id)"
-              :key="asset.id"
-              class="text-surface-500 flex justify-between text-sm"
-            >
-              <span>{{ asset.name }}</span>
-              <span>{{ formatCurrency(asset.value) }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="text-primary-300 text-right text-sm">
-          총 상속 자산: {{ formatCurrency(calculateGrandTotal()) }}
-        </div>
-      </template>
+      </div>
     </div>
 
-    <div
-      v-if="mode === 'inheritance'"
-      class="flex w-full max-w-150 flex-col space-y-2"
-    >
-      <Btn
-        color="primary"
-        label="추가 유언 작성하기"
-        size="large"
-        @click="goToWillForm"
-      />
-      <Btn
-        color="surface"
-        label="바로 유언장 보러가기"
-        size="large"
-        @click="goToResult"
-      />
+    <!-- 총계 -->
+    <div class="mb-4 text-center">
+      <span class="text-primary-300 text-base font-semibold">
+        {{ mode === 'gift' ? '총 증여 자산' : '총 상속 자산' }}:
+        {{ formatCurrency(calculateGrandTotal()) }}
+      </span>
     </div>
-    <div v-else class="w-full max-w-150">
-      <Btn
-        color="primary"
-        label="세액 및 절세 전략 확인하기"
-        size="large"
-        @click="goToResult"
-      />
-    </div>
+  </div>
+
+  <div
+    v-if="mode === 'inheritance'"
+    class="flex w-full max-w-150 flex-col space-y-2"
+  >
+    <Btn
+      color="primary"
+      label="추가 유언 작성하기"
+      size="large"
+      @click="goToWillForm"
+    />
+    <Btn
+      color="surface"
+      label="바로 유언장 보러가기"
+      size="large"
+      @click="goToResult"
+    />
+  </div>
+  <div v-else class="w-full max-w-150">
+    <Btn
+      color="primary"
+      label="세액 및 절세 전략 확인하기"
+      size="large"
+      @click="goToResult"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  reactive,
-  onMounted,
-  onUnmounted,
-  withDefaults,
-  computed,
-} from 'vue';
+import { ref, reactive, onMounted, withDefaults, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 import AssetCard from './_components/AssetCard.vue';
-import TabBtn from '../nohoo/_components/TabBtn.vue';
 import { fetchGiftPageData } from '@/api/gift/recipient';
 import { formatCurrency } from '@/utils/format';
 import { categories, categoryCodeMap } from '@/types/gift/constants';
@@ -189,7 +148,6 @@ const store = computed(() => {
 });
 
 const allAssets = reactive<Map<string, Asset[]>>(new Map());
-const activeTab = ref('estate');
 const beneficiaries = reactive<Beneficiary[]>([]);
 
 const loadAssetsAndBeneficiaries = async () => {
@@ -329,7 +287,7 @@ const calculateTotalForBeneficiary = (beneficiaryId: string): number => {
 };
 
 const getAssetsForBeneficiary = (beneficiaryId: string) => {
-  const assets: Asset[] = [];
+  const assets: (Asset & { stake?: number })[] = [];
   Array.from(allAssets.values())
     .flat()
     .forEach((asset) => {
@@ -343,7 +301,7 @@ const getAssetsForBeneficiary = (beneficiaryId: string) => {
         ) {
           assets.push({
             ...asset,
-            name: `${asset.name} (지분 ${asset.distributionRatios[beneficiaryId]}%)`,
+            stake: asset.distributionRatios[beneficiaryId],
             value: Math.floor(
               (asset.value * (asset.distributionRatios[beneficiaryId] || 0)) /
                 100
@@ -360,32 +318,6 @@ const calculateGrandTotal = (): number => {
     .flat()
     .filter((asset) => asset.selected)
     .reduce((sum, asset) => sum + asset.value, 0);
-};
-
-const scrollToSection = (sectionId: string) => {
-  const element = document.getElementById(sectionId);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' });
-    activeTab.value = sectionId;
-  }
-};
-
-const handleScroll = () => {
-  const sections = categories
-    .map((cat) => document.getElementById(cat.id))
-    .filter(Boolean);
-  const scrollPosition = window.scrollY + 160;
-
-  for (const section of sections) {
-    if (
-      section &&
-      section.offsetTop <= scrollPosition &&
-      section.offsetTop + section.offsetHeight > scrollPosition
-    ) {
-      activeTab.value = section.id;
-      break;
-    }
-  }
 };
 
 const createSimulationRequest = (): SimulationRequestDto => {
@@ -623,10 +555,5 @@ onMounted(() => {
   } else {
     loadAssetsAndBeneficiaries();
   }
-  window.addEventListener('scroll', handleScroll);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
 });
 </script>

@@ -10,9 +10,7 @@
 
     <div v-if="selectedTab === '예금'">
       <div class="mb-2 flex items-end justify-between">
-        <span class="text-primary-300 text-2xl font-bold">
-          금리 흐름을 확인하고<br />더 나은 예금 상품을 골라보세요!
-        </span>
+        <span class="text-primary-500 text-2xl font-bold"> 오늘의 금리 </span>
         <span class="text-surface-300">출처: 한국은행</span>
       </div>
       <InterestRateCard :interestRateData="graphStore.interestRate" />
@@ -34,16 +32,22 @@
 
     <div v-if="selectedTab === '금'">
       <div
-        class="text-primary-300 mb-4 flex items-center justify-between text-2xl font-bold"
+        class="text-primary-500 mb-4 flex items-center justify-between text-2xl font-bold"
       >
         오늘의 금값
-        <span class="text-surface-300 font-regular text-sm">출처: FX</span>
+        <span class="text-surface-300 font-regular text-base">출처: FX</span>
       </div>
       <GoldPriceCard class="mb-8" />
       <img :src="Gold" alt="Gold Banner" />
     </div>
 
     <div v-if="selectedTab === '펀드'">
+      <div v-if="news.length > 0">
+        <NewsCard :newsItem="news[0]" />
+      </div>
+      <Banner v-else />
+    </div>
+    <div v-if="selectedTab === '신탁'">
       <div v-if="news.length > 0">
         <NewsCard :newsItem="news[0]" />
       </div>

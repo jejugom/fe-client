@@ -1,13 +1,7 @@
 <template>
-  <div class="mb-8 text-center">
-    <div
-      class="mb-4 inline-flex items-center justify-center rounded-full bg-white p-6 shadow-xs"
-    >
-      <div class="text-3xl font-bold">
-        <span class="text-primary-300">노후</span>
-        <span class="text-secondary-300">도락</span>
-      </div>
-    </div>
+  <div class="mb-16 flex flex-col items-center text-center">
+    <img :src="Logo" alt="로고" class="mb-8 h-10" />
+
     <h1 class="text-primary-500 mb-2 text-2xl font-bold">
       스마트한 노후 준비의 시작
     </h1>
@@ -17,3 +11,7 @@
     </p>
   </div>
 </template>
+
+<script setup lang="ts">
+import Logo from '@/assets/logos/logo.svg';
+</script>

@@ -1,9 +1,12 @@
 <template>
-  <h2 class="text-primary-300 mb-8 text-2xl font-bold">증여 시뮬레이션 결과</h2>
-
-  <div ref="pdfRef" class="mb-4">
+  <div ref="pdfRef">
     <GiftSimulationResult />
   </div>
+  <p class="text-surface-300 mb-4"
+    >이 결과는 <strong>참고용 시뮬레이션</strong>이며, 실제 세액은 세무사 상담
+    후 확정됩니다. <br />정확한 세액 계산과 절세 전략 수립을 위해서는 전문가와의
+    상담을 권장합니다.</p
+  >
   <Btn
     color="secondary"
     :label="isMobile ? '결과 공유하기 (PDF)' : '결과 PDF 다운로드'"
@@ -11,7 +14,7 @@
     @click="handleShareOrDownload"
   />
   <div class="mt-16">
-    <p class="text-primary-300 mb-2 text-center font-semibold">
+    <p class="text-primary-500 mb-2 text-center font-semibold">
       궁금한 점이 생기셨다면,<br />
       은행에서 자세히 알려드릴게요
     </p>
@@ -23,11 +26,16 @@
       @click="goToRegister"
     />
   </div>
+
+  <Alert v-if="showAlert" @click="showAlert = false">
+    <p>{{ alertMessage }}</p>
+  </Alert>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
+import Alert from '@/components/modals/Alert.vue';
 import { useRouter } from 'vue-router';
 import { useSimulationStore } from '@/stores/simulation'; // 변경
 import GiftSimulationResult from './_components/GiftSimulationResult.vue';
@@ -39,6 +47,8 @@ const simulationStore = useSimulationStore();
 
 // 데스크탑/모바일 환경 구분
 const isMobile = ref(false);
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 const checkDeviceType = () => {
   isMobile.value = /Mobi|Android/i.test(navigator.userAgent);
@@ -111,15 +121,17 @@ const shareResult = async () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href);
 
-      alert(
-        isMobile.value
-          ? '공유 기능을 사용할 수 없어 PDF를 다운로드합니다.'
-          : '결과 PDF가 다운로드되었습니다.'
-      );
+      alertMessage.value = isMobile.value
+        ? '공유 기능을 사용할 수 없어 PDF를 다운로드합니다.'
+        : '결과 PDF가 다운로드되었습니다.';
+      showAlert.value = true;
     }
   } catch (error) {
     console.error('PDF 생성/공유 실패:', error);
-    alert('결과를 공유하거나 저장하는 데 실패했습니다.');
+    alertMessage.value = '결과를 공유하거나 저장하는 데 실패했습니다.';
+    showAlert.value = true;
+  } finally {
+    // PDF 생성 후 로딩 상태 해제 (필요 시)
   }
 };
 

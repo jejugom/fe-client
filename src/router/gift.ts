@@ -39,6 +39,11 @@ const giftRoutes: RouteRecordRaw[] = [
     name: 'gift-result',
     component: () => import('@/pages/gift/JEL5_GiftResultPage.vue'),
   },
+  {
+    path: '/gift/tax-info',
+    name: 'gift-taxinfo',
+    component: () => import('@/pages/gift/GiftTaxInfoPage.vue'),
+  },
   // {
   //   path: '/gift/register',
   //   name: 'gift-register',

@@ -1,42 +1,43 @@
 <template>
   <div class="flex flex-col gap-8 text-base">
-    <div class="text-primary-300 text-2xl font-bold"
+    <div class="text-primary-500 text-2xl font-bold"
       >은행 방문 예약이 완료되었어요</div
     >
 
     <!-- 예약 정보 -->
-
-    <div class="flex flex-col gap-4">
-      <InfoRow
-        v-for="(item, index) in infoRows"
-        :key="index"
-        :label="item.label"
-        :value="item.value"
-      />
-    </div>
-
-    <!-- 필요 서류 -->
-    <div>
-      <span class="text-primary-300 font-semibold"
-        >은행 방문 시, 아래 서류를 챙겨주세요</span
-      >
-      <ul class="mt-4 list-disc pl-5">
-        <li
-          v-for="(doc, index) in data?.docInfo?.requiredDocuments || []"
+    <div class="card-design py-8">
+      <div class="flex flex-col gap-4">
+        <InfoRow
+          v-for="(item, index) in infoRows"
           :key="index"
-        >
-          {{ doc }}
-        </li>
-      </ul>
-    </div>
+          :label="item.label"
+          :value="item.value"
+        />
+      </div>
 
-    <ReserveCompleteBox />
+      <!-- 필요 서류 -->
+      <div class="mt-8">
+        <span class="text-primary-500 flex gap-1 font-semibold"
+          >은행 방문 시, 아래 서류를
+          <p class="text-gold">꼭!</p> 챙겨주세요</span
+        >
+        <ul class="mt-4 list-disc pl-5">
+          <li
+            v-for="(doc, index) in data?.docInfo?.requiredDocuments || []"
+            :key="index"
+          >
+            {{ doc }}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <ReserveCompleteBox :primary-label="backLabel" @primary="goBackToMain" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import {
   fetchReservedDetail,
   type Register,
@@ -46,19 +47,40 @@ import InfoRow from './_components/InfoRow.vue';
 import { useLoadingStore } from '@/stores/loading';
 
 const route = useRoute();
+const router = useRouter();
 
-const bookingId = ref('');
+const bookingCode = ref('');
 const data = ref<Register | null>(null);
 const loadingStore = useLoadingStore();
 
-onMounted(async () => {
-  const id = route.query.bookingId as string;
-  if (!id) return;
+// from 쿼리 기반 흐름 결정 (기본은 nohoo)
+const flow = computed<'gift' | 'nohoo'>(() => {
+  const f = (route.query.from as string) || '';
+  return f === 'gift' ? 'gift' : 'nohoo';
+});
 
-  bookingId.value = id;
+// 버튼 라벨 타겟
+const backLabel = computed(() =>
+  flow.value === 'gift' ? '증여설계로 돌아가기' : '노후투자로 돌아가기'
+);
+const backRouteName = computed(() =>
+  flow.value === 'gift' ? 'gift' : 'nohoo'
+);
+
+function goBackToMain() {
+  router.push({ name: backRouteName.value });
+}
+
+onMounted(async () => {
+  // URL 쿼리 파라미터에서 bookingId대신 bookingCode를 가져옵니다
+  const code = route.query.bookingCode as string;
+  if (!code) return;
+
+  bookingCode.value = code;
   loadingStore.startLoading();
   try {
-    const result = await fetchReservedDetail(id);
+    // API 호출 시 ID 대신 bookingCode를 사용
+    const result = await fetchReservedDetail(code);
     data.value = result;
   } catch (e) {
     console.error('예약 상세 조회 실패', e);
@@ -79,7 +101,7 @@ const infoRows = computed(() => {
     { label: '상품명', value: data.value.prodName },
     { label: '지점명', value: data.value.branchName },
     { label: '날짜/시간', value: formattedDateTime.value },
-    { label: '예약 번호', value: data.value.bookingId },
+    { label: '예약 번호', value: data.value.bookingCode }, // 사용자에게 보여주는 예약 번호를 bookingCode로 변경
   ];
 });
 </script>

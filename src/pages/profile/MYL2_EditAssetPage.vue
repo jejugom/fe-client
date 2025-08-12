@@ -61,12 +61,33 @@
       @blur="handleBlur"
     />
   </Modal>
+
+  <!-- 삭제 확인 모달 -->
+  <Modal
+    v-if="showDeleteConfirmModal"
+    title="자산 삭제"
+    leftLabel="아니오"
+    rightLabel="예"
+    @click1="showDeleteConfirmModal = false"
+    @click2="confirmDeleteAsset"
+  >
+    <p class="text-center"
+      >정말로 이 자산을 삭제하시겠습니까?<br />한 번 삭제한 자산은 되돌릴 수
+      없습니다.</p
+    >
+  </Modal>
+
+  <!-- 일반 알림 모달 -->
+  <Alert v-if="showAlert" @click="showAlert = false">
+    <p>{{ alertMessage }}</p>
+  </Alert>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Modal from '@/components/modals/Modal.vue';
+import Alert from '@/components/modals/Alert.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
@@ -84,9 +105,12 @@ const router = useRouter();
 
 const modalTitle = ref('자산 정보 등록 및 수정');
 const isModalOpen = ref(false);
+const showAlert = ref(false);
+const alertMessage = ref('');
+const showDeleteConfirmModal = ref(false);
+const assetIdToDelete = ref(null);
 
 // 자산 입력 폼 데이터
-// amount는 문자열로 관리 (InputBox 컴포넌트가 modelValue로 string 타입을 요구하기 때문)
 const newAsset = ref({
   id: null, // 기존 자산 수정 시 사용될 ID
   name: '',
@@ -181,54 +205,44 @@ const filteredAssets = computed(() => {
 const editAsset = (assetId) => {
   const assetToEdit = assets.value.find((asset) => asset.id === assetId);
   if (assetToEdit) {
-    // 모달 제목 설정
     modalTitle.value = '자산 수정하기';
-
-    // 기존 자산 데이터를 폼에 복사
-    // amount를 문자열로 변환: InputBox 컴포넌트가 string 타입의 modelValue를 요구하므로
-    // 숫자형 데이터(4000)를 문자열("4000")로 변환하여 타입 오류 방지
     newAsset.value = {
       ...assetToEdit,
       amount: String(assetToEdit.amount),
     };
-
-    // 유효성 검사 및 포커스 상태 초기화
     resetValidationState();
-
     isModalOpen.value = true;
   }
 };
 
-const deleteAsset = async (assetId) => {
-  try {
-    console.log('삭제 요청 assetId:', assetId);
-    console.log('현재 자산 목록:', assets.value);
-    
-    if (assetId === null || assetId === undefined) {
-      alert('유효하지 않은 자산 ID입니다.');
-      return;
-    }
-    
-    if (confirm('정말로 이 자산을 삭제하시겠습니까?')) {
-      // 자산 삭제 API 호출
-      await assetsApi.deleteAsset(assetId);
-      console.log('자산 삭제 성공:', assetId);
+const deleteAsset = (assetId) => {
+  if (assetId === null || assetId === undefined) {
+    alertMessage.value = '유효하지 않은 자산 ID입니다.';
+    showAlert.value = true;
+    return;
+  }
+  assetIdToDelete.value = assetId;
+  showDeleteConfirmModal.value = true;
+};
 
-      // 삭제 후 전체 자산 목록을 다시 조회하여 최신 상태로 업데이트
-      await loadAssets();
-    }
+const confirmDeleteAsset = async () => {
+  showDeleteConfirmModal.value = false;
+  try {
+    await assetsApi.deleteAsset(assetIdToDelete.value);
+    await loadAssets();
+    alertMessage.value = '자산이 삭제되었습니다.';
+    showAlert.value = true;
   } catch (error) {
     console.error('자산 삭제 실패:', error);
-    alert('자산 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+    alertMessage.value = '자산 삭제 중 오류가 발생했습니다. 다시 시도해주세요.';
+    showAlert.value = true;
+  } finally {
+    assetIdToDelete.value = null;
   }
 };
 
 const addNewAsset = () => {
-  // 새 자산 추가를 위해 폼 초기화
-
-  // 모달 제목 설정
   modalTitle.value = '새 자산 등록하기';
-
   newAsset.value = {
     id: null,
     name: '',
@@ -236,10 +250,7 @@ const addNewAsset = () => {
     amount: '',
     companyType: '',
   };
-
-  // 유효성 검사 및 포커스 상태 초기화
   resetValidationState();
-
   isModalOpen.value = true;
 };
 
@@ -249,12 +260,10 @@ const closeModal = () => {
 };
 
 const saveNewAsset = async () => {
-  // 유효성 검사 초기화
   resetValidationState();
 
   const missingFields = [];
 
-  // 필수 필드 유효성 검사
   if (!newAsset.value.type) {
     validationErrors.value.type = true;
     missingFields.push('카테고리');
@@ -270,64 +279,51 @@ const saveNewAsset = async () => {
     missingFields.push('금액');
   }
 
-  // 사업체/지분 선택 시 사업체 종류 유효성 검사
   if (newAsset.value.type === '사업체/지분' && !newAsset.value.companyType) {
     validationErrors.value.companyType = true;
     missingFields.push('사업체 종류');
   }
 
-  // 비어있는 필드가 있으면 alert로 알려주기
   if (missingFields.length > 0) {
-    alert(`다음 항목을 입력해주세요: ${missingFields.join(', ')}`);
+    alertMessage.value = `다음 항목을 입력해주세요: ${missingFields.join(', ')}`;
+    showAlert.value = true;
     return;
   }
 
-  // 저장 시 amount를 숫자로 변환 (데이터 저장은 숫자형으로)
   const assetToSave = {
     ...newAsset.value,
     amount: Number(newAsset.value.amount),
   };
 
   try {
-    console.log('저장할 자산 데이터:', assetToSave);
-    console.log('newAsset.value.id:', newAsset.value.id);
-    
+    let successMessage = '';
     if (newAsset.value.id) {
-      // 기존 자산 수정
       const updateData = {
         assetCategoryCode: CATEGORY_NAME_TO_CODE[assetToSave.type],
         assetName: assetToSave.name,
-        amount: assetToSave.amount * 10000, // 만원 단위를 원 단위로 변환
+        amount: assetToSave.amount * 10000,
         businessType: assetToSave.companyType || null,
       };
-
-      console.log('수정 요청 데이터:', updateData);
       await assetsApi.updateAsset(newAsset.value.id, updateData);
-      console.log('자산 수정 성공:', updateData);
-
-      // 수정 후 전체 자산 목록을 다시 조회하여 최신 상태로 업데이트
-      await loadAssets();
+      successMessage = '자산 수정이 완료되었습니다.';
     } else {
-      // 새 자산 추가
       const createData = {
         assetCategoryCode: CATEGORY_NAME_TO_CODE[assetToSave.type],
         assetName: assetToSave.name,
-        amount: assetToSave.amount * 10000, // 만원 단위를 원 단위로 변환
+        amount: assetToSave.amount * 10000,
         businessType: assetToSave.companyType || null,
       };
-
       await assetsApi.createAsset(createData);
-      console.log('자산 생성 성공');
-
-      // 생성 후 전체 자산 목록을 다시 조회하여 정확한 ID로 업데이트
-      await loadAssets();
+      successMessage = '자산 등록이 완료되었습니다.';
     }
-
-    // 모달 닫기
+    await loadAssets();
     closeModal();
+    alertMessage.value = successMessage;
+    showAlert.value = true;
   } catch (error) {
     console.error('자산 저장 실패:', error);
-    alert('자산 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+    alertMessage.value = '자산 저장 중 오류가 발생했습니다. 다시 시도해주세요.';
+    showAlert.value = true;
   }
 };
 
@@ -335,22 +331,16 @@ const goToProfilePage = () => {
   router.push({ name: 'profile' });
 };
 
-// 자산 데이터 로드
 const loadAssets = async () => {
   try {
     const apiResponse = await assetsApi.getAssets();
     assets.value = transformApiResponseToAssets(apiResponse);
-    console.log('자산 조회 성공:', apiResponse);
-    console.log('변환된 자산 데이터:', assets.value);
   } catch (error) {
     console.error('자산 조회 실패:', error);
-    // 실패 시 더미 데이터 사용
     assets.value = transformApiResponseToAssets(assetsApiResponse);
-    console.log('더미 데이터 사용:', assets.value);
   }
 };
 
-// 컴포넌트 마운트 시 자산 데이터 로드
 onMounted(() => {
   loadAssets();
 });

@@ -1,13 +1,11 @@
 <template>
-  <div
-    class="border-primary-300 flex flex-col gap-2 rounded-xl border pt-4 pr-4"
-  >
+  <div class="card-design flex flex-col gap-2 p-0 pt-4 pr-4">
     <!-- 상단: 금리 & 영향력 -->
     <div class="ml-4 flex items-center justify-between font-semibold">
       <span class="text-lg">{{ currentRate.toFixed(2) }} % </span>
       <span
         :class="rateDiff > 0 ? 'text-red-300' : 'text-blue-300'"
-        class="text-sm"
+        class="text-base"
       >
         {{ rateDiff > 0 ? '▲' : '▼' }} {{ Math.abs(rateDiff).toFixed(2) }}%
       </span>

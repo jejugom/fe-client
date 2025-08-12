@@ -69,12 +69,12 @@
               @input="handleAmountInput"
             />
             <span
-              class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-sm"
+              class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-base"
             >
               만원
             </span>
           </div>
-          <p class="mt-1 w-full text-right text-sm text-blue-300">
+          <p class="mt-1 w-full text-right text-base text-blue-300">
             {{ formatCurrency(formData.priorGiftAmount || 0) }}
           </p>
         </div>
@@ -94,11 +94,23 @@
       </FormField>
     </div>
   </Modal>
+  <Alert
+    v-if="showAlert"
+    @click="showAlert = false"
+    title="모든 필수 정보를 입력해 주세요"
+  >
+    <ul>
+      <li v-for="field in missingFieldsForAlert" :key="field">
+        - {{ field }}
+      </li>
+    </ul>
+  </Alert>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, defineEmits, defineProps } from 'vue';
 import Modal from '@/components/modals/Modal.vue';
+import Alert from '@/components/modals/Alert.vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import FormField from './FormField.vue';
@@ -141,6 +153,8 @@ const formData = ref<RecipientRequestDto>(
 );
 
 const priorGiftAmountInTenThousand = ref<string>('');
+const showAlert = ref(false);
+const missingFieldsForAlert = ref<string[]>([]);
 
 // 숫자 입력 처리 함수
 const handleAmountInput = (e: Event) => {
@@ -202,7 +216,8 @@ const handleSubmit = () => {
   if (!formData.value.giftTaxPayer) missingFields.push('증여세 납부자');
 
   if (missingFields.length > 0) {
-    alert(`모든 필수 정보를 입력해 주세요:\n- ${missingFields.join('\n- ')}`);
+    missingFieldsForAlert.value = missingFields;
+    showAlert.value = true;
     return;
   }
 

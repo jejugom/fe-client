@@ -2,18 +2,12 @@
 <template>
   <div class="flex min-h-[calc(80vh-9rem)] items-center">
     <div
-      class="stroke-primary px-auto my-auto flex w-full flex-col items-center justify-center gap-16 rounded-xl bg-white py-15"
+      class="card-design px-auto my-auto flex w-full flex-col items-center justify-center gap-16 py-15"
     >
       <div class="text-center">
         <p class="text-surface-500 mb-8 font-semibold"
           >자산 정보 입력이 모두 완료됐습니다</p
         >
-
-        <p class="text-surface-500 mb-8 flex items-end text-xl font-semibold">
-          고객님은
-          <span class="text-secondary-300 font-point mx-1">{{ userType }}</span>
-          입니다!
-        </p>
 
         <div class="text-surface-500 space-y-2 text-lg font-semibold">
           <p class="flex items-end justify-center gap-1"
@@ -22,13 +16,16 @@
               <img :src="Logo" alt="노후도락 로고" class="h-8 w-auto" /></span
             >과 함께</p
           >
-          <p>든든하고 건강한 골든라이프 시작해봐요!</p>
+          <p
+            >든든하고 건강한
+            <span class="text-gold">골든라이프</span> 시작해보세요!</p
+          >
         </div>
       </div>
 
       <Btn
         @click="goToHome"
-        color="secondary"
+        color="primary"
         label="시작하기"
         size="medium"
       /> </div

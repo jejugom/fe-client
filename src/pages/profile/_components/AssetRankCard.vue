@@ -1,9 +1,8 @@
 <template>
-  <div class="border-primary-300 flex flex-col gap-4 rounded-xl border p-4">
+  <div class="card-design flex flex-col gap-4">
     <div class="text-lg font-semibold">
-      {{ userName }} 님은 전체 사용자 중 상위
-      <span class="text-primary-300">{{ rankPercent }}</span
-      >% 자산 보유자예요
+      {{ userName }} 님은 상위
+      <span class="text-primary-300">{{ rankPercent }}% </span>자산 보유자예요
     </div>
 
     <!-- 반원형 게이지 -->
@@ -35,6 +34,7 @@ const radialChartOptions = computed(() => ({
   chart: {
     height: 250,
     type: 'radialBar',
+    fontFamily: 'Pretendard-Regular, Noto Sans KR, sans-serif',
     offsetY: -20,
     sparkline: { enabled: true },
   },
@@ -55,7 +55,7 @@ const radialChartOptions = computed(() => ({
         value: {
           show: true,
           fontSize: '24px',
-          fontFamily: 'Pretendard',
+          fontFamily: 'Pretendard-Semibold',
           fontWeight: 700,
           color: '#d1a843',
           offsetY: -10,

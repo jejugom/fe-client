@@ -1,5 +1,5 @@
 <template>
-  <section class="mb-8">
+  <section class="mb-16">
     <AssetSummaryCardBar
       v-if="transformedAssetSummary.length > 0"
       :userName="userName"
@@ -9,10 +9,10 @@
   </section>
 
   <section>
-    <h2 class="text-primary-300 mb-2 text-2xl font-bold">
+    <h2 class="text-primary-500 mb-2 text-2xl font-bold">
       {{ pageConfig.recipientTitle }}
     </h2>
-    <p class="mb-4 text-sm whitespace-pre-line">
+    <p class="mb-4 text-base whitespace-pre-line">
       {{ pageConfig.recipientDescription }}
     </p>
 
@@ -60,7 +60,7 @@
 
     <div class="mt-16 flex flex-col">
       <p
-        class="text-primary-300 mb-2 text-center font-semibold whitespace-pre-line"
+        class="text-primary-500 mb-2 text-center font-semibold whitespace-pre-line"
       >
         {{ pageConfig.nextStepMessage }}
       </p>
@@ -135,11 +135,11 @@ const store = computed(() => {
 const pageConfigs: Record<'gift' | 'inheritance', PageConfig> = {
   gift: {
     recipientTitle: '수증자 정보 입력하기',
-    recipientDescription: `누구에게 주실지 알려주세요.\n받으실 분의 정보를 통해 정확한 세금 계산을 도와드릴게요.`, // Corrected newline escape
+    recipientDescription: `누구에게 자산을 나눠주고 싶은지 알려주세요.\n받으실 분의 정보를 통해 정확한 세금 계산을 도와드릴게요.`, // Corrected newline escape
     addButtonLabel: '수증자 추가하기',
     historyLabel: '증여',
     nextStepMessage:
-      '다음 단계에서는 간단한 클릭을 통해\n어떤 자산을 누구에게 증여할지 알려주세요.', // Corrected newline escape
+      '간단한 클릭을 통해\n어떤 자산을 누구에게 증여할지 알려주세요.', // Corrected newline escape
     quizRouteName: 'gift-quiz',
   },
   inheritance: {
@@ -148,7 +148,7 @@ const pageConfigs: Record<'gift' | 'inheritance', PageConfig> = {
     addButtonLabel: '수증자 추가하기',
     historyLabel: '상속',
     nextStepMessage:
-      '다음 단계에서는 간단한 클릭을 통해\n어떤 자산을 누구에게 상속할지 알려주세요.', // Corrected newline escape
+      '간단한 클릭을 통해\n어떤 자산을 누구에게 상속할지 알려주세요.', // Corrected newline escape
     quizRouteName: 'inheritance-quiz',
   },
 };
@@ -335,10 +335,12 @@ const goToQuiz = () => {
       beneficiaries: [],
     });
   } else {
-    (inheritanceStore as ReturnType<typeof useInheritanceStore>).setInitialData({
-      allAssets: new Map(),
-      beneficiaries: [],
-    });
+    (inheritanceStore as ReturnType<typeof useInheritanceStore>).setInitialData(
+      {
+        allAssets: new Map(),
+        beneficiaries: [],
+      }
+    );
   }
   router.push({ name: pageConfig.value.quizRouteName });
 };

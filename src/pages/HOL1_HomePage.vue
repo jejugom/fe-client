@@ -6,17 +6,14 @@
   - 로그인: 개인화된 인사말, 자산 정보, 맞춤형 서비스 제공
 -->
 <template>
-  <div>
+  <div class="flex flex-col gap-16">
     <!-- 비로그인 사용자를 대상 로그인 유도 -->
-    <div
-      v-if="!authStore.isLogin"
-      class="border-primary-300 mb-8 rounded-xl border bg-white p-4"
-    >
+    <div v-if="!authStore.isLogin" class="card-design">
       <div class="space-y-4">
-        <div class="text-primary-300 text-xl font-semibold">
+        <div class="text-primary-300 text-xl font-bold">
           노후도락에 오신 것을 환영합니다!
         </div>
-        <p class="text-surface-500 text-base">
+        <p class="text-surface-500">
           카카오로 로그인해서 맞춤형 금융 서비스를 시작해보세요
         </p>
         <!-- 카카오 로그인 버튼 - auth store를 통해 OAuth2.0 플로우 시작 -->
@@ -46,8 +43,17 @@
     <!-- 로그인된 사용자를 위한 개인화된 인사 및 자산 정보 -->
     <div
       v-if="authStore.isLogin && homeData"
-      class="border-primary-300 mb-2 rounded-xl border bg-white p-4"
+      class="card-design relative"
+      @click="goToEditAsset"
     >
+      <!-- 우측 상단 고정 아이콘 -->
+      <TextBtn
+        color="surface"
+        label="더보기 ➜"
+        size="small"
+        class="absolute top-4 right-4"
+      />
+
       <div class="text-primary-300 mb-4 text-lg font-semibold">
         {{ homeData.userSummary.name }}님
         <span class="text-surface-500">안녕하세요!</span>
@@ -60,19 +66,9 @@
       </div>
     </div>
 
-    <!-- 자산 관리 버튼 - 로그인된 사용자에게만 표시 -->
-    <Btn
-      v-if="authStore.isLogin"
-      class="mb-8"
-      color="secondary"
-      label="자산 추가 등록·수정"
-      size="large"
-      @click="goToEditAsset"
-    />
-
     <!-- 맞춤형 서비스 카드 -->
-    <section class="mb-16">
-      <h2 class="text-primary-300 mb-4 text-2xl font-bold"
+    <section class="">
+      <h2 class="text-primary-500 mb-4 text-2xl font-bold"
         >지금 필요한 것만, 딱 맞게 준비해요</h2
       >
       <div class="space-y-4">
@@ -83,7 +79,7 @@
           :content1="card.content1"
           :content2="card.content2"
           color="secondary"
-          class="border-secondary-300 border shadow-none"
+          class=""
           @click="handlers[card.onClick]"
         >
           <template #icon>
@@ -93,22 +89,39 @@
       </div>
     </section>
 
-    <!-- 금융상품 캐러셀 -->
-    <section class="mb-16">
-      <h2 class="text-primary-300 mb-4 text-2xl font-bold">
-        내가 쓸 돈, 미리 챙겨두는 3가지 방법
-      </h2>
-      <Top3Products :items="slides" />
+    <!-- 가장 가까운 골든라이프 -->
+    <section v-if="nearestBranch">
+      <div class="text-primary-500 mb-2 text-2xl font-bold">
+        가장 가까운 골든라이프
+      </div>
+      <div
+        class="stroke-secondary bg-gold flex items-center justify-between rounded-lg p-4"
+      >
+        <div>
+          <div class="text-lg font-semibold text-white">{{
+            nearestBranch.name
+          }}</div>
+          <div class="">
+            나와의 거리:
+            <span class="tabular-nums">{{
+              formatDistance(nearestBranch.distance)
+            }}</span>
+          </div>
+        </div>
+        <Btn
+          color="surface"
+          size="small"
+          label="찾아가기"
+          @click="openMap(nearestBranch)"
+        />
+      </div>
     </section>
 
-    <!-- 광고 배너 -->
-    <Banner class="mb-16" />
-
     <!-- 하단 서비스 특징 -->
-    <section class="border-secondary-300 rounded-xl border p-4 text-center">
+    <section class="card-design text-center">
       <div class="mb-4 p-4">
-        <p class="text-primary-300 mb-4 text-2xl font-semibold"
-          >노후도락과 함께 챙겨드립니다</p
+        <p class="text-primary-500 mb-4 text-2xl font-bold"
+          >노후도락이 함께 챙겨드립니다</p
         >
         <p class="text-surface-400 text-base">
           자산은 얼마나 있는지, 어떤 상품이 나에게 좋은지<br />
@@ -156,6 +169,8 @@ import Home5 from '@/assets/images/Home5.svg';
 import Home6 from '@/assets/images/Home6.svg';
 import KakaoLoginBtn from '@/assets/images/kakao_login_medium_wide.png';
 import Banner from '@/components/cards/Banner.vue';
+import ArrowIcon from '@/assets/icons/Arrow45.svg';
+import TextBtn from '@/components/buttons/TextBtn.vue';
 
 /** Vue Router 인스턴스 - 페이지 네비게이션용 */
 const router = useRouter();
@@ -270,4 +285,87 @@ const features = [
     src: Home6,
   },
 ];
+
+declare const kakao: any;
+
+type Branch = {
+  name: string;
+  lat: number;
+  lng: number;
+  distance: number;
+  placeUrl: string;
+};
+
+const myPos = ref<{ lat: number; lng: number } | null>(null);
+const nearestBranch = ref<Branch | null>(null);
+
+/* 거리 계산 */
+function haversine(lat1: number, lng1: number, lat2: number, lng2: number) {
+  const R = 6371e3;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+function formatDistance(m: number) {
+  return m < 1000 ? `${Math.round(m)}m` : `${(m / 1000).toFixed(1)}km`;
+}
+
+/* 지도에서 보기 */
+function openMap(branch: Branch) {
+  window.open(branch.placeUrl, '_blank');
+}
+
+/* 카카오맵 검색 */
+function searchNearestBranch() {
+  if (!myPos.value) return;
+  const ps = new kakao.maps.services.Places();
+
+  ps.keywordSearch(
+    'KB골든라이프',
+    (data: any[], status: string) => {
+      if (status !== kakao.maps.services.Status.OK) {
+        console.error('검색 실패');
+        return;
+      }
+      const branches = data.map((item) => {
+        const lat = parseFloat(item.y);
+        const lng = parseFloat(item.x);
+        return {
+          name: item.place_name,
+          lat,
+          lng,
+          placeUrl: item.place_url,
+          distance: haversine(myPos.value!.lat, myPos.value!.lng, lat, lng),
+        };
+      });
+      // 거리순 정렬 후 가장 가까운 1곳만
+      branches.sort((a, b) => a.distance - b.distance);
+      nearestBranch.value = branches[0];
+    },
+    {
+      location: new kakao.maps.LatLng(myPos.value.lat, myPos.value.lng),
+      radius: 10000, // 10km 범위
+    }
+  );
+}
+
+/* 위치 + 검색 실행 */
+onMounted(() => {
+  if (!('geolocation' in navigator)) return;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      myPos.value = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      searchNearestBranch();
+    },
+    (err) => {
+      console.error('위치 조회 실패', err);
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+});
 </script>

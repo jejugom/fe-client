@@ -36,12 +36,11 @@
   --font-point: 'TTHakgyoansimYeohaengR';
 
   --shadow-xs: 0 1px 2px var(--color-surface-200);
-  --shadow-up-xs: 0 -1px 2px var(--color-surface-200);
 }
 
 @layer base {
   body {
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
     color: var(--color-surface-500);
     font-family: var(--font-regular);
     transition: transform 300ms ease-in-out;
@@ -56,7 +55,12 @@
     transform: scale(0.95);
     opacity: 0.9;
     box-shadow: var(--shadow-xs);
-    box-shadow: var(--shadow-up-xs);
+    box-shadow: var(--custom-shadow);
+  }
+
+  .custom-shadow {
+    box-shadow: 0 1px 2px var(--color-surface-200);
+    box-shadow: 0 -1px 2px var(--color-surface-200);
   }
 
   .bg-gradient-cross-1 {
@@ -87,20 +91,29 @@
 
   .stroke-primary {
     box-shadow:
-      0.5px 0.5px 2px 0px oklch(0.2959 0.0476 259.03 / 0.25),
-      -0.5px -0.5px 2px 0px oklch(0.2959 0.0476 259.03 / 0.25);
+      0.5px 0.5px 2px 0px #3674b53f,
+      -0.5px -0.5px 2px 0px #3674b53f;
   }
 
   .stroke-secondary {
     box-shadow:
-      0.5px 0.5px 2px 0px oklch(0.4453 0.09126 84.9532 / 25%),
-      -0.5px -0.5px 2px 0px oklch(0.4453 0.09126 84.9532 / 25%);
+      0.5px 0.5px 2px 0px #d1a8433f,
+      -0.5px -0.5px 2px 0px #d1a8433f;
   }
 
   .stroke-surface {
     box-shadow:
       0.5px 0.5px 2px 0px oklch(0.209 0 0 / 0.25),
       -0.5px -0.5px 2px 0px oklch(0.209 0 0 / 0.25);
+  }
+
+  .card-design {
+    box-shadow:
+      0.5px 0.5px 2px 0px #3674b53f,
+      -0.5px -0.5px 2px 0px #3674b53f;
+    border-radius: 8px;
+    background-color: white;
+    padding: 16px;
   }
 }
 

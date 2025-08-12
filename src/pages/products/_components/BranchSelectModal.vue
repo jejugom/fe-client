@@ -21,19 +21,25 @@
 
     <div
       v-if="errorMessage"
-      class="bg-secondary-100 my-2 w-full p-2 text-sm text-red-500"
+      class="stroke-secondary bg-secondary-100 my-2 w-full rounded-lg p-4 text-red-300"
     >
       {{ errorMessage }}
     </div>
 
-    <div v-if="selectedBranch" class="bg-secondary-100 my-2 w-full p-2">
+    <div
+      v-if="selectedBranch"
+      class="stroke-secondary bg-secondary-100 my-2 w-full rounded-lg p-4"
+    >
       선택한 지점:
-      <span class="text-secondary-500 font-semibold">
+      <span class="font-semibold">
         {{ selectedBranch }}
       </span>
     </div>
 
-    <div id="map-wrapper" class="relative mt-4 h-64 w-full">
+    <div
+      id="map-wrapper"
+      class="stroke-secondary relative mt-4 h-64 w-full rounded-lg"
+    >
       <div id="map" class="h-full w-full"></div>
 
       <!-- 우측 상단 고정 버튼 -->
