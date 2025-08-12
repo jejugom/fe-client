@@ -100,7 +100,10 @@ import { getAssetCategoryName } from '@/utils/format';
 import InputBox from '@/components/forms/InputBox.vue';
 import AssetRankCard from './_components/AssetRankCard.vue';
 import MenuBtn from './_components/MenuBtn.vue';
-import { getBranchNameById, getProductNameByCodeWrapper } from '@/utils/bookingMapper';
+import {
+  getBranchNameById,
+  getProductNameByCodeWrapper,
+} from '@/utils/bookingMapper';
 
 const myPageData = ref(null);
 const loading = ref(true);
@@ -181,6 +184,7 @@ const handleMenuClick = (menuId) => {
     case 'revenue':
       router.push({
         name: 'edit-branch',
+        query: { from: 'profile' },
       });
       break;
     case 'investment-reset':
