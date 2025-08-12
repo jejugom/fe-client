@@ -1,11 +1,22 @@
 declare namespace kakao.maps {
+  /** autoload=false에서 SDK가 로드된 뒤 호출 */
+  function load(callback: () => void): void;
+
+  /** 실제 SDK가 받는 지도 옵션 */
+  interface MapOptions {
+    center: LatLng;
+    level: number;
+  }
+
   class LatLng {
+    /** (lat, lng) 순서 */
     constructor(latitude: number, longitude: number);
   }
 
   class LatLngBounds {
     extend(latlng: LatLng): void;
-    contain(latlng: LatLng): boolean;
+    /** 실제 API는 contains */
+    contains(latlng: LatLng): boolean;
   }
 
   class Point {
@@ -30,29 +41,32 @@ declare namespace kakao.maps {
   }
 
   class Marker {
-    constructor(options: { map: Map; position: LatLng; image?: MarkerImage });
+    /** SDK는 map 없이도 생성 가능 → map?: Map 로 정의 */
+    constructor(options: { map?: Map; position: LatLng; image?: MarkerImage });
     setMap(map: Map | null): void;
   }
 
   class Map {
-    constructor(
-      container: HTMLElement,
-      options: { center: LatLng; level: number }
-    );
+    constructor(container: HTMLElement, options: MapOptions);
     getBounds(): LatLngBounds;
     getCenter(): LatLng;
     setBounds(bounds: LatLngBounds): void;
   }
 
   namespace event {
-    function addListener(target: any, type: string, handler: () => void): void;
+    function addListener(
+      target: any,
+      type: string,
+      handler: (...args: any[]) => void
+    ): void;
   }
 
   namespace services {
     class Places {
+      constructor(map?: Map);
       keywordSearch(
         keyword: string,
-        callback: (data: any[], status: string) => void,
+        callback: (data: any[], status: Status) => void,
         options?: { bounds?: LatLngBounds; location?: LatLng; radius?: number }
       ): void;
     }
@@ -61,7 +75,7 @@ declare namespace kakao.maps {
       coord2RegionCode(
         longitude: number,
         latitude: number,
-        callback: (result: any[], status: string) => void
+        callback: (result: any[], status: Status) => void
       ): void;
     }
 
@@ -70,5 +84,13 @@ declare namespace kakao.maps {
       ERROR = 'ERROR',
       ZERO_RESULT = 'ZERO_RESULT',
     }
+  }
+}
+
+type KakaoNS = typeof kakao;
+
+declare global {
+  interface Window {
+    kakao?: KakaoNS;
   }
 }

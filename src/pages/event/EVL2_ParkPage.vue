@@ -93,20 +93,39 @@
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
-import { useRouter } from 'vue-router';
 import Confirm from '@/components/modals/Confirm.vue';
+import { useRouter } from 'vue-router';
 import { useRewardStore } from '@/stores/reward';
 
-const rewardStore = useRewardStore();
-const router = useRouter();
+import {
+  loadKakaoMaps,
+  whenInView,
+  createMap,
+  createPlaces,
+  getCurrentPosition,
+  clearMarkers as clearAllMarkers,
+  makeMarker as makeBasicMarker,
+  keywordSearch as kwSearch,
+} from '@/utils/kakaoMap';
 
-// Confirm 상태
+type Park = {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  distance: number; // meters
+  checked: boolean;
+};
+
+const router = useRouter();
+const rewardStore = useRewardStore();
+
+/* ---------- Confirm ---------- */
 const showConfirm = ref(false);
-const confirmTitle = ref<string | undefined>(undefined);
+const confirmTitle = ref<string>();
 const confirmMessage = ref('');
 let confirmResolve: ((v: boolean) => void) | null = null;
 
-// 열기(프로미스)
 const openConfirm = (message: string, title?: string) =>
   new Promise<boolean>((resolve) => {
     confirmMessage.value = message;
@@ -114,7 +133,6 @@ const openConfirm = (message: string, title?: string) =>
     showConfirm.value = true;
     confirmResolve = resolve;
   });
-
 const onConfirmNo = () => {
   showConfirm.value = false;
   confirmResolve?.(false);
@@ -126,23 +144,11 @@ const onConfirmYes = () => {
   confirmResolve = null;
 };
 
-// Kakao 전역 타입
-declare const kakao: any;
-
-type Park = {
-  id: string;
-  name: string;
-  lat: number;
-  lng: number;
-  distance: number; // meters
-  checked: boolean;
-};
-
 /* ---------- 상태 ---------- */
 const mapRef = ref<HTMLDivElement | null>(null);
-let map: any | null = null;
-let places: any | null = null;
-const markers: any[] = [];
+let map: kakao.maps.Map | null = null;
+let places: kakao.maps.services.Places | null = null;
+const markers: kakao.maps.Marker[] = [];
 
 const myPos = ref<{ lat: number; lng: number } | null>(null);
 const parks = ref<Park[]>([]);
@@ -164,21 +170,18 @@ const progress = computed(() =>
 
 /* ---------- 로컬 스토리지 ---------- */
 const LS_KEY = 'park_challenge_checked_ids';
-function loadCheckedIds(): Set<string> {
+const loadCheckedIds = () => {
   try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return new Set();
-    return new Set(JSON.parse(raw) as string[]);
+    return new Set<string>(JSON.parse(localStorage.getItem(LS_KEY) || '[]'));
   } catch {
-    return new Set();
+    return new Set<string>();
   }
-}
-function saveCheckedIds(ids: Set<string>) {
-  localStorage.setItem(LS_KEY, JSON.stringify(Array.from(ids)));
-}
+};
+const saveCheckedIds = (ids: Set<string>) =>
+  localStorage.setItem(LS_KEY, JSON.stringify([...ids]));
 
 /* ---------- 유틸 ---------- */
-function haversine(lat1: number, lng1: number, lat2: number, lng2: number) {
+const haversine = (lat1: number, lng1: number, lat2: number, lng2: number) => {
   const R = 6371e3;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLng = ((lng2 - lng1) * Math.PI) / 180;
@@ -188,73 +191,11 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number) {
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(a));
-}
-function formatDistance(m: number) {
-  return m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toFixed(2)} km`;
-}
+};
+const formatDistance = (m: number) =>
+  m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toFixed(2)} km`;
 
-/* ---------- 지도 ---------- */
-function initMap(center: { lat: number; lng: number }) {
-  if (!mapRef.value || !(window as any)?.kakao?.maps) {
-    errorMsg.value = '카카오 지도 스크립트가 로드되지 않았습니다.';
-    return;
-  }
-  const kakaoCenter = new kakao.maps.LatLng(center.lat, center.lng);
-  map = new kakao.maps.Map(mapRef.value, { center: kakaoCenter, level: 5 });
-  map.setDraggable(false); // 드래그(이동) 막기
-  map.setZoomable(false); // 휠/핀치/더블클릭 줌 막기
-  places = new kakao.maps.services.Places(map);
-  makeMarker(center.lat, center.lng, true); // 내 위치
-}
-function clearMarkers() {
-  markers.forEach((m) => m.setMap(null));
-  markers.length = 0;
-}
-function makeMarker(
-  lat: number,
-  lng: number,
-  me = false,
-  visited = false,
-  title = ''
-) {
-  const markerPosition = new kakao.maps.LatLng(lat, lng);
-
-  // 마커 생성
-  const marker = new kakao.maps.Marker({
-    position: markerPosition,
-  });
-  marker.setMap(map);
-
-  // 색상 설정
-  const color = me ? '#2563eb' : visited ? '#9ca3af' : '#10b981';
-  const circle = new kakao.maps.Circle({
-    center: markerPosition,
-    radius: me ? 12 : 8,
-    strokeWeight: 2,
-    strokeColor: color,
-    strokeOpacity: 0.9,
-    fillColor: color,
-    fillOpacity: 0.6,
-  });
-  circle.setMap(map);
-
-  // 인포윈도우 내용
-  if (title) {
-    const infowindow = new kakao.maps.InfoWindow({
-      content: `<div  style="padding:4px; color:#3674b5">${title}</div>`,
-    });
-
-    // 마커 클릭 시 인포윈도우 열기
-    kakao.maps.event.addListener(marker, 'click', () => {
-      infowindow.open(map, marker);
-    });
-  }
-
-  markers.push(marker, circle);
-  return marker;
-}
-
-/* ---------- 고급 필터 세트 ---------- */
+/* ---------- 필터 ---------- */
 const ALLOW_GROUPS = new Set(['AT4', 'CT1', 'PO3']); // 관광명소/문화시설/공공기관 허용
 const DENY_GROUPS = new Set([
   'CS2',
@@ -266,17 +207,16 @@ const DENY_GROUPS = new Set([
   'BK9',
   'SW8',
   'OL7',
-]); // 편의점, 음식점 등 차단
+]); // 편의점/음식점 등
 const NAME_ALLOW =
-  /(근린공원|어린이공원|도시공원|생태공원|수변공원|체육공원|공원)$/i; // '…공원' 우선
-const NAME_INCLUDE = /공원/i; // 일반 포함
+  /(근린공원|어린이공원|도시공원|생태공원|수변공원|체육공원|공원)$/i;
+const NAME_INCLUDE = /공원/i;
 const NAME_DENY =
   /(편의점|CU|GS25?|베드민턴장|운동장|화장실|놀이터|물놀이장|테니스장|축구장|야구장|탁구장|볼링장|헬스|스포츠센터|구의공원점|점$)/i;
 
-function isParkLike(d: any) {
+const isParkLike = (d: any) => {
   const group = d.category_group_code as string | undefined;
   const name = d.place_name as string;
-
   if (group) {
     if (DENY_GROUPS.has(group)) return false;
     if (ALLOW_GROUPS.has(group)) {
@@ -286,8 +226,9 @@ function isParkLike(d: any) {
   }
   if (NAME_DENY.test(name)) return false;
   return NAME_ALLOW.test(name) || NAME_INCLUDE.test(name);
-}
-function normalizeToPark(d: any): Park {
+};
+
+const normalizeToPark = (d: any): Park => {
   const lat = Number(d.y);
   const lng = Number(d.x);
   const dist = haversine(myPos.value!.lat, myPos.value!.lng, lat, lng);
@@ -299,116 +240,178 @@ function normalizeToPark(d: any): Park {
     distance: dist,
     checked: loadCheckedIds().has(String(d.id)),
   };
-}
-function applyParksAndMarkers(list: Park[]) {
+};
+
+/* ---------- 마커 ---------- */
+const clearMarkers = () => clearAllMarkers(markers);
+
+// (필요 시 원형 오버레이/인포윈도우까지 쓰려면 any 캐스팅)
+const makeMarker = (opts: {
+  lat: number;
+  lng: number;
+  me?: boolean;
+  visited?: boolean;
+  title?: string;
+}) => {
+  if (!map) return;
+  const { lat, lng, me, visited, title } = opts;
+
+  // 기본 마커(공통 유틸)
+  const m = makeBasicMarker({ map, lat, lng });
+
+  // 색상 원형(타입 정의 외라 캐스팅)
+  const kakaoAny = window.kakao as any;
+  const pos = new kakaoAny.maps.LatLng(lat, lng);
+  const color = me ? '#2563eb' : visited ? '#9ca3af' : '#10b981';
+  const circle = new kakaoAny.maps.Circle({
+    center: pos,
+    radius: me ? 12 : 8,
+    strokeWeight: 2,
+    strokeColor: color,
+    strokeOpacity: 0.9,
+    fillColor: color,
+    fillOpacity: 0.6,
+  });
+  circle.setMap(map);
+
+  if (title) {
+    const infowindow = new kakaoAny.maps.InfoWindow({
+      content: `<div style="padding:4px; color:#3674b5">${title}</div>`,
+    });
+    kakaoAny.maps.event.addListener(m, 'click', () => infowindow.open(map, m));
+  }
+
+  markers.push(m);
+};
+
+/* ---------- 지도 초기화 ---------- */
+const initMap = (center: { lat: number; lng: number }) => {
+  if (!mapRef.value || !window.kakao?.maps) {
+    errorMsg.value = '카카오 지도 스크립트가 로드되지 않았습니다.';
+    return;
+  }
+  map = createMap(mapRef.value, {
+    center: new window.kakao.maps.LatLng(center.lat, center.lng),
+    level: 5,
+  });
+  (map as any).setDraggable(false);
+  (map as any).setZoomable(false);
+  places = createPlaces(map);
+
+  makeMarker({ lat: center.lat, lng: center.lng, me: true });
+};
+
+/* ---------- 검색 ---------- */
+const applyParksAndMarkers = (list: Park[]) => {
   const arr = list
     .filter((p) => p.distance <= searchRadius)
     .sort((a, b) => a.distance - b.distance)
-    .slice(0, 10); // TOP 10만
-
+    .slice(0, 10);
   parks.value = arr;
-  clearMarkers();
-  if (myPos.value) makeMarker(myPos.value.lat, myPos.value.lng, true);
-  for (const p of parks.value) {
-    makeMarker(p.lat, p.lng, false, p.checked, p.name);
-  }
-}
 
-/* ---------- 검색 ---------- */
-function searchParks() {
+  clearMarkers();
+  if (myPos.value)
+    makeMarker({ lat: myPos.value.lat, lng: myPos.value.lng, me: true });
+  for (const p of parks.value)
+    makeMarker({ lat: p.lat, lng: p.lng, visited: p.checked, title: p.name });
+};
+
+const searchParks = async () => {
   if (!places || !myPos.value) return;
   noticeMsg.value = '근처 공원을 검색 중…';
-  const center = new kakao.maps.LatLng(myPos.value.lat, myPos.value.lng);
-  const opt = {
-    location: center,
-    radius: searchRadius,
-    sort: kakao.maps.services.SortBy.DISTANCE,
-  };
 
-  // 1) 공공기관(PO3)에서 먼저 시도
-  places.categorySearch(
-    'PO3',
-    (data: any[], status: string) => {
-      if (status !== kakao.maps.services.Status.OK) return keywordFallback();
-      const filtered = data.filter(isParkLike).map(normalizeToPark);
-      if (filtered.length > 0) {
-        noticeMsg.value = '';
-        return applyParksAndMarkers(filtered);
-      }
-      keywordFallback();
-    },
-    opt
-  );
-
-  // 2) 부족하면 키워드 ‘공원’ 폴백
-  function keywordFallback() {
-    places.keywordSearch(
-      '공원',
-      (kData: any[], kStatus: string) => {
-        noticeMsg.value = '';
-        if (kStatus !== kakao.maps.services.Status.OK) {
-          errorMsg.value = '주변에 적합한 공원을 찾지 못했습니다.';
-          parks.value = [];
-          clearMarkers();
-          if (myPos.value) makeMarker(myPos.value.lat, myPos.value.lng, true);
-          return;
+  // 1) 공공기관(PO3) 카테고리 우선 시도
+  let list: Park[] = [];
+  try {
+    const res = await new Promise<any[]>((resolve) => {
+      (places as any).categorySearch(
+        'PO3',
+        (data: any[], status: kakao.maps.services.Status) => {
+          resolve(status === kakao.maps.services.Status.OK ? data : []);
+        },
+        {
+          location: new window.kakao!.maps.LatLng(
+            myPos.value!.lat,
+            myPos.value!.lng
+          ),
+          radius: searchRadius,
+          // SortBy 타입이 d.ts에 없으므로 생략 (기본 거리 정렬)
         }
-        const filtered = kData
-          .filter((d) => {
-            const group = d.category_group_code as string | undefined;
-            if (group && DENY_GROUPS.has(group)) return false;
-            return isParkLike(d);
-          })
-          .map(normalizeToPark);
-
-        applyParksAndMarkers(filtered);
-      },
-      opt
-    );
+      );
+    });
+    list = res.filter(isParkLike).map(normalizeToPark);
+  } catch {
+    // noop
   }
-}
 
-/* ---------- 위치 ---------- */
-function locateAndSearch() {
-  errorMsg.value = '';
-  if (!('geolocation' in navigator)) {
-    errorMsg.value = '이 브라우저는 위치 정보를 지원하지 않습니다.';
+  // 2) 부족하면 키워드 ‘공원’ 폴백 (공통 유틸)
+  if (list.length === 0) {
+    const k = await kwSearch(places, '공원', {
+      location: new window.kakao!.maps.LatLng(
+        myPos.value!.lat,
+        myPos.value!.lng
+      ),
+      radius: searchRadius,
+    });
+    list = k
+      .filter((d) => {
+        const g = d.category_group_code as string | undefined;
+        if (g && DENY_GROUPS.has(g)) return false;
+        return isParkLike(d);
+      })
+      .map(normalizeToPark);
+  }
+
+  noticeMsg.value = '';
+  if (list.length === 0) {
+    errorMsg.value = '주변에 적합한 공원을 찾지 못했습니다.';
+    parks.value = [];
+    clearMarkers();
+    if (myPos.value)
+      makeMarker({ lat: myPos.value.lat, lng: myPos.value.lng, me: true });
     return;
   }
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      myPos.value = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-      if (!map) initMap(myPos.value);
-      if (map) {
-        map.setCenter(new kakao.maps.LatLng(myPos.value.lat, myPos.value.lng));
-        makeMarker(myPos.value.lat, myPos.value.lng, true);
-      }
-      searchParks(); // 위치 갱신 후 즉시 검색
-    },
-    (err) => {
-      errorMsg.value = `위치 조회 실패: ${err.message}`;
-    },
-    { enableHighAccuracy: true, timeout: 10000 }
-  );
-}
+  applyParksAndMarkers(list);
+};
 
-function panTo(p: Park) {
-  if (!map) return;
-  map.panTo(new kakao.maps.LatLng(p.lat, p.lng));
-}
+/* ---------- 위치 ---------- */
+const locateAndSearch = async () => {
+  errorMsg.value = '';
+  try {
+    const pos = await getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 10000,
+    });
+    myPos.value = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+
+    if (!map) initMap(myPos.value);
+    if (map) {
+      const center = new window.kakao!.maps.LatLng(
+        myPos.value.lat,
+        myPos.value.lng
+      );
+      const bounds = new window.kakao!.maps.LatLngBounds();
+      bounds.extend(center);
+      map.setBounds(bounds);
+      makeMarker({ lat: myPos.value.lat, lng: myPos.value.lng, me: true });
+    }
+    searchParks();
+  } catch (err: any) {
+    errorMsg.value = `위치 조회 실패: ${err?.message ?? '알 수 없는 오류'}`;
+  }
+};
+
 function canCheckIn(p: Park) {
   if (!myPos.value) return false;
   return p.distance <= checkInRadius;
 }
 async function checkIn(p: Park) {
   if (!canCheckIn(p)) return;
-
   const ids = loadCheckedIds();
   ids.add(String(p.id));
   saveCheckedIds(ids);
   p.checked = true;
 
-  // 목표 달성 시 보상 기록
   rewardStore.complete('park');
 
   const ok = await openConfirm(
@@ -419,34 +422,43 @@ async function checkIn(p: Park) {
 }
 
 /* ---------- 거리 재계산 + watch ---------- */
-function recalcDistances() {
+const recalcDistances = () => {
   if (!myPos.value) return;
   parks.value = parks.value.map((p) => ({
     ...p,
     distance: haversine(myPos.value!.lat, myPos.value!.lng, p.lat, p.lng),
   }));
-}
+};
 
 let watchId: number | null = null;
-onMounted(() => {
-  // 처음 진입 시 한 번 실행
-  locateAndSearch();
 
-  // 위치 변화 감시(배터리 고려해서 highAccuracy는 off)
-  if ('geolocation' in navigator) {
-    watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        myPos.value = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        recalcDistances();
-      },
-      () => {},
-      { enableHighAccuracy: false, maximumAge: 5000, timeout: 10000 }
-    );
-  }
-});
-onBeforeUnmount(() => {
-  if (watchId !== null && 'geolocation' in navigator) {
-    navigator.geolocation.clearWatch(watchId);
-  }
+/* ---------- lazy load: 지도가 화면에 들어올 때만 SDK 로드 ---------- */
+onMounted(() => {
+  if (!mapRef.value) return;
+
+  const stop = whenInView(mapRef.value, async () => {
+    await loadKakaoMaps();
+    locateAndSearch();
+
+    // 위치 변화 감시(배터리 고려)
+    if ('geolocation' in navigator) {
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          myPos.value = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          recalcDistances();
+        },
+        () => {},
+        { enableHighAccuracy: false, maximumAge: 5000, timeout: 10000 }
+      );
+    }
+  });
+
+  // 컴포넌트 unmount 시 옵저버 해제
+  onBeforeUnmount(() => {
+    stop();
+    if (watchId !== null && 'geolocation' in navigator) {
+      navigator.geolocation.clearWatch(watchId);
+    }
+  });
 });
 </script>

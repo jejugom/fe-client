@@ -77,82 +77,123 @@ import Alert from '@/components/modals/Alert.vue';
 import { branchApi } from '@/api/user/branch';
 import { branchList } from '@/data/branchList';
 
-interface KakaoPlace {
-  place_name: string;
-  x: string;
-  y: string;
-}
+// kakao 유틸/타입
+import {
+  loadKakaoMaps,
+  createMap,
+  createPlaces,
+  keywordSearch,
+  coord2Region,
+  getCurrentPosition,
+  clearMarkers,
+  makeMarker,
+  isBankBranch,
+  debounce,
+  type Place,
+  type SearchOpts,
+} from '@/utils/kakaoMap';
 
 const router = useRouter();
 const route = useRoute();
+
+/* ---------- state ---------- */
 const searchQuery = ref('');
 const currentAddress = ref('');
-const selectedBranch = ref('');
-const displaySelectedBranchName = ref(''); // UI에 표시될 전체 지점명
-const currentBranch = ref(''); // 현재 설정된 지점
+const currentBranch = ref('');
+const displaySelectedBranchName = ref('');
+const selectedBranch = ref(''); // 저장용 간단 지점명
+
 const showSuccessAlert = ref(false);
 const showErrorAlert = ref(false);
 const errorAlertMessage = ref('');
-let map: kakao.maps.Map;
 
-const searchPlaces = () => {
-  const ps = new kakao.maps.services.Places();
+const map = ref<kakao.maps.Map>();
+const ps = ref<kakao.maps.services.Places>();
+const markers = ref<kakao.maps.Marker[]>([]);
 
-  ps.keywordSearch(
-    `국민은행 ${searchQuery.value}`,
-    (data: KakaoPlace[], status: string) => {
-      if (status === kakao.maps.services.Status.OK) {
-        const bounds = new kakao.maps.LatLngBounds();
-
-        data.forEach((place: KakaoPlace) => {
-          const pos = new kakao.maps.LatLng(Number(place.y), Number(place.x));
-          const marker = new kakao.maps.Marker({ map, position: pos });
-
-          kakao.maps.event.addListener(marker, 'click', () => {
-            displaySelectedBranchName.value = place.place_name; // UI에 표시될 전체 지점명
-            selectedBranch.value = place.place_name
-              .replace(/KB국민은행\s*/g, '')
-              .replace(/점/g, '')
-              .trim(); // 로직에 사용될 간소화된 지점명
-          });
-
-          bounds.extend(pos);
-        });
-
-        map.setBounds(bounds);
-      }
-    }
-  );
-};
-
-const normalizeBranchName = (name: string) => {
-  return name
-    .replace(/KB국민은행\s*/g, '')
-    .replace(/점/g, '')
-    .trim();
-};
-
-const onAlertConfirm = () => {
-  showSuccessAlert.value = false;
-  const from = q(route.query.from);
-  if (from === 'profile') {
-    router.push({ name: 'profile' });
-  } else {
-    router.push({ name: 'asset-signup-complete' });
-  }
-};
-
+/* ---------- helpers ---------- */
 const q = (v: unknown) =>
   Array.isArray(v) ? String(v[0] ?? '') : v != null ? String(v) : '';
 
+const normalizeBranchName = (name: string) =>
+  name
+    .replace(/KB국민은행\s*/g, '')
+    .replace(/점/g, '')
+    .trim();
+
+/* ---------- 검색/마커 ---------- */
+const paintMarkers = (list: Place[]) => {
+  if (!map.value) return;
+  clearMarkers(markers.value);
+
+  const bounds = new kakao.maps.LatLngBounds();
+
+  for (const p of list) {
+    const lat = Number(p.y);
+    const lng = Number(p.x);
+    const isGolden = p.place_name.includes('골든라이프');
+
+    const m = makeMarker({
+      map: map.value,
+      lat,
+      lng,
+      imageUrl: isGolden ? '/images/golden-marker.png' : undefined,
+      imageSize: { w: 40, h: 40 },
+    });
+
+    kakao.maps.event.addListener(m, 'click', () => {
+      displaySelectedBranchName.value = p.place_name; // 전체 표시용
+      selectedBranch.value = normalizeBranchName(p.place_name); // 저장용
+    });
+
+    markers.value.push(m);
+    bounds.extend(new kakao.maps.LatLng(lat, lng));
+  }
+
+  if (list.length) map.value.setBounds(bounds);
+};
+
+const doSearch = async () => {
+  if (!map.value || !ps.value) return;
+
+  const keyword = searchQuery.value.trim();
+  // 입력 없으면 현 지도 bounds 사용
+  const opts: SearchOpts | undefined = keyword
+    ? undefined
+    : { bounds: map.value.getBounds() };
+
+  const baseKeyword = keyword ? `국민은행 ${keyword}` : '국민은행';
+  const results = await keywordSearch(ps.value, baseKeyword, opts);
+  const filtered = results.filter((r) => isBankBranch(r.place_name));
+
+  if (!filtered.length) {
+    clearMarkers(markers.value);
+    errorAlertMessage.value = '검색 결과가 없습니다.';
+    showErrorAlert.value = true;
+    return;
+  }
+
+  showErrorAlert.value = false;
+  paintMarkers(filtered);
+};
+
+const debouncedSearch = debounce(doSearch, 300);
+const searchPlaces = () => debouncedSearch();
+
+/* ---------- 완료/스킵/알럿 ---------- */
+const onAlertConfirm = () => {
+  showSuccessAlert.value = false;
+  const from = q(route.query.from);
+  router.push({
+    name: from === 'profile' ? 'profile' : 'asset-signup-complete',
+  });
+};
+
 const handleSkip = () => {
   const from = q(route.query.from);
-
-  if (from === 'profile') {
-    router.push({ name: 'profile' });
-  } else {
-    router.push({ name: 'asset-signup-complete' });
-  }
+  router.push({
+    name: from === 'profile' ? 'profile' : 'asset-signup-complete',
+  });
 };
 
 const handleComplete = async () => {
@@ -163,58 +204,75 @@ const handleComplete = async () => {
   }
 
   try {
-    const branchData = branchList.find(
+    const match = branchList.find(
       (b) => normalizeBranchName(b.name) === selectedBranch.value
     );
-
-    if (!branchData) {
+    if (!match) {
       errorAlertMessage.value =
         '선택한 지점을 찾을 수 없습니다. 다시 선택해주세요.';
       showErrorAlert.value = true;
       return;
     }
 
-    await branchApi.setMyBranch({ branchId: branchData.id });
-    currentBranch.value = displaySelectedBranchName.value; // 현재 지점 업데이트
+    await branchApi.setMyBranch({ branchId: match.id });
+    currentBranch.value = displaySelectedBranchName.value;
+    showErrorAlert.value = false;
     showSuccessAlert.value = true;
-  } catch (error) {
-    console.error('지점 설정 실패:', error);
+  } catch (e) {
+    console.error('지점 설정 실패:', e);
     errorAlertMessage.value =
       '지점 설정 중 오류가 발생했습니다. 다시 시도해주세요.';
     showErrorAlert.value = true;
   }
 };
 
+/* ---------- mount: 지도/초기검색 ---------- */
 onMounted(async () => {
   try {
     const myBranch = await branchApi.getMyBranch();
     currentBranch.value = myBranch.branchName;
-  } catch (error) {
-    console.error('내 지점 정보 조회 실패:', error);
+  } catch (e) {
+    // 초기 지점 없을 수 있음: 무시
+    console.warn('내 지점 정보 조회 실패:', e);
   }
 
-  navigator.geolocation.getCurrentPosition((position) => {
-    const lat = position.coords.latitude;
-    const lng = position.coords.longitude;
-    const locPosition = new kakao.maps.LatLng(lat, lng);
+  await loadKakaoMaps();
 
-    map = new kakao.maps.Map(document.getElementById('map') as HTMLElement, {
-      center: locPosition,
-      level: 3,
+  // 위치 → 실패 시 서울시청
+  let lat = 37.5665,
+    lng = 126.978;
+  try {
+    const pos = await getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 8000,
     });
+    lat = pos.coords.latitude;
+    lng = pos.coords.longitude;
+  } catch {
+    /* noop */
+  }
 
-    new kakao.maps.Marker({ map, position: locPosition });
+  map.value = createMap(document.getElementById('map') as HTMLElement, {
+    center: new kakao.maps.LatLng(lat, lng),
+    level: 3,
+  });
+  ps.value = createPlaces(map.value);
 
-    const geocoder = new kakao.maps.services.Geocoder();
-    geocoder.coord2RegionCode(lng, lat, (result: any, status: any) => {
-      if (status === kakao.maps.services.Status.OK && result[0]) {
-        currentAddress.value = result[0].address_name;
-        searchQuery.value = result[0].address_name || '';
-        searchPlaces();
-      }
-    });
+  // 내 위치 마커
+  makeMarker({ map: map.value, lat, lng });
+
+  // 역지오 → 현재 주소/기본 검색어
+  const region = await coord2Region(lng, lat);
+  currentAddress.value = region?.address_name ?? '';
+  // 구 단위가 있으면 기본 검색어로 세팅
+  searchQuery.value = region?.region_2depth_name ?? '';
+
+  await doSearch();
+
+  // 지도를 드래그한 상태라면 버튼 없이도 즉시 재검색하고 싶다면:
+  kakao.maps.event.addListener(map.value, 'dragend', () => {
+    // 입력이 비어있을 때만 bounds 검색 자동 실행
+    if (!searchQuery.value.trim()) debouncedSearch();
   });
 });
 </script>
-
-<style scoped></style>
