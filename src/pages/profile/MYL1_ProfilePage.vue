@@ -151,7 +151,10 @@ const handleMenuClick = (menuId) => {
       router.push({ name: 'asset-kookmin-login', query: { from: 'profile' } });
       break;
     case 'revenue':
-      router.push({ name: 'edit-branch' });
+      router.push({
+        name: 'edit-branch',
+        query: { from: 'profile' },
+      });
       break;
     case 'investment-reset':
       router.push({ name: 'asset-custom-quiz', query: { from: 'profile' } });
