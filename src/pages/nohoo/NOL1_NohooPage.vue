@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import TabBtnGroup from './_components/TabBtnGroup.vue';
 import BtnCard from '@/components/cards/BtnCard.vue';
 import AdBox from './_components/AdBox.vue';
@@ -85,6 +85,7 @@ import {
 import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
+const route = useRoute();
 const productStore = useProductStore();
 const loadingStore = useLoadingStore();
 
@@ -110,6 +111,11 @@ onMounted(async () => {
   loadingStore.startLoading();
   try {
     const result = await fetchNohooData();
+
+    // Check for tab query parameter
+    if (route.query.tab) {
+      selectedTab.value = route.query.tab as string;
+    }
 
     const {
       userInfo = { userName: '', assetStatus: [] },

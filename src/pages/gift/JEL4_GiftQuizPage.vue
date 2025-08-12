@@ -61,8 +61,8 @@
     </div>
 
     <!-- 총계 -->
-    <div class="mb-4 text-right">
-      <span class="text-primary-300 text-base">
+    <div class="mb-4 text-center">
+      <span class="text-primary-300 text-base font-semibold">
         {{ mode === 'gift' ? '총 증여 자산' : '총 상속 자산' }}:
         {{ formatCurrency(calculateGrandTotal()) }}
       </span>
