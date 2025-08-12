@@ -3,6 +3,7 @@
     :tabs="['맞춤', '금', '예금', '적금', '펀드', '주택담보', '신탁']"
     v-model:selectedTab="selectedTab"
   />
+
   <div class="mt-12 flex flex-col gap-8">
     <AdBox
       :selectedTab="selectedTab"
@@ -13,35 +14,63 @@
     />
 
     <div class="flex flex-col gap-4">
-      <div v-if="selectedTab !== '금'" class="flex justify-end">
-        <SelectBox size="small" v-model="sortOption">
+      <!-- 정렬 + 필터 버튼 -->
+      <div
+        v-if="selectedTab !== '금' && selectedTab !== '신탁'"
+        class="flex items-center justify-end gap-2"
+      >
+        <SelectBox size="small" v-model="sortOption" class="w-40">
           <option value="name">상품명순</option>
+
           <option v-if="selectedTab === '맞춤'" value="score"
             >맞춤점수순</option
           >
-          <option
-            v-if="selectedTab === '예금' || selectedTab === '적금'"
-            value="rate"
-            >최고금리순</option
-          >
-          <option v-if="selectedTab === '주택담보'" value="rate"
-            >최저금리순</option
-          >
-          <option v-if="selectedTab === '펀드'" value="rate"
-            >최고수익률순</option
-          >
+
+          <!-- 예금 / 적금 -->
+          <template v-if="selectedTab === '예금' || selectedTab === '적금'">
+            <option value="rateDesc">최고금리순</option>
+            <option value="rateAsc">최저금리순</option>
+          </template>
+
+          <!-- 주택담보 -->
+          <template v-if="selectedTab === '주택담보'">
+            <option value="rateAsc">최저금리순</option>
+            <option value="rateDesc">최고금리순</option>
+          </template>
+
+          <!-- 펀드 -->
+          <template v-if="selectedTab === '펀드'">
+            <option value="returnDesc">최고수익률순</option>
+            <option value="returnAsc">최저수익률순</option>
+            <option value="return3mon">3개월수익률순</option>
+            <option value="riskGrade">위험등급순</option>
+            <option value="returnPrice">기준가순</option>
+          </template>
         </SelectBox>
+
+        <Btn
+          v-if="canFilter"
+          size="square"
+          label="필터"
+          color="primary"
+          class="max-h-10"
+          @click="openFilter()"
+        />
       </div>
+
+      <!-- 검색 결과 없음 -->
       <div
-        v-if="selectedTab !== '맞춤' && filteredProducts.length === 0"
+        v-if="selectedTab !== '맞춤' && shownProducts.length === 0"
         class="text-surface-400 text-center text-base"
       >
-        찾으신 조건으로는 상품이 아직 준비 중이에요!<br />조건을 조금
-        바꿔보시겠어요?
+        찾으신 조건으로는 상품이 아직 준비 중이에요!<br />
+        조건을 조금 바꿔보시겠어요?
       </div>
+
+      <!-- 맞춤 헤더 -->
       <div v-if="selectedTab === '맞춤'">
-        <p class="text-primary-500 text-2xl font-bold">
-          딱 맞는 상품만 보여드릴게요</p
+        <p class="text-primary-500 text-2xl font-bold"
+          >딱 맞는 상품만 보여드릴게요</p
         >
         <p v-if="recommendationCommentParts" class="mt-2">
           <span>{{ recommendationCommentParts.name }}</span>
@@ -52,10 +81,12 @@
           상품이 가장 많이 추천되었어요.
         </p>
       </div>
+
+      <!-- 카드 리스트 -->
       <BtnCard
         v-for="product in selectedTab === '맞춤'
           ? recommendedProducts
-          : filteredProducts"
+          : shownProducts"
         :key="product.finPrdtCd"
         :title="product.finPrdtNm"
         :content="product.prdtFeature"
@@ -66,23 +97,40 @@
       />
     </div>
   </div>
+
+  <!-- 우리 모달: Modal(껍데기) + FilterForm(폼만) -->
+  <Modal
+    v-if="isFilterOpen"
+    title="나에게 찾는 상품은?"
+    leftLabel="초기화"
+    rightLabel="적용"
+    @click1="handleReset"
+    @click2="handleApply"
+  >
+    <FilterForm :category="selectedTab" v-model:filters="draftFilters" />
+  </Modal>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import TabBtnGroup from './_components/TabBtnGroup.vue';
 import BtnCard from '@/components/cards/BtnCard.vue';
 import AdBox from './_components/AdBox.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import { useProductStore } from '@/stores/product';
+import { useLoadingStore } from '@/stores/loading';
 import {
   fetchNohooData,
   type ParsedApiResponse,
   type News,
   type UserInfo,
 } from '@/api/nohoo/nohoo';
-import { useLoadingStore } from '@/stores/loading';
+import Btn from '@/components/buttons/Btn.vue';
+import Modal from '@/components/modals/Modal.vue';
+import FilterForm from './_components/FilterForm.vue';
+
+type AnyFilters = Record<string, any>;
 
 const router = useRouter();
 const route = useRoute();
@@ -90,10 +138,13 @@ const productStore = useProductStore();
 const loadingStore = useLoadingStore();
 
 const data = ref<ParsedApiResponse | null>(null);
-const selectedTab = ref('맞춤');
-const sortOption = ref<'name' | 'score' | 'rate'>('name');
+const selectedTab = ref<
+  '맞춤' | '금' | '예금' | '적금' | '펀드' | '주택담보' | '신탁'
+>('맞춤');
+const sortOption = ref<string>('name');
 const news = ref<News[]>([]);
 
+/* 탭 <-> 코드 */
 const PRODUCT_CATEGORY_MAP: Record<string, number> = {
   예금: 1,
   적금: 2,
@@ -102,20 +153,16 @@ const PRODUCT_CATEGORY_MAP: Record<string, number> = {
   펀드: 5,
   신탁: 6,
 };
-
 const CATEGORY_LABEL_MAP = Object.fromEntries(
   Object.entries(PRODUCT_CATEGORY_MAP).map(([k, v]) => [String(v), k])
 );
 
+/* 초기 로드 */
 onMounted(async () => {
   loadingStore.startLoading();
   try {
     const result = await fetchNohooData();
-
-    // Check for tab query parameter
-    if (route.query.tab) {
-      selectedTab.value = route.query.tab as string;
-    }
+    if (route.query.tab) selectedTab.value = route.query.tab as any;
 
     const {
       userInfo = { userName: '', assetStatus: [] },
@@ -133,21 +180,18 @@ onMounted(async () => {
       trust = [],
     } = allProducts ?? {};
 
-    // 옵션 변환기
     const mapTimeDepositOptions = (opts: any[] = []) =>
       opts.map((o) => ({
-        saveTrm: o?.saveTrm ?? null, // (string|null) 허용
+        saveTrm: o?.saveTrm ?? null,
         intrRate: Number(o?.intrRate ?? 0),
         intrRate2: Number(o?.intrRate2 ?? 0),
       }));
-
     const mapSavingOptions = (opts: any[] = []) =>
       opts.map((o) => ({
-        saveTrm: String(o?.saveTrm ?? ''), // string 강제
+        saveTrm: String(o?.saveTrm ?? ''),
         intrRate: Number(o?.intrRate ?? 0),
         intrRate2: Number(o?.intrRate2 ?? 0),
       }));
-
     const mapMortgageOptions = (opts: any[] = []) =>
       opts.map((o) => ({
         mrtgTypeNm: String(o?.mrtgTypeNm ?? ''),
@@ -156,15 +200,13 @@ onMounted(async () => {
         lendRateMin: String(o?.lendRateMin ?? ''),
         lendRateMax: String(o?.lendRateMax ?? ''),
       }));
-
     const mapFundOptions = (opts: any[] = []) =>
       opts.map((o) => ({
-        rate3mon: String(o?.rate3mon ?? ''), // null → ''
+        rate3mon: String(o?.rate3mon ?? ''),
         riskGrade: String(o?.riskGrade ?? ''),
         priceStd: String(o?.priceStd ?? ''),
       }));
 
-    // 스토어 저장
     productStore.setAllProducts({
       timeDeposits: (deposit as any[]).map((p) => ({
         finPrdtCategory: '1',
@@ -210,7 +252,6 @@ onMounted(async () => {
       })),
     });
 
-    // 화면에서 쓰는 데이터
     data.value = {
       userInfo,
       customRecommendPrdt,
@@ -223,22 +264,16 @@ onMounted(async () => {
       news: newsArr,
     } as any;
 
-    // 뉴스
     news.value = newsArr;
-  } catch (error) {
-    console.error('Nohoo 데이터 요청 실패', error);
-    loadingStore.setError(true);
   } finally {
     loadingStore.stopLoading();
   }
 });
 
+/* 공통 표시 */
 const filteredNews = computed(() => {
   const category = PRODUCT_CATEGORY_MAP[selectedTab.value];
-  if (category) {
-    return news.value.filter((item) => item.category === category);
-  }
-  return [];
+  return category ? news.value.filter((n) => n.category === category) : [];
 });
 const userInfo = computed<UserInfo | undefined>(() => data.value?.userInfo);
 const userName = computed(() => userInfo.value?.userName ?? '');
@@ -249,8 +284,6 @@ const totalAsset = computed(() =>
     0
   )
 );
-
-// 자산 데이터를 카테고리별로 그룹화
 const ASSET_CATEGORY_MAP: Record<string, string> = {
   '1': '부동산',
   '2': '예금/적금',
@@ -259,179 +292,240 @@ const ASSET_CATEGORY_MAP: Record<string, string> = {
   '5': '사업체/지분',
   '6': '기타 자산',
 };
-
 const assetSummary = computed(() =>
-  assetInfo.value.map(
-    (item: { assetCategoryCode: string; amount: number }) => ({
-      category: ASSET_CATEGORY_MAP[item.assetCategoryCode] ?? '기타',
-      amount: item.amount,
-    })
-  )
+  assetInfo.value.map((i: { assetCategoryCode: string; amount: number }) => ({
+    category: ASSET_CATEGORY_MAP[i.assetCategoryCode] ?? '기타',
+    amount: i.amount,
+  }))
 );
 
-// 탭 전환 시 정렬 초기화
-watch(selectedTab, () => {
-  sortOption.value = 'name';
+/* 탭 이동 시 초기화 */
+watch(selectedTab, async () => {
+  if (selectedTab.value === '맞춤') {
+    sortOption.value = 'score';
+  } else if (selectedTab.value === '예금' || selectedTab.value === '적금') {
+    sortOption.value = 'rateDesc'; // 최고금리순
+  } else if (selectedTab.value === '주택담보') {
+    sortOption.value = 'rateAsc'; // 최저금리순
+  } else if (selectedTab.value === '펀드') {
+    sortOption.value = 'returnDesc'; // 최고수익률순
+  } else {
+    sortOption.value = 'name';
+  }
+  serverFiltered.value = null;
+
+  // 탭 바뀌고 DOM 갱신된 뒤 맨 위로
+  await nextTick();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-function hasOptionList(product: any): product is { optionList: any[] } {
-  return 'optionList' in product && Array.isArray(product.optionList);
-}
-
-// 추천 상품 목록
+/* 맞춤 추천 */
 const recommendedProducts = computed(() => {
   const recommendItems = data.value?.customRecommendPrdt ?? [];
-
   const products = productStore
     .getProductsByRecommendIds(recommendItems)
     .map((product) => {
-      const tags: string[] = [];
-
-      // 추천 점수도 붙여줌 (정렬용)
       const score = Number(
         recommendItems.find((r) => r.finPrdtCd === product.finPrdtCd)?.score ??
           '0'
       );
-      tags.push(
-        `적합도 ${(score * 100).toFixed(1)}% | ${CATEGORY_LABEL_MAP[product.finPrdtCategory] ?? '기타'}`
-      );
-
-      return { ...product, tags, score: Number(score) };
+      const tags = [
+        `적합도 ${(score * 100).toFixed(1)}% | ${CATEGORY_LABEL_MAP[product.finPrdtCategory] ?? '기타'}`,
+      ];
+      return { ...product, tags, score };
     });
-
-  // 정렬 처리
-  if (sortOption.value === 'score') {
-    return products.sort((a, b) => b.score - a.score);
-  } else {
-    return products.sort((a, b) => a.finPrdtNm.localeCompare(b.finPrdtNm));
-  }
+  return sortOption.value === 'score'
+    ? [...products].sort((a, b) => b.score - a.score)
+    : [...products].sort((a, b) => a.finPrdtNm.localeCompare(b.finPrdtNm));
 });
 
-// 탭별 상품 필터링 및 정렬
-const filteredProducts = computed(() => {
-  const tab = selectedTab.value;
-  let products: any[] = [];
+/* 필터 모달 상태 */
+const isFilterOpen = ref(false);
+const canFilter = computed(() =>
+  ['예금', '적금', '펀드', '주택담보'].includes(selectedTab.value)
+);
+const filtersByTab = ref<Record<string, AnyFilters>>({});
+const currentFilters = computed<AnyFilters>(
+  () => filtersByTab.value[selectedTab.value] ?? {}
+);
+const draftFilters = ref<AnyFilters>({}); // 모달 내부 임시
 
-  // 예금
+function openFilter() {
+  const cur = currentFilters.value || {};
+  draftFilters.value = {
+    terms: Array.isArray(cur.terms) ? [...cur.terms] : [],
+    rateTypes: Array.isArray(cur.rateTypes) ? [...cur.rateTypes] : [],
+    savingKinds: Array.isArray(cur.savingKinds) ? [...cur.savingKinds] : [],
+    riskGrades: Array.isArray(cur.riskGrades) ? [...cur.riskGrades] : [],
+    mrtgTypes: Array.isArray(cur.mrtgTypes) ? [...cur.mrtgTypes] : [],
+    repayTypes: Array.isArray(cur.repayTypes) ? [...cur.repayTypes] : [],
+    minTopRate: cur.minTopRate ?? null,
+    min3mReturn: cur.min3mReturn ?? null,
+    maxRateCeil: cur.maxRateCeil ?? null,
+    calcLtv: cur.calcLtv ?? null,
+  };
+  isFilterOpen.value = true;
+}
+function handleReset() {
+  draftFilters.value = {};
+}
+async function handleApply() {
+  filtersByTab.value[selectedTab.value] = JSON.parse(
+    JSON.stringify(draftFilters.value)
+  );
+  isFilterOpen.value = false;
+
+  loadingStore.startLoading();
+  try {
+    serverFiltered.value = await fetchFilteredProducts(
+      selectedTab.value,
+      draftFilters.value
+    );
+  } catch (e) {
+    console.error('filtered fetch fail', e);
+    serverFiltered.value = [];
+  } finally {
+    loadingStore.stopLoading();
+  }
+}
+
+/* 리스트 구성/정렬 (기본: 12개월 표기 유지) */
+const serverFiltered = ref<any[] | null>(null);
+
+function buildLocalListFor(tab: string): any[] {
   if (tab === '예금') {
-    products = productStore.allProducts.timeDeposits.map((p) => {
-      const optionList = (p as any).optionList ?? [];
+    return productStore.allProducts.timeDeposits.map((p: any) => {
+      const optionList = p.optionList ?? [];
       const option12 = optionList.find(
-        (opt: { saveTrm: string }) => opt.saveTrm === '12'
+        (opt: any) => String(opt.saveTrm) === '12'
       );
       const tags = option12
-        ? ['12개월', `최고금리 ${(option12 as any).intrRate2.toFixed(2)}%`]
+        ? ['12개월', `최고금리 ${Number(option12.intrRate2).toFixed(2)}%`]
         : [];
-
       const maxRate = option12
-        ? (option12 as any).intrRate2
+        ? Number(option12.intrRate2)
         : Math.max(
-            ...(optionList.map(
-              (opt: { intrRate2: number }) => opt.intrRate2
-            ) ?? [0])
+            ...optionList.map((opt: any) => Number(opt.intrRate2 ?? 0)),
+            0
           );
-
       return { ...p, tags, maxRate };
     });
   }
-
-  // 적금
-  else if (tab === '적금') {
-    products = productStore.allProducts.savingsDeposits.map((p) => {
-      const optionList = (p as any).optionList ?? [];
+  if (tab === '적금') {
+    return productStore.allProducts.savingsDeposits.map((p: any) => {
+      const optionList = p.optionList ?? [];
       const option12 = optionList.find(
-        (opt: { saveTrm: string }) => opt.saveTrm === '12'
+        (opt: any) => String(opt.saveTrm) === '12'
       );
       const tags = option12
-        ? ['12개월', `최고금리 ${(option12 as any).intrRate2.toFixed(2)}%`]
+        ? ['12개월', `최고금리 ${Number(option12.intrRate2).toFixed(2)}%`]
         : [];
-
       const maxRate = option12
-        ? (option12 as any).intrRate2
+        ? Number(option12.intrRate2)
         : Math.max(
-            ...(optionList.map(
-              (opt: { intrRate2: number }) => opt.intrRate2
-            ) ?? [0])
+            ...optionList.map((opt: any) => Number(opt.intrRate2 ?? 0)),
+            0
           );
-
       return { ...p, tags, maxRate };
     });
   }
-
-  // 주택담보
-  else if (tab === '주택담보') {
-    products = productStore.allProducts.mortgageLoan.map((p) => {
-      const optionList = (p as any).optionList ?? [];
+  if (tab === '주택담보') {
+    return productStore.allProducts.mortgageLoan.map((p: any) => {
+      const optionList = p.optionList ?? [];
       const minRate = Math.min(
-        ...(optionList.map((opt: { lendRateMin: string | null }) =>
-          parseFloat(opt.lendRateMin ?? '999')
-        ) ?? [999])
+        ...optionList.map((opt: any) => parseFloat(opt.lendRateMin ?? '999')),
+        999
       );
 
-      return {
-        ...p,
+      const tags: string[] = [];
+      if (isFinite(minRate) && minRate < 999) tags.push(`최저금리 ${minRate}%`);
 
-        maxRate: minRate,
-      };
+      return { ...p, maxRate: minRate, tags };
     });
   }
-
-  // 금 → 태그 비표시
-  else if (tab === '금') {
-    products = productStore.allProducts.goldProducts.map((p) => ({
+  if (tab === '금') {
+    return productStore.allProducts.goldProducts.map((p: any) => ({
       ...p,
-      tags: [], // 태그 표시하지 않음
+      tags: [],
     }));
-  } else if (tab === '펀드') {
-    products = productStore.allProducts.fundProducts.map((p) => {
-      const optionList = (p as any).optionList ?? [];
+  }
+  if (tab === '펀드') {
+    return productStore.allProducts.fundProducts.map((p: any) => {
+      const optionList = p.optionList ?? [];
+      const first = optionList[0] ?? {};
+      const risk = String(first.riskGrade ?? p.riskGrade ?? '').trim();
+      const r3m = parseFloat((first.rate3mon ?? p.rate3mon ?? '0').toString());
+
       const maxReturn = Math.max(
-        ...(optionList.map((opt: { rate3mon: string | null }) =>
-          parseFloat(opt.rate3mon?.replace('%', '') || '0')
-        ) ?? [0])
+        ...optionList.map((opt: any) =>
+          parseFloat((opt.rate3mon ?? '0').toString())
+        ),
+        0
       );
-      return {
-        ...p,
 
-        maxRate: maxReturn,
-      };
+      const tags: string[] = [];
+      if (risk) tags.push(`위험등급 ${risk}`);
+      return { ...p, maxRate: maxReturn, tags };
     });
-  } else if (tab === '신탁') {
-    products = productStore.allProducts.trustProducts.map((p) => ({
+  }
+  if (tab === '신탁') {
+    return productStore.allProducts.trustProducts.map((p: any) => ({
       ...p,
-      tags: [], // 태그 표시하지 않음
+      tags: [],
     }));
   }
+  return [];
+}
 
-  // 정렬
-  return sortOption.value === 'rate'
-    ? tab === '주택담보'
-      ? products.sort((a, b) => a.maxRate - b.maxRate)
-      : products.sort((a, b) => b.maxRate - a.maxRate)
-    : products.sort((a, b) => a.finPrdtNm.localeCompare(b.finPrdtNm));
+function sortForTab(list: any[], tab: string, mode: string) {
+  if (mode === 'name') {
+    return [...list].sort((a, b) => a.finPrdtNm.localeCompare(b.finPrdtNm));
+  }
+  if (mode === 'score') {
+    return [...list].sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  }
+
+  // 금리 정렬
+  if (mode === 'rateDesc' || mode === 'returnDesc')
+    return [...list].sort((a, b) => (b.maxRate ?? 0) - (a.maxRate ?? 0));
+  if (mode === 'rateAsc' || mode === 'returnAsc' || mode === 'return3mon')
+    return [...list].sort((a, b) => (a.maxRate ?? 999) - (b.maxRate ?? 999));
+
+  // 펀드 추가 정렬
+  if (mode === 'riskGrade')
+    return [...list].sort((a, b) => (a.riskGrade ?? 99) - (b.riskGrade ?? 99));
+  if (mode === 'returnPrice')
+    return [...list].sort((a, b) => (b.priceStd ?? 0) - (a.priceStd ?? 0));
+
+  return list;
+}
+
+const shownProducts = computed(() => {
+  const tab = selectedTab.value;
+  const base =
+    serverFiltered.value && canFilter.value
+      ? serverFiltered.value
+      : buildLocalListFor(tab);
+  return sortForTab(base, tab, sortOption.value);
 });
 
-// 가장 많이 추천된 카테고리 계산
 const mostRecommendedCategory = computed(() => {
   const recommendItems = productStore.getProductsByRecommendIds(
     data.value?.customRecommendPrdt ?? []
   );
-
   const counts: Record<string, number> = {};
-
   recommendItems.forEach((item) => {
     const category = item.finPrdtCategory;
     if (!category) return;
     counts[category] = (counts[category] || 0) + 1;
   });
-
   const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  const topCategoryCode = sorted[0]?.[0]; // '1', '2' 등
+  const topCategoryCode = sorted[0]?.[0];
   const count = sorted[0]?.[1] ?? 0;
 
   return {
     categoryCode: topCategoryCode,
-    categoryLabel: CATEGORY_LABEL_MAP[topCategoryCode] ?? '기타',
+    categoryLabel: CATEGORY_LABEL_MAP[topCategoryCode ?? ''] ?? '기타',
     count,
   };
 });
@@ -439,12 +533,229 @@ const mostRecommendedCategory = computed(() => {
 const recommendationCommentParts = computed(() => {
   const { categoryLabel, count } = mostRecommendedCategory.value;
   if (!count) return null;
-  return {
-    name: userName.value,
-    category: categoryLabel,
-  };
+  return { name: userName.value, category: categoryLabel };
 });
 
+/* ====== 여기부터: “왜 이 카드가 걸렸는지” 태그/정렬을 매칭 옵션 기준으로 ====== */
+// 예금용 태그/정렬값 생성
+function buildDepositTags(
+  p: any,
+  f: { terms?: string[]; rateTypes?: string[] }
+) {
+  const opts = p.optionList ?? [];
+
+  // 1) 기간 필터가 있으면 그 기간만, 없으면 전체
+  let cand =
+    !f.terms || f.terms.length === 0
+      ? opts
+      : opts.filter((o: any) => f.terms!.includes(String(o.saveTrm)));
+
+  // 2) 금리유형 필터가 있으면 유형 일치만
+  if (f.rateTypes && f.rateTypes.length) {
+    const typeOf = (o: any) => p.intrRateTypeNm ?? p.rateType ?? '고정금리';
+    cand = cand.filter((o: any) => f.rateTypes!.includes(typeOf(o)));
+  }
+
+  if (cand.length === 0) return { maxRate: 0, tags: [] };
+
+  // 3) 후보 중 최고금리 옵션을 기준으로 표기
+  const best = cand.reduce(
+    (acc: any, cur: any) =>
+      Number(cur.intrRate2 ?? 0) > Number(acc.intrRate2 ?? 0) ? cur : acc,
+    cand[0]
+  );
+  const tags = [
+    `${best.saveTrm}개월`,
+    `최고금리 ${Number(best.intrRate2 ?? 0).toFixed(2)}%`,
+  ];
+  const typeLabel = p.intrRateTypeNm ?? p.rateType ?? '';
+  if (typeLabel) tags.push(typeLabel);
+  return { maxRate: Number(best.intrRate2 ?? 0), tags };
+}
+
+// 적금용 태그/정렬값 생성
+function buildSavingTags(p: any, f: { terms?: string[] }) {
+  const opts = p.optionList ?? [];
+  let cand =
+    !f.terms || f.terms.length === 0
+      ? opts
+      : opts.filter((o: any) => f.terms!.includes(String(o.saveTrm)));
+  if (cand.length === 0) return { maxRate: 0, tags: [] };
+  const best = cand.reduce(
+    (acc: any, cur: any) =>
+      Number(cur.intrRate2 ?? 0) > Number(acc.intrRate2 ?? 0) ? cur : acc,
+    cand[0]
+  );
+  const tags = [
+    `${best.saveTrm}개월`,
+    `최고금리 ${Number(best.intrRate2 ?? 0).toFixed(2)}%`,
+  ];
+  return { maxRate: Number(best.intrRate2 ?? 0), tags };
+}
+
+function buildFundTags(p: any) {
+  const o = (p.optionList ?? [])[0] ?? {};
+  const tags = [
+    `3개월수익률 ${parseFloat((o.rate3mon ?? '0').toString()).toFixed(2)}% | `,
+  ];
+  if (o.riskGrade) tags.push(`위험등급 ${o.riskGrade} | `);
+  if (o.priceStd) tags.push(`기준가 ${o.priceStd}`);
+  return tags;
+}
+
+/* (샘플) 서버 필터 자리 */
+async function fetchFilteredProducts(category: string, filters: AnyFilters) {
+  await new Promise((r) => setTimeout(r, 200)); // demo 딜레이
+  const all =
+    {
+      예금: productStore.allProducts.timeDeposits,
+      적금: productStore.allProducts.savingsDeposits,
+      펀드: productStore.allProducts.fundProducts,
+      주택담보: productStore.allProducts.mortgageLoan,
+    }[category] ?? [];
+  return frontFilterMock(category, filters, all);
+}
+
+function frontFilterMock(category: string, filters: AnyFilters, list: any[]) {
+  if (category === '예금') {
+    const f = filters as {
+      terms?: string[];
+      rateTypes?: string[];
+      minTopRate?: number;
+    };
+    return list
+      .filter((p: any) => {
+        const opts = p.optionList ?? [];
+        const hitTerm =
+          !f.terms?.length ||
+          opts.some((o: any) => f.terms!.includes(String(o.saveTrm)));
+        const rateType = p.intrRateTypeNm ?? p.rateType ?? '고정금리';
+        const hitType = !f.rateTypes?.length || f.rateTypes!.includes(rateType);
+        const topAll = Math.max(
+          ...opts.map((o: any) => Number(o.intrRate2 || 0)),
+          0
+        );
+        const hitRate = f.minTopRate == null || topAll >= f.minTopRate!;
+        return hitTerm && hitType && hitRate;
+      })
+      .map((p: any) => {
+        // 선택한 조건(terms, rateTypes)으로 매칭된 옵션을 기준으로 태그/정렬값 생성
+        const { maxRate, tags } = buildDepositTags(p, f);
+        return { ...p, maxRate, tags };
+      });
+  }
+
+  if (category === '적금') {
+    const f = filters as {
+      terms?: string[];
+      savingKinds?: string[];
+      minTopRate?: number;
+    };
+    return list
+      .filter((p: any) => {
+        const opts = p.optionList ?? [];
+        const hitTerm =
+          !f.terms?.length ||
+          opts.some((o: any) => f.terms!.includes(String(o.saveTrm)));
+        const kind = p?.savingKind || p?.accType || '정액적립식';
+        const hitKind = !f.savingKinds?.length || f.savingKinds!.includes(kind);
+        const topAll = Math.max(
+          ...opts.map((o: any) => Number(o.intrRate2 || 0)),
+          0
+        );
+        const hitRate = f.minTopRate == null || topAll >= f.minTopRate!;
+        return hitTerm && hitKind && hitRate;
+      })
+      .map((p: any) => {
+        const { maxRate, tags } = buildSavingTags(p, f);
+        return { ...p, maxRate, tags };
+      });
+  }
+
+  if (category === '펀드') {
+    const f = filters as { riskGrades?: string[]; min3mReturn?: number };
+    return list
+      .filter((p: any) => {
+        const opts = p.optionList ?? [];
+        const first = opts[0] ?? {};
+        const max3m = Math.max(
+          ...opts.map((o: any) => parseFloat((o.rate3mon ?? '0').toString())),
+          0
+        );
+        const hitRisk =
+          !f.riskGrades?.length ||
+          f.riskGrades!.includes(String(first.riskGrade));
+        const hitRet = f.min3mReturn == null || max3m >= f.min3mReturn!;
+        return hitRisk && hitRet;
+      })
+      .map((p: any) => {
+        const opts = p.optionList ?? [];
+        const max3m = Math.max(
+          ...opts.map((o: any) => parseFloat((o.rate3mon ?? '0').toString())),
+          0
+        );
+        const first = opts[0] ?? {};
+        return {
+          ...p,
+          maxRate: max3m,
+          riskGrade: Number(first.riskGrade ?? 0),
+          priceStd: Number(first.priceStd ?? 0),
+          tags: buildFundTags(p),
+        };
+      });
+  }
+
+  if (category === '주택담보') {
+    const f = filters as {
+      rateTypes?: string[];
+      mrtgTypes?: string[];
+      repayTypes?: string[];
+      maxRateCeil?: number;
+      calcLtv?: number | null;
+    };
+    const ASSUMED_LTV = 60;
+    if (f.calcLtv != null && f.calcLtv > ASSUMED_LTV) return [];
+    return list
+      .filter((p: any) => {
+        const opts = p.optionList ?? [];
+        const minRate = Math.min(
+          ...opts.map((o: any) => parseFloat(o.lendRateMin ?? '999')),
+          999
+        );
+        const hitsType =
+          !f.rateTypes?.length ||
+          opts.some((o: any) => f.rateTypes!.includes(o.lendRateTypeNm));
+        const hitsMrtg =
+          !f.mrtgTypes?.length ||
+          opts.some((o: any) => f.mrtgTypes!.includes(o.mrtgTypeNm));
+        const hitsRepay =
+          !f.repayTypes?.length ||
+          f.repayTypes!.includes(p.rpayTypeNm ?? '') ||
+          opts.some((o: any) => f.repayTypes!.includes(o.rpayTypeNm));
+        const hitsMax = f.maxRateCeil == null || minRate <= f.maxRateCeil!;
+        const hitsLtv = f.calcLtv == null || f.calcLtv <= ASSUMED_LTV;
+        return hitsType && hitsMrtg && hitsRepay && hitsMax && hitsLtv;
+      })
+      .map((p: any) => {
+        const opts = p.optionList ?? [];
+        const minRate = Math.min(
+          ...opts.map((o: any) => parseFloat(o.lendRateMin ?? '999')),
+          999
+        );
+        const first = opts[0] ?? {};
+        const tags = [
+          `최저금리 ${isFinite(minRate) ? minRate.toFixed(2) : '-'}% | `,
+        ];
+        if (first.lendRateTypeNm) tags.push(first.lendRateTypeNm);
+        if (first.mrtgTypeNm) tags.push(first.mrtgTypeNm);
+        return { ...p, maxRate: minRate, tags };
+      });
+  }
+
+  return list;
+}
+
+/* 이동 */
 const goToDetail = (id: string) => {
   if (!id) return;
   router.push({ name: 'product-detail', params: { id } });
