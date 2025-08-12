@@ -132,10 +132,15 @@ const normalizeBranchName = (name: string) => {
     .trim();
 };
 
-
 const onAlertConfirm = () => {
   showSuccessAlert.value = false;
-  currentBranch.value = displaySelectedBranchName.value;
+  const from = q(route.query.from);
+  if (from === 'profile') {
+    router.push({ name: 'profile' });
+  } else {
+    router.push({ name: 'asset-signup-complete' });
+  }
+};
 
 const q = (v: unknown) =>
   Array.isArray(v) ? String(v[0] ?? '') : v != null ? String(v) : '';
@@ -144,21 +149,6 @@ const handleSkip = () => {
   const from = q(route.query.from);
 
   if (from === 'profile') {
-    router.push({ name: 'profile' });
-  } else {
-    router.push({ name: 'asset-signup-complete' });
-  }
-};
-
-const handleComplete = async () => {
-  try {
-    if (!selectedBranch.value) {
-      alert('지점을 선택해주세요.');
-      return;
-    }
-
-
-  if (route.query.from === 'profile') {
     router.push({ name: 'profile' });
   } else {
     router.push({ name: 'asset-signup-complete' });
@@ -184,18 +174,9 @@ const handleComplete = async () => {
       return;
     }
 
-
     await branchApi.setMyBranch({ branchId: branchData.id });
+    currentBranch.value = displaySelectedBranchName.value; // 현재 지점 업데이트
     showSuccessAlert.value = true;
-
-    const from = q(route.query.from);
-
-    if (from === 'profile') {
-      router.push({ name: 'profile' });
-    } else {
-      router.push({ name: 'asset-signup-complete' });
-    }
-
   } catch (error) {
     console.error('지점 설정 실패:', error);
     errorAlertMessage.value =
