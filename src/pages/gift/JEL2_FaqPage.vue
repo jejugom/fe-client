@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 import InputBox from '@/components/forms/InputBox.vue';
@@ -73,57 +73,56 @@ const router = useRouter();
 const loadingStore = useLoadingStore();
 
 const faqData = ref<Faq[]>([]);
-const filteredFaqs = ref<Faq[]>([]);
 const searchQuery = ref('');
+const submittedSearchQuery = ref('');
 const activeTab = ref<'all' | '상속' | '증여'>('all');
 
 // 탭 토글
-function toggleTab(tab: '상속' | '증여') {
+const toggleTab = (tab: '상속' | '증여') => {
   activeTab.value = activeTab.value === tab ? 'all' : tab;
-}
+};
 
-// 공통 필터 함수
-function applyFilter() {
+// 검색 실행
+const handleSearch = () => {
+  submittedSearchQuery.value = searchQuery.value;
+};
+
+// 필터 초기화
+const resetFilters = () => {
+  searchQuery.value = '';
+  submittedSearchQuery.value = '';
+  activeTab.value = 'all';
+};
+
+// 필터링된 FAQ 목록 (computed 사용)
+const filteredFaqs = computed(() => {
   let faqs = [...faqData.value];
 
+  // 1. 탭 필터링
   if (activeTab.value !== 'all') {
     faqs = faqs.filter((faq) => faq.category === activeTab.value);
   }
 
-  const q = searchQuery.value.trim().toLowerCase();
+  // 2. 검색어 필터링
+  const q = submittedSearchQuery.value.trim().toLowerCase();
   if (q) {
     faqs = faqs.filter((faq) => faq.title.toLowerCase().includes(q));
   }
 
-  filteredFaqs.value = faqs;
-}
-
-// 버튼/엔터 시에만 필터 적용
-const handleSearch = () => {
-  applyFilter();
-};
-
-// 탭이 바뀌면 현재 검색어 기준으로 재필터
-watch(activeTab, applyFilter);
+  return faqs;
+});
 
 // 상세 페이지 이동
 const goToFaqDetail = (faqId: number) => {
   router.push({ name: 'gift-detail', params: { id: faqId } });
 };
 
-const resetFilters = () => {
-  searchQuery.value = '';
-  activeTab.value = 'all';
-  applyFilter();
-};
-
-// 초기 로딩
+// 초기 데이터 로딩
 onMounted(async () => {
   loadingStore.startLoading();
   try {
     const res = await getFaqList();
     faqData.value = res.data;
-    filteredFaqs.value = res.data; // 초기엔 전체 노출
   } catch (e) {
     console.error('FAQ 목록 조회 실패:', e);
   } finally {
