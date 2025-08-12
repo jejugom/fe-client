@@ -21,9 +21,14 @@
     :current-question-index="currentQuestionIndex"
     :is-last-question="isLastQuestion"
     :is-answer-selected="isAnswerSelected"
+    :is-from-profile="isFromProfile"
     @prev-question="handlePrevQuestion"
     @next-question="handleNextQuestion"
   />
+
+  <Alert v-if="showAlert" @click="showAlert = false">
+    <p>{{ alertMessage }}</p>
+  </Alert>
 </template>
 
 <script setup lang="ts">
@@ -31,12 +36,17 @@ import { ref, computed, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import QuizContent from './_components/QuizContent.vue';
 import QuizNavigation from './_components/QuizNavigation.vue';
+import Alert from '@/components/modals/Alert.vue';
 import { preferencesApi } from '@/api/user/preferences';
 import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
 const route = useRoute();
 const loadingStore = useLoadingStore();
+
+const isFromProfile = computed(() => route.query.from === 'profile');
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 // 현재 질문 인덱스
 const currentQuestionIndex = ref(0);
@@ -127,10 +137,7 @@ const handleNextQuestion = async () => {
       const response = await preferencesApi.submit(preferencesData);
       console.log('투자성향 제출 성공:', response);
 
-      // 프로필에서 온 경우 마이페이지로 돌아가기
-      const isFromProfile = route.query.from === 'profile';
-
-      if (isFromProfile) {
+      if (isFromProfile.value) {
         router.push({ name: 'profile' });
       } else {
         // 기본 플로우: 지점 설정으로 이동
@@ -138,7 +145,9 @@ const handleNextQuestion = async () => {
       }
     } catch (error) {
       console.error('투자성향 제출 실패:', error);
-      alert('투자성향 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+      alertMessage.value =
+        '투자성향 저장 중 오류가 발생했습니다. 다시 시도해주세요.';
+      showAlert.value = true;
     } finally {
       loadingStore.stopLoading();
     }

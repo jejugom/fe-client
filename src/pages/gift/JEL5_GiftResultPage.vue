@@ -26,11 +26,16 @@
       @click="goToRegister"
     />
   </div>
+
+  <Alert v-if="showAlert" @click="showAlert = false">
+    <p>{{ alertMessage }}</p>
+  </Alert>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
+import Alert from '@/components/modals/Alert.vue';
 import { useRouter } from 'vue-router';
 import { useSimulationStore } from '@/stores/simulation'; // 변경
 import GiftSimulationResult from './_components/GiftSimulationResult.vue';
@@ -42,6 +47,8 @@ const simulationStore = useSimulationStore();
 
 // 데스크탑/모바일 환경 구분
 const isMobile = ref(false);
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 const checkDeviceType = () => {
   isMobile.value = /Mobi|Android/i.test(navigator.userAgent);
@@ -114,15 +121,17 @@ const shareResult = async () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href);
 
-      alert(
-        isMobile.value
-          ? '공유 기능을 사용할 수 없어 PDF를 다운로드합니다.'
-          : '결과 PDF가 다운로드되었습니다.'
-      );
+      alertMessage.value = isMobile.value
+        ? '공유 기능을 사용할 수 없어 PDF를 다운로드합니다.'
+        : '결과 PDF가 다운로드되었습니다.';
+      showAlert.value = true;
     }
   } catch (error) {
     console.error('PDF 생성/공유 실패:', error);
-    alert('결과를 공유하거나 저장하는 데 실패했습니다.');
+    alertMessage.value = '결과를 공유하거나 저장하는 데 실패했습니다.';
+    showAlert.value = true;
+  } finally {
+    // PDF 생성 후 로딩 상태 해제 (필요 시)
   }
 };
 

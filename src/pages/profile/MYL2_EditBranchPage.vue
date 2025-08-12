@@ -53,6 +53,18 @@
     @click2="handleComplete"
     type="type2"
   />
+  <!-- 지점 설정 완료 -->
+  <Alert v-if="showSuccessAlert" @click="onAlertConfirm">
+    <p>
+      지점 "{{ displaySelectedBranchName }}"이(가) 성공적으로 설정되었습니다.
+    </p>
+  </Alert>
+  <!-- 지점 설정 실패 시 -->
+  <Alert v-if="showErrorAlert" @click="showErrorAlert = false">
+    <p>
+      {{ errorAlertMessage }}
+    </p>
+  </Alert>
 </template>
 
 <script setup lang="ts">
@@ -61,6 +73,7 @@ import { useRouter, useRoute } from 'vue-router';
 import InputBox from '@/components/forms/InputBox.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import BtnSet from '@/components/buttons/BtnSet.vue';
+import Alert from '@/components/modals/Alert.vue';
 import { branchApi } from '@/api/user/branch';
 import { branchList } from '@/data/branchList';
 
@@ -77,6 +90,9 @@ const currentAddress = ref('');
 const selectedBranch = ref('');
 const displaySelectedBranchName = ref(''); // UI에 표시될 전체 지점명
 const currentBranch = ref(''); // 현재 설정된 지점
+const showSuccessAlert = ref(false);
+const showErrorAlert = ref(false);
+const errorAlertMessage = ref('');
 let map: kakao.maps.Map;
 
 const searchPlaces = () => {
@@ -116,44 +132,43 @@ const normalizeBranchName = (name: string) => {
     .trim();
 };
 
+const onAlertConfirm = () => {
+  showSuccessAlert.value = false;
+  currentBranch.value = displaySelectedBranchName.value;
+
+  if (route.query.from === 'profile') {
+    router.push({ name: 'profile' });
+  } else {
+    router.push({ name: 'asset-signup-complete' });
+  }
+};
+
 const handleComplete = async () => {
+  if (!selectedBranch.value) {
+    errorAlertMessage.value = '지점을 선택해주세요.';
+    showErrorAlert.value = true;
+    return;
+  }
+
   try {
-    if (!selectedBranch.value) {
-      alert('지점을 선택해주세요.');
+    const branchData = branchList.find(
+      (b) => normalizeBranchName(b.name) === selectedBranch.value
+    );
+
+    if (!branchData) {
+      errorAlertMessage.value =
+        '선택한 지점을 찾을 수 없습니다. 다시 선택해주세요.';
+      showErrorAlert.value = true;
       return;
     }
 
-    try {
-      // branchList에서 selectedBranch.value에 해당하는 branchId를 찾습니다.
-      const branchData = branchList.find(
-        (b) => normalizeBranchName(b.name) === selectedBranch.value
-      );
-
-      if (!branchData) {
-        alert('선택한 지점을 찾을 수 없습니다. 다시 선택해주세요.');
-        return;
-      }
-
-      const response = await branchApi.setMyBranch({ branchId: branchData.id });
-      console.log('지점 설정 성공:', response);
-      alert(
-        `지점 "${displaySelectedBranchName.value}"이(가) 성공적으로 설정되었습니다.`
-      );
-      currentBranch.value = displaySelectedBranchName.value; // 현재 지점 업데이트
-    } catch (error) {
-      console.error('지점 설정 실패:', error);
-      alert('지점 설정 중 오류가 발생했습니다.');
-      return;
-    }
-
-    if (route.query.from === 'profile') {
-      router.push({ name: 'profile' });
-    } else {
-      router.push({ name: 'asset-signup-complete' });
-    }
+    await branchApi.setMyBranch({ branchId: branchData.id });
+    showSuccessAlert.value = true;
   } catch (error) {
-    console.error('지점 업데이트 실패:', error);
-    alert('지점 설정 중 오류가 발생했습니다. 다시 시도해주세요.');
+    console.error('지점 설정 실패:', error);
+    errorAlertMessage.value =
+      '지점 설정 중 오류가 발생했습니다. 다시 시도해주세요.';
+    showErrorAlert.value = true;
   }
 };
 
