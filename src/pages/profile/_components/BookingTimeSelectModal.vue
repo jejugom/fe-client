@@ -85,10 +85,11 @@ const handleTimeClick = (time: string) => {
 
 // 선택된 시간 제출
 const submitSelection = () => {
-  if (!selectedTime.value) {
-    alert('시간을 선택해주세요!');
-    return;
-  }
+  // // 선택된 시간이 없는 경우가 없을 것 같아 주석처리 해놨어요 (사은)
+  // if (!selectedTime.value) {
+  //   alert('시간을 선택해주세요!');
+  //   return;
+  // }
 
   emit('select', selectedTime.value);
   emit('close');

@@ -39,6 +39,9 @@
       </div>
     </div>
   </div>
+  <Alert v-if="showAlert" @click="showAlert = false">
+    <p>{{ alertMessage }}</p>
+  </Alert>
 </template>
 
 <script setup lang="ts">
@@ -52,6 +55,7 @@ import {
 } from 'vue';
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
+import Alert from '@/components/modals/Alert.vue';
 import { useInheritanceStore } from '@/stores/inheritance';
 import { fetchWillTestator } from '@/api/gift/simulation';
 import type { TestatorInfo } from '@/types/gift/simulation';
@@ -87,6 +91,8 @@ const goToRegister = () => {
 };
 
 const isMobile = ref(false);
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 const checkDeviceType = () => {
   isMobile.value = /Mobi|Android/i.test(navigator.userAgent);
@@ -142,15 +148,15 @@ const shareResult = async () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href);
 
-      alert(
-        isMobile.value
-          ? '공유 기능을 사용할 수 없어 PDF를 다운로드합니다.'
-          : '결과 PDF가 다운로드되었습니다.'
-      );
+      alertMessage.value = isMobile.value
+        ? '공유 기능을 사용할 수 없어 PDF를 다운로드합니다.'
+        : '결과 PDF가 다운로드되었습니다.';
+      showAlert.value = true;
     }
   } catch (error) {
     console.error('PDF 생성/공유 실패:', error);
-    alert('결과를 공유하거나 저장하는 데 실패했습니다.');
+    alertMessage.value = '결과를 공유하거나 저장하는 데 실패했습니다.';
+    showAlert.value = true;
   }
 };
 

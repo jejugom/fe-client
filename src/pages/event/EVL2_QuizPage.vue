@@ -25,7 +25,7 @@
       />
     </div>
 
-    <FinanceQuiz v-if="gameStarted" @quiz-finished="gameStarted = false" />
+    <FinanceQuiz v-if="gameStarted" @quiz-finished="handleQuizFinished" />
   </div>
 </template>
 
@@ -34,6 +34,9 @@ import GlassBtn from '@/components/buttons/GlassBtn.vue';
 import { ref, computed } from 'vue';
 import financeQuizBanner from '@/assets/images/financeQuiz.png';
 import FinanceQuiz from './_components/FinanceQuiz.vue';
+import { useRewardStore } from '@/stores/reward';
+
+const rewardStore = useRewardStore();
 
 const weekNumberToKorean = (number: number): string => {
   const weeks: string[] = ['첫', '둘', '셋', '넷', '다섯', '여섯'];
@@ -57,5 +60,9 @@ const gameStarted = ref(false);
 const startQuiz = () => {
   gameStarted.value = true;
 };
+
+const handleQuizFinished = () => {
+  rewardStore.complete('quiz');
+  rewardStore.complete('number');
+};
 </script>
-]

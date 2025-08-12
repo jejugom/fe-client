@@ -40,11 +40,15 @@
       />
     </div>
   </div>
+  <Alert v-if="showAlert" @click="onAlertConfirm">
+    <p>{{ alertMessage }}</p>
+  </Alert>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
+import Alert from '@/components/modals/Alert.vue';
 import { profileApi } from '@/api/profile/profile';
 import EditInputBox from './_components/EditInputBox.vue';
 import { useRouter } from 'vue-router';
@@ -55,6 +59,9 @@ const email = ref('');
 const userName = ref('');
 const userPhone = ref('');
 const birth = ref(''); // 내부 형식: YYYY-MM-DD
+const showAlert = ref(false);
+const alertMessage = ref('');
+const isSuccessAlert = ref(false);
 
 // 화면 표시용 포맷터
 const formatKoreanDate = (iso: string) => {
@@ -62,6 +69,14 @@ const formatKoreanDate = (iso: string) => {
   const [y, m, d] = iso.split('-');
   if (!y || !m || !d) return iso;
   return `${y}년 ${m.padStart(2, '0')}월 ${d.padStart(2, '0')}일`;
+};
+
+const onAlertConfirm = () => {
+  showAlert.value = false;
+  if (isSuccessAlert.value) {
+    isSuccessAlert.value = false; // Reset flag
+    router.push({ name: 'profile' });
+  }
 };
 
 const fetchUserProfile = async () => {
@@ -73,7 +88,8 @@ const fetchUserProfile = async () => {
     birth.value = userProfile.birth ?? ''; // 백엔드에서 YYYY-MM-DD로 내려오는 값
   } catch (error) {
     console.error('프로필 조회 실패:', error);
-    alert('프로필 정보를 불러오는데 실패했습니다.');
+    alertMessage.value = '프로필 정보를 불러오는데 실패했습니다.';
+    showAlert.value = true;
   }
 };
 
@@ -84,11 +100,14 @@ const updateProfile = async () => {
       userPhone: userPhone.value,
       birth: birth.value, // 그대로 YYYY-MM-DD 전송
     });
-    alert('프로필 정보가 성공적으로 업데이트되었습니다.');
-    router.push({ name: 'profile' });
+    alertMessage.value = '프로필 정보가 성공적으로 업데이트되었습니다.';
+    isSuccessAlert.value = true;
+    showAlert.value = true;
   } catch (error) {
     console.error('프로필 업데이트 실패:', error);
-    alert('프로필 정보 업데이트에 실패했습니다.');
+    alertMessage.value = '프로필 정보 업데이트에 실패했습니다.';
+    isSuccessAlert.value = false;
+    showAlert.value = true;
   }
 };
 
