@@ -111,6 +111,10 @@ import ProgressBar from '@/components/progressbar/ProgressBar.vue';
 
 const router = useRouter();
 
+const emit = defineEmits<{
+  (e: 'quiz-finished'): void;
+}>();
+
 // 상태 관리
 const gameFinished = ref(false);
 const currentQuizzes = ref<Quiz[]>([]);
@@ -221,6 +225,7 @@ const finishQuiz = () => {
     localStorage.setItem('financeQuizBestScore', score.value.toString());
     isNewBest.value = true;
   }
+  emit('quiz-finished');
 };
 
 const restartQuiz = () => {
