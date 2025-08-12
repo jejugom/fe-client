@@ -35,6 +35,14 @@
         @update:credentials="credentials = $event"
       />
     </div>
+    <div class="flex justify-end">
+      <TextBtn
+        label="ID/PW 찾기"
+        size="small"
+        @click="openKbFindUrl"
+        class="text-surface-300 text-sm"
+      />
+    </div>
   </div>
   <BtnSet
     label1="건너뛰기"
@@ -48,10 +56,27 @@
   <Alert v-if="alertOpen" @click="alertOpen = false">
     <div class="text-center whitespace-pre-line">{{ alertMsg }}</div>
   </Alert>
+
+  <Confirm
+    v-if="confirm.open"
+    :title="confirm.title"
+    :leftLabel="confirm.left"
+    :rightLabel="confirm.right"
+    @click1="
+      confirm.onLeft?.();
+      confirm.open = false;
+    "
+    @click2="
+      confirm.onRight?.();
+      confirm.open = false;
+    "
+  >
+    <p class="text-center whitespace-pre-line">{{ confirm.message }}</p>
+  </Confirm>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
@@ -60,6 +85,8 @@ import { codefApi } from '@/api/asset/codef';
 import { useLoadingStore } from '@/stores/loading';
 import BtnSet from '@/components/buttons/BtnSet.vue';
 import Alert from '@/components/modals/Alert.vue';
+import Confirm from '@/components/modals/Confirm.vue';
+import TextBtn from '@/components/buttons/TextBtn.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -77,6 +104,30 @@ const alertMsg = ref('');
 function openAlert(msg: string) {
   alertMsg.value = msg;
   alertOpen.value = true;
+}
+
+const confirm = reactive<{
+  open: boolean;
+  title: string;
+  message: string;
+  left: string;
+  right: string;
+  onLeft?: () => void;
+  onRight?: () => void;
+}>({
+  open: false,
+  title: '',
+  message: '',
+  left: '',
+  right: '',
+});
+
+function openConfirm(opts: Partial<typeof confirm>) {
+  Object.assign(
+    confirm,
+    { open: true, title: '', message: '', left: '닫기', right: '' },
+    opts
+  );
 }
 
 // 모든 값이 채워졌는지 여부
@@ -108,9 +159,26 @@ onUnmounted(() => {
   window.removeEventListener('keypress', handleKeyPress);
 });
 
+const KB_FIND_URL =
+  'https://obank1.kbstar.com/quics?page=C018897&QViewPC=Y#loading';
+
+function openKbFindUrl() {
+  window.open(KB_FIND_URL, '_blank');
+}
+
 const handleAssetSync = async () => {
   if (!isFormFilled.value) {
-    openAlert('아이디와 비밀번호를 모두 입력해주세요.');
+    openConfirm({
+      title: '',
+      message: '아이디와 비밀번호를 모두 입력해주세요.',
+      left: '다시 시도하기',
+      right: 'ID/PW 찾기',
+      onLeft: () => {
+        confirm.open = false;
+      },
+      // 새 탭 이동이 안전. 앱을 떠나도 괜찮다면 location.href = KB_FIND_URL 사용
+      onRight: openKbFindUrl,
+    });
     return;
   }
   loadingStore.startLoading();
@@ -151,9 +219,17 @@ const handleAssetSync = async () => {
     const detail = error?.response?.data?.detail as string;
 
     if (detail && detail.includes('아이디/비밀번호')) {
-      openAlert(
-        '은행 아이디와 비밀번호가 올바르지 않습니다. 다시 확인해주세요.'
-      );
+      openConfirm({
+        title: '비밀번호 오류',
+        message:
+          '은행 아이디와 비밀번호가 올바르지 않습니다.\n다시 확인해주세요.',
+        left: '다시 시도하기',
+        right: 'ID/PW 찾기',
+        onLeft: () => {
+          confirm.open = false;
+        },
+        onRight: () => window.open(KB_FIND_URL, '_blank'),
+      });
     }
     // 에러 메시지 표시
     else if (error.code === 'ECONNABORTED') {
