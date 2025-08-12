@@ -49,7 +49,7 @@
   <BtnSet
     label1="건너뛰기"
     label2="설정하기"
-    @click1="router.push({ name: 'profile' })"
+    @click1="handleSkip"
     @click2="handleComplete"
     type="type2"
   />
@@ -116,6 +116,19 @@ const normalizeBranchName = (name: string) => {
     .trim();
 };
 
+const q = (v: unknown) =>
+  Array.isArray(v) ? String(v[0] ?? '') : v != null ? String(v) : '';
+
+const handleSkip = () => {
+  const from = q(route.query.from);
+
+  if (from === 'profile') {
+    router.push({ name: 'profile' });
+  } else {
+    router.push({ name: 'asset-signup-complete' });
+  }
+};
+
 const handleComplete = async () => {
   try {
     if (!selectedBranch.value) {
@@ -146,7 +159,9 @@ const handleComplete = async () => {
       return;
     }
 
-    if (route.query.from === 'profile') {
+    const from = q(route.query.from);
+
+    if (from === 'profile') {
       router.push({ name: 'profile' });
     } else {
       router.push({ name: 'asset-signup-complete' });
