@@ -10,19 +10,20 @@
       <p>어려운 금융 단어가 있으신가요?</p>
       <p>궁금한점을 입력해주시거나,</p>
       <p>마이크 버튼을 눌러서 알려주세요.</p>
-      <p class="text-primary-500 font-semibold">쉽게 설명해드릴게요!</p>
+      <p>쉽게 설명해드릴게요!</p>
     </div>
 
     <!-- 하단 입력 영역 -->
     <div class="flex flex-1 flex-col justify-end space-y-6">
-      
       <!-- 텍스트로 물어보기 섹션 -->
       <div class="space-y-3">
-        <h3 class="text-lg font-semibold text-primary-500">💬 텍스트로 물어보기</h3>
+        <h3 class="text-primary-500 text-lg font-semibold"
+          >💬 키보드로 물어보기</h3
+        >
         <InputBox
           v-model="questionText"
           size="large"
-          placeholder="궁금한 금융 용어나 내용을 입력해주세요"
+          placeholder="궁금한 금융 단어를 물어보세요!"
           class="w-full"
         />
         <button
@@ -31,7 +32,7 @@
           :class="[
             'w-full rounded-lg py-3 font-semibold text-white transition-colors',
             questionText.trim()
-              ? 'bg-primary-500 hover:bg-primary-600'
+              ? 'bg-primary-500'
               : 'bg-surface-300 cursor-not-allowed',
           ]"
         >
@@ -39,12 +40,14 @@
         </button>
       </div>
 
-      <div class="border-t border-surface-200"></div>
+      <div class="border-surface-200 border-t"></div>
 
       <!-- 음성으로 물어보기 섹션 -->
       <div class="space-y-3">
-        <h3 class="text-lg font-semibold text-primary-500">🎤 음성으로 물어보기</h3>
-        
+        <h3 class="text-primary-500 text-lg font-semibold"
+          >🎤 마이크로 물어보기</h3
+        >
+
         <!-- 음성 입력 버튼 -->
         <div class="flex justify-center">
           <button
@@ -83,7 +86,7 @@
           <p class="text-sm font-medium text-red-500">
             녹음 중... ({{ recordingTime }}초)
           </p>
-          <p class="text-surface-500 mt-1 text-xs">
+          <p class="text-surface-500 mt-1 text-sm">
             마이크 버튼을 다시 눌러 녹음을 종료하세요
           </p>
         </div>
@@ -93,18 +96,50 @@
             음성을 처리하고 있습니다...
           </p>
         </div>
-        
-        <p class="text-center text-sm text-surface-400">
+
+        <p class="text-surface-400 text-center text-sm">
           마이크 버튼을 눌러 녹음하고, 다시 눌러 전송하세요
         </p>
       </div>
     </div>
+
+    <!-- Alert 모달 -->
+    <Alert v-if="showAlert" :title="alertTitle" @click="closeAlert">
+      <!-- 에러 메시지인 경우 -->
+      <div v-if="!currentResponse" class="text-red-600">
+        {{ alertContent }}
+      </div>
+
+      <!-- 성공 응답인 경우 -->
+      <div v-else class="space-y-4">
+        <!-- 질문하신 내용 -->
+        <div v-if="currentResponse.processedText" class="space-y-2">
+          <h4 class="text-primary-600 text-lg font-semibold"
+            >질문하신 내용 :</h4
+          >
+          <p class="text-surface-500 bg-surface-100 rounded-lg p-3 text-base">
+            "{{ currentResponse.processedText }}"
+          </p>
+        </div>
+
+        <!-- 설명 -->
+        <div v-if="currentResponse.aiResponse" class="space-y-2">
+          <h4 class="text-primary-600 text-lg font-semibold">설명이에요 :</h4>
+          <p
+            class="text-surface-500 bg-surface-100 rounded-lg p-3 text-base leading-relaxed"
+          >
+            {{ currentResponse.aiResponse }}
+          </p>
+        </div>
+      </div>
+    </Alert>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue';
 import InputBox from '@/components/forms/InputBox.vue';
+import Alert from '@/components/modals/Alert.vue';
 import { questionApi, type QuestionResponse } from '@/api/question/question';
 
 const questionText = ref('');
@@ -112,6 +147,12 @@ const isRecording = ref(false);
 const isProcessing = ref(false);
 const recordingTime = ref(0);
 const audioBlob = ref<Blob | null>(null);
+
+// Alert 모달 상태
+const showAlert = ref(false);
+const alertTitle = ref('');
+const alertContent = ref('');
+const currentResponse = ref<QuestionResponse | null>(null);
 
 let mediaRecorder: MediaRecorder | null = null;
 let recordingTimer: number | null = null;
@@ -147,7 +188,7 @@ const startRecording = async () => {
       audioBlob.value = new Blob(audioChunks, { type: mimeType });
 
       stream.getTracks().forEach((track) => track.stop());
-      
+
       // 음성 녹음이 완료되면 자동으로 API 호출
       submitVoiceQuestion();
     };
@@ -185,10 +226,12 @@ const submitTextQuestion = async () => {
 
   try {
     isProcessing.value = true;
-    
+
     console.log('텍스트 질문 전송 시작...');
-    const response: QuestionResponse = await questionApi.askTextOnly(questionText.value);
-    
+    const response: QuestionResponse = await questionApi.askTextOnly(
+      questionText.value
+    );
+
     console.log('=== 텍스트 질문 응답 ===');
     console.log('상태:', response.status);
     console.log('메시지:', response.message);
@@ -199,17 +242,16 @@ const submitTextQuestion = async () => {
       console.log('AI 응답:', response.aiResponse);
     }
     console.log('===================');
-    
+
     if (response.status === 'SUCCESS') {
       questionText.value = '';
-      alert('텍스트 질문이 성공적으로 처리되었습니다!\n콘솔을 확인해보세요.');
+      showSuccessAlert(response);
     } else {
-      alert('처리 실패: ' + response.message);
+      showErrorAlert(response.message);
     }
-    
   } catch (error) {
     console.error('텍스트 질문 전송 실패:', error);
-    alert('텍스트 질문 전송에 실패했습니다. 다시 시도해주세요.');
+    showErrorAlert('텍스트 질문 전송에 실패했습니다. 다시 시도해주세요.');
   } finally {
     isProcessing.value = false;
   }
@@ -223,14 +265,17 @@ const submitVoiceQuestion = async () => {
 
   try {
     isProcessing.value = true;
-    
+
     // 음성 파일을 File 객체로 변환
     const fileName = `voice_question_${Date.now()}.webm`;
-    const audioFile = new File([audioBlob.value], fileName, { type: audioBlob.value.type });
-    
+    const audioFile = new File([audioBlob.value], fileName, {
+      type: audioBlob.value.type,
+    });
+
     console.log('음성 질문 전송 시작...');
-    const response: QuestionResponse = await questionApi.askVoiceOnly(audioFile);
-    
+    const response: QuestionResponse =
+      await questionApi.askVoiceOnly(audioFile);
+
     console.log('=== 음성 질문 응답 ===');
     console.log('상태:', response.status);
     console.log('메시지:', response.message);
@@ -241,20 +286,40 @@ const submitVoiceQuestion = async () => {
       console.log('AI 응답:', response.aiResponse);
     }
     console.log('===================');
-    
+
     if (response.status === 'SUCCESS') {
       audioBlob.value = null;
-      alert('음성 질문이 성공적으로 처리되었습니다!\n콘솔을 확인해보세요.');
+      showSuccessAlert(response);
     } else {
-      alert('처리 실패: ' + response.message);
+      showErrorAlert(response.message);
     }
-    
   } catch (error) {
     console.error('음성 질문 전송 실패:', error);
-    alert('음성 질문 전송에 실패했습니다. 다시 시도해주세요.');
+    showErrorAlert('음성 질문 전송에 실패했습니다. 다시 시도해주세요.');
   } finally {
     isProcessing.value = false;
   }
+};
+
+// Alert 모달 제어 함수들
+const showSuccessAlert = (response: QuestionResponse) => {
+  currentResponse.value = response;
+  alertTitle.value = '💡 설명 완료!';
+  showAlert.value = true;
+};
+
+const showErrorAlert = (message: string) => {
+  currentResponse.value = null;
+  alertTitle.value = '⚠️ 오류 발생';
+  alertContent.value = message;
+  showAlert.value = true;
+};
+
+const closeAlert = () => {
+  showAlert.value = false;
+  alertTitle.value = '';
+  alertContent.value = '';
+  currentResponse.value = null;
 };
 
 onUnmounted(() => {
