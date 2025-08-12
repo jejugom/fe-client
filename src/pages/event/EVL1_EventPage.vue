@@ -1,10 +1,7 @@
 <template>
   <div class="space-y-16">
     <!-- 무엇이든 물어보세요 -->
-    <div class="space-y-4">
-      <div class="text-primary-500 text-2xl font-bold">무엇이든 물어보세요</div>
-      <Btn label="무엇이든 물어보세요" size="large" color="secondary" />
-    </div>
+    <Question></Question>
 
     <!-- 매일매일 -->
     <div class="space-y-4">
@@ -72,23 +69,6 @@
         />
       </div>
     </div>
-
-    <!-- 무엇이든 물어보세요 이동 샘플 카드 -->
-    <IconCard
-      class="max-h-20"
-      color="primary"
-      :title="'무엇이든 물어보세요'"
-      :content1="'쉽게 설명해드릴게요'"
-      @click="router.push({ name: 'event-question' })"
-    >
-      <template #icon>
-        <img :src="Quiz" class="h-10 w-10" />
-      </template>
-    </IconCard>
-
-    <!-- Modal 구현 -->
-    <!-- 1. 텍스트 입력 -->
-    <!-- 2. 음성 입력 (음성 녹음 mp3 저장 -> 백엔드로 전송 예정) -->
   </div>
 
   <Confirm
@@ -121,6 +101,7 @@ import Quiz from '@/assets/icons/Quiz.svg';
 import Park from '@/assets/icons/Park.svg';
 import Confirm from '@/components/modals/Confirm.vue';
 import { is } from 'date-fns/locale';
+import Question from '@/components/question/Question.vue';
 
 const router = useRouter();
 const rewardStore = useRewardStore();
