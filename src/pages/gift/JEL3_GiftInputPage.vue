@@ -73,6 +73,11 @@
       />
     </div>
   </section>
+
+  <!-- 에러 알림 모달 -->
+  <Alert v-if="showAlert" @click="showAlert = false">
+    <p class="text-center">{{ alertMessage }}</p>
+  </Alert>
 </template>
 
 <script setup lang="ts">
@@ -83,6 +88,7 @@ import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
 import RecipientFormModal from './_components/RecipientFormModal.vue';
 import DeleteConfirmModal from './_components/DeleteConfirmModal.vue';
 import AssetSummaryCardBar from '@/components/cards/AssetSummaryCardBar.vue';
+import Alert from '@/components/modals/Alert.vue';
 import { formatCurrency } from '@/utils/format';
 import { useLoadingStore } from '@/stores/loading';
 
@@ -165,6 +171,8 @@ const pageConfig = computed(() => {
 // 모달 상태
 const isRecipientModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 // 데이터 상태
 const recipients = ref<RecipientResponseDto[]>([]);
@@ -224,7 +232,9 @@ const loadPageData = async () => {
     recipients.value = data.recipients || [];
     assetCategories.value = data.assetCategories || [];
   } catch (error) {
-    console.error('데이터 로드 실패:', error);
+    // console.error('데이터 로드 실패:', error);
+    alertMessage.value = '데이터를 불러오는 데 실패했습니다.';
+    showAlert.value = true;
   } finally {
     loadingStore.stopLoading();
   }
@@ -272,6 +282,8 @@ const handleRecipientConfirm = async (recipientData: RecipientRequestDto) => {
     cancelRecipientModal();
   } catch (error) {
     console.error('수증자/상속인 저장/수정 실패:', error);
+    alertMessage.value = '정보를 저장하는 데 실패했습니다.';
+    showAlert.value = true;
   } finally {
     loadingStore.stopLoading();
   }
@@ -318,6 +330,8 @@ const confirmDelete = async () => {
       cancelDelete();
     } catch (error) {
       console.error('삭제 실패:', error);
+      alertMessage.value = '삭제하는 데 실패했습니다.';
+      showAlert.value = true;
     } finally {
       loadingStore.stopLoading();
     }
