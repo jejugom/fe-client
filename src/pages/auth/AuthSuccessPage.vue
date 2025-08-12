@@ -50,86 +50,86 @@ const router = useRouter();
 const authStore = useAuthStore();
 const loadingStore = useLoadingStore();
 
-/** 로그인 처리 진행 상태 */
 const isProcessing = ref(true);
-
-/** 오류 메시지 */
 const error = ref('');
 
-/**
- * 컴포넌트 마운트 시 카카오 로그인 성공 처리
- *
- * 백엔드에서 리다이렉트로 전달받은 URL 파라미터를 파싱하여
- * 사용자 인증 상태를 설정하고 적절한 페이지로 이동시킵니다.
- */
+// string | string[] | undefined → string 로 안전 변환
+function q(v: unknown): string {
+  if (Array.isArray(v)) return String(v[0] ?? '');
+  return v != null ? String(v) : '';
+}
+
+// base64url 안전 디코더
+function base64UrlToUtf8(input: string) {
+  let s = input.replace(/-/g, '+').replace(/_/g, '/');
+  const pad = s.length % 4;
+  if (pad) s += '='.repeat(4 - pad);
+
+  const bin = atob(s);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
 onMounted(async () => {
   try {
     loadingStore.startLoading();
-    // 1. URL 쿼리 파라미터에서 토큰 정보 추출
-    const { token, refreshToken, isNew, isTendencyNotDefined, state } =
-      route.query;
-    console.log('AuthSuccessPage received state:', state);
-    console.log('AuthSuccessPage received isNew:', isNew);
-    console.log(
-      'AuthSuccessPage received isTendencyNotDefined:',
-      isTendencyNotDefined
-    );
 
-    // 2. 필수 토큰 정보 검증
+    // 1) 쿼리 안전 추출
+    const token = q(route.query.token);
+    const refreshToken = q(route.query.refreshToken);
+    const isNew = q(route.query.isNew) === 'true';
+    const isTendencyNotDefined = q(route.query.isTendencyNotDefined) === 'true';
+    const nextState = q(route.query.state) || 'home';
+
     if (!token || !refreshToken) {
       throw new Error('토큰 정보가 없습니다.');
     }
 
-    // 3. JWT 토큰에서 사용자 정보 추출
-    // JWT는 header.payload.signature 구조이므로 payload 부분을 Base64 디코딩
-    const tokenPayload = JSON.parse(atob((token as string).split('.')[1]));
-    const userEmail = tokenPayload.sub; // JWT의 subject는 사용자 이메일
+    // 2) JWT payload 안전 파싱 (base64url)
+    const parts = token.split('.');
+    if (parts.length < 2) throw new Error('올바르지 않은 토큰 형식입니다.');
+    const payloadStr = base64UrlToUtf8(parts[1]);
+    const payload = JSON.parse(payloadStr);
 
-    // 4. Pinia store에 인증 상태 저장
+    // 3) 이메일/표시명 추출 (여러 클레임 대비 + 폴백)
+    const email = payload.email ?? payload.sub ?? ''; // 꼭 문자열 보장
+    if (!email) throw new Error('토큰에 사용자 이메일 정보가 없습니다.');
+
+    const displayName =
+      payload.name ??
+      payload.nickname ??
+      payload.preferred_username ??
+      // 마지막 폴백: 이메일 로컬파트
+      (email.includes('@') ? email.split('@')[0] : '고객님');
+
+    // 4) 스토어 저장
     authStore.setKakaoLoginData(
-      token as string,
-      refreshToken as string,
-      userEmail,
-      userEmail.split('@')[0], // 이메일의 @ 앞부분을 사용자명으로 사용
-      isNew === 'true'
+      token,
+      refreshToken,
+      String(email),
+      String(displayName),
+      isNew
     );
 
-    // 5. 회원 유형에 따른 페이지 이동
-    const nextRoute = state ? String(state) : 'home';
-
-    if (isNew === 'true') {
-      // 신규 회원 → 튜토리얼 페이지로 이동
-      console.log('신규 회원 - asset-tutorial로 이동');
+    // 5) 라우팅
+    if (isNew) {
       router.replace({ name: 'asset-tutorial' });
-    } else if (isTendencyNotDefined === 'true') {
-      // 성향 미입력 회원 → 일단 튜토리얼 페이지로 이동 (추후 custom-quiz로 변경 고려)
-      console.log(
-        '성향 미입력 회원 - asset-tutorial로 이동 (추후 custom-quiz로 변경 고려)'
-      );
+    } else if (isTendencyNotDefined) {
       router.replace({ name: 'asset-tutorial' });
     } else {
-      // 기존 회원 → 원래 가려던 페이지 또는 홈페이지로 이동
-      console.log('기존 회원 -', nextRoute, '로 이동');
-      router.replace({ name: nextRoute });
+      router.replace({ name: nextState });
     }
-  } catch (err) {
-    // 6. 오류 처리
+  } catch (err: any) {
+    // 6) 오류 처리
     console.error('Auth processing error:', err);
     loadingStore.setError(true);
-    error.value =
-      err instanceof Error
-        ? err.message
-        : '로그인 처리 중 오류가 발생했습니다.';
+    error.value = err?.message ?? '로그인 처리 중 오류가 발생했습니다.';
     isProcessing.value = false;
   } finally {
     loadingStore.stopLoading();
   }
 });
 
-/**
- * 홈페이지로 이동
- */
-const goHome = () => {
-  router.push({ name: 'home' });
-};
+const goHome = () => router.push({ name: 'home' });
 </script>

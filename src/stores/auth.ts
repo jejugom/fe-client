@@ -7,9 +7,9 @@ import axios from 'axios';
  * (향후 폼로그인 확장 가능성을 위해 유지)
  */
 interface Member {
-  username: string;
+  userName: string;
   password: string;
-  email?: string;
+  userMail?: string;
 }
 
 /**
@@ -20,8 +20,7 @@ const initState = {
   token: '', // JWT Access Token
   refreshToken: '', // JWT Refresh Token
   user: {
-    username: '', // 사용자 ID (이메일 주소)
-    email: '', // 사용자 이메일
+    userMail: '', // 사용자 이메일
     userName: '', // 사용자 표시명 (닉네임)
     roles: [], // 사용자 권한 목록 (향후 확장용)
   },
@@ -42,14 +41,11 @@ export const useAuthStore = defineStore('auth', () => {
   const state = ref({ ...initState });
 
   // === Computed Properties (상태 접근자) ===
-  /** 로그인 여부 - username이 있으면 로그인된 상태로 판단 */
-  const isLogin = computed(() => !!state.value.user.username);
+  /** 로그인 여부 - userName이 있으면 로그인된 상태로 판단 */
+  const isLogin = computed(() => !!state.value.user.userName);
 
-  /** 로그인한 사용자의 ID (이메일) */
-  const username = computed(() => state.value.user.username);
-
-  /** 로그인한 사용자의 이메일 */
-  const email = computed(() => state.value.user.email);
+  /** userMail 사용자의 이메일 */
+  const userMail = computed(() => state.value.user.userMail);
 
   /** 로그인한 사용자의 표시명 */
   const userName = computed(() => state.value.user.userName);
@@ -84,7 +80,7 @@ export const useAuthStore = defineStore('auth', () => {
   const setKakaoLoginData = (
     accessToken: string,
     refreshToken: string,
-    userId: string,
+    userMail: string,
     userName: string,
     isNew: boolean
   ) => {
@@ -92,14 +88,15 @@ export const useAuthStore = defineStore('auth', () => {
       token: accessToken,
       refreshToken: refreshToken,
       user: {
-        username: userId,
-        email: userId,
+        userMail: userMail,
         userName: userName,
         roles: [],
       },
       isNewUser: isNew,
     };
     sessionStorage.setItem('auth', JSON.stringify(state.value));
+    sessionStorage.setItem('userMail', userMail);
+    sessionStorage.setItem('userName', userName);
   };
 
   /**
@@ -162,8 +159,8 @@ export const useAuthStore = defineStore('auth', () => {
    * (향후 확장용 - 현재는 이메일 변경만 지원)
    */
   const changeProfile = (member: Partial<Member>) => {
-    if (member.email) {
-      state.value.user.email = member.email;
+    if (member.userMail) {
+      state.value.user.userMail = member.userMail;
       sessionStorage.setItem('auth', JSON.stringify(state.value));
     }
   };
@@ -175,8 +172,7 @@ export const useAuthStore = defineStore('auth', () => {
   // === 외부로 노출할 API ===
   return {
     state,
-    username,
-    email,
+    userMail,
     userName,
     isLogin,
     isNewUser,

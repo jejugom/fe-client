@@ -5,7 +5,7 @@
       class="card-design px-auto my-auto flex w-full flex-col items-center justify-center gap-16 py-15"
     >
       <h1 class="text-primary-300 text-2xl font-bold">
-        {{ authStore.userName || authStore.username }}님, 안녕하세요!
+        {{ authStore.userName }}님, 안녕하세요!
       </h1>
       <div class="text-surface-500 text-center text-lg font-semibold">
         <p>더 정확한 서비스 제공을 위해서</p>
