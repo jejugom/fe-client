@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router';
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import Arrow from '@/assets/icons/HeaderBefore.svg';
 import Logo from '@/assets/logos/typo.svg';
 
@@ -26,14 +26,19 @@ const router = useRouter();
 const route = useRoute();
 
 const goBack = () => {
-  const referrer = document.referrer;
+  // 완료 페이지에서는 무조건 홈으로
+  if (route.name === 'register-complete') {
+    router.push({ name: 'home' });
+    return;
+  }
 
+  // 그 외 페이지: 내부 이동이면 back, 외부에서 진입이면 홈
+  const referrer = document.referrer || '';
   const isInternal = referrer.includes(window.location.host);
-
   if (isInternal) {
-    router.back(); // 내부에서 온 경우 → 히스토리 뒤로 이동
+    router.back();
   } else {
-    router.push({ name: 'home' }); // 외부에서 온 경우 → 홈으로
+    router.push({ name: 'home' });
   }
 };
 
@@ -41,5 +46,24 @@ const showBackBtn = computed(() => {
   return !['home', 'not-found', 'fail', 'loading'].includes(
     route.name as string
   );
+});
+
+// 브라우저/앱 하드웨어 뒤로가기 대응
+const onPopState = () => {
+  if (route.name === 'register-complete') {
+    router.replace({ name: 'home' });
+  }
+};
+
+onMounted(() => {
+  // 완료 페이지에서 뒤로가기로 직전 폼이 보이는 것을 막기
+  if (route.name === 'register-complete') {
+    window.history.pushState(null, '', window.location.href);
+  }
+  window.addEventListener('popstate', onPopState);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('popstate', onPopState);
 });
 </script>

@@ -11,6 +11,7 @@
     :question="questions[currentQuestionIndex]"
     :current-question-index="currentQuestionIndex"
     :selected-answer="selectedAnswers[currentQuestionIndex]"
+    :total-questions="questions.length"
     @select-answer="selectAnswer"
     class="mb-16"
   />

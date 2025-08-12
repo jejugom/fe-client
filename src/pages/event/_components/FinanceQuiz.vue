@@ -1,15 +1,12 @@
 <template>
   <div v-if="currentQuestion" class="animate-fade-in">
     <div v-if="!gameFinished">
-      <!-- 진행률 -->
-      <div class="mb-8">
-        <div class="text-primary-500 flex items-center justify-between">
-          <span class="font-medium">진행률</span>
-          <span class="font-bold"
-            >{{ currentQuestionIndex + 1 }} / {{ currentQuizzes.length }}</span
-          >
-        </div>
-      </div>
+      <!-- 프로그레스바 -->
+      <ProgressBar
+        :currentQuestionIndex="currentQuestionIndex"
+        :totalQuestions="currentQuizzes.length"
+        class="mb-8"
+      />
 
       <!-- 문제 -->
       <div class="mb-8">
@@ -110,6 +107,7 @@ import GlassBtn from '@/components/buttons/GlassBtn.vue';
 import { quizBank, type Quiz } from '@/pages/event/quizData';
 import { useRouter } from 'vue-router';
 import QuizResultModal from './QuizResultModal.vue';
+import ProgressBar from '@/components/progressbar/ProgressBar.vue';
 
 const router = useRouter();
 
@@ -130,11 +128,6 @@ const quizPerDay = 7;
 // 계산된 속성
 const currentQuestion = computed<Quiz>(
   () => currentQuizzes.value[currentQuestionIndex.value]
-);
-const progress = computed(() =>
-  Math.round(
-    ((currentQuestionIndex.value + 1) / currentQuizzes.value.length) * 100
-  )
 );
 const isCorrect = computed(
   () => selectedAnswer.value === currentQuestion.value?.answer

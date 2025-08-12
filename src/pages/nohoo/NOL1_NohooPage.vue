@@ -85,8 +85,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-
+import { useRouter, useRoute } from 'vue-router';
 import TabBtnGroup from './_components/TabBtnGroup.vue';
 import BtnCard from '@/components/cards/BtnCard.vue';
 import AdBox from './_components/AdBox.vue';
@@ -104,6 +103,7 @@ import {
 } from '@/api/nohoo/nohoo';
 
 const router = useRouter();
+const route = useRoute();
 const productStore = useProductStore();
 const loadingStore = useLoadingStore();
 
@@ -118,7 +118,7 @@ const news = ref<News[]>([]);
 const PRODUCT_CATEGORY_MAP: Record<string, number> = {
   예금: 1,
   적금: 2,
-  주택담보: 3,
+  주택담보대출: 3,
   금: 4,
   펀드: 5,
   신탁: 6,
@@ -134,6 +134,10 @@ onMounted(async () => {
   loadingStore.startLoading();
   try {
     const result = await fetchNohooData();
+    // Check for tab query parameter
+    if (route.query.tab) {
+      selectedTab.value = route.query.tab as string;
+    }
     const {
       userInfo = { userName: '', assetStatus: [] },
       customRecommendPrdt = [],
@@ -298,7 +302,10 @@ const recommendedProducts = computed(() => {
       const score = Number(
         recommendItems.find((r) => r.finPrdtCd === product.finPrdtCd)?.score ?? '0'
       );
-      tags.push(`맞춤점수 ${(score * 100).toFixed(0)}점 `);
+      tags.push(
+        `적합도 ${(score * 100).toFixed(1)}% | ${CATEGORY_LABEL_MAP[product.finPrdtCategory] ?? '기타'}`
+      );
+
       return { ...product, tags, score: Number(score) };
     });
 
