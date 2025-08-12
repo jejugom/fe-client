@@ -28,15 +28,19 @@
 </template>
 
 <script setup lang="ts">
-import InterestRate from '@/assets/icons/InterestRate.svg';
-import LoanRate from '@/assets/icons/LoanRate.svg';
-import CollateralOil from '@/assets/icons/CollateralOil.svg';
-import SignUpRoom from '@/assets/icons/SignUpRoom.svg';
-import SubscriptionRestriction from '@/assets/icons/SubscriptionRestriction.svg';
-import MothReturn from '@/assets/icons/3MonthReturn.svg';
-import Currency from '@/assets/icons/Currency.svg';
-import RateType from '@/assets/icons/RateType.svg';
-import UnitOfAccount from '@/assets/icons/UnitOfAccount.svg';
+import Icon1 from '@/assets/images/productFeats/Icon 1.svg';
+import Icon2 from '@/assets/images/productFeats/Icon 2.svg';
+import Icon3 from '@/assets/images/productFeats/Icon 3.svg';
+import Icon4 from '@/assets/images/productFeats/Icon 4.svg';
+import Icon5 from '@/assets/images/productFeats/Icon 5.svg';
+import Icon6 from '@/assets/images/productFeats/Icon 6.svg';
+import Icon7 from '@/assets/images/productFeats/Icon 7.svg';
+import Icon8 from '@/assets/images/productFeats/Icon 8.svg';
+import Icon9 from '@/assets/images/productFeats/Icon 9.svg';
+import Icon10 from '@/assets/images/productFeats/Icon 10.svg';
+import Icon11 from '@/assets/images/productFeats/Icon 11.svg';
+import Icon12 from '@/assets/images/productFeats/Icon 12.svg';
+import Icon13 from '@/assets/images/productFeats/Icon 13.svg';
 
 defineProps<{
   items: { label: string; value: string }[];
@@ -44,17 +48,19 @@ defineProps<{
 
 // 라벨 기반 아이콘 반환 함수
 const getIcon = (label: string): string | null => {
-  if (label.includes('최고금리')) return InterestRate;
-  if (label.includes('가입방법')) return SignUpRoom;
-  if (label.includes('담보유형')) return CollateralOil;
-  if (label.includes('가입제한')) return SubscriptionRestriction;
-  if (label.includes('대출금리')) return LoanRate;
-  if (label.includes('3개월 수익률')) return MothReturn;
-  if (label.includes('통화')) return Currency;
-  if (label.includes('금리유형')) return RateType;
-  if (label.includes('매매단위')) return UnitOfAccount;
-  if (label.includes('총보수')) return LoanRate;
-  if (label.includes('위험등급')) return SubscriptionRestriction;
-  return null;
+  if (label.includes('최고금리')) return Icon1;
+  if (label.includes('가입방법')) return Icon2;
+  if (label.includes('가입제한')) return Icon3;
+  if (label.includes('대출금리')) return Icon4;
+  if (label.includes('담보유형')) return Icon5;
+  if (label.includes('금리유형')) return Icon6;
+  if (label.includes('매매단위')) return Icon7;
+  if (label.includes('통화')) return Icon8;
+  if (label.includes('3개월 수익률')) return Icon9;
+  if (label.includes('위험등급')) return Icon10;
+  if (label.includes('총보수')) return Icon11;
+  if (label.includes('보호여부')) return Icon12;
+  if (label.includes('기준가')) return Icon13;
+  return null; // 기본값
 };
 </script>
