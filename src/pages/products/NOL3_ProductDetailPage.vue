@@ -317,16 +317,17 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import type {
+  ProductDetail,
+  FundDailyReturn,
+  Option,
+  MortgageOption,
+  FundOption,
+} from '@/types/products/productDetail';
 import {
   fetchProductDetail,
-  fetchFundReturn, // ★ 추가
-  type ProductDetail,
-  type Option,
-  type MortgageOption,
-  type FundOption,
-  type FundDailyReturn,
+  fetchFundReturn,
 } from '@/api/products/productDetail';
-
 import DetailImg from './_components/DetailImg.vue';
 import FundReturnChart from './_components/FundReturnChart.vue'; // ★ 추가
 import Btn from '@/components/buttons/Btn.vue';

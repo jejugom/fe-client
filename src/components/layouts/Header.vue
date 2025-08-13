@@ -1,5 +1,7 @@
 <template>
-  <header class="relative flex h-16 items-center justify-center bg-white">
+  <header
+    class="relative flex h-16 items-center justify-center bg-white shadow-xs"
+  >
     <!-- 뒤로가기 -->
     <img
       v-if="showBackBtn"
