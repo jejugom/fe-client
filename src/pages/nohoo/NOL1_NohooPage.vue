@@ -77,11 +77,11 @@ import AdBox from './_components/AdBox.vue';
 import SelectBox from '@/components/forms/SelectBox.vue';
 import { useProductStore } from '@/stores/product';
 import {
-  fetchNohooData,
   type ParsedApiResponse,
   type News,
   type UserInfo,
-} from '@/api/nohoo/nohoo';
+} from '@/types/nohoo/nohoo';
+import { fetchNohooData } from '@/api/nohoo/nohoo';
 import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
