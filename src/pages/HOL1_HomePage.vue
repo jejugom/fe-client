@@ -31,11 +31,12 @@
         @click="authStore.startKakaoLogin"
         class="w-full"
       /> -->
-        <div class="flex justify-center">
+        <div class="flex flex-col items-center justify-center gap-4">
           <img
             :src="KakaoLoginBtn"
             alt="카카오 로그인"
             @click="() => authStore.startKakaoLogin()"
+            class="btn-pressed block max-h-20 w-auto"
           /> </div
       ></div>
     </div>
@@ -83,7 +84,7 @@
           @click="handlers[card.onClick]"
         >
           <template #icon>
-            <img :src="card.src" />
+            <img :src="card.src" class="h-16 w-16" />
           </template>
         </IconCard>
       </div>
@@ -156,20 +157,16 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
-import Top3Products from '@/components/cards/Top3ProductsCard.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { fetchHomeData, type HomeData } from '@/api/home';
 import IconCard from '@/components/cards/IconCard.vue';
-import AdBanner from '@/assets/images/AdBanner.png';
 import Home1 from '@/assets/images/Home1.svg';
 import Home2 from '@/assets/images/Home2.svg';
 import Home3 from '@/assets/images/Home3.svg';
 import Home4 from '@/assets/images/Home4.svg';
 import Home5 from '@/assets/images/Home5.svg';
 import Home6 from '@/assets/images/Home6.svg';
-import KakaoLoginBtn from '@/assets/images/kakao_login_medium_wide.png';
-import Banner from '@/components/cards/Banner.vue';
-import ArrowIcon from '@/assets/icons/Arrow45.svg';
+import KakaoLoginBtn from '@/assets/images/kakao_login_medium_wide.webp';
 import TextBtn from '@/components/buttons/TextBtn.vue';
 
 /** Vue Router 인스턴스 - 페이지 네비게이션용 */

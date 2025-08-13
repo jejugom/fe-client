@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import GlassBtn from '@/components/buttons/GlassBtn.vue';
 import { ref, computed } from 'vue';
-import financeQuizBanner from '@/assets/images/financeQuiz.png';
+import financeQuizBanner from '@/assets/images/financeQuiz.webp';
 import FinanceQuiz from './_components/FinanceQuiz.vue';
 import { useRewardStore } from '@/stores/reward';
 

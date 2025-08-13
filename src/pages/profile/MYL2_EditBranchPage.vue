@@ -2,7 +2,7 @@
   <!-- guno: featured from wina's branch select modal -->
 
   <!-- 현재 위치 표시 -->
-  <div class="mb-8">
+  <div class="mb-4">
     <h2 class="text-primary-500 mb-2 text-2xl font-bold">
       나의 국민은행 지점 설정
     </h2>
@@ -10,7 +10,7 @@
     <!-- 현재 설정된 지점 표시 -->
     <div
       v-if="currentBranch"
-      class="stroke-primary bg-primary-100 my-2 w-full rounded-lg p-4"
+      class="stroke-primary bg-primary-100 my-2 w-full rounded-lg p-2"
     >
       현재 설정된 지점:
       <span class="text-primary-500 ml-2 text-base font-semibold">{{
@@ -33,12 +33,14 @@
     </div>
 
     <!-- 선택된 지점 표시 -->
-    <div
-      v-if="displaySelectedBranchName"
-      class="stroke-secondary bg-secondary-100 w-full rounded-lg p-4"
-    >
-      선택한 지점:
-      <span class="font-semibold">{{ displaySelectedBranchName }}</span>
+    <div class="min-h-8 transition-[opacity] duration-200">
+      <div
+        v-if="displaySelectedBranchName"
+        class="stroke-secondary bg-secondary-100 flex w-full items-center rounded-lg p-2"
+      >
+        선택한 지점:
+        <span class="font-semibold">{{ displaySelectedBranchName }}</span>
+      </div>
     </div>
 
     <!-- 지도 영역 -->
