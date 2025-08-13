@@ -189,7 +189,7 @@
       >
         <div class="flex items-start">
           <div class="mt-1 mr-3">
-            <img :src="ErrorIcon" alt="Error Icon" class="h-5 w-5" />
+            <img :src="Error" alt="Error Icon" class="h-5 w-5" />
           </div>
           <div>
             <h4 class="mb-1 text-lg font-semibold text-red-500">참고사항</h4>
@@ -218,5 +218,5 @@ const openYoutubePopup = () => {
 
   window.open(url, name, options);
 };
-import ErrorIcon from '@/assets/icons/ErrorIcon.svg';
+import Error from '@/assets/icons/Error.svg';
 </script>

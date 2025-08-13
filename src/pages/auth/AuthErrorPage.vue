@@ -16,7 +16,7 @@
     <div class="space-y-4 text-center">
       <!-- 에러 아이콘 GPT -->
       <div>
-        <img :src="ErrorIcon" alt="Error Icon" class="mx-auto h-16 w-16" />
+        <img :src="Error" alt="Error Icon" class="mx-auto h-16 w-16" />
       </div>
 
       <h1 class="text-surface-500 text-2xl font-bold">로그인 실패</h1>
@@ -44,7 +44,7 @@ import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import BtnSet from '@/components/buttons/BtnSet.vue';
-import ErrorIcon from '@/assets/icons/ErrorIcon.svg';
+import Error from '@/assets/icons/Error.svg';
 
 const route = useRoute();
 const router = useRouter();
