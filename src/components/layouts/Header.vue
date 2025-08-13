@@ -11,7 +11,7 @@
 
     <!-- 로고 텍스트 -->
     <router-link :to="{ name: 'home' }" class="text-2xl font-bold">
-      <img :src="Logo" alt="노후도락 로고" class="h-6 w-auto" />
+      <img :src="Logo" alt="노후도락 로고" class="h-10 w-auto" />
     </router-link>
   </header>
 </template>

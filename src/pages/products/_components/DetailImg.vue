@@ -28,19 +28,19 @@
 </template>
 
 <script setup lang="ts">
-import Icon1 from '@/assets/images/productFeats/Icon 1.svg';
-import Icon2 from '@/assets/images/productFeats/Icon 2.svg';
-import Icon3 from '@/assets/images/productFeats/Icon 3.svg';
-import Icon4 from '@/assets/images/productFeats/Icon 4.svg';
-import Icon5 from '@/assets/images/productFeats/Icon 5.svg';
-import Icon6 from '@/assets/images/productFeats/Icon 6.svg';
-import Icon7 from '@/assets/images/productFeats/Icon 7.svg';
-import Icon8 from '@/assets/images/productFeats/Icon 8.svg';
-import Icon9 from '@/assets/images/productFeats/Icon 9.svg';
-import Icon10 from '@/assets/images/productFeats/Icon 10.svg';
-import Icon11 from '@/assets/images/productFeats/Icon 11.svg';
-import Icon12 from '@/assets/images/productFeats/Icon 12.svg';
-import Icon13 from '@/assets/images/productFeats/Icon 13.svg';
+import Icon1 from '@/assets/images/productFeats/Icon1.svg';
+import Icon2 from '@/assets/images/productFeats/Icon2.svg';
+import Icon3 from '@/assets/images/productFeats/Icon3.svg';
+import Icon4 from '@/assets/images/productFeats/Icon4.svg';
+import Icon5 from '@/assets/images/productFeats/Icon5.svg';
+import Icon6 from '@/assets/images/productFeats/Icon6.svg';
+import Icon7 from '@/assets/images/productFeats/Icon7.svg';
+import Icon8 from '@/assets/images/productFeats/Icon8.svg';
+import Icon9 from '@/assets/images/productFeats/Icon9.svg';
+import Icon10 from '@/assets/images/productFeats/Icon10.svg';
+import Icon11 from '@/assets/images/productFeats/Icon11.svg';
+import Icon12 from '@/assets/images/productFeats/Icon12.svg';
+import Icon13 from '@/assets/images/productFeats/Icon13.svg';
 
 defineProps<{
   items: { label: string; value: string }[];

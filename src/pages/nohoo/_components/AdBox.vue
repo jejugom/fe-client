@@ -38,7 +38,7 @@
         <span class="text-surface-300 font-regular text-base">출처: FX</span>
       </div>
       <GoldPriceCard class="mb-8" />
-      <img :src="Gold" alt="Gold Banner" />
+      <Banner />
     </div>
 
     <div v-if="selectedTab === '펀드'">
@@ -47,6 +47,7 @@
       </div>
       <Banner v-else />
     </div>
+
     <div v-if="selectedTab === '신탁'">
       <div v-if="news.length > 0">
         <NewsCard :newsItem="news[0]" />
@@ -66,6 +67,8 @@ import Gold from '@/assets/images/goldBanner.webp';
 import type { News } from '@/api/nohoo/nohoo';
 import NewsCard from '@/components/cards/NewsCard.vue';
 
+const graphStore = useGraphStore();
+
 defineProps<{
   selectedTab: string;
   userName: string;
@@ -73,6 +76,4 @@ defineProps<{
   assetSummary: { category: string; amount: number }[];
   news: News[];
 }>();
-
-const graphStore = useGraphStore();
 </script>

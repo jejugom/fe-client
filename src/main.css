@@ -139,7 +139,7 @@
 }
 @font-face {
   font-family: 'TTHakgyoansimYeohaengR';
-  src: url('./styles/fonts/hakgyoansim/HakgyoansimYeohaengR.ttf')
+  src: url('./styles/fonts/hakgyoansim/HakgyoansimMulgyeolR.ttf')
     format('truetype');
   font-display: swap;
 }
