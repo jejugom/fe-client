@@ -104,6 +104,7 @@
                 height="300"
               ></apexchart>
             </div>
+            <!-- 차트 데이터가 없을 때 처리 -->
             <div
               v-else
               class="text-primary-500 flex h-64 items-center justify-center"
