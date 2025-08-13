@@ -1,10 +1,4 @@
-<!--
-  노후도락 홈페이지
-  
-  사용자의 로그인 상태에 따라 다른 UI를 제공해야함
-  - 비로그인: 카카오 로그인 유도 메시지 및 버튼
-  - 로그인: 개인화된 인사말, 자산 정보, 맞춤형 서비스 제공
--->
+<!-- 노후도락 홈페이지: 로그인 상태별 맞춤형 UI 제공 -->
 <template>
   <div class="flex flex-col gap-16">
     <!-- 비로그인 사용자를 대상 로그인 유도 -->
@@ -16,21 +10,7 @@
         <p class="text-surface-500">
           카카오로 로그인해서 맞춤형 금융 서비스를 시작해보세요
         </p>
-        <!-- 카카오 로그인 버튼 - auth store를 통해 OAuth2.0 플로우 시작 -->
-        <!-- 현재 구현방식 - 서버사이드 (백엔드에서 모든 로직 처리) -->
-        <!-- 백엔드에서 처리 후에 [ jwt 토큰, 신규사용자 여부, 리다이렉트 주소] 전달 -->
-        <!-- 강사님 피드백 (고도화때 처리)
-       1. 로그인 요청을 백엔드로 보내고 필터로 가로채서 구현
-       2. 주소에 jwt 토큰 정보 담기는것을 막기위해 httpOnly 쿠키로 보낼 것
-       -->
-
-        <!-- <Btn
-        color="secondary"
-        label="카카오 시작하기"
-        size="large"
-        @click="authStore.startKakaoLogin"
-        class="w-full"
-      /> -->
+        <!-- 카카오 로그인 버튼 -->
         <div class="flex justify-center">
           <img
             :src="KakaoLoginBtn"
@@ -67,7 +47,7 @@
     </div>
 
     <!-- 맞춤형 서비스 카드 -->
-    <section class="">
+    <section>
       <h2 class="text-primary-500 mb-4 text-2xl font-bold"
         >지금 필요한 것만, 딱 맞게 준비해요</h2
       >
@@ -79,7 +59,6 @@
           :content1="card.content1"
           :content2="card.content2"
           color="secondary"
-          class=""
           @click="handlers[card.onClick]"
         >
           <template #icon>
@@ -156,11 +135,9 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
-import Top3Products from '@/components/cards/Top3ProductsCard.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { fetchHomeData, type HomeData } from '@/api/home';
 import IconCard from '@/components/cards/IconCard.vue';
-import AdBanner from '@/assets/images/AdBanner.png';
 import Home1 from '@/assets/images/Home1.svg';
 import Home2 from '@/assets/images/Home2.svg';
 import Home3 from '@/assets/images/Home3.svg';
@@ -168,8 +145,6 @@ import Home4 from '@/assets/images/Home4.svg';
 import Home5 from '@/assets/images/Home5.svg';
 import Home6 from '@/assets/images/Home6.svg';
 import KakaoLoginBtn from '@/assets/images/kakao_login_medium_wide.png';
-import Banner from '@/components/cards/Banner.vue';
-import ArrowIcon from '@/assets/icons/Arrow45.svg';
 import TextBtn from '@/components/buttons/TextBtn.vue';
 
 /** Vue Router 인스턴스 - 페이지 네비게이션용 */
@@ -187,7 +162,7 @@ onMounted(async () => {
     try {
       homeData.value = await fetchHomeData();
     } catch (error) {
-      console.error('홈 데이터 요청 실패', error);
+      // console.error('홈 데이터 요청 실패', error);
       loadingStore.setError(true);
     } finally {
       loadingStore.stopLoading();
@@ -199,12 +174,13 @@ onMounted(async () => {
 const totalAsset = computed(() => homeData.value?.userSummary.asset ?? 0);
 
 /**
- * @param value "1234567"
- * @returns "1,234,567원"
+ * 숫자를 한국 통화 형식으로 포맷팅
+ * @param value 포맷팅할 숫자 (예: 1234567)
+ * @returns 포맷팅된 문자열 (예: "1,234,567원")
  */
-const formatCurrency = (value: number): string => {
+function formatCurrency(value: number): string {
   return value.toLocaleString('ko-KR') + '원';
-};
+}
 
 // 맞춤형 서비스 카드
 const serviceCards = [
@@ -231,6 +207,7 @@ const serviceCards = [
   },
 ];
 
+// 서비스 카드 클릭 핸들러
 const handlers: Record<string, () => void> = {
   goToNohoo: () => {
     router.push({ name: 'nohoo' });
@@ -247,38 +224,25 @@ const handlers: Record<string, () => void> = {
  * 자산 등록 수정 페이지로 이동
  * 로그인된 사용자에게만 노출
  */
-const goToEditAsset = () => {
+function goToEditAsset() {
   router.push({ name: 'edit-asset' });
-};
+}
 
-// 맞춤형 금융상품
-const slides = computed(() => {
-  if (!homeData.value) return [];
-  return homeData.value.recommandTop3.map((product) => ({
-    prod_name: product.fin_prdt_nm,
-    description: product.prdt_feature,
-    rate: product.intr_rate,
-  }));
-});
-
-// 하단 노후도락 설명
+// 하단 서비스 특징 설명 데이터
 const features = [
   {
-    image: '',
     keyword: '',
     suffix: '누르기만',
     description: '하면 끝!',
     src: Home4,
   },
   {
-    image: '',
     keyword: '',
     suffix: '믿을 수 있는',
     description: '정보만',
     src: Home5,
   },
   {
-    image: '',
     keyword: '',
     suffix: '나한테',
     description: '딱 맞는 상품',
@@ -299,9 +263,16 @@ type Branch = {
 const myPos = ref<{ lat: number; lng: number } | null>(null);
 const nearestBranch = ref<Branch | null>(null);
 
-/* 거리 계산 */
+/**
+ * Haversine 공식을 사용한 두 지점 간 거리 계산
+ * @param lat1 첫 번째 지점의 위도
+ * @param lng1 첫 번째 지점의 경도
+ * @param lat2 두 번째 지점의 위도
+ * @param lng2 두 번째 지점의 경도
+ * @returns 두 지점 간 거리 (미터)
+ */
 function haversine(lat1: number, lng1: number, lat2: number, lng2: number) {
-  const R = 6371e3;
+  const R = 6371e3; // 지구 반지름 (미터)
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLng = ((lng2 - lng1) * Math.PI) / 180;
   const a =
@@ -311,16 +282,27 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number) {
       Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(a));
 }
+
+/**
+ * 미터 단위 거리를 읽기 쉬운 형태로 포맷팅
+ * @param m 거리 (미터)
+ * @returns 포맷팅된 거리 문자열 (예: "500m", "1.2km")
+ */
 function formatDistance(m: number) {
   return m < 1000 ? `${Math.round(m)}m` : `${(m / 1000).toFixed(1)}km`;
 }
 
-/* 지도에서 보기 */
+/**
+ * 해당 지점을 카카오맵에서 새 창으로 열기
+ * @param branch 지점 정보
+ */
 function openMap(branch: Branch) {
   window.open(branch.placeUrl, '_blank');
 }
 
-/* 카카오맵 검색 */
+/**
+ * 현재 위치 주변 KB골든라이프 지점 검색
+ */
 function searchNearestBranch() {
   if (!myPos.value) return;
   const ps = new kakao.maps.services.Places();
@@ -329,7 +311,7 @@ function searchNearestBranch() {
     'KB골든라이프',
     (data: any[], status: string) => {
       if (status !== kakao.maps.services.Status.OK) {
-        console.error('검색 실패');
+        // console.error('검색 실패');
         return;
       }
       const branches = data.map((item) => {
@@ -354,7 +336,7 @@ function searchNearestBranch() {
   );
 }
 
-/* 위치 + 검색 실행 */
+// 현재 위치 조회 및 가장 가까운 지점 검색
 onMounted(() => {
   if (!('geolocation' in navigator)) return;
   navigator.geolocation.getCurrentPosition(
@@ -362,8 +344,8 @@ onMounted(() => {
       myPos.value = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       searchNearestBranch();
     },
-    (err) => {
-      console.error('위치 조회 실패', err);
+    (_err) => {
+      // console.error('위치 조회 실패', _err);
     },
     { enableHighAccuracy: true, timeout: 10000 }
   );

@@ -1,4 +1,3 @@
-<!-- 회원가입완료 -->
 <template>
   <div class="flex min-h-[calc(80vh-9rem)] items-center">
     <div
@@ -39,9 +38,9 @@ import Btn from '@/components/buttons/Btn.vue';
 import Logo from '@/assets/logos/typo.svg';
 
 const router = useRouter();
-const userType = ref('안정적인 주식형 자산가'); // 개발용 기본값
+const userType = ref('안정적인 주식형 자산가');
 
-const fetchUserType = async () => {
+async function fetchUserType() {
   try {
     // TODO: API 호출로 사용자 유형 가져오기
     // [GET] /api/v1/preferences
@@ -51,16 +50,16 @@ const fetchUserType = async () => {
     // }
     // userType.value = response.data.description;
   } catch (error) {
-    console.error('사용자 유형 조회 실패:', error);
+    // console.error('사용자 유형 조회 실패:', error);
   }
-};
+}
 
 onMounted(() => {
   // TODO: 실제 API 연동 시 주석 해제
   // fetchUserType();
 });
 
-const goToHome = () => {
+function goToHome() {
   router.push({ name: 'home' });
-};
+}
 </script>

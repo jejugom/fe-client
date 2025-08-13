@@ -71,13 +71,13 @@ const formattedDisplay = computed(() => {
   return props.modelValue;
 });
 
-const openNativePicker = () => {
+function openNativePicker() {
   nativeDate.value?.showPicker?.(); // 지원 브라우저
   nativeDate.value?.click(); // 폴백
-};
+}
 
-const onNativeChange = (e: Event) => {
+function onNativeChange(e: Event) {
   const v = (e.target as HTMLInputElement).value; // YYYY-MM-DD
   emit('update:modelValue', v);
-};
+}
 </script>

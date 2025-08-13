@@ -1,6 +1,4 @@
 <template>
-  <!-- guno: featured from wina's branch select modal -->
-
   <!-- 현재 위치 표시 -->
   <div class="mb-8">
     <h2 class="text-primary-500 mb-2 text-2xl font-bold">
@@ -95,7 +93,7 @@ const showErrorAlert = ref(false);
 const errorAlertMessage = ref('');
 let map: kakao.maps.Map;
 
-const searchPlaces = () => {
+function searchPlaces() {
   const ps = new kakao.maps.services.Places();
 
   ps.keywordSearch(
@@ -123,16 +121,16 @@ const searchPlaces = () => {
       }
     }
   );
-};
+}
 
-const normalizeBranchName = (name: string) => {
+function normalizeBranchName(name: string) {
   return name
     .replace(/KB국민은행\s*/g, '')
     .replace(/점/g, '')
     .trim();
-};
+}
 
-const onAlertConfirm = () => {
+function onAlertConfirm() {
   showSuccessAlert.value = false;
   const from = q(route.query.from);
   if (from === 'profile') {
@@ -140,12 +138,13 @@ const onAlertConfirm = () => {
   } else {
     router.push({ name: 'asset-signup-complete' });
   }
-};
+}
 
-const q = (v: unknown) =>
-  Array.isArray(v) ? String(v[0] ?? '') : v != null ? String(v) : '';
+function q(v: unknown) {
+  return Array.isArray(v) ? String(v[0] ?? '') : v != null ? String(v) : '';
+}
 
-const handleSkip = () => {
+function handleSkip() {
   const from = q(route.query.from);
 
   if (from === 'profile') {
@@ -153,9 +152,9 @@ const handleSkip = () => {
   } else {
     router.push({ name: 'asset-signup-complete' });
   }
-};
+}
 
-const handleComplete = async () => {
+async function handleComplete() {
   if (!selectedBranch.value) {
     errorAlertMessage.value = '지점을 선택해주세요.';
     showErrorAlert.value = true;
@@ -178,19 +177,19 @@ const handleComplete = async () => {
     currentBranch.value = displaySelectedBranchName.value; // 현재 지점 업데이트
     showSuccessAlert.value = true;
   } catch (error) {
-    console.error('지점 설정 실패:', error);
+    // console.error('지점 설정 실패:', error);
     errorAlertMessage.value =
       '지점 설정 중 오류가 발생했습니다. 다시 시도해주세요.';
     showErrorAlert.value = true;
   }
-};
+}
 
 onMounted(async () => {
   try {
     const myBranch = await branchApi.getMyBranch();
     currentBranch.value = myBranch.branchName;
   } catch (error) {
-    console.error('내 지점 정보 조회 실패:', error);
+    // console.error('내 지점 정보 조회 실패:', error);
   }
 
   navigator.geolocation.getCurrentPosition((position) => {

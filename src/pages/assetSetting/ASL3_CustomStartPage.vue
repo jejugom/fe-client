@@ -1,4 +1,3 @@
-<!-- 개인설정시작 -->
 <template>
   <div class="flex min-h-[calc(80vh-9rem)] items-center">
     <div
@@ -33,7 +32,7 @@ import Btn from '@/components/buttons/Btn.vue';
 
 const router = useRouter();
 
-const goToCustomQuiz = () => {
+function goToCustomQuiz() {
   router.push({ name: 'asset-custom-quiz' });
-};
+}
 </script>

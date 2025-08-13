@@ -1,4 +1,3 @@
-<!-- 자산연동시작 -->
 <template>
   <div class="flex min-h-[calc(80vh-9rem)] items-center">
     <div
@@ -30,7 +29,7 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
-const goToKookminLogin = () => {
+function goToKookminLogin() {
   // 현재 route의 쿼리 파라미터 확인
   const isFromProfile = route.query.from === 'profile';
 
@@ -39,5 +38,5 @@ const goToKookminLogin = () => {
     name: 'asset-kookmin-login',
     query: isFromProfile ? { from: 'profile' } : {},
   });
-};
+}
 </script>

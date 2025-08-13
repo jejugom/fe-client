@@ -1,5 +1,5 @@
 <template>
-  <!-- 새로운 자산 등록 Content -->
+  <!-- 자산 관리 페이지 -->
   <div class="space-y-8">
     <!-- 자산 등록 버튼과 카테고리 필터 섹션 -->
     <div class="flex items-center justify-between">
@@ -129,7 +129,7 @@ const validationErrors = ref({
 const focusedField = ref('');
 
 // 자산 데이터 업데이트 핸들러
-const handleAssetUpdate = (updatedAsset) => {
+function handleAssetUpdate(updatedAsset) {
   const previousAsset = { ...newAsset.value };
   newAsset.value = updatedAsset;
 
@@ -142,19 +142,19 @@ const handleAssetUpdate = (updatedAsset) => {
       validationErrors.value[key] = false;
     }
   });
-};
+}
 
 // 포커스 이벤트 핸들러
-const handleFocus = (fieldName) => {
+function handleFocus(fieldName) {
   focusedField.value = fieldName;
-};
+}
 
-const handleBlur = () => {
+function handleBlur() {
   focusedField.value = '';
-};
+}
 
 // 유효성 검사 및 포커스 상태 초기화 (중복 코드 제거)
-const resetValidationState = () => {
+function resetValidationState() {
   validationErrors.value = {
     type: false,
     name: false,
@@ -162,7 +162,7 @@ const resetValidationState = () => {
     companyType: false,
   };
   focusedField.value = '';
-};
+}
 
 const selectedOption = ref('');
 
@@ -173,7 +173,7 @@ const assets = ref([]);
 const categoryOptions = Object.values(ASSET_CATEGORY_MAP);
 
 // 금액을 억/만원 단위로 포맷팅하는 함수
-const formatAmount = (amountInManwon) => {
+function formatAmount(amountInManwon) {
   if (
     amountInManwon === null ||
     amountInManwon === '' ||
@@ -188,7 +188,7 @@ const formatAmount = (amountInManwon) => {
     return `${eok.toLocaleString()}억 ${manwon > 0 ? manwon.toLocaleString() + '만원' : ''}`;
   }
   return `${amount.toLocaleString()}만원`;
-};
+}
 
 // 선택된 카테고리에 따라 자산 필터링 및 금액 포맷팅
 const filteredAssets = computed(() => {
@@ -202,7 +202,7 @@ const filteredAssets = computed(() => {
   }));
 });
 
-const editAsset = (assetId) => {
+function editAsset(assetId) {
   const assetToEdit = assets.value.find((asset) => asset.id === assetId);
   if (assetToEdit) {
     modalTitle.value = '자산 수정하기';
@@ -213,9 +213,9 @@ const editAsset = (assetId) => {
     resetValidationState();
     isModalOpen.value = true;
   }
-};
+}
 
-const deleteAsset = (assetId) => {
+function deleteAsset(assetId) {
   if (assetId === null || assetId === undefined) {
     alertMessage.value = '유효하지 않은 자산 ID입니다.';
     showAlert.value = true;
@@ -223,9 +223,9 @@ const deleteAsset = (assetId) => {
   }
   assetIdToDelete.value = assetId;
   showDeleteConfirmModal.value = true;
-};
+}
 
-const confirmDeleteAsset = async () => {
+async function confirmDeleteAsset() {
   showDeleteConfirmModal.value = false;
   try {
     await assetsApi.deleteAsset(assetIdToDelete.value);
@@ -233,15 +233,15 @@ const confirmDeleteAsset = async () => {
     alertMessage.value = '자산이 삭제되었습니다.';
     showAlert.value = true;
   } catch (error) {
-    console.error('자산 삭제 실패:', error);
+    // console.error('자산 삭제 실패:', error);
     alertMessage.value = '자산 삭제 중 오류가 발생했습니다. 다시 시도해주세요.';
     showAlert.value = true;
   } finally {
     assetIdToDelete.value = null;
   }
-};
+}
 
-const addNewAsset = () => {
+function addNewAsset() {
   modalTitle.value = '새 자산 등록하기';
   newAsset.value = {
     id: null,
@@ -252,14 +252,14 @@ const addNewAsset = () => {
   };
   resetValidationState();
   isModalOpen.value = true;
-};
+}
 
-const closeModal = () => {
+function closeModal() {
   resetValidationState();
   isModalOpen.value = false;
-};
+}
 
-const saveNewAsset = async () => {
+async function saveNewAsset() {
   resetValidationState();
 
   const missingFields = [];
@@ -321,25 +321,25 @@ const saveNewAsset = async () => {
     alertMessage.value = successMessage;
     showAlert.value = true;
   } catch (error) {
-    console.error('자산 저장 실패:', error);
+    // console.error('자산 저장 실패:', error);
     alertMessage.value = '자산 저장 중 오류가 발생했습니다. 다시 시도해주세요.';
     showAlert.value = true;
   }
-};
+}
 
-const goToProfilePage = () => {
+function goToProfilePage() {
   router.push({ name: 'profile' });
-};
+}
 
-const loadAssets = async () => {
+async function loadAssets() {
   try {
     const apiResponse = await assetsApi.getAssets();
     assets.value = transformApiResponseToAssets(apiResponse);
   } catch (error) {
-    console.error('자산 조회 실패:', error);
+    // console.error('자산 조회 실패:', error);
     assets.value = transformApiResponseToAssets(assetsApiResponse);
   }
-};
+}
 
 onMounted(() => {
   loadAssets();

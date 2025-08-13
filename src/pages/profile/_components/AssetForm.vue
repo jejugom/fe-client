@@ -78,8 +78,7 @@
         금액을 입력하세요
       </label>
       <div class="relative w-full">
-        <!--guno: type="number" 로 구현하면 스피너(오른쪽 토글)가 발생하여 사용성에 문제있음 -->
-        <!-- 문자열로 관리하여 스피너 발생 방지 -->
+        <!-- 숫자 입력 시 스피너 제거를 위해 text 타입 사용 -->
         <InputBox
           id="assetAmount"
           placeholder="금액을 입력하세요"
@@ -141,22 +140,22 @@ const emit = defineEmits<{
 const categoryOptions = Object.values(ASSET_CATEGORY_MAP);
 
 // 자산 데이터 업데이트
-const updateAsset = (field: keyof Asset, value: string) => {
+function updateAsset(field: keyof Asset, value: string) {
   const updatedAsset = { ...props.asset, [field]: value };
   emit('update:asset', updatedAsset);
-};
+}
 
 // 포커스 이벤트 핸들러
-const handleFocus = (fieldName: string) => {
+function handleFocus(fieldName: string) {
   emit('focus', fieldName);
-};
+}
 
-const handleBlur = (fieldName: string) => {
+function handleBlur(fieldName: string) {
   emit('blur', fieldName);
-};
+}
 
 // 금액 포맷팅 함수
-const formatAmount = (amountInManwon: string) => {
+function formatAmount(amountInManwon: string) {
   if (amountInManwon === '' || isNaN(Number(amountInManwon))) {
     return '0원';
   }
@@ -167,7 +166,7 @@ const formatAmount = (amountInManwon: string) => {
     return `${eok.toLocaleString()}억 ${manwon > 0 ? manwon.toLocaleString() + '만원' : ''}`;
   }
   return `${amount.toLocaleString()}만원`;
-};
+}
 
 // 입력 필드 클래스 결정
 const getInputClass = computed(() => {
