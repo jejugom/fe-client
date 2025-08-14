@@ -1,4 +1,3 @@
-<!-- @/components/forms/FormField.vue -->
 <template>
   <div class="form-field">
     <label class="text-primary-500 mb-1 text-base font-semibold">

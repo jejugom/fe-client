@@ -104,6 +104,7 @@
                 height="300"
               ></apexchart>
             </div>
+            <!-- 차트 데이터가 없을 때 처리 -->
             <div
               v-else
               class="text-primary-500 flex h-64 items-center justify-center"
@@ -153,7 +154,7 @@
             <div v-else class="group mx-1 mb-4 flex items-start">
               <!-- 숫자 인덱스 -->
               <div
-                class="bg-primary-500 mt-2 mr-4 flex h-7 w-7 items-center justify-center rounded-full font-bold text-white"
+                class="text-primary-300 mt-2 mr-4 flex h-7 w-7 items-center justify-center text-3xl font-black"
               >
                 {{ item.globalIndex }}
               </div>

@@ -24,6 +24,11 @@
             v-for="option in relationshipOptions"
             :key="option"
             :value="option"
+            :disabled="
+              option === '배우자' &&
+              spouseExists &&
+              !(isEditing && formData.relationship === '배우자')
+            "
           >
             {{ option }}
           </option>
@@ -40,16 +45,19 @@
       </FormField>
 
       <FormField label="결혼하셨나요?">
-        <SelectBox v-model="formData.isMarried" size="medium" class="w-full">
+        <SelectBox
+          v-model="formData.isMarried"
+          size="medium"
+          class="w-full"
+          :disabled="formData.relationship === '배우자'"
+        >
           <option disabled :value="null">선택하세요</option>
           <option :value="true">예</option>
           <option :value="false">아니오</option>
         </SelectBox>
       </FormField>
 
-      <FormField
-        :label="`최근 10년 내 ${formData.recipientName || '수증자'}에게 증여한 적 있나요?`"
-      >
+      <FormField :label="`최근 10년 내 수증자에게 증여한 적 있나요?`">
         <SelectBox v-model="formData.hasPriorGift" size="medium" class="w-full">
           <option disabled :value="null">선택하세요</option>
           <option :value="true">예</option>
@@ -66,7 +74,6 @@
               placeholder="금액을 입력하세요"
               v-model="priorGiftAmountInTenThousand"
               class="w-full"
-              @input="handleAmountInput"
             />
             <span
               class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-base"
@@ -94,21 +101,20 @@
       </FormField>
     </div>
   </Modal>
-  <Alert
-    v-if="showAlert"
-    @click="showAlert = false"
-    title="모든 필수 정보를 입력해 주세요"
-  >
-    <ul>
-      <li v-for="field in missingFieldsForAlert" :key="field">
-        - {{ field }}
-      </li>
-    </ul>
+  <Alert v-if="showAlert" @click="showAlert = false">
+    <div class="text-center">
+      <p class="mb-2 font-semibold">모든 필수 정보를 입력해 주세요:</p>
+      <ul class="list-none text-left">
+        <li v-for="field in missingFieldsForAlert" :key="field" class="ml-4">
+          - {{ field }}
+        </li>
+      </ul>
+    </div>
   </Alert>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineEmits, defineProps } from 'vue';
+import { ref, watch, defineEmits, defineProps, computed } from 'vue';
 import Modal from '@/components/modals/Modal.vue';
 import Alert from '@/components/modals/Alert.vue';
 import InputBox from '@/components/forms/InputBox.vue';
@@ -121,6 +127,7 @@ import { formatCurrency } from '@/utils/format';
 interface Props {
   recipient?: RecipientRequestDto | null;
   isEditing?: boolean;
+  spouseExists?: boolean;
 }
 
 interface Emits {
@@ -128,10 +135,10 @@ interface Emits {
   (e: 'confirm', recipient: RecipientRequestDto): void;
 }
 
-// `mode` prop 제거
 const props = withDefaults(defineProps<Props>(), {
   recipient: null,
   isEditing: false,
+  spouseExists: false,
 });
 
 const emit = defineEmits<Emits>();
@@ -152,68 +159,77 @@ const formData = ref<RecipientRequestDto>(
   props.recipient ? { ...props.recipient } : createDefaultRecipient()
 );
 
-const priorGiftAmountInTenThousand = ref<string>('');
 const showAlert = ref(false);
 const missingFieldsForAlert = ref<string[]>([]);
 
-// 숫자 입력 처리 함수
-const handleAmountInput = (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  const raw = target.value.replace(/[^\d]/g, '');
-  formData.value.priorGiftAmount = Number(raw) * 10000 || undefined;
-  priorGiftAmountInTenThousand.value = raw;
-};
+// 만원 단위 입력을 위한 계산된 속성
+const priorGiftAmountInTenThousand = computed({
+  get: () =>
+    formData.value.priorGiftAmount != null
+      ? String(formData.value.priorGiftAmount / 10000)
+      : '',
+  set: (value) => {
+    const raw = value.replace(/[^\d]/g, '');
+    formData.value.priorGiftAmount = raw ? Number(raw) * 10000 : undefined;
+  },
+});
 
-// 더미 옵션
+// 관계 옵션
 const relationshipOptions = ['자녀', '배우자', '손자녀', '형제자매', '기타'];
 
-// `hasPriorGift` 변경 시 `priorGiftAmount`와 `priorGiftAmountInTenThousand` 초기화
+// 관계가 '배우자'로 변경될 때, 결혼 여부를 '예'로 자동 설정
+watch(
+  () => formData.value.relationship,
+  (newRelationship) => {
+    if (newRelationship === '배우자') {
+      formData.value.isMarried = true;
+    }
+  }
+);
+
+// `hasPriorGift` 변경 시 `priorGiftAmount` 초기화
 watch(
   () => formData.value.hasPriorGift,
   (newVal) => {
     if (newVal !== true) {
       formData.value.priorGiftAmount = undefined;
-      priorGiftAmountInTenThousand.value = '';
     }
   }
 );
 
-// Props가 변경될 때 `formData` 동기화 및 `priorGiftAmountInTenThousand` 설정
+// Props가 변경될 때 `formData` 동기화
 watch(
   () => props.recipient,
   (newRecipient) => {
-    if (newRecipient) {
-      formData.value = { ...newRecipient };
-      priorGiftAmountInTenThousand.value = newRecipient.priorGiftAmount
-        ? String(newRecipient.priorGiftAmount / 10000)
-        : '';
-    } else {
-      formData.value = createDefaultRecipient();
-      priorGiftAmountInTenThousand.value = '';
-    }
+    formData.value = newRecipient
+      ? { ...newRecipient }
+      : createDefaultRecipient();
   },
   { immediate: true }
 );
 
+// 유효성 검사 규칙 정의
+const validationRules: {
+  [key: string]: (data: RecipientRequestDto) => boolean | string;
+} = {
+  recipientName: (data) =>
+    (data.recipientName && data.recipientName.trim() !== '') || '이름',
+  relationship: (data) => !!data.relationship || '관계',
+  birthDate: (data) => !!data.birthDate || '생년월일',
+  isMarried: (data) => data.isMarried !== null || '결혼 여부',
+  hasPriorGift: (data) => data.hasPriorGift !== null || '최근 10년간 증여 여부',
+  priorGiftAmount: (data) =>
+    !data.hasPriorGift ||
+    (data.priorGiftAmount != null && data.priorGiftAmount >= 0) ||
+    '증여 금액',
+  giftTaxPayer: (data) => !!data.giftTaxPayer || '증여세 납부자',
+};
+
 // 제출 처리 함수
 const handleSubmit = () => {
-  const missingFields: string[] = [];
-
-  // 모든 필드에 대한 유효성 검사
-  if (!formData.value.recipientName.trim()) missingFields.push('이름');
-  if (!formData.value.relationship) missingFields.push('관계');
-  if (!formData.value.birthDate) missingFields.push('생년월일');
-  if (formData.value.isMarried === null) missingFields.push('결혼 여부');
-  if (formData.value.hasPriorGift === null)
-    missingFields.push('최근 10년간 증여 여부');
-  if (
-    formData.value.hasPriorGift === true &&
-    (formData.value.priorGiftAmount === undefined ||
-      formData.value.priorGiftAmount < 0)
-  ) {
-    missingFields.push('증여 금액');
-  }
-  if (!formData.value.giftTaxPayer) missingFields.push('증여세 납부자');
+  const missingFields = Object.keys(validationRules)
+    .map((field) => validationRules[field](formData.value))
+    .filter((result): result is string => typeof result === 'string');
 
   if (missingFields.length > 0) {
     missingFieldsForAlert.value = missingFields;
