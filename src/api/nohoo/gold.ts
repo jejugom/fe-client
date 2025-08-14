@@ -1,12 +1,8 @@
 import axios from 'axios';
+import type { GoldPrice } from '@/types/nohoo/gold';
 
 const API_KEY = import.meta.env.VITE_ALPHA_VANTAGE_KEY;
 const BASE_URL = 'https://www.alphavantage.co/query';
-
-export interface GoldPrice {
-  date: string;
-  price: number;
-}
 
 export const fetchGoldPrice = async (): Promise<GoldPrice[]> => {
   const url = `${BASE_URL}?function=TIME_SERIES_DAILY&symbol=XAUUSD&apikey=${API_KEY}`;

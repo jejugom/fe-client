@@ -4,12 +4,15 @@
     <Header class="sticky top-0 z-50 w-full max-w-[600px]" />
 
     <!-- 본문 영역 -->
-    <main class="relative w-full max-w-[600px] flex-1 bg-[#fcfcfc] p-5">
+    <main
+      class="relative w-full max-w-[600px] flex-1 bg-[#fcfcfc] p-[20px] pb-[60px]"
+    >
       <router-view />
       <Floating />
       <LoadingPage v-if="loadingStore.isLoading" />
       <FailPage v-else-if="loadingStore.hasError" />
     </main>
+    <footer class="relative w-full max-w-[600px] flex-1"> <Footer /></footer>
 
     <!-- 하단 고정 탭바 -->
     <TabBar
@@ -27,6 +30,7 @@ import TabBar from './TabBar.vue';
 import LoadingPage from '@/pages/etc/ETL1_LoadingPage.vue';
 import FailPage from '@/pages/etc/ETL1_FailPage.vue';
 import Floating from './Floating.vue';
+import Footer from './Footer.vue';
 
 const loadingStore = useLoadingStore();
 const authStore = useAuthStore();

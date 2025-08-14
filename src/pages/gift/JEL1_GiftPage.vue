@@ -2,7 +2,7 @@
   <div class="space-y-16">
     <div>
       <h2 class="text-primary-500 mb-3 text-2xl font-bold">
-        자녀에게 미리 마음을 전하고 싶다면
+        미리 마음을 전하고 싶다면
       </h2>
       <p class="mb-8">
         복잡하고 어려운 증여와 상속, <br />

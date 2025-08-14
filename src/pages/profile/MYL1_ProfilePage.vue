@@ -132,11 +132,11 @@ const confirmWithdrawal = async () => {
 
 const menuItems = ref([
   { id: 'profile', title: '내 정보 고치기' },
+  { id: 'register', title: '내 예약 내역 확인 및 고치기' },
   { id: 'revenue', title: '내 은행 지점 바꾸기' },
-  { id: 'investment-reset', title: '내 투자 성향 다시 선택하기' },
+  { id: 'calculation', title: '내 자산 자동 연결하기' },
+  { id: 'investment-reset', title: '내 투자 성향 선택하기' },
   { id: 'asset', title: '내 자산 고치기' },
-  { id: 'register', title: '예약 내역 확인 및 수정하기' },
-  { id: 'calculation', title: '자산 다시 연결하기' },
   { id: 'tutorial', title: '사용 방법 보기' },
   { id: 'logout', title: '로그아웃' },
   { id: 'withdrawal', title: '회원 탈퇴' },

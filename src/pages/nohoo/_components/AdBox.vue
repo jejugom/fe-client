@@ -38,7 +38,7 @@
         <span class="text-surface-300 font-regular text-base">출처: FX</span>
       </div>
       <GoldPriceCard class="mb-8" />
-      <img :src="Gold" alt="Gold Banner" />
+      <Banner />
     </div>
 
     <div v-if="selectedTab === '펀드'">
@@ -47,6 +47,7 @@
       </div>
       <Banner v-else />
     </div>
+
     <div v-if="selectedTab === '신탁'">
       <div v-if="news.length > 0">
         <NewsCard :newsItem="news[0]" />
@@ -62,10 +63,10 @@ import Banner from '@/components/cards/Banner.vue';
 import InterestRateCard from './InterestRateCard.vue';
 import GoldPriceCard from './GoldPriceCard.vue';
 import { useGraphStore } from '@/stores/interestRate';
-import Gold from '@/assets/images/goldBanner.png';
-import type { News } from '@/api/nohoo/nohoo';
+import type { News } from '@/types/nohoo/nohoo';
 import NewsCard from '@/components/cards/NewsCard.vue';
-import AssetSummaryCardPie from '@/components/cards/AssetSummaryCardPie.vue';
+
+const graphStore = useGraphStore();
 
 defineProps<{
   selectedTab: string;
@@ -74,6 +75,4 @@ defineProps<{
   assetSummary: { category: string; amount: number }[];
   news: News[];
 }>();
-
-const graphStore = useGraphStore();
 </script>

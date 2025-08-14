@@ -80,7 +80,7 @@
   </div>
 
   <!-- 주택담보 -->
-  <div v-else-if="category === '주택담보대출'" class="space-y-4">
+  <div v-else-if="category === '주택담보'" class="space-y-4">
     <div class="space-y-2">
       <h3 class="text-primary-500 font-semibold">금리유형</h3>
       <div class="flex flex-wrap gap-2">
