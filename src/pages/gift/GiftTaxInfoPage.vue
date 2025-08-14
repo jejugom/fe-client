@@ -162,9 +162,6 @@
       <div
         class="custom-shadow border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8"
       >
-        <!-- <h2 class="text-primary-500 mb-4 text-lg font-semibold">
-          국세청 자료를 참고하세요
-        </h2> -->
         <iframe
           class="h-60 w-full"
           src="https://www.youtube.com/embed/eWztSg6_9lU"
@@ -177,7 +174,7 @@
           <a
             href="https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=2340&cntntsId=7728"
             target="_blank"
-            class="text-primary-300 font-semibold underline"
+            class="text-primary-300 underline"
           >
             🔗 국세청 홈페이지에서 세액계산 흐름도를 확인해 보세요
           </a>

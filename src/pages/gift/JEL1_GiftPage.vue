@@ -68,6 +68,7 @@ const router = useRouter();
 
 const goToGiftStart = () => router.push({ name: 'gift-start' });
 const goToInheritanceStart = () => router.push({ name: 'inheritance-start' });
-const goToInheritanceProducts = () => router.push({ name: 'nohoo' });
+const goToInheritanceProducts = () =>
+  router.push({ name: 'nohoo', query: { tab: '신탁' } });
 const goToFAQ = () => router.push({ name: 'gift-faq' });
 </script>
