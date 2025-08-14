@@ -25,7 +25,7 @@
           :disabled="isReserved"
           :color="selectedTime === time ? 'primary' : 'surface'"
           :class="[
-            'w-full',
+            'w-full text-[16px]',
             selectedTime === time ? 'bg-primary-300 text-white' : '',
             isReserved ? 'cursor-not-allowed opacity-40' : '',
           ]"

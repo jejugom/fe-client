@@ -62,7 +62,7 @@ export const privateAllow = [
     title: '8. 부칙',
     content: `
       <ul class='list-disc pl-5'>
-        <li>본 방침은 2025년 8월 13일부터 적용됩니다.</li>
+        <li>본 방침은 2025년 8월 9일부터 적용됩니다.</li>
         <li>개인정보 처리방침의 변경이 있을 경우 사전 공지합니다.</li>
       </ul>`,
   },

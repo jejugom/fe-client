@@ -1,7 +1,7 @@
 <template>
   <div v-if="hasData" class="card-design flex flex-col gap-2">
     <div class="font-semibold">
-      <div class="text-lg">지금까지 모은 자산은 이렇게 구성돼 있어요</div>
+      <div class="text-lg">지금까지 모은 자산은 이렇게 구성되어 있어요</div>
       <div>총 {{ displayTotal.toLocaleString() }} 원</div>
     </div>
 

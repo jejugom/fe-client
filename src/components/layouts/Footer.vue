@@ -1,6 +1,6 @@
 <template>
   <footer
-    class="bg-surface-200 text-surface-600 relative left-1/2 w-screen max-w-[600px] -translate-x-1/2 px-6 py-8 text-sm"
+    class="bg-surface-400 relative left-1/2 w-screen max-w-[600px] -translate-x-1/2 px-6 py-8 text-sm text-white"
   >
     <div class="grid gap-8 md:grid-cols-3">
       <!-- 유틸리티 & 정책 -->
@@ -47,8 +47,11 @@
       </div>
 
       <!-- 저작권 -->
-      <div class="text-surface-500 flex flex-col justify-end text-xs">
-        <p>© 2025 노후도락. All rights reserved.</p>
+      <div class="flex flex-col justify-end text-xs">
+        <p
+          >© 2025 노후도락(제주는 곰이 부리고.. 안녕하세요, 곰입니다). All
+          rights reserved.</p
+        >
         <p>KB IT's Your Life 6기 최종 프로젝트</p>
         <p> 본 서비스는 KB금융그룹과 무관한 비영리 프로젝트입니다.</p>
       </div>

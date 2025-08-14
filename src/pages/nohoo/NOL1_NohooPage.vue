@@ -49,7 +49,7 @@
           <span class="text-gold font-semibold">{{
             recommendationCommentParts.category
           }}</span>
-          상품이 가장 많이 추천되었어요.
+          상품이 가장 많이 추천되었어요
         </p>
       </div>
       <BtnCard

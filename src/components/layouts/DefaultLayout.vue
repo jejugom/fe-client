@@ -4,7 +4,9 @@
     <Header class="sticky top-0 z-50 w-full max-w-[600px]" />
 
     <!-- 본문 영역 -->
-    <main class="relative w-full max-w-[600px] flex-1 bg-[#fcfcfc] p-5">
+    <main
+      class="relative w-full max-w-[600px] flex-1 bg-[#fcfcfc] p-[20px] pb-[60px]"
+    >
       <router-view />
       <Floating />
       <LoadingPage v-if="loadingStore.isLoading" />

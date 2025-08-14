@@ -16,9 +16,10 @@
           alt="icon"
           class="h-20 w-20"
         />
-        <span class="text-surface-300 mt-1 mb-2 text-base font-semibold">{{
-          item.label
-        }}</span>
+        <span
+          class="text-surface-300 mt-1 mb-2 text-center text-base font-semibold"
+          >{{ item.label }}</span
+        >
         <span class="font-point text-primary-500 text-center">
           {{ item.value }}
         </span>

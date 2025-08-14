@@ -45,7 +45,7 @@
 
     <div>
       <h2 class="text-primary-500 mb-4 text-2xl font-bold">
-        지금 필요한 것만, 딱 맞게 준비해요
+        필요한 것만, 딱 맞게 준비해요
       </h2>
       <div class="space-y-4">
         <IconCard
@@ -183,21 +183,21 @@ const formatCurrency = (value: number) => value.toLocaleString('ko-KR') + '원';
 const serviceCards = [
   {
     title: '노후준비',
-    content1: '내가 쓸 돈, 내가 준비해요',
+    content1: '내가 쓸 돈, 내가 준비',
     content2: '연금부터 여유자금까지 차근차근 모아드려요',
     onClick: 'goToNohoo',
     src: Home1,
   },
   {
     title: '증여·상속',
-    content1: '내가 원할 때, 원하는 만큼',
+    content1: '원할 때, 원하는 만큼',
     content2: '가족에게 남기는 마음을 함께 설계해요',
     src: Home2,
     onClick: 'goToGift',
   },
   {
     title: '생활편의',
-    content1: '내 생활이 더 편안해지도록',
+    content1: '더 편안한 생활',
     content2: '하루하루를 활기차게 만들어드려요',
     onClick: 'goToEvent',
     src: Home3,

@@ -567,7 +567,13 @@ const topInfos = computed(() => {
       ];
     case '6':
       return [
-        { label: '보호여부', value: d.depositProtection ?? '-' },
+        {
+          label: '보호여부',
+          value:
+            d.depositProtection === '1인당 5천만원 한도'
+              ? '5천만원'
+              : (d.depositProtection ?? '-'),
+        },
         {
           label: '기준가',
           value: Number(d.basePrice).toFixed(0) + ' 원',
