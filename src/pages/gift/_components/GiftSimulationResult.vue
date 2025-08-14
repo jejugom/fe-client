@@ -110,12 +110,7 @@
               class="text-primary-500 flex h-64 items-center justify-center"
             >
               <div class="text-center">
-                <img
-                  :src="ChartIcon"
-                  alt="Chart Icon"
-                  class="mx-auto h-12 w-12"
-                />
-                <p class="mt-2">차트 데이터를 불러오는 중...</p>
+                <p class="mt-2">차트 데이터가 없어요.</p>
               </div>
             </div>
           </div>
