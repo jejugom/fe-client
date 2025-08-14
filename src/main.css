@@ -110,7 +110,7 @@
   .card-design {
     box-shadow:
       0.5px 0.5px 2px 0px #3674b53f,
-      -0.5px -0.5px 2px 0px #3674b53f;
+      -0.5px -0.5px 4px 0px #3674b53f;
     border-radius: 8px;
     background-color: white;
     padding: 16px;

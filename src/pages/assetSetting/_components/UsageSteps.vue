@@ -1,8 +1,6 @@
 <template>
-  <div class="card-design mb-16 py-8">
-    <h2 class="text-primary-500 mb-6 text-center text-xl font-bold">
-      이용 절차
-    </h2>
+  <div class="card-design py-8">
+    <h2 class="text-primary-500 text-center text-xl font-bold"> 이용 절차 </h2>
 
     <div class="mx-4 space-y-4">
       <template v-for="(step, index) in steps" :key="step.id">
@@ -19,7 +17,7 @@
             <h3 class="font-semibold">{{ step.title }}</h3>
             <p class="text-surface-400">{{ step.description }}</p>
           </div>
-          <div class="text-2xl">{{ step.emoji }}</div>
+          <!-- <div class="text-2xl">{{ step.emoji }}</div> -->
         </div>
 
         <div
@@ -38,7 +36,6 @@ const steps = [
     step: 1,
     title: '자산 연동',
     description: '국민은행 계좌 연결 또는 직접 입력',
-    emoji: '🏦',
     bgClass: 'bg-secondary-300',
   },
   {
@@ -46,7 +43,6 @@ const steps = [
     step: 2,
     title: '투자 성향 파악',
     description: '1분 안에 끝나는 간단한 설문',
-    emoji: '📝',
     bgClass: 'bg-primary-300',
   },
   {
@@ -54,7 +50,6 @@ const steps = [
     step: 3,
     title: '지점 설정',
     description: '가까운 국민은행 지점 선택',
-    emoji: '🏢',
     bgClass: 'bg-secondary-300',
   },
 ];

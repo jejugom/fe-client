@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-16 flex flex-col items-center text-center">
+  <div class="flex flex-col items-center text-center">
     <img :src="Logo" alt="로고" class="mb-8 h-16" />
 
     <h1 class="text-primary-500 mb-2 text-2xl font-bold">
