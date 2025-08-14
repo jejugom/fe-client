@@ -127,6 +127,9 @@ import {
   type NohooFilters,
 } from '@/types/nohoo/nohoo';
 import { fetchNohooData } from '@/api/nohoo/nohoo';
+import Btn from '@/components/buttons/Btn.vue';
+import Modal from '@/components/modals/Modal.vue';
+import FilterForm from './_components/FilterForm.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -144,7 +147,7 @@ const news = ref<News[]>([]);
 const PRODUCT_CATEGORY_MAP: Record<string, number> = {
   예금: 1,
   적금: 2,
-  주택담보대출: 3,
+  주택담보: 3,
   금: 4,
   펀드: 5,
   신탁: 6,
