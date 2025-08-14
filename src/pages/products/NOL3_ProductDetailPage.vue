@@ -10,7 +10,9 @@
         <span>{{ detail?.recReason }}</span>
       </div>
       <div v-if="detail?.prdtFeature" class="flex flex-col gap-2">
-        <span class="text-primary-500 text-lg font-semibold">상품을 한줄로 설명하면?</span>
+        <span class="text-primary-500 text-lg font-semibold"
+          >상품을 한줄로 설명하면?</span
+        >
         <span>{{ detail?.prdtFeature }}</span>
       </div>
     </div>
@@ -27,22 +29,32 @@
         <!-- 적합도 -->
         <div v-if="detail?.tendency !== undefined" class="text-base">
           <p class="text-primary-500 mb-1 font-semibold">적합도</p>
-          <p><span :class="{
-            'text-gold text-lg font-semibold': displayScore > '50',
-          }">{{ displayScore }} </span>%</p>
+          <p
+            ><span
+              :class="{
+                'text-gold text-lg font-semibold': displayScore > '50',
+              }"
+              >{{ displayScore }} </span
+            >%</p
+          >
         </div>
 
         <div v-if="detail?.description">
           <p class="text-primary-500 mb-1 font-semibold">설명</p>
           <p class="whitespace-pre-line">{{
             detail?.description || '설명 없음'
-            }}</p>
+          }}</p>
         </div>
 
         <div v-if="detail?.mtrtInt">
           <p class="text-primary-500 mb-1 font-semibold">만기 후 이자율</p>
           <ul class="list-disc space-y-1 pl-4">
-            <li v-for="(item, idx) in mtrtIntList" :key="idx" class="leading-relaxed">{{ item! }}</li>
+            <li
+              v-for="(item, idx) in mtrtIntList"
+              :key="idx"
+              class="leading-relaxed"
+              >{{ item! }}</li
+            >
           </ul>
         </div>
 
@@ -54,7 +66,12 @@
         <div v-if="detail?.spclCnd">
           <p class="text-primary-500 mb-1 font-semibold">우대 조건</p>
           <ul class="list-disc space-y-1 pl-4">
-            <li v-for="(item, idx) in spclCndList" :key="idx" class="leading-relaxed">{{ item! }}</li>
+            <li
+              v-for="(item, idx) in spclCndList"
+              :key="idx"
+              class="leading-relaxed"
+              >{{ item! }}</li
+            >
           </ul>
         </div>
 
@@ -69,7 +86,9 @@
         </div>
 
         <div v-if="fundOptions.length > 0 && fundOptions[0].assetTotal">
-          <p class="text-primary-500 mb-1 font-semibold">순자산(운용펀드기준))</p>
+          <p class="text-primary-500 mb-1 font-semibold"
+            >순자산(운용펀드기준))</p
+          >
           <p class="tabular-nums">{{ fmtNum(fundOptions[0].assetTotal) }} 원</p>
         </div>
 
@@ -84,7 +103,9 @@
         <div v-if="detail?.loanInciExpn || detail?.loanLmt">
           <p class="text-primary-500 mb-1 font-semibold">대출 관련</p>
           <ul class="list-disc pl-4">
-            <li v-if="detail?.loanInciExpn">대출 부대 비용: {{ detail.loanInciExpn }}</li>
+            <li v-if="detail?.loanInciExpn"
+              >대출 부대 비용: {{ detail.loanInciExpn }}</li
+            >
             <li v-if="detail?.loanLmt">대출 한도: {{ detail.loanLmt }}</li>
           </ul>
         </div>
@@ -107,8 +128,12 @@
         <div v-if="detail?.fundStructure || detail?.fundType">
           <p class="text-primary-500 mb-1 font-semibold">대출 관련</p>
           <ul class="list-disc pl-4">
-            <li v-if="detail?.fundStructure">운용 구조: {{ detail.fundStructure }}</li>
-            <li v-if="detail?.fundType">펀드/신탁 유형: {{ detail.fundType }}</li>
+            <li v-if="detail?.fundStructure"
+              >운용 구조: {{ detail.fundStructure }}</li
+            >
+            <li v-if="detail?.fundType"
+              >펀드/신탁 유형: {{ detail.fundType }}</li
+            >
           </ul>
         </div>
 
@@ -136,14 +161,21 @@
           <p class="text-primary-500 mb-1 font-semibold">가입 관련</p>
           <ul class="list-disc pl-4">
             <li v-if="detail?.joinWay">가입 방법: {{ detail.joinWay }}</li>
-            <li v-if="detail?.joinMember">가입 대상: {{ detail.joinMember }}</li>
+            <li v-if="detail?.joinMember"
+              >가입 대상: {{ detail.joinMember }}</li
+            >
           </ul>
         </div>
 
         <div v-if="detail?.etcNote">
           <p class="text-primary-500 mb-1 font-semibold">기타 참고사항</p>
           <ul class="list-disc space-y-1 pl-4">
-            <li v-for="(item, idx) in etcNoteList" :key="idx" class="leading-relaxed">{{ item! }}</li>
+            <li
+              v-for="(item, idx) in etcNoteList"
+              :key="idx"
+              class="leading-relaxed"
+              >{{ item! }}</li
+            >
           </ul>
         </div>
 
@@ -158,29 +190,37 @@
         <!-- 옵션 테이블: 예금/적금 -->
         <div v-if="depositOptions.length">
           <p class="text-primary-500 mb-2 font-semibold">금리 정보</p>
-          <table class="w-full table-auto border-collapse overflow-hidden text-center text-base">
+          <table
+            class="w-full table-auto border-collapse overflow-hidden text-center text-base"
+          >
             <thead class="bg-primary-100 font-semibold">
               <tr>
                 <th class="border-surface-200 border px-4 py-2">기간</th>
                 <th class="border-surface-200 border px-4 py-2">
                   <span class="tabular-nums">금리유형</span>
                 </th>
-                <th class="border-surface-200 border px-4 py-2">기본 금리(%)</th>
-                <th class="border-surface-200 border px-4 py-2">최고 금리(%)</th>
+                <th class="border-surface-200 border px-4 py-2"
+                  >기본 금리(%)</th
+                >
+                <th class="border-surface-200 border px-4 py-2"
+                  >최고 금리(%)</th
+                >
               </tr>
             </thead>
             <tbody>
               <tr v-for="(opt, idx) in depositOptions" :key="idx">
-                <td class="border-surface-200 border px-4 py-2">{{ opt.saveTrm }}개월</td>
+                <td class="border-surface-200 border px-4 py-2"
+                  >{{ opt.saveTrm }}개월</td
+                >
                 <td class="border-surface-200 border px-4 py-2">{{
                   opt.intrRateTypeNm
-                  }}</td>
+                }}</td>
                 <td class="border-surface-200 border px-4 py-2 tabular-nums">{{
                   opt.intrRate.toFixed(2)
-                  }}</td>
+                }}</td>
                 <td class="border-surface-200 border px-4 py-2 tabular-nums">{{
                   opt.intrRate2.toFixed(2)
-                  }}</td>
+                }}</td>
               </tr>
             </tbody>
           </table>
@@ -191,12 +231,18 @@
           <p class="text-primary-500 mb-2 font-semibold">펀드 정보</p>
           <!-- ★ 펀드: 3개월 일일 수익률 그래프 -->
 
-          <table class="w-full table-auto border-collapse overflow-hidden text-center text-sm">
+          <table
+            class="w-full table-auto border-collapse overflow-hidden text-center text-sm"
+          >
             <thead class="bg-surface-100 font-semibold">
               <tr>
                 <th class="border-surface-200 border px-4 py-2">총보수(%)</th>
-                <th class="border-surface-200 border px-4 py-2">3개월 수수료(%)</th>
-                <th class="border-surface-200 border px-4 py-2">환매수수료(%)</th>
+                <th class="border-surface-200 border px-4 py-2"
+                  >3개월 수수료(%)</th
+                >
+                <th class="border-surface-200 border px-4 py-2"
+                  >환매수수료(%)</th
+                >
               </tr>
             </thead>
             <tbody>
@@ -221,7 +267,9 @@
         <!-- 옵션 테이블: 주담대 -->
         <div v-if="mortgageOptions.length">
           <p class="text-primary-500 mb-2 font-semibold">대출 조건</p>
-          <table class="w-full table-auto border-collapse overflow-x-auto text-center text-base">
+          <table
+            class="w-full table-auto border-collapse overflow-x-auto text-center text-base"
+          >
             <thead class="bg-primary-100 font-semibold">
               <tr>
                 <th class="border-surface-200 border px-4 py-2">담보 유형</th>
@@ -235,32 +283,38 @@
               <tr v-for="(opt, idx) in mortgageOptions" :key="idx">
                 <td class="border-surface-200 border px-4 py-2">{{
                   opt.mrtgTypeNm
-                  }}</td>
+                }}</td>
                 <td class="border-surface-200 border px-4 py-2">{{
                   opt.rpayTypeNm
-                  }}</td>
+                }}</td>
                 <td class="border-surface-200 border px-4 py-2">{{
                   opt.lendRateTypeNm
-                  }}</td>
+                }}</td>
                 <td class="border-surface-200 border px-4 py-2">{{
                   opt.lendRateMin
-                  }}</td>
+                }}</td>
                 <td class="border-surface-200 border px-4 py-2">{{
                   opt.lendRateMax
-                  }}</td>
+                }}</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
+    <Question />
 
     <!-- 가입 예약 버튼 -->
     <div class="mt-8">
       <p class="text-primary-500 mb-2 text-center font-semibold">
         은행에서 상담받고 가입하실 수 있어요
       </p>
-      <Btn color="primary" label="상담 예약하기" size="large" @click="goToRegister" />
+      <Btn
+        color="primary"
+        label="상담 예약하기"
+        size="large"
+        @click="goToRegister"
+      />
     </div>
   </div>
 </template>
@@ -284,6 +338,7 @@ import FundReturnChart from './_components/FundReturnChart.vue'; // ★ 추가
 import Btn from '@/components/buttons/Btn.vue';
 import { useRegisterStore } from '@/stores/register';
 import { useLoadingStore } from '@/stores/loading';
+import Question from '@/components/question/Question.vue';
 
 const route = useRoute();
 const router = useRouter();
