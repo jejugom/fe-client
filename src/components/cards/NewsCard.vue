@@ -9,9 +9,10 @@
     />
 
     <a :href="newsItem.link" target="_blank">
-      <div class="text-primary-500 mr-6 line-clamp-1 text-base font-semibold">{{
-        newsItem.title
-      }}</div>
+      <div
+        class="text-primary-500 mr-6 line-clamp-1 w-2/3 text-base font-semibold"
+        >{{ newsItem.title }}</div
+      >
       <div class="mt-2 line-clamp-2">{{ newsItem.summary }}</div>
       <div class="text-surface-300 text-end">{{ newsItem.date }}</div>
     </a>

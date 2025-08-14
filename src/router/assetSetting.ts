@@ -4,7 +4,7 @@ const assetSetting: RouteRecordRaw[] = [
   {
     path: '/asset/tutorial',
     name: 'asset-tutorial',
-    component: () => import('@/pages/assetSetting/TutorialPage.vue'),
+    component: () => import('@/pages/assetSetting/ASL0_TutorialPage.vue'),
   },
   {
     path: '/asset/start',

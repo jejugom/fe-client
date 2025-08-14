@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'btn-pressed relative flex h-30 w-full items-center justify-start gap-6 rounded-lg p-4',
+      'btn-pressed relative flex h-30 w-full items-center justify-start gap-4 rounded-lg p-4',
       color === 'primary' && 'stroke-primary bg-primary-100',
       color === 'secondary' && 'stroke-secondary bg-secondary-100',
       $attrs.class,
@@ -24,9 +24,11 @@
 
     <!-- 텍스트 -->
     <div class="text-primary-500 flex flex-col gap-1 text-sm">
-      <div>{{ content1 }}</div>
-      <div class="text-primary-500 text-2xl font-bold">{{ title }}</div>
-      <div>{{ content2 }}</div>
+      <div class="line-clamp-1">{{ content1 }}</div>
+      <div class="text-primary-500 line-clamp-1 text-2xl font-bold">{{
+        title
+      }}</div>
+      <div class="line-clamp-1">{{ content2 }}</div>
     </div>
   </div>
 </template>

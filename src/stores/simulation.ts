@@ -31,6 +31,7 @@ export const useSimulationStore = defineStore('simulation', {
         this.taxSavingStrategies = response.taxSavingStrategies;
       } catch (error) {
         console.error('증여세 시뮬레이션 실패:', error);
+        throw error; // 에러를 다시 던져서 호출한 쪽에서 알 수 있도록 함
       }
     },
 
@@ -40,4 +41,5 @@ export const useSimulationStore = defineStore('simulation', {
       this.taxSavingStrategies = [];
     },
   },
+  persist: true, // 이 스토어의 상태를 localStorage에 저장 -> 새로고침해도 데이터가 유지됨
 });

@@ -162,9 +162,6 @@
       <div
         class="custom-shadow border-surface-200 bg-primary-100 relative overflow-hidden rounded-lg border px-4 py-8"
       >
-        <!-- <h2 class="text-primary-500 mb-4 text-lg font-semibold">
-          국세청 자료를 참고하세요
-        </h2> -->
         <iframe
           class="h-60 w-full"
           src="https://www.youtube.com/embed/eWztSg6_9lU"
@@ -177,7 +174,7 @@
           <a
             href="https://www.nts.go.kr/nts/cm/cntnts/cntntsView.do?mi=2340&cntntsId=7728"
             target="_blank"
-            class="text-primary-300 font-semibold underline"
+            class="text-primary-300 underline"
           >
             🔗 국세청 홈페이지에서 세액계산 흐름도를 확인해 보세요
           </a>
@@ -189,17 +186,7 @@
       >
         <div class="flex items-start">
           <div class="mt-1 mr-3">
-            <svg
-              class="h-5 w-5 text-red-500"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                clip-rule="evenodd"
-              />
-            </svg>
+            <img :src="Error" alt="Error Icon" class="h-5 w-5" />
           </div>
           <div>
             <h4 class="mb-1 text-lg font-semibold text-red-500">참고사항</h4>
@@ -217,15 +204,5 @@
 </template>
 
 <script setup lang="ts">
-const openYoutubePopup = () => {
-  const url = 'https://www.youtube.com/watch?v=eWztSg6_9lU';
-  const name = 'youtube_popup';
-  const width = 800;
-  const height = 500;
-  const left = (window.innerWidth - width) / 2;
-  const top = (window.innerHeight - height) / 2;
-  const options = `width=${width},height=${height},left=${left},top=${top}`;
-
-  window.open(url, name, options);
-};
+import Error from '@/assets/icons/Error.svg';
 </script>

@@ -1,13 +1,6 @@
 <template>
   <Teleport to="body">
-    <Transition
-      enter-active-class="transition-all duration-300 ease-out"
-      leave-active-class="transition-all duration-300 ease-in"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-from-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
+    <Transition>
       <div
         v-if="showResultModal"
         class="fixed inset-0 z-50 flex items-end justify-center"
@@ -16,21 +9,14 @@
         <div class="bg-surface-300 absolute inset-0 opacity-40"></div>
 
         <!-- 바텀시트 -->
-        <Transition
-          enter-active-class="transition-transform duration-500 ease-out"
-          leave-active-class="transition-transform duration-300 ease-in"
-          enter-from-class="transform translate-y-full"
-          enter-to-class="transform translate-y-0"
-          leave-from-class="transform translate-y-0"
-          leave-to-class="transform translate-y-full"
-        >
+        <Transition>
           <div
             v-if="showResultModal"
-            class="relative mx-4 mb-4 w-full max-w-2xl rounded-3xl bg-white p-8"
+            class="relative mx-4 mb-4 w-full max-w-150 rounded-3xl bg-white p-8"
           >
             <!-- 핸들바 -->
             <div
-              class="absolute top-3 left-1/2 h-1 w-10 -translate-x-1/2 transform rounded-full bg-gray-300"
+              class="left -1/2 absolute top-3 h-1 -translate-x-1/2 transform rounded-full bg-gray-300"
             ></div>
 
             <!-- 컨텐츠 -->
@@ -45,7 +31,7 @@
                   <!-- 정답 O 아이콘 -->
                   <div
                     v-if="isCorrect"
-                    class="border-primary-300 h-8 w-8 rounded-full border-4"
+                    class="h-8 w-8 rounded-full border-4 border-blue-300"
                   ></div>
 
                   <!-- 오답 X 아이콘 -->
@@ -65,19 +51,21 @@
                 <!-- 제목 -->
                 <h3
                   class="text-3xl font-bold"
-                  :class="isCorrect ? 'text-primary-300' : 'text-primary-500'"
+                  :class="isCorrect ? 'text-blue-300' : 'text-primary-500'"
                 >
                   {{ isCorrect ? '정답이에요!' : '정답이 아니에요' }}
                 </h3>
               </div>
 
               <!-- 결과 내용 -->
-              <div class="text-primary-500 mb-8">
+              <div class="mb-8">
                 <p v-if="!isCorrect" class="mb-4 text-lg">
                   정답:
-                  <span class="text-primary-500 font-bold">{{
-                    currentQuestion.choices[currentQuestion.answer]
-                  }}</span>
+                  <span
+                    class="font-bold"
+                    :class="isCorrect ? 'text-primary-500' : 'text-red-300'"
+                    >{{ currentQuestion.choices[currentQuestion.answer] }}</span
+                  >
                 </p>
 
                 <div v-if="currentQuestion.explanation">
@@ -86,7 +74,7 @@
                       <p class="text-primary-500 mb-2 text-lg font-semibold"
                         >해설</p
                       >
-                      <p class="text-primary-500 text-base">
+                      <p class="">
                         {{ currentQuestion.explanation }}
                       </p>
                     </div>
@@ -95,7 +83,7 @@
               </div>
 
               <!-- 버튼 -->
-              <GlassBtn
+              <Btn
                 color="primary"
                 :label="isLastQuestion ? '결과 보기' : '다음'"
                 size="large"
@@ -114,6 +102,7 @@
 import { watch } from 'vue';
 import GlassBtn from '@/components/buttons/GlassBtn.vue';
 import { type Quiz } from '@/pages/event/quizData';
+import Btn from '@/components/buttons/Btn.vue';
 
 const props = defineProps<{
   showResultModal: boolean;

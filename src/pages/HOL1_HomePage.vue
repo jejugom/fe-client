@@ -1,7 +1,5 @@
-<!-- 노후도락 홈페이지: 로그인 상태별 맞춤형 UI 제공 -->
 <template>
   <div class="flex flex-col gap-16">
-    <!-- 비로그인 사용자를 대상 로그인 유도 -->
     <div v-if="!authStore.isLogin" class="card-design">
       <div class="space-y-4">
         <div class="text-primary-300 text-xl font-bold">
@@ -10,23 +8,22 @@
         <p class="text-surface-500">
           카카오로 로그인해서 맞춤형 금융 서비스를 시작해보세요
         </p>
-        <!-- 카카오 로그인 버튼 -->
-        <div class="flex justify-center">
+        <div class="flex flex-col items-center justify-center gap-4">
           <img
             :src="KakaoLoginBtn"
             alt="카카오 로그인"
             @click="() => authStore.startKakaoLogin()"
-          /> </div
-      ></div>
+            class="btn-pressed block max-h-20 w-auto"
+          />
+        </div>
+      </div>
     </div>
 
-    <!-- 로그인된 사용자를 위한 개인화된 인사 및 자산 정보 -->
     <div
       v-if="authStore.isLogin && homeData"
       class="card-design relative"
       @click="goToEditAsset"
     >
-      <!-- 우측 상단 고정 아이콘 -->
       <TextBtn
         color="surface"
         label="더보기 ➜"
@@ -46,11 +43,10 @@
       </div>
     </div>
 
-    <!-- 맞춤형 서비스 카드 -->
-    <section>
-      <h2 class="text-primary-500 mb-4 text-2xl font-bold"
-        >지금 필요한 것만, 딱 맞게 준비해요</h2
-      >
+    <div>
+      <h2 class="text-primary-500 mb-4 text-2xl font-bold">
+        필요한 것만, 딱 맞게 준비해요
+      </h2>
       <div class="space-y-4">
         <IconCard
           v-for="(card, index) in serviceCards"
@@ -62,17 +58,16 @@
           @click="handlers[card.onClick]"
         >
           <template #icon>
-            <img :src="card.src" />
+            <img :src="card.src" class="h-16 w-16" />
           </template>
         </IconCard>
       </div>
-    </section>
+    </div>
 
-    <!-- 가장 가까운 골든라이프 -->
-    <section v-if="nearestBranch">
-      <div class="text-primary-500 mb-2 text-2xl font-bold">
-        가장 가까운 골든라이프
-      </div>
+    <div v-if="nearestBranch" ref="nearestBranchSection">
+      <div class="text-primary-500 mb-2 text-2xl font-bold"
+        >가장 가까운 골든라이프</div
+      >
       <div
         class="stroke-secondary bg-gold flex items-center justify-between rounded-lg p-4"
       >
@@ -80,7 +75,7 @@
           <div class="text-lg font-semibold text-white">{{
             nearestBranch.name
           }}</div>
-          <div class="">
+          <div>
             나와의 거리:
             <span class="tabular-nums">{{
               formatDistance(nearestBranch.distance)
@@ -94,14 +89,13 @@
           @click="openMap(nearestBranch)"
         />
       </div>
-    </section>
+    </div>
 
-    <!-- 하단 서비스 특징 -->
     <section class="card-design text-center">
       <div class="mb-4 p-4">
-        <p class="text-primary-500 mb-4 text-2xl font-bold"
-          >노후도락이 함께 챙겨드립니다</p
-        >
+        <p class="text-primary-500 mb-4 text-2xl font-bold">
+          노후도락이 함께 챙겨드립니다
+        </p>
         <p class="text-surface-400 text-base">
           자산은 얼마나 있는지, 어떤 상품이 나에게 좋은지<br />
           이제 복잡하지 않게 하나씩 알려드릴게요
@@ -131,29 +125,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
-import Btn from '@/components/buttons/Btn.vue';
 import { fetchHomeData, type HomeData } from '@/api/home';
 import IconCard from '@/components/cards/IconCard.vue';
+import Btn from '@/components/buttons/Btn.vue';
+import TextBtn from '@/components/buttons/TextBtn.vue';
 import Home1 from '@/assets/images/Home1.svg';
 import Home2 from '@/assets/images/Home2.svg';
 import Home3 from '@/assets/images/Home3.svg';
 import Home4 from '@/assets/images/Home4.svg';
 import Home5 from '@/assets/images/Home5.svg';
 import Home6 from '@/assets/images/Home6.svg';
-import KakaoLoginBtn from '@/assets/images/kakao_login_medium_wide.png';
-import TextBtn from '@/components/buttons/TextBtn.vue';
+import KakaoLoginBtn from '@/assets/images/kakao_login_medium_wide.webp';
 
-/** Vue Router 인스턴스 - 페이지 네비게이션용 */
+// Kakao 지도 & 위치 유틸
+import {
+  haversine,
+  formatDistance,
+  openMap,
+  getCurrentPosition,
+  loadKakaoMaps,
+  createPlaces,
+  keywordSearch,
+  whenInView,
+} from '@/utils/kakaoMap';
+
+/** Router & Stores */
 const router = useRouter();
-
-/** 인증 상태 관리 store - 로그인 여부 확인 및 카카오 로그인 처리 */
 const authStore = useAuthStore();
 const loadingStore = useLoadingStore();
 
+/** 홈 데이터 */
 const homeData = ref<HomeData | null>(null);
 
 onMounted(async () => {
@@ -170,88 +175,63 @@ onMounted(async () => {
   }
 });
 
-/** 사용자 총 자산 - 로그인된 경우에만 실제 데이터 사용, 비로그인 시 0 */
+/** 금액 포맷 */
 const totalAsset = computed(() => homeData.value?.userSummary.asset ?? 0);
+const formatCurrency = (value: number) => value.toLocaleString('ko-KR') + '원';
 
-/**
- * 숫자를 한국 통화 형식으로 포맷팅
- * @param value 포맷팅할 숫자 (예: 1234567)
- * @returns 포맷팅된 문자열 (예: "1,234,567원")
- */
-function formatCurrency(value: number): string {
-  return value.toLocaleString('ko-KR') + '원';
-}
-
-// 맞춤형 서비스 카드
+/** 메인 카드 */
 const serviceCards = [
   {
     title: '노후준비',
-    content1: '내가 쓸 돈, 내가 준비해요',
+    content1: '내가 쓸 돈, 내가 준비',
     content2: '연금부터 여유자금까지 차근차근 모아드려요',
     onClick: 'goToNohoo',
     src: Home1,
   },
   {
     title: '증여·상속',
-    content1: '내가 원할 때, 원하는 만큼',
+    content1: '원할 때, 원하는 만큼',
     content2: '가족에게 남기는 마음을 함께 설계해요',
     src: Home2,
     onClick: 'goToGift',
   },
   {
-    title: '건강관리',
-    content1: '아프면 돈이 더 들어요',
-    content2: '지금부터 차근차근 챙겨요',
+    title: '생활편의',
+    content1: '더 편안한 생활',
+    content2: '하루하루를 활기차게 만들어드려요',
     onClick: 'goToEvent',
     src: Home3,
   },
-];
+] as const;
 
 // 서비스 카드 클릭 핸들러
 const handlers: Record<string, () => void> = {
-  goToNohoo: () => {
-    router.push({ name: 'nohoo' });
-  },
-  goToGift: () => {
-    router.push({ name: 'gift' });
-  },
-  goToEvent: () => {
-    router.push({ name: 'event' });
-  },
+  goToNohoo: () => router.push({ name: 'nohoo' }),
+  goToGift: () => router.push({ name: 'gift' }),
+  goToEvent: () => router.push({ name: 'event' }),
 };
 
-/**
- * 자산 등록 수정 페이지로 이동
- * 로그인된 사용자에게만 노출
- */
-function goToEditAsset() {
-  router.push({ name: 'edit-asset' });
-}
+/** 자산 수정 */
+const goToEditAsset = () => router.push({ name: 'edit-asset' });
 
-// 하단 서비스 특징 설명 데이터
+/** 추천 슬라이드 */
+const slides = computed(() => {
+  if (!homeData.value) return [];
+  return homeData.value.recommandTop3.map((p) => ({
+    prod_name: p.fin_prdt_nm,
+    description: p.prdt_feature,
+    rate: p.intr_rate,
+  }));
+});
+
+/** 하단 특징 */
 const features = [
-  {
-    keyword: '',
-    suffix: '누르기만',
-    description: '하면 끝!',
-    src: Home4,
-  },
-  {
-    keyword: '',
-    suffix: '믿을 수 있는',
-    description: '정보만',
-    src: Home5,
-  },
-  {
-    keyword: '',
-    suffix: '나한테',
-    description: '딱 맞는 상품',
-    src: Home6,
-  },
+  { keyword: '', suffix: '누르기만', description: '하면 끝!', src: Home4 },
+  { keyword: '', suffix: '믿을 수 있는', description: '정보만', src: Home5 },
+  { keyword: '', suffix: '나한테', description: '딱 맞는 상품', src: Home6 },
 ];
 
-declare const kakao: any;
-
+/** 가장 가까운 골든라이프 섹션 (로그인 시에만 표시 + 로드시 검색) */
 type Branch = {
   name: string;
   lat: number;
@@ -262,92 +242,86 @@ type Branch = {
 
 const myPos = ref<{ lat: number; lng: number } | null>(null);
 const nearestBranch = ref<Branch | null>(null);
+const nearestBranchSection = ref<HTMLElement | null>(null);
+let branchInitDone = false;
 
-/**
- * Haversine 공식을 사용한 두 지점 간 거리 계산
- * @param lat1 첫 번째 지점의 위도
- * @param lng1 첫 번째 지점의 경도
- * @param lat2 두 번째 지점의 위도
- * @param lng2 두 번째 지점의 경도
- * @returns 두 지점 간 거리 (미터)
- */
-function haversine(lat1: number, lng1: number, lat2: number, lng2: number) {
-  const R = 6371e3; // 지구 반지름 (미터)
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLng = ((lng2 - lng1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(a));
-}
-
-/**
- * 미터 단위 거리를 읽기 쉬운 형태로 포맷팅
- * @param m 거리 (미터)
- * @returns 포맷팅된 거리 문자열 (예: "500m", "1.2km")
- */
-function formatDistance(m: number) {
-  return m < 1000 ? `${Math.round(m)}m` : `${(m / 1000).toFixed(1)}km`;
-}
-
-/**
- * 해당 지점을 카카오맵에서 새 창으로 열기
- * @param branch 지점 정보
- */
-function openMap(branch: Branch) {
-  window.open(branch.placeUrl, '_blank');
-}
-
-/**
- * 현재 위치 주변 KB골든라이프 지점 검색
- */
-function searchNearestBranch() {
+/** 가장 가까운 지점 검색 */
+async function searchNearestBranch() {
   if (!myPos.value) return;
-  const ps = new kakao.maps.services.Places();
+  try {
+    await loadKakaoMaps();
+    const ps = createPlaces();
 
-  ps.keywordSearch(
-    'KB골든라이프',
-    (data: any[], status: string) => {
-      if (status !== kakao.maps.services.Status.OK) {
-        // console.error('검색 실패');
-        return;
-      }
-      const branches = data.map((item) => {
-        const lat = parseFloat(item.y);
-        const lng = parseFloat(item.x);
-        return {
-          name: item.place_name,
-          lat,
-          lng,
-          placeUrl: item.place_url,
-          distance: haversine(myPos.value!.lat, myPos.value!.lng, lat, lng),
-        };
-      });
-      // 거리순 정렬 후 가장 가까운 1곳만
-      branches.sort((a, b) => a.distance - b.distance);
-      nearestBranch.value = branches[0];
-    },
-    {
-      location: new kakao.maps.LatLng(myPos.value.lat, myPos.value.lng),
-      radius: 10000, // 10km 범위
-    }
-  );
+    const results = await keywordSearch(ps, 'KB골든라이프', {
+      location: new window.kakao.maps.LatLng(myPos.value.lat, myPos.value.lng),
+      radius: 10000,
+    });
+
+    if (!results.length) return;
+    const branches = results.map((item: any) => {
+      const lat = parseFloat(item.y);
+      const lng = parseFloat(item.x);
+      return {
+        name: item.place_name,
+        lat,
+        lng,
+        placeUrl: item.place_url,
+        distance: haversine(myPos.value!.lat, myPos.value!.lng, lat, lng),
+      } as Branch;
+    });
+    branches.sort((a, b) => a.distance - b.distance);
+    nearestBranch.value = branches[0];
+  } catch (err) {
+    console.error('지점 검색 실패', err);
+  }
 }
 
-// 현재 위치 조회 및 가장 가까운 지점 검색
-onMounted(() => {
-  if (!('geolocation' in navigator)) return;
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      myPos.value = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-      searchNearestBranch();
-    },
-    (_err) => {
-      // console.error('위치 조회 실패', _err);
-    },
-    { enableHighAccuracy: true, timeout: 10000 }
-  );
+/** 섹션이 실제 DOM에 올라오고, 뷰포트에 들어오면 1회만 실행 */
+async function runNearestBranchSearchOnce() {
+  if (branchInitDone) return;
+  try {
+    const pos = await getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 10000,
+    });
+    myPos.value = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    await searchNearestBranch();
+    branchInitDone = true;
+  } catch (err) {
+    console.error('위치 조회 실패', err);
+  }
+}
+
+/** 로그인 여부를 감시해서 로그인된 순간에 섹션 초기화 */
+watch(
+  () => authStore.isLogin,
+  async (loggedIn) => {
+    if (!loggedIn) return;
+    await nextTick(); // 섹션 ref가 연결되길 대기
+    const el = nearestBranchSection.value;
+    if (el) {
+      whenInView(el, runNearestBranchSearchOnce);
+    } else {
+      // 혹시 ref가 없다면 바로 실행
+      runNearestBranchSearchOnce();
+    }
+  },
+  { immediate: true } // 이미 로그인 상태로 진입했을 때도 실행
+);
+
+/** 템플릿에서 사용할 것들 노출 */
+defineExpose({
+  KakaoLoginBtn,
+  formatCurrency,
+  totalAsset,
+  serviceCards,
+  handlers,
+  goToEditAsset,
+  slides,
+  features,
+  nearestBranch,
+  nearestBranchSection,
+  formatDistance,
+  openMap,
 });
 </script>

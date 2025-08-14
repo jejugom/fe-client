@@ -104,24 +104,17 @@
                 height="300"
               ></apexchart>
             </div>
+            <!-- 차트 데이터가 없을 때 처리 -->
             <div
               v-else
               class="text-primary-500 flex h-64 items-center justify-center"
             >
               <div class="text-center">
-                <svg
-                  class="text-primary-500 mx-auto h-12 w-12"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
+                <img
+                  :src="ChartIcon"
+                  alt="Chart Icon"
+                  class="mx-auto h-12 w-12"
+                />
                 <p class="mt-2">차트 데이터를 불러오는 중...</p>
               </div>
             </div>
@@ -153,7 +146,7 @@
             <div v-else class="group mx-1 mb-4 flex items-start">
               <!-- 숫자 인덱스 -->
               <div
-                class="bg-primary-500 mt-2 mr-4 flex h-7 w-7 items-center justify-center rounded-full font-bold text-white"
+                class="text-primary-300 mt-2 mr-4 flex h-7 w-7 items-center justify-center text-3xl font-black"
               >
                 {{ item.globalIndex }}
               </div>
@@ -185,6 +178,8 @@ import type {
   SimulationRequestDto,
   TaxSavingStrategy,
 } from '@/types/gift/simulation';
+
+import ChartIcon from '@/assets/icons/Charts.svg';
 
 const apexchart = VueApexCharts;
 const simulationStore = useSimulationStore();

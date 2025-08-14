@@ -38,10 +38,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import {
-  fetchReservedDetail,
-  type Register,
-} from '@/api/products/registerComplete';
+import { fetchReservedDetail } from '@/api/products/registerComplete';
+import type { Register } from '@/types/products/registerComplete';
 import ReserveCompleteBox from './_components/ReserveCompleteBox.vue';
 import InfoRow from './_components/InfoRow.vue';
 import { useLoadingStore } from '@/stores/loading';

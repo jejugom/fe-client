@@ -33,8 +33,8 @@ import Btn from '@/components/buttons/Btn.vue';
 
 const router = useRouter();
 
-function handleStart() {
-  // console.log('시작하기 버튼 클릭됨');
-  router.push({ name: 'asset-kookmin-login' });
-}
+const handleStart = () => {
+  console.log('시작하기 버튼 클릭됨');
+  router.push({ name: 'asset-start' });
+};
 </script>

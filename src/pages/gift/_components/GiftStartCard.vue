@@ -16,8 +16,8 @@
 
     <div class="space-y-3">
       <Btn
-        v-for="(btn, idx) in buttons"
-        :key="idx"
+        v-for="btn in buttons"
+        :key="btn.label"
         :color="btn.color"
         :label="btn.label"
         :size="btn.size || 'large'"

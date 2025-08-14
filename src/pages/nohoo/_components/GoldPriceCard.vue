@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { fetchGoldPrice } from '@/api/nohoo/gold';
-import type { GoldPrice } from '@/api/nohoo/gold';
+import type { GoldPrice } from '@/types/nohoo/gold';
 import { fetchExchangeRate } from '@/api/nohoo/exchange';
 
 const goldPrices = ref<GoldPrice[]>([]);
