@@ -9,7 +9,7 @@
 
       <!-- 모달 박스 -->
       <div
-        class="card-design relative z-10 py-8"
+        class="card-design relative z-10 max-h-[80vh] overflow-y-auto py-8"
         role="dialog"
         aria-modal="true"
       >

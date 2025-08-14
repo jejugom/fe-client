@@ -13,7 +13,7 @@
           <p class="flex items-end justify-center gap-1"
             >앞으로는
             <span class="text-primary-300 font-point text-3xl">
-              <img :src="Logo" alt="노후도락 로고" class="h-8 w-auto" /></span
+              <img :src="Logo" alt="노후도락 로고" class="h-10 w-auto" /></span
             >과 함께</p
           >
           <p

@@ -121,8 +121,8 @@ import {
   fetchReservedSlots,
   postBooking,
   smsApi,
-  type SmsData,
 } from '@/api/products/register';
+import type { SmsData } from '@/types/products/register';
 import { useProductStore } from '@/stores/product';
 import Alert from '@/components/modals/Alert.vue';
 import Confirm from '@/components/modals/Confirm.vue';

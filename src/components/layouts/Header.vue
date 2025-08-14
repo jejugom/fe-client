@@ -1,17 +1,19 @@
 <template>
-  <header class="relative flex h-16 items-center justify-center bg-white">
+  <header
+    class="relative flex h-[64px] items-center justify-center bg-white shadow-xs"
+  >
     <!-- 뒤로가기 -->
     <img
       v-if="showBackBtn"
       :src="Arrow"
       alt="뒤로가기 아이콘"
-      class="absolute left-5 h-6 w-6"
+      class="absolute left-5 h-[24px] w-[24px]"
       @click="goBack"
     />
 
     <!-- 로고 텍스트 -->
     <router-link :to="{ name: 'home' }" class="text-2xl font-bold">
-      <img :src="Logo" alt="노후도락 로고" class="h-6 w-auto" />
+      <img :src="Logo" alt="노후도락 로고" class="h-[40px] w-auto" />
     </router-link>
   </header>
 </template>

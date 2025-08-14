@@ -268,16 +268,17 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import type {
+  ProductDetail,
+  FundDailyReturn,
+  Option,
+  MortgageOption,
+  FundOption,
+} from '@/types/products/productDetail';
 import {
   fetchProductDetail,
-  fetchFundReturn, // ★ 추가
-  type ProductDetail,
-  type Option,
-  type MortgageOption,
-  type FundOption,
-  type FundDailyReturn,
+  fetchFundReturn,
 } from '@/api/products/productDetail';
-
 import DetailImg from './_components/DetailImg.vue';
 import FundReturnChart from './_components/FundReturnChart.vue'; // ★ 추가
 import Btn from '@/components/buttons/Btn.vue';
@@ -517,7 +518,13 @@ const topInfos = computed(() => {
       ];
     case '6':
       return [
-        { label: '보호여부', value: d.depositProtection ?? '-' },
+        {
+          label: '보호여부',
+          value:
+            d.depositProtection === '1인당 5천만원 한도'
+              ? '5천만원'
+              : (d.depositProtection ?? '-'),
+        },
         {
           label: '기준가',
           value: Number(d.basePrice).toFixed(0) + ' 원',

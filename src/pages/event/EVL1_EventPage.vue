@@ -8,19 +8,17 @@
       <div class="text-primary-500 text-2xl font-bold"
         >매일매일 노후도락 PLAY</div
       >
-      <IconCard
+      <EventCard
         class="max-h-20"
         color="primary"
         v-for="(c, i) in card"
         :key="i"
         :title="c.title"
         :content1="c.content1"
+        :content2="c.content2"
         @click="handlers[c.onClick]"
-      >
-        <template #icon>
-          <img :src="c.src" class="h-10 w-10" />
-        </template>
-      </IconCard>
+        :src="c.src"
+      />
     </div>
 
     <!-- 챌린지 현황 / 보상 -->
@@ -92,16 +90,15 @@ import { fetchEventData, postEventData } from '@/api/event/event';
 import { useRouter } from 'vue-router';
 import { useRewardStore } from '@/stores/reward';
 import NewsCard from '@/components/cards/NewsCard.vue';
-import IconCard from '@/components/cards/IconCard.vue';
 import TextBtn from '@/components/buttons/TextBtn.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import ChallengeState from './_components/ChallengeState.vue';
-import Number from '@/assets/icons/Number.svg';
-import Quiz from '@/assets/icons/Quiz.svg';
-import Park from '@/assets/icons/Park.svg';
+import Quiz from '@/assets/images/QuizBanner.webp';
+import Number from '@/assets/images/NumberBanner.webp';
+import Park from '@/assets/images/ParkBanner.webp';
 import Confirm from '@/components/modals/Confirm.vue';
-import { is } from 'date-fns/locale';
 import Question from '@/components/question/Question.vue';
+import EventCard from './_components/EventCard.vue';
 
 const router = useRouter();
 const rewardStore = useRewardStore();
@@ -139,19 +136,22 @@ onMounted(async () => {
 const card = [
   {
     title: '금융 지식 퀴즈',
-    content1: '내 자산은 내가 직접!',
+    content1: '매주 달라지는 퀴즈로 두뇌도 깨우고, 리워드도 받아가세요!',
+    content2: '누구나 쉽게 풀 수 있는 퀴즈로 일상 속 금융을 익혀보아요.',
     onClick: 'goToQuiz',
     src: Quiz,
   },
   {
     title: '숫자 빨리 누르기 게임',
-    content1: '내 두뇌 나이는 몇살?',
+    content1: '반짝이는 순발력, 당신의 손끝에서 빛을 발하다!',
+    content2: '제한 시간 안에 숫자를 빠르게 찾아 눌러보세요.',
     onClick: 'goToNumberGame',
     src: Number,
   },
   {
     title: '공원 방문 챌린지',
-    content1: '오늘은 공원에 가볼까요?',
+    content1: '근처 공원에 들러 걷기만 해도 건강과 리워드가 함께 찾아옵니다.',
+    content2: '오늘의 작은 발걸음이 내일의 활력으로 이어집니다.',
     onClick: 'goToParkChallenge',
     src: Park,
   },

@@ -94,6 +94,11 @@
       @click="goToResult"
     />
   </div>
+
+  <!-- 에러 알림 모달 -->
+  <Alert v-if="showAlert" @click="showAlert = false">
+    <p class="text-center">{{ alertMessage }}</p>
+  </Alert>
 </template>
 
 <script setup lang="ts">
@@ -101,25 +106,20 @@ import { ref, reactive, onMounted, withDefaults, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 import AssetCard from './_components/AssetCard.vue';
+import Alert from '@/components/modals/Alert.vue';
 import { fetchGiftPageData } from '@/api/gift/recipient';
 import { formatCurrency } from '@/utils/format';
 import { categories, categoryCodeMap } from '@/types/gift/constants';
 import { useLoadingStore } from '@/stores/loading';
-
-// 두 스토어를 모두 import
 import { useInheritanceStore } from '@/stores/inheritance';
 import { useGiftStore } from '@/stores/gift';
-import { useSimulationStore } from '@/stores/simulation'; // <-- useSimulationStore 추가
-
+import { useSimulationStore } from '@/stores/simulation';
 import type { RecipientResponseDto } from '@/types/gift/recipient';
-
 import type {
   Asset,
   Beneficiary,
   DistributedAsset,
 } from '@/types/gift/inheritance';
-
-// 새로운 DTO 타입 import
 import type {
   RecipientGiftRequestDto,
   CategoryGiftRequestDto,
@@ -137,11 +137,9 @@ const props = withDefaults(
 
 const router = useRouter();
 const loadingStore = useLoadingStore();
-
-// mode에 따라 적절한 스토어를 사용하도록 computed 속성으로 묶음
 const giftStore = useGiftStore();
 const inheritanceStore = useInheritanceStore();
-const simulationStore = useSimulationStore(); //
+const simulationStore = useSimulationStore();
 
 const store = computed(() => {
   return props.mode === 'gift' ? giftStore : inheritanceStore;
@@ -149,6 +147,8 @@ const store = computed(() => {
 
 const allAssets = reactive<Map<string, Asset[]>>(new Map());
 const beneficiaries = reactive<Beneficiary[]>([]);
+const showAlert = ref(false);
+const alertMessage = ref('');
 
 const loadAssetsAndBeneficiaries = async () => {
   loadingStore.startLoading();
@@ -190,67 +190,36 @@ const loadAssetsAndBeneficiaries = async () => {
     allAssets.clear();
     newAllAssets.forEach((value, key) => allAssets.set(key, value));
 
-    // `store.value`를 사용하여 현재 모드의 스토어에 데이터 저장
-    if (props.mode === 'gift') {
-      (giftStore as ReturnType<typeof useGiftStore>).setInitialData({
-        allAssets: newAllAssets,
-        beneficiaries: newBeneficiaries,
-      });
-    } else {
-      (
-        inheritanceStore as ReturnType<typeof useInheritanceStore>
-      ).setInitialData({
-        allAssets: newAllAssets,
-        beneficiaries: newBeneficiaries,
-      });
-    }
+    store.value.setInitialData({
+      allAssets: newAllAssets,
+      beneficiaries: newBeneficiaries,
+    });
   } catch (error) {
     console.error('데이터 로드 실패:', error);
+    alertMessage.value = '데이터를 불러오는 데 실패했습니다.';
+    showAlert.value = true;
   } finally {
     loadingStore.stopLoading();
   }
 };
 
 const restoreStateFromStore = () => {
-  if (props.mode === 'gift') {
-    if (
-      (giftStore as ReturnType<typeof useGiftStore>).allAssets.size > 0 &&
-      (giftStore as ReturnType<typeof useGiftStore>).beneficiaries.length > 0
-    ) {
-      beneficiaries.splice(
-        0,
-        beneficiaries.length,
-        ...(giftStore as ReturnType<typeof useGiftStore>).beneficiaries
-      );
-      allAssets.clear();
-      (giftStore as ReturnType<typeof useGiftStore>).allAssets.forEach(
-        (value: Asset[], key: string) => {
-          allAssets.set(key, value);
-        }
-      );
-    }
-  } else {
-    if (
-      (inheritanceStore as ReturnType<typeof useInheritanceStore>).allAssets
-        .size > 0 &&
-      (inheritanceStore as ReturnType<typeof useInheritanceStore>).beneficiaries
-        .length > 0
-    ) {
-      beneficiaries.splice(
-        0,
-        beneficiaries.length,
-        ...(inheritanceStore as ReturnType<typeof useInheritanceStore>)
-          .beneficiaries
-      );
-      allAssets.clear();
-      (
-        inheritanceStore as ReturnType<typeof useInheritanceStore>
-      ).allAssets.forEach((value: Asset[], key: string) => {
-        allAssets.set(key, value);
-      });
-    }
+  if (store.value.allAssets.size > 0 && store.value.beneficiaries.length > 0) {
+    beneficiaries.splice(0, beneficiaries.length, ...store.value.beneficiaries);
+    allAssets.clear();
+    store.value.allAssets.forEach((value: Asset[], key: string) => {
+      allAssets.set(key, value);
+    });
   }
 };
+
+onMounted(() => {
+  if (store.value.allAssets.size > 0) {
+    restoreStateFromStore();
+  } else {
+    loadAssetsAndBeneficiaries();
+  }
+});
 
 const onAssetUpdate = (updatedAsset: Asset) => {
   Array.from(allAssets.values()).forEach((assets) => {
@@ -259,14 +228,7 @@ const onAssetUpdate = (updatedAsset: Asset) => {
       assets.splice(index, 1, updatedAsset);
     }
   });
-
-  if (props.mode === 'gift') {
-    (giftStore as ReturnType<typeof useGiftStore>).setAllAssets(allAssets);
-  } else {
-    (inheritanceStore as ReturnType<typeof useInheritanceStore>).setAllAssets(
-      allAssets
-    );
-  }
+  store.value.setAllAssets(allAssets);
 };
 
 const calculateTotalForBeneficiary = (beneficiaryId: string): number => {
@@ -381,15 +343,15 @@ const createSimulationRequest = (): SimulationRequestDto => {
   };
 };
 
-const setInheritanceStoreData = () => {
-  // 상속 모드일 때 distributedAssets와 recipientSummaries를 스토어에 저장
+// 상속 데이터 준비 로직 추출
+const prepareInheritanceData = () => {
   const distributed: DistributedAsset[] = [];
   Array.from(allAssets.values())
     .flat()
     .filter(
       (asset) =>
         asset.selected && (asset.beneficiary || asset.isMultipleBeneficiaries)
-    ) // Only consider selected assets that have a beneficiary or are for multiple beneficiaries
+    )
     .forEach((asset) => {
       const foundCategory = categories.find(
         (c) => c.id === asset.id.split('-')[0]
@@ -397,7 +359,6 @@ const setInheritanceStoreData = () => {
       const categoryName = foundCategory?.name ?? '기타';
 
       if (asset.isMultipleBeneficiaries && asset.distributionRatios) {
-        // Handle multiple beneficiaries
         for (const beneficiaryId in asset.distributionRatios) {
           const ratio = asset.distributionRatios[beneficiaryId];
           if (ratio > 0) {
@@ -411,17 +372,15 @@ const setInheritanceStoreData = () => {
                   relation: foundRecipient.relation,
                 },
                 category: categoryName,
-                description: `${asset.name} (지분 ${ratio}%)`, // Add ratio to description
+                description: `${asset.name} (지분 ${ratio}%)`,
                 amount: Math.floor((asset.value * ratio) / 100),
               });
             }
           }
         }
       } else if (asset.beneficiary) {
-        // Handle single beneficiary
-        const currentBeneficiary = asset.beneficiary; // Type narrowing
         const foundRecipient = beneficiaries.find(
-          (b) => b.id === currentBeneficiary.id
+          (b) => b.id === asset.beneficiary!.id
         );
         if (foundRecipient) {
           distributed.push({
@@ -437,22 +396,23 @@ const setInheritanceStoreData = () => {
       }
     });
 
-  const recipientSummary = beneficiaries.map((b) => ({
+  const recipientSummaries = beneficiaries.map((b) => ({
     recipientId: Number(b.id),
     name: b.name,
     giftAmount: calculateTotalForBeneficiary(b.id),
-    estimatedTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
+    estimatedTax: 0,
   }));
 
-  inheritanceStore.setInheritanceData({
-    distributedAssets: distributed,
-    recipientSummaries: recipientSummary,
-    totalGiftTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
-  });
+  return { distributedAssets: distributed, recipientSummaries, totalGiftTax: 0 };
+};
+
+const setInheritanceStoreData = () => {
+  const inheritanceData = prepareInheritanceData();
+  inheritanceStore.setInheritanceData(inheritanceData);
 };
 
 const goToWillForm = () => {
-  setInheritanceStoreData(); // 데이터 저장 함수 호출
+  setInheritanceStoreData();
   router.push({
     name: 'inheritance-will',
   });
@@ -465,77 +425,9 @@ const goToResult = async () => {
       const requestDto = createSimulationRequest();
       await simulationStore.simulateGiftTax(requestDto);
     } else if (props.mode === 'inheritance') {
-      // '바로 유언장 보러가기'를 눌렀을 때 추가 유언을 무시하고 초기화
       inheritanceStore.setAdditionalWillContent('');
-
-      // 상속 모드일 때 distributedAssets와 recipientSummaries를 스토어에 저장
-      const distributed: DistributedAsset[] = [];
-      Array.from(allAssets.values())
-        .flat()
-        .filter(
-          (asset) =>
-            asset.selected &&
-            (asset.beneficiary || asset.isMultipleBeneficiaries)
-        ) // Only consider selected assets that have a beneficiary or are for multiple beneficiaries
-        .forEach((asset) => {
-          const foundCategory = categories.find(
-            (c) => c.id === asset.id.split('-')[0]
-          );
-          const categoryName = foundCategory?.name ?? '기타';
-
-          if (asset.isMultipleBeneficiaries && asset.distributionRatios) {
-            // Handle multiple beneficiaries
-            for (const beneficiaryId in asset.distributionRatios) {
-              const ratio = asset.distributionRatios[beneficiaryId];
-              if (ratio > 0) {
-                const foundRecipient = beneficiaries.find(
-                  (b) => b.id === beneficiaryId
-                );
-                if (foundRecipient) {
-                  distributed.push({
-                    recipient: {
-                      name: foundRecipient.name,
-                      relation: foundRecipient.relation,
-                    },
-                    category: categoryName,
-                    description: `${asset.name} (지분 ${ratio}%)`, // Add ratio to description
-                    amount: Math.floor((asset.value * ratio) / 100),
-                  });
-                }
-              }
-            }
-          } else if (asset.beneficiary) {
-            // Handle single beneficiary
-            const currentBeneficiary = asset.beneficiary; // Type narrowing
-            const foundRecipient = beneficiaries.find(
-              (b) => b.id === currentBeneficiary.id
-            );
-            if (foundRecipient) {
-              distributed.push({
-                recipient: {
-                  name: foundRecipient.name,
-                  relation: foundRecipient.relation,
-                },
-                category: categoryName,
-                description: asset.name,
-                amount: asset.value,
-              });
-            }
-          }
-        });
-
-      const recipientSummary = beneficiaries.map((b) => ({
-        recipientId: Number(b.id),
-        name: b.name,
-        giftAmount: calculateTotalForBeneficiary(b.id),
-        estimatedTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
-      }));
-
-      inheritanceStore.setInheritanceData({
-        distributedAssets: distributed,
-        recipientSummaries: recipientSummary,
-        totalGiftTax: 0, // 상속세는 여기서 계산하지 않으므로 0으로 설정
-      });
+      const inheritanceData = prepareInheritanceData();
+      inheritanceStore.setInheritanceData(inheritanceData);
     }
 
     router.push({
@@ -543,17 +435,10 @@ const goToResult = async () => {
     });
   } catch (error) {
     console.error('시뮬레이션 실패:', error);
+    alertMessage.value = '결과를 계산하는 데 실패했습니다.';
+    showAlert.value = true;
   } finally {
     loadingStore.stopLoading();
   }
 };
-
-onMounted(() => {
-  // `store.value`를 사용하여 데이터 존재 여부 확인
-  if (store.value.allAssets.size > 0) {
-    restoreStateFromStore();
-  } else {
-    loadAssetsAndBeneficiaries();
-  }
-});
 </script>
