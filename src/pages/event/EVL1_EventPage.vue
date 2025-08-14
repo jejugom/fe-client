@@ -6,8 +6,28 @@
     <!-- 매일매일 -->
     <div class="space-y-4">
       <div class="text-primary-500 text-2xl font-bold"
-        >매일매일 노후도락 PLAY</div
+        >오늘의 노후도락 PLAY</div
       >
+      <p class="text-primary-500 text-base"
+        >매일매일 작지만 소중한 습관,<br />노후도락과 함께 3가지 활동을 실천하고
+        작은 선물도 받아보세요.</p
+      >
+      <!-- 챌린지 현황 / 보상 -->
+      <div class="space-y-4">
+        <ChallengeState :points="todayPoint">
+          <Btn
+            :color="rewardStore.allCompleted ? 'primary' : 'surface'"
+            :disabled="!rewardStore.allCompleted"
+            :label="
+              rewardStore.allCompleted
+                ? '포인트리로 전환하기'
+                : '오늘의 노후도락 PLAY를 완료해 주세요'
+            "
+            size="large"
+            @click="onClickClaim"
+          />
+        </ChallengeState>
+      </div>
       <EventCard
         class="max-h-20"
         color="primary"
@@ -19,26 +39,6 @@
         @click="handlers[c.onClick]"
         :src="c.src"
       />
-    </div>
-
-    <!-- 챌린지 현황 / 보상 -->
-    <div class="space-y-4">
-      <div class="text-primary-500 text-2xl font-bold"
-        >오늘의 노후도락 PLAY 현황</div
-      >
-      <ChallengeState :points="todayPoint">
-        <Btn
-          :color="rewardStore.allCompleted ? 'primary' : 'surface'"
-          :disabled="!rewardStore.allCompleted"
-          :label="
-            rewardStore.allCompleted
-              ? '포인트리로 전환하기'
-              : '오늘의 노후도락 PLAY를 완료해 주세요'
-          "
-          size="large"
-          @click="onClickClaim"
-        />
-      </ChallengeState>
     </div>
 
     <!-- 오늘의 금융시장 -->
@@ -136,7 +136,7 @@ onMounted(async () => {
 const card = [
   {
     title: '금융 지식 퀴즈',
-    content1: '매주 달라지는 퀴즈로 두뇌도 깨우고, 리워드도 받아가세요!',
+    content1: '매일 달라지는 퀴즈로 두뇌도 깨우고, 리워드도 받아가세요!',
     content2: '누구나 쉽게 풀 수 있는 퀴즈로 일상 속 금융을 익혀보아요.',
     onClick: 'goToQuiz',
     src: Quiz,
