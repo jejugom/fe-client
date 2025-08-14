@@ -14,29 +14,6 @@
           <!-- 무엇이든 물어보세요 -->
           <div class="space-y-2">
             <h2 class="text-primary-500 text-lg font-bold"
-              >무엇이든 물어보세요</h2
-            >
-            <p class="text-surface-300">
-              금융관련 궁금한 걸 물어보면, 무엇이든 대답해드려요.
-            </p>
-          </div>
-          <Question />
-        </div>
-        <!-- 글자 크기 조절 -->
-        <!-- 글자 크기 조절 (미리보기 전용) -->
-        <div class="space-y-4">
-          <div class="space-y-2">
-            <h2 class="text-primary-500 text-lg font-bold">글자 크기 조절</h2>
-            <p class="text-surface-300"
-              >"설정하기"를 누르면 전체 앱에 적용돼요.</p
-            >
-          </div>
-          <FontSize />
-        </div>
-        <div class="space-y-4">
-          <!-- 무엇이든 물어보세요 -->
-          <div class="space-y-2">
-            <h2 class="text-primary-500 text-lg font-bold"
               >가장 가까운 골든라이프 지점</h2
             >
             <p>
@@ -78,6 +55,29 @@
               />
             </div>
           </div>
+        </div>
+        <div class="space-y-4">
+          <!-- 무엇이든 물어보세요 -->
+          <div class="space-y-2">
+            <h2 class="text-primary-500 text-lg font-bold"
+              >무엇이든 물어보세요</h2
+            >
+            <p class="text-surface-300">
+              금융관련 궁금한 걸 물어보면, 무엇이든 대답해드려요.
+            </p>
+          </div>
+          <Question />
+        </div>
+        <!-- 글자 크기 조절 -->
+        <!-- 글자 크기 조절 (미리보기 전용) -->
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <h2 class="text-primary-500 text-lg font-bold">글자 크기 조절</h2>
+            <p class="text-surface-300"
+              >"설정하기"를 누르면 전체 앱에 적용돼요.</p
+            >
+          </div>
+          <FontSize />
         </div>
       </section>
       <UsageSteps />

@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 
 const KEY = 'app.fontSizePx';
-const DEFAULT_PX = 16;
+const DEFAULT_PX = 14;
 
 const currentPx = ref<number>(DEFAULT_PX);
 
