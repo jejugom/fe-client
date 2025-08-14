@@ -34,7 +34,7 @@ import Btn from '@/components/buttons/Btn.vue';
 const router = useRouter();
 
 const handleStart = () => {
-  console.log('시작하기 버튼 클릭됨');
+  // console.log('시작하기 버튼 클릭됨');
   router.push({ name: 'asset-start' });
 };
 </script>

@@ -120,6 +120,7 @@ function normalizeBranchName(name: string) {
     .replace(/KB국민은행\s*/g, '')
     .replace(/점/g, '')
     .trim();
+}
 
 /* ---------- 검색/마커 ---------- */
 const paintMarkers = (list: Place[]) => {
@@ -194,7 +195,7 @@ function handleSkip() {
   router.push({
     name: from === 'profile' ? 'profile' : 'asset-signup-complete',
   });
-};
+}
 
 async function handleComplete() {
   if (!selectedBranch.value) {
