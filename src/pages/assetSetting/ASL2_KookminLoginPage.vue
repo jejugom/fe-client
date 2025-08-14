@@ -138,7 +138,12 @@ const isFormFilled = computed(
 
 // 건너뛰기 버튼 처리
 function handleSkip() {
-  router.push({ name: 'asset-custom-quiz' });
+  const fromProfile = route.query.from === 'profile';
+  if (fromProfile) {
+    router.push({ name: 'profile' });
+  } else {
+    router.push({ name: 'asset-custom-quiz' });
+  }
 }
 
 // Enter 키 이벤트 처리
@@ -211,7 +216,7 @@ async function handleAssetSync() {
       router.push({ name: 'profile' });
     } else {
       // 회원가입 과정인 경우 -> 다음 스텝으로 이동
-      router.push({ name: 'asset-custom-quiz' });
+      router.push({ name: 'asset-custom-start' });
     }
   } catch (error: any) {
     // console.error('자산 연동 실패:', error);

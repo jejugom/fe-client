@@ -152,9 +152,10 @@ import { ref, computed } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
 import Modal from '@/components/modals/Modal.vue';
 import { privateAllow, finAllow } from '@/data/allowList';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 
 /* ---------------- state ---------------- */
 const isPrivateModalOpen = ref(false);
@@ -176,6 +177,10 @@ function openFinModal() {
 
 function goNext() {
   if (!canProceed.value) return;
-  router.push({ name: 'asset-kookmin-login' });
+  const fromProfile = route.query.from === 'profile';
+  router.push({ 
+    name: 'asset-kookmin-login',
+    query: fromProfile ? { from: 'profile' } : {}
+  });
 }
 </script>

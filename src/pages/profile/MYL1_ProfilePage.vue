@@ -211,7 +211,7 @@ function handleMenuClick(menuId) {
       router.push({ name: 'asset-custom-quiz', query: { from: 'profile' } });
       break;
     case 'tutorial':
-      router.push({ name: 'asset-tutorial' });
+      router.push({ name: 'asset-tutorial', query: { from: 'profile' } });
       break;
     case 'logout':
       authStore.logout();

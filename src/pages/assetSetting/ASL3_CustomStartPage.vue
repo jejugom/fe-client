@@ -27,12 +27,17 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 
 const router = useRouter();
+const route = useRoute();
 
 function goToCustomQuiz() {
-  router.push({ name: 'asset-custom-quiz' });
+  const fromProfile = route.query.from === 'profile';
+  router.push({ 
+    name: 'asset-custom-quiz',
+    query: fromProfile ? { from: 'profile' } : {}
+  });
 }
 </script>

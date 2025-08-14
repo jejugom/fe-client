@@ -16,13 +16,15 @@
 
     <!-- 하단 고정 탭바 -->
     <TabBar
-      v-if="authStore.isLogin"
+      v-if="authStore.isLogin && !isInTutorial"
       class="sticky bottom-0 z-50 w-full max-w-[600px]"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { useLoadingStore } from '@/stores/loading';
 import { useAuthStore } from '@/stores/auth';
 import Header from './Header.vue';
@@ -32,6 +34,24 @@ import FailPage from '@/pages/etc/ETL1_FailPage.vue';
 import Floating from './Floating.vue';
 import Footer from './Footer.vue';
 
+const route = useRoute();
 const loadingStore = useLoadingStore();
 const authStore = useAuthStore();
+
+// 튜토리얼 페이지들에서는 탭바를 숨김 (단, profile에서 진입한 경우는 제외)
+const tutorialRoutes = [
+  'asset-tutorial',
+  'asset-start', 
+  'asset-kookmin-login',
+  'asset-custom-start',
+  'asset-custom-quiz'
+];
+
+const isInTutorial = computed(() => {
+  const currentRoute = route.name as string;
+  const fromProfile = route.query.from === 'profile';
+  
+  // 튜토리얼 페이지이면서 profile에서 온 것이 아닌 경우에만 탭바 숨김
+  return tutorialRoutes.includes(currentRoute) && !fromProfile;
+});
 </script>
