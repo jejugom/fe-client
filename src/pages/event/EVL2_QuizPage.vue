@@ -108,11 +108,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import GlassBtn from '@/components/buttons/GlassBtn.vue';
-import { quizBank, type Quiz } from '@/pages/event/quizData';
+import { type Quiz } from '@/types/event/quiz.d';
 import { useRouter } from 'vue-router';
 import QuizResultModal from './_components/QuizResultModal.vue';
 import ProgressBar from '@/components/progressbar/ProgressBar.vue';
 import { useRewardStore } from '@/stores/reward';
+import { getQuiz } from '@/api/event/quiz';
 
 const router = useRouter();
 const rewardStore = useRewardStore();
@@ -131,9 +132,6 @@ const score = ref(0);
 const bestScore = ref(0);
 const isNewBest = ref(false);
 const showResultModal = ref(false);
-
-// 상수
-const quizPerDay = 7;
 
 // 계산된 속성
 const currentQuestion = computed<Quiz>(
@@ -172,18 +170,50 @@ const getChoiceClass = (index: number) => {
   return 'card-design bg-surface-100';
 };
 
-const startQuiz = () => {
-  currentQuizzes.value = quizBank.slice(
-    0,
-    Math.min(quizPerDay, quizBank.length)
-  );
+const startQuiz = async () => {
+  // 1. 오늘 날짜를 가져온다
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const cachedQuizzes = sessionStorage.getItem('dailyQuiz');
 
+  if (cachedQuizzes) {
+    const { date, quizzes } = JSON.parse(cachedQuizzes);
+    // 2. 저장된 퀴즈의 날짜가 오늘과 같은지 비교한다
+    if (date === today) {
+      // 3. 날짜가 같으면, api를 호출하지 않고 저장된 퀴즈를 사용한다.
+      currentQuizzes.value = quizzes;
+    } else {
+      // 4. 날짜가 다르면 새로운 퀴즈를 api로 요청해서 가져옴
+      await fetchAndCacheQuizzes();
+    }
+  } else {
+    // 5. 캐시된 퀴즈가 없어도 새로운 퀴즈를 가져옴
+    await fetchAndCacheQuizzes();
+  }
+
+  // 퀴즈 상태 초기화
   currentQuestionIndex.value = 0;
   selectedAnswer.value = null;
   answered.value = false;
   score.value = 0;
   gameFinished.value = false;
   isNewBest.value = false;
+};
+
+// api로 퀴즈를 요청하고, 오늘 날짜와 함께 ssessionStorage에 저장
+const fetchAndCacheQuizzes = async () => {
+  try {
+    const quizzes = await getQuiz(); // 실제 api 호출
+    currentQuizzes.value = quizzes;
+    const today = new Date().toISOString().split('T')[0];
+    // 받아온 퀴즈를 오늘 날짜와 함께 저장
+    sessionStorage.setItem(
+      'dailyQuiz',
+      JSON.stringify({ date: today, quizzes })
+    );
+  } catch (error) {
+    console.error('퀴즈 데이터 로딩 실패:', error);
+    // TODO: 사용자에게 에러 메시지를 보여주는 로직 추가
+  }
 };
 
 const selectAnswer = (index: number) => {
