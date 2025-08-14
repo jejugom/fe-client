@@ -1,6 +1,6 @@
 let _loadPromise: Promise<void> | null = null;
 
-/** Kakao JS SDK 1회 로드 */
+// kakao js sdk 1회 로드
 export function loadKakaoMaps(
   appKey = import.meta.env.VITE_KAKAO_MAP_KEY
 ): Promise<void> {
@@ -27,10 +27,11 @@ export function loadKakaoMaps(
     document.head.appendChild(s);
   });
 
+  console.log('[kakaoMap] SDK 로드 시작');
   return _loadPromise;
 }
 
-/** 지도가 viewport에 들어올 때만 초기화 */
+// 지도가 viewport에 들어올 때만 초기화
 export function whenInView(
   el: Element,
   cb: () => void,
@@ -51,7 +52,7 @@ export function whenInView(
   return () => io.disconnect();
 }
 
-/** Map/Places/Geocoder 팩토리 */
+// Map/Places/Geocoder 팩토리
 export function createMap(
   container: HTMLElement,
   options: kakao.maps.MapOptions
@@ -70,7 +71,7 @@ export function createGeocoder() {
   return new window.kakao!.maps.services.Geocoder();
 }
 
-/** 디바운스/쓰로틀 */
+// 디바운스/쓰로틀
 export const debounce = <T extends (...a: any[]) => any>(fn: T, wait = 350) => {
   let t: number | undefined;
   return (...args: Parameters<T>) => {
@@ -90,7 +91,7 @@ export const throttle = <T extends (...a: any[]) => any>(fn: T, gap = 300) => {
   };
 };
 
-/** 현재 위치 Promise */
+// 현재위치 Promise
 export function getCurrentPosition(options?: PositionOptions) {
   return new Promise<GeolocationPosition>((resolve, reject) => {
     if (!('geolocation' in navigator))
@@ -99,13 +100,13 @@ export function getCurrentPosition(options?: PositionOptions) {
   });
 }
 
-/** ATM/지급기 제거 필터 */
+// ATM/지급기 제거 필터
 export function isBankBranch(name: string) {
   const bad = /(ATM|현금|지급기)/;
   return !bad.test(name);
 }
 
-/** 마커 유틸 */
+// 마커 유틸
 export function clearMarkers(markers: kakao.maps.Marker[]) {
   markers.forEach((m) => m.setMap(null));
   markers.length = 0;
@@ -139,7 +140,7 @@ export function makeMarker(opts: {
   return marker;
 }
 
-/** 키워드 검색 (옵션: bounds or location/radius) */
+// 키워드 검색
 export function keywordSearch(
   ps: kakao.maps.services.Places,
   keyword: string,
@@ -165,7 +166,7 @@ export function keywordSearch(
   });
 }
 
-/** 좌표 → 행정구역 */
+// 좌표->행정구역
 export function coord2Region(lng: number, lat: number) {
   return new Promise<any>((resolve) => {
     createGeocoder().coord2RegionCode(lng, lat, (result: any, status: any) => {
@@ -176,6 +177,35 @@ export function coord2Region(lng: number, lat: number) {
   });
 }
 
+// 거리 계산(하버사인 공식)
+export function haversine(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+) {
+  const R = 6371e3; // 지구 반지름 (미터)
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+// 거리 포맷팅
+export function formatDistance(m: number): string {
+  return m < 1000 ? `${Math.round(m)}m` : `${(m / 1000).toFixed(1)}km`;
+}
+
+// 외부 지도 앱 열기
+export function openMap(branch: { placeUrl: string }) {
+  window.open(branch.placeUrl, '_blank');
+}
+
+// 타입정의
 export type Place = { place_name: string; x: string; y: string; id?: string };
 export type SearchOpts = {
   bounds?: kakao.maps.LatLngBounds;
