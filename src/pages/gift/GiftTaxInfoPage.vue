@@ -204,16 +204,5 @@
 </template>
 
 <script setup lang="ts">
-const openYoutubePopup = () => {
-  const url = 'https://www.youtube.com/watch?v=eWztSg6_9lU';
-  const name = 'youtube_popup';
-  const width = 800;
-  const height = 500;
-  const left = (window.innerWidth - width) / 2;
-  const top = (window.innerHeight - height) / 2;
-  const options = `width=${width},height=${height},left=${left},top=${top}`;
-
-  window.open(url, name, options);
-};
 import Error from '@/assets/icons/Error.svg';
 </script>
