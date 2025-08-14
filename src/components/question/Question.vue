@@ -1,112 +1,193 @@
 <template>
-  <div class="question-component card-design flex flex-col justify-between">
-    <div
-      v-if="currentStep === 'initial' || currentStep === 'methodSelect'"
-      class="text-primary-500 mb-3 py-3 text-center text-2xl font-bold"
-    >
-      {{ stepTitle }}
+  <div
+    class="question-component card-design bg-primary-100 flex h-48 flex-col justify-between"
+  >
+    <!-- Header Section -->
+    <div class="flex-shrink-0">
+      <div
+        v-if="currentStep === 'initial' || currentStep === 'methodSelect'"
+        class="animate-fade-in mb-4 text-center"
+      >
+        <h2 class="text-primary-300 mb-1 text-xl font-bold">
+          {{ stepTitle }}
+        </h2>
+        <p class="text-surface-400 text-small"
+          >궁금한 금융용어를 질문해보세요</p
+        >
+      </div>
     </div>
 
-    <!-- 1단계: 초기 버튼 -->
-    <div v-if="currentStep === 'initial'" class="text-center">
-      <Btn
-        label="버튼을 눌러서 물어보기"
-        color="primary"
-        size="large"
-        @click="startQuestion"
-      />
-    </div>
-
-    <!-- 2단계: 방법 선택 버튼들 -->
-    <div v-if="currentStep === 'methodSelect'" class="text-center">
-      <BtnSet
-        label1="직접 입력"
-        label2="음성 입력"
-        type="type2"
-        :onClick1="selectTextInput"
-        :onClick2="selectVoiceInput"
-      />
-    </div>
-
-    <!-- 3-1단계: 텍스트 입력 -->
-    <div v-if="currentStep === 'textInput'" class="text-center">
-      <InputBox
-        v-model="questionText"
-        size="medium"
-        placeholder="궁금한 내용을 입력해주세요"
-        class="mb-3 h-14 w-full"
-      />
-      <BtnSet
-        label1="취소"
-        label2="질문하기"
-        type="type2"
-        :onClick1="resetToInitial"
-        :onClick2="submitTextQuestion"
-      />
-    </div>
-
-    <!-- 3-2단계: 음성 입력 -->
-    <div v-if="currentStep === 'voiceInput'" class="text-center">
-      <!-- 녹음 버튼 -->
-      <div class="mb-3 flex h-14 items-center justify-center">
+    <div class="flex flex-grow items-center justify-center">
+      <!-- 1단계: 초기 버튼 -->
+      <div v-if="currentStep === 'initial'" class="w-full text-center">
         <Btn
-          :label="
-            isRecording
-              ? recordingTime >= 1
-                ? '질문이 끝나면 눌러주세요!'
-                : '듣고 있어요...'
-              : isProcessing
-                ? '처리 중...'
-                : '버튼을 누르고 물어보세요!'
-          "
-          :color="isRecording ? 'primary' : 'primary'"
+          label="버튼을 누르고 물어보세요"
+          color="surface"
           size="large"
-          :class="[
-            'transition-all duration-300',
-            isRecording && 'animate-pulse bg-red-500 text-white',
-            isProcessing && 'cursor-not-allowed opacity-50',
-          ]"
-          :disabled="isProcessing"
-          @click="toggleRecording"
+          class="animate-glow-pulse font-bold"
+          @click="startQuestion"
         />
       </div>
 
-      <!-- 취소 버튼 (BtnSet과 같은 크기) -->
-      <Btn label="취소" color="surface" size="large" @click="resetToInitial" />
-    </div>
-
-    <!-- Alert 모달 -->
-    <Alert v-if="showAlert" :title="alertTitle" @click="closeAlert">
-      <!-- 에러 메시지인 경우 -->
-      <div v-if="!currentResponse" class="text-red-600">
-        {{ alertContent }}
+      <!-- 2단계: 방법 선택 버튼들 -->
+      <div
+        v-if="currentStep === 'methodSelect'"
+        class="animate-fade-in w-full text-center"
+      >
+        <div class="flex gap-3">
+          <Btn
+            label="직접 입력"
+            color="surface"
+            size="medium"
+            class="flex-1 font-bold"
+            @click="selectTextInput"
+          />
+          <Btn
+            label="음성 입력"
+            color="surface"
+            size="medium"
+            class="flex-1 font-bold"
+            @click="selectVoiceInput"
+          />
+        </div>
       </div>
 
-      <!-- 성공 응답인 경우 -->
-      <div v-else class="space-y-4">
-        <!-- 질문하신 내용 -->
-        <div v-if="currentResponse.processedText" class="space-y-2">
-          <h4 class="text-primary-600 text-lg font-semibold"
-            >질문하신 내용 :</h4
+      <!-- 3-1단계: 텍스트 입력 -->
+      <div
+        v-if="currentStep === 'textInput'"
+        class="w-full space-y-3 text-center"
+      >
+        <div class="relative">
+          <InputBox
+            v-model="questionText"
+            size="medium"
+            placeholder="궁금한 내용을 입력해주세요"
+            class="h-12 w-full rounded-lg text-base"
+          />
+        </div>
+        <div class="animate-fade-in flex gap-3">
+          <Btn
+            label="취소"
+            color="surface"
+            size="medium"
+            class="flex-1"
+            @click="resetToInitial"
+          />
+          <Btn
+            label="질문하기"
+            color="secondary"
+            size="medium"
+            class="flex-1"
+            :disabled="!questionText.trim() || isProcessing"
+            @click="submitTextQuestion"
+          />
+        </div>
+      </div>
+
+      <!-- 3-2단계: 음성 입력 -->
+      <div
+        v-if="currentStep === 'voiceInput'"
+        class="animate-fade-in w-full space-y-3 text-center"
+      >
+        <!-- 녹음 버튼 -->
+        <div class="flex items-center justify-center">
+          <button
+            @click="toggleRecording"
+            :disabled="isProcessing"
+            class="relative"
           >
-          <p class="text-surface-500 bg-surface-100 rounded-lg p-3 text-base">
-            "{{ currentResponse.processedText }}"
+            <!-- 파동 애니메이션 -->
+            <div
+              v-if="isRecording"
+              class="absolute -inset-2 animate-ping rounded-full border-2 border-red-200 opacity-60"
+              style="animation-duration: 2s"
+            ></div>
+            <div
+              v-if="isRecording"
+              class="absolute -inset-1 animate-pulse rounded-full border border-red-300 opacity-40"
+            ></div>
+
+            <!-- 메인 버튼 -->
+            <div
+              :class="[
+                'relative flex h-20 w-20 items-center justify-center rounded-full transition-all duration-300',
+                isRecording ? 'scale-110 bg-red-500' : 'bg-primary-300',
+                isProcessing && 'cursor-not-allowed opacity-50',
+                'active:scale-95',
+              ]"
+            >
+              <div v-if="isRecording" class="h-6 w-6 rounded-sm bg-white"></div>
+
+              <svg
+                v-if="!isRecording"
+                class="h-8 w-8 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+          </button>
+        </div>
+
+        <div class="text-center">
+          <p class="text-surface-500 text-sm font-semibold">
+            {{
+              isRecording
+                ? recordingTime >= 1
+                  ? '질문이 끝나면 눌러주세요!'
+                  : '듣고 있어요...'
+                : isProcessing
+                  ? '처리 중...'
+                  : '버튼을 누르고 물어보세요!'
+            }}
           </p>
         </div>
 
-        <!-- 설명 -->
-        <div v-if="currentResponse.aiResponse" class="space-y-2">
-          <h4 class="text-primary-600 text-lg font-semibold">설명이에요 :</h4>
-          <div
-            class="text-surface-500 bg-surface-100 relative rounded-lg p-3 text-base leading-relaxed"
-          >
-            <!-- 일반 텍스트 -->
-            <span>{{ displayedText }}</span>
-          </div>
+        <!-- 취소 버튼 -->
+        <Btn
+          label="취소"
+          color="surface"
+          size="small"
+          @click="resetToInitial"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert 모달 -->
+  <Alert v-if="showAlert" :title="alertTitle" @click="closeAlert">
+    <!-- 에러 메시지인 경우 -->
+    <div v-if="!currentResponse" class="text-red-600">
+      {{ alertContent }}
+    </div>
+
+    <!-- 성공 응답인 경우 -->
+    <div v-else class="space-y-4">
+      <!-- 질문하신 내용 -->
+      <div v-if="currentResponse.processedText" class="space-y-2">
+        <h4 class="text-primary-600 text-lg font-semibold">질문하신 내용 :</h4>
+        <p class="text-surface-500 bg-surface-100 rounded-lg p-3 text-base">
+          "{{ currentResponse.processedText }}"
+        </p>
+      </div>
+
+      <!-- 설명 -->
+      <div v-if="currentResponse.aiResponse" class="space-y-2">
+        <h4 class="text-primary-600 text-lg font-semibold">설명이에요 :</h4>
+        <div
+          class="text-surface-500 bg-surface-100 relative rounded-lg p-3 text-base leading-relaxed"
+        >
+          <!-- 일반 텍스트 -->
+          <span>{{ displayedText }}</span>
         </div>
       </div>
-    </Alert>
-  </div>
+    </div>
+  </Alert>
 </template>
 
 <script setup lang="ts">
@@ -114,7 +195,6 @@ import { ref, onUnmounted, computed } from 'vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import Alert from '@/components/modals/Alert.vue';
 import Btn from '@/components/buttons/Btn.vue';
-import BtnSet from '@/components/buttons/BtnSet.vue';
 import { questionApi, type QuestionResponse } from '@/api/question/question';
 import { useLoadingStore } from '@/stores/loading';
 
