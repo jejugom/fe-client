@@ -318,26 +318,6 @@ watch(selectedTab, async () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-/* 맞춤 추천 */
-const recommendedProducts = computed(() => {
-  const recommendItems = data.value?.customRecommendPrdt ?? [];
-  const products = productStore
-    .getProductsByRecommendIds(recommendItems)
-    .map((product) => {
-      const score = Number(
-        recommendItems.find((r) => r.finPrdtCd === product.finPrdtCd)?.score ??
-          '0'
-      );
-      const tags = [
-        `적합도 ${(score * 100).toFixed(1)}% | ${CATEGORY_LABEL_MAP[product.finPrdtCategory] ?? '기타'}`,
-      ];
-      return { ...product, tags, score };
-    });
-  return sortOption.value === 'score'
-    ? [...products].sort((a, b) => b.score - a.score)
-    : [...products].sort((a, b) => a.finPrdtNm.localeCompare(b.finPrdtNm));
-});
-
 /* 필터 모달 상태 */
 const isFilterOpen = ref(false);
 const canFilter = computed(() =>
@@ -515,7 +495,44 @@ const shownProducts = computed(() => {
     serverFiltered.value && canFilter.value
       ? serverFiltered.value
       : buildLocalListFor(tab);
-  return sortForTab(base, tab, sortOption.value);
+
+  let filteredBase = base;
+
+  // 신탁 탭일 때 필터링
+  if (tab === '신탁') {
+    filteredBase = filteredBase.filter(
+      (p) => p.finPrdtCategory != null && p.finPrdtCd?.startsWith('TR')
+    );
+  }
+
+  return sortForTab(filteredBase, tab, sortOption.value);
+});
+
+const recommendedProducts = computed(() => {
+  const recommendItems = data.value?.customRecommendPrdt ?? [];
+  const products = productStore
+    .getProductsByRecommendIds(recommendItems)
+    // category 없는 애는 제외
+    .filter(
+      (product) =>
+        product.finPrdtCategory != null && product.finPrdtCategory !== ''
+    )
+    .map((product) => {
+      const score = Number(
+        recommendItems.find((r) => r.finPrdtCd === product.finPrdtCd)?.score ??
+          '0'
+      );
+      const tags = [
+        `적합도 ${(score * 100).toFixed(1)}% | ${
+          CATEGORY_LABEL_MAP[product.finPrdtCategory] ?? '기타'
+        }`,
+      ];
+      return { ...product, tags, score };
+    });
+
+  return sortOption.value === 'score'
+    ? [...products].sort((a, b) => b.score - a.score)
+    : [...products].sort((a, b) => a.finPrdtNm.localeCompare(b.finPrdtNm));
 });
 
 const mostRecommendedCategory = computed(() => {
