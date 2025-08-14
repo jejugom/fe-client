@@ -18,7 +18,7 @@
               {{ formatCurrency(totalGiftTax) }}
             </p>
             <div class="text-primary-500 mt-4 mb-4 flex items-center">
-              어떻게 계산되었는지 궁금하신가요? 🤔
+              어떻게 계산되었는지 궁금하신가요?
             </div>
             <Btn
               color="surface"
