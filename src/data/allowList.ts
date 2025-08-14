@@ -173,8 +173,73 @@ export const finAllow = [
     title: '8. 고지의 의무',
     content: `
       <ul class='list-disc pl-5'>
-        <li>본 처리방침은 2025년 8월 13일부터 적용됩니다.</li>
+        <li>본 처리방침은 2025년 8월 9일부터 적용됩니다.</li>
         <li>내용 추가, 삭제 또는 수정이 있을 경우 최소 7일 전 앱 및 웹사이트를 통해 사전 공지합니다.</li>
       </ul>`,
+  },
+];
+
+export const copyrightAllow = [
+  {
+    title: '1. 저작권 고지',
+    content: `
+      <ul class='list-disc pl-5'>
+        <li>본 서비스의 로고, UI, 아이콘, 이미지, 텍스트, 코드 등 일체의 저작물은 노후도락 또는 해당 저작권자에게 권리가 있습니다.</li>
+        <li>별도 출처 표시가 있는 자료는 해당 소유자의 정책을 따릅니다.</li>
+      </ul>`,
+  },
+  {
+    title: '2. 이용 범위 및 금지 사항',
+    content: `
+      <ul class='list-disc pl-5'>
+        <li>비상업적 개인 이용 범위에서 콘텐츠 열람은 허용됩니다.</li>
+        <li>사전 서면 동의 없는 복제, 배포, 2차 저작물 작성, 스크래핑 및 자동 수집을 금지합니다.</li>
+      </ul>`,
+  },
+  {
+    title: '3. 제휴 및 인용',
+    content: `
+      <ul class='list-disc pl-5'>
+        <li>언론 보도/학술 인용 시, 출처(서비스명/링크)를 명확히 표기해야 합니다.</li>
+        <li>상업적 활용은 별도의 서면 계약 체결 후에만 가능합니다.</li>
+      </ul>`,
+  },
+  {
+    title: '4. 신고 및 문의',
+    content: `
+      <ul class='list-disc pl-5'>
+        <li>무단 사용 신고 또는 라이선스 문의: a404.18a@gmail.com</li>
+      </ul>`,
+  },
+  {
+    title: '5. 부칙',
+    content: `
+      <ul class='list-disc pl-5'>
+        <li>본 저작권 약관은 2025년 8월 9일부터 적용됩니다.</li>
+        <li>정책 변경 시 서비스 공지사항을 통해 사전 고지합니다.</li>
+      </ul>`,
+  },
+];
+
+export const termsAllow = [
+  {
+    title: '1. 기본 서비스 이용',
+    content: `
+      <ul class='list-disc pl-5'>
+        <li>서비스는 비상업적 개인 사용을 기본으로 합니다.</li>
+        <li>계정 보안은 사용자 책임입니다.</li>
+        <li>운영 정책 및 기능은 사전 고지 후 변경될 수 있습니다.</li>
+      </ul>
+    `,
+  },
+  {
+    title: '2. 금지 행위',
+    content: `
+      <ul class='list-disc pl-5'>
+        <li>불법 정보의 게시, 유포 금지</li>
+        <li>타인의 권리를 침해하는 행위 금지</li>
+        <li>서비스 역설계, 무단 크롤링 등 금지</li>
+      </ul>
+    `,
   },
 ];
