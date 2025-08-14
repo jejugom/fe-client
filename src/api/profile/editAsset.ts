@@ -108,7 +108,7 @@ export function transformApiResponseToAssets(apiData: AssetResponse[]) {
     type: ASSET_CATEGORY_MAP[
       item.assetCategoryCode as keyof typeof ASSET_CATEGORY_MAP
     ],
-    amount: Math.round(item.amount / 10000), // 원 단위를 만원 단위로 변환
+    amount: item.amount, // 원 단위 그대로 사용
     companyType: item.businessType || '', // 사업체 종류가 있으면 사용, 없으면 빈 문자열
     email: item.email,
   }));
@@ -125,7 +125,7 @@ export function transformAssetsToApiRequest(assets: any[]) {
     email: item.email || 'user@gmail.com',
     assetCategoryCode:
       CATEGORY_NAME_TO_CODE[item.type as keyof typeof CATEGORY_NAME_TO_CODE],
-    amount: item.amount * 10000, // 만원 단위를 원 단위로 변환
+    amount: item.amount, // 원 단위 그대로 사용
     assetName: item.name,
     businessType: item.companyType || null,
   }));

@@ -93,7 +93,7 @@
         <span
           class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-base"
         >
-          만원
+          원
         </span>
       </div>
       <p class="mt-1 w-68 text-right text-base text-blue-300">
@@ -155,17 +155,40 @@ function handleBlur(fieldName: string) {
 }
 
 // 금액 포맷팅 함수
-function formatAmount(amountInManwon: string) {
-  if (amountInManwon === '' || isNaN(Number(amountInManwon))) {
+function formatAmount(amount: string) {
+  if (amount === '' || isNaN(Number(amount))) {
     return '0원';
   }
-  const amount = Number(amountInManwon);
-  if (amount >= 10000) {
-    const eok = Math.floor(amount / 10000);
-    const manwon = amount % 10000;
-    return `${eok.toLocaleString()}억 ${manwon > 0 ? manwon.toLocaleString() + '만원' : ''}`;
+  const num = Number(amount);
+  
+  // 1조 단위부터 표시 (1000억 단위 까지는 억으로 표시)
+  if (num >= 1000000000000) {
+    const jo = Math.floor(num / 1000000000000);
+    const remainder = num % 1000000000000;
+    const eok = Math.floor(remainder / 100000000);
+    const man = Math.floor((remainder % 100000000) / 10000);
+    const won = remainder % 10000;
+    
+    let result = `${jo.toLocaleString()}조`;
+    if (eok > 0) result += ` ${eok.toLocaleString()}억`;
+    if (man > 0) result += ` ${man.toLocaleString()}만`;
+    if (won > 0) result += ` ${won.toLocaleString()}원`;
+    else result += '원';
+    return result;
   }
-  return `${amount.toLocaleString()}만원`;
+  
+  // 1000억 이하: 억, 만, 원 단위로 표시
+  const eok = Math.floor(num / 100000000);
+  const man = Math.floor((num % 100000000) / 10000);
+  const won = num % 10000;
+
+  let result = '';
+  if (eok > 0) result += `${eok.toLocaleString()}억 `;
+  if (man > 0) result += `${man.toLocaleString()}만 `;
+  if (won > 0 || result === '') result += `${won.toLocaleString()}원`;
+  else result += '원';
+
+  return result.trim();
 }
 
 // 입력 필드 클래스 결정
