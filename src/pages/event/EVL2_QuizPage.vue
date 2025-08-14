@@ -5,28 +5,32 @@
       <ProgressBar
         :currentQuestionIndex="currentQuestionIndex"
         :totalQuestions="currentQuizzes.length"
-        class="mb-8"
+        class="mb-4"
       />
 
       <!-- 문제 -->
-      <div class="mb-8">
+      <div class="mb-4">
         <h2 class="text-primary-500 text-2xl leading-relaxed font-bold">
           Q{{ currentQuestionIndex + 1 }}. {{ currentQuestion.question }}
         </h2>
       </div>
 
       <!-- 4개 선지 -->
-      <div class="mb-8 grid aspect-square grid-cols-2 gap-6">
+      <!-- 정사각형 버전 -->
+      <!-- <div class="mb-4 grid aspect-square grid-cols-2 gap-4"> -->
+
+      <!-- 직사각형 버전 -->
+      <div class="mb-4 flex w-full flex-col gap-y-4">
         <button
           v-for="(choice, index) in currentQuestion.choices"
           :key="index"
           @click="selectAnswer(index)"
           :disabled="answered"
-          class="text-primary-500 bg-primary-100 transform rounded-2xl p-6 transition-all duration-300"
+          class="text-primary-500 bg-primary-100 transform rounded-2xl p-4 transition-all duration-300"
           :class="getChoiceClass(index)"
         >
           <!-- 선지 내용 -->
-          <span class="text-center text-xl font-semibold">{{ choice }}</span>
+          <span class="text-center text-base font-semibold">{{ choice }}</span>
         </button>
       </div>
 
@@ -108,8 +112,10 @@ import { quizBank, type Quiz } from '@/pages/event/quizData';
 import { useRouter } from 'vue-router';
 import QuizResultModal from './_components/QuizResultModal.vue';
 import ProgressBar from '@/components/progressbar/ProgressBar.vue';
+import { useRewardStore } from '@/stores/reward';
 
 const router = useRouter();
+const rewardStore = useRewardStore();
 
 const emit = defineEmits<{
   (e: 'quiz-finished'): void;
@@ -216,6 +222,7 @@ const nextQuestion = () => {
 
 const finishQuiz = () => {
   gameFinished.value = true;
+  rewardStore.complete('quiz');
 
   const savedBest = parseInt(
     localStorage.getItem('financeQuizBestScore') || '0'
