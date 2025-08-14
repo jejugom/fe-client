@@ -124,9 +124,9 @@ import {
   type ParsedApiResponse,
   type News,
   type UserInfo,
+  type NohooFilters,
 } from '@/types/nohoo/nohoo';
 import { fetchNohooData } from '@/api/nohoo/nohoo';
-import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
 const route = useRoute();
@@ -340,25 +340,35 @@ const isFilterOpen = ref(false);
 const canFilter = computed(() =>
   ['예금', '적금', '펀드', '주택담보'].includes(selectedTab.value)
 );
-const filtersByTab = ref<Record<string, AnyFilters>>({});
-const currentFilters = computed<AnyFilters>(
+const filtersByTab = ref<Record<string, NohooFilters>>({});
+const currentFilters = computed<NohooFilters>(
   () => filtersByTab.value[selectedTab.value] ?? {}
 );
-const draftFilters = ref<AnyFilters>({}); // 모달 내부 임시
+const draftFilters = ref<NohooFilters>({}); // 모달 내부 임시
 
 function openFilter() {
   const cur = currentFilters.value || {};
   draftFilters.value = {
-    terms: Array.isArray(cur.terms) ? [...cur.terms] : [],
-    rateTypes: Array.isArray(cur.rateTypes) ? [...cur.rateTypes] : [],
-    savingKinds: Array.isArray(cur.savingKinds) ? [...cur.savingKinds] : [],
-    riskGrades: Array.isArray(cur.riskGrades) ? [...cur.riskGrades] : [],
-    mrtgTypes: Array.isArray(cur.mrtgTypes) ? [...cur.mrtgTypes] : [],
-    repayTypes: Array.isArray(cur.repayTypes) ? [...cur.repayTypes] : [],
-    minTopRate: cur.minTopRate ?? null,
-    min3mReturn: cur.min3mReturn ?? null,
-    maxRateCeil: cur.maxRateCeil ?? null,
-    calcLtv: cur.calcLtv ?? null,
+    terms: Array.isArray((cur as any).terms) ? [...(cur as any).terms] : [],
+    rateTypes: Array.isArray((cur as any).rateTypes)
+      ? [...(cur as any).rateTypes]
+      : [],
+    savingKinds: Array.isArray((cur as any).savingKinds)
+      ? [...(cur as any).savingKinds]
+      : [],
+    riskGrades: Array.isArray((cur as any).riskGrades)
+      ? [...(cur as any).riskGrades]
+      : [],
+    mrtgTypes: Array.isArray((cur as any).mrtgTypes)
+      ? [...(cur as any).mrtgTypes]
+      : [],
+    repayTypes: Array.isArray((cur as any).repayTypes)
+      ? [...(cur as any).repayTypes]
+      : [],
+    minTopRate: (cur as any).minTopRate ?? null,
+    min3mReturn: (cur as any).min3mReturn ?? null,
+    maxRateCeil: (cur as any).maxRateCeil ?? null,
+    calcLtv: (cur as any).calcLtv ?? null,
   };
   isFilterOpen.value = true;
 }
@@ -600,7 +610,7 @@ function buildFundTags(p: any) {
 }
 
 /* (샘플) 서버 필터 자리 */
-async function fetchFilteredProducts(category: string, filters: AnyFilters) {
+async function fetchFilteredProducts(category: string, filters: NohooFilters) {
   await new Promise((r) => setTimeout(r, 200)); // demo 딜레이
   const all =
     {
@@ -612,7 +622,7 @@ async function fetchFilteredProducts(category: string, filters: AnyFilters) {
   return frontFilterMock(category, filters, all);
 }
 
-function frontFilterMock(category: string, filters: AnyFilters, list: any[]) {
+function frontFilterMock(category: string, filters: NohooFilters, list: any[]) {
   if (category === '예금') {
     const f = filters as {
       terms?: string[];

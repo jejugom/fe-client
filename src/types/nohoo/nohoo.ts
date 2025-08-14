@@ -94,6 +94,48 @@ interface ParsedApiResponse {
   news?: News[];
 }
 
+// 공통(모든 탭에서 잠재적으로 쓸 수 있는) 필드
+export interface BaseFilters {
+  // 공통 숫자/문자 필드가 필요하면 여기에 추가
+}
+
+// 예금 탭에서 사용하는 필터
+export interface DepositFilters extends BaseFilters {
+  terms?: string[]; // 예: ['6','12','24']
+  rateTypes?: string[]; // 예: ['고정금리','변동금리']
+  minTopRate?: number | null; // 최고금리 하한
+}
+
+// 적금 탭에서 사용하는 필터
+export interface SavingFilters extends BaseFilters {
+  terms?: string[];
+  savingKinds?: string[]; // 예: ['정액적립식','자유적립식']
+  minTopRate?: number | null;
+}
+
+// 펀드 탭에서 사용하는 필터
+export interface FundFilters extends BaseFilters {
+  riskGrades?: string[]; // 예: ['1','2','3'...]
+  min3mReturn?: number | null; // 3개월 수익률 하한
+}
+
+// 주택담보 탭에서 사용하는 필터
+export interface MortgageFilters extends BaseFilters {
+  rateTypes?: string[]; // 대출 금리 유형
+  mrtgTypes?: string[]; // 담보 유형
+  repayTypes?: string[]; // 상환 방식
+  maxRateCeil?: number | null; // 최저금리 상한 (ceil)
+  calcLtv?: number | null; // 사용자가 계산한 LTV
+}
+
+// 화면에서 다루는 “필터”의 총합 유니온
+export type NohooFilters =
+  | DepositFilters
+  | SavingFilters
+  | FundFilters
+  | MortgageFilters
+  | BaseFilters; // 안전하게 기본 포함
+
 export type {
   UserInfo,
   CustomRecommendPrdt,
