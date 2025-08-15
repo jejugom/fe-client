@@ -140,9 +140,11 @@ import Park from '@/assets/images/ParkBanner.webp';
 import Confirm from '@/components/modals/Confirm.vue';
 import Question from '@/components/question/Question.vue';
 import EventCard from './_components/EventCard.vue';
+import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
 const rewardStore = useRewardStore();
+const loadingStore = useLoadingStore();
 
 const showMore = ref(false);
 const showConfirm = ref(false);
@@ -167,6 +169,7 @@ const newsList = ref<
 const todayPoint = ref<number | null>(null);
 
 onMounted(async () => {
+  loadingStore.startLoading();
   try {
     const result = await fetchEventData();
     // 여기! 배열만 따로 넣어야 함
@@ -176,6 +179,8 @@ onMounted(async () => {
     console.error('이벤트 데이터 로딩 실패', e);
     newsList.value = [];
     todayPoint.value = null;
+  } finally {
+    loadingStore.stopLoading();
   }
 
   // 자동 슬라이드 (옵션)
