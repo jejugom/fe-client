@@ -1,5 +1,5 @@
 <template>
-  <div class="card-design mb-8 py-8">
+  <div class="card-design py-8">
     <h2 class="text-primary-500 mb-8 text-center text-xl font-bold">
       노후도락이 제공하는 서비스
     </h2>

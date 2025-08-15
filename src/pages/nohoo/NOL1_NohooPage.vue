@@ -127,6 +127,9 @@ import {
   type NohooFilters,
 } from '@/types/nohoo/nohoo';
 import { fetchNohooData } from '@/api/nohoo/nohoo';
+import Btn from '@/components/buttons/Btn.vue';
+import Modal from '@/components/modals/Modal.vue';
+import FilterForm from './_components/FilterForm.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -144,7 +147,7 @@ const news = ref<News[]>([]);
 const PRODUCT_CATEGORY_MAP: Record<string, number> = {
   예금: 1,
   적금: 2,
-  주택담보대출: 3,
+  주택담보: 3,
   금: 4,
   펀드: 5,
   신탁: 6,
@@ -313,26 +316,6 @@ watch(selectedTab, async () => {
   // 탭 바뀌고 DOM 갱신된 뒤 맨 위로
   await nextTick();
   window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-/* 맞춤 추천 */
-const recommendedProducts = computed(() => {
-  const recommendItems = data.value?.customRecommendPrdt ?? [];
-  const products = productStore
-    .getProductsByRecommendIds(recommendItems)
-    .map((product) => {
-      const score = Number(
-        recommendItems.find((r) => r.finPrdtCd === product.finPrdtCd)?.score ??
-          '0'
-      );
-      const tags = [
-        `적합도 ${(score * 100).toFixed(1)}% | ${CATEGORY_LABEL_MAP[product.finPrdtCategory] ?? '기타'}`,
-      ];
-      return { ...product, tags, score };
-    });
-  return sortOption.value === 'score'
-    ? [...products].sort((a, b) => b.score - a.score)
-    : [...products].sort((a, b) => a.finPrdtNm.localeCompare(b.finPrdtNm));
 });
 
 /* 필터 모달 상태 */
@@ -512,7 +495,44 @@ const shownProducts = computed(() => {
     serverFiltered.value && canFilter.value
       ? serverFiltered.value
       : buildLocalListFor(tab);
-  return sortForTab(base, tab, sortOption.value);
+
+  let filteredBase = base;
+
+  // 신탁 탭일 때 필터링
+  if (tab === '신탁') {
+    filteredBase = filteredBase.filter(
+      (p) => p.finPrdtCategory != null && p.finPrdtCd?.startsWith('TR')
+    );
+  }
+
+  return sortForTab(filteredBase, tab, sortOption.value);
+});
+
+const recommendedProducts = computed(() => {
+  const recommendItems = data.value?.customRecommendPrdt ?? [];
+  const products = productStore
+    .getProductsByRecommendIds(recommendItems)
+    // category 없는 애는 제외
+    .filter(
+      (product) =>
+        product.finPrdtCategory != null && product.finPrdtCategory !== ''
+    )
+    .map((product) => {
+      const score = Number(
+        recommendItems.find((r) => r.finPrdtCd === product.finPrdtCd)?.score ??
+          '0'
+      );
+      const tags = [
+        `적합도 ${(score * 100).toFixed(1)}% | ${
+          CATEGORY_LABEL_MAP[product.finPrdtCategory] ?? '기타'
+        }`,
+      ];
+      return { ...product, tags, score };
+    });
+
+  return sortOption.value === 'score'
+    ? [...products].sort((a, b) => b.score - a.score)
+    : [...products].sort((a, b) => a.finPrdtNm.localeCompare(b.finPrdtNm));
 });
 
 const mostRecommendedCategory = computed(() => {

@@ -34,50 +34,41 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useFontSize } from '@/utils/useFontSize';
 
 const route = useRoute();
-// 숨길 라우트 name들
 const HIDDEN = new Set(['event-quiz', 'event-number', 'event-park']);
-
-// 보이기 여부
 const showFab = computed(() => !HIDDEN.has(route.name ?? ''));
 
-// 폰트 사이즈 px 단위 리스트
-const fontSizes = [10, 12, 14, 16, 18, 20];
-// 현재 인덱스 (기본값 16px 위치)
-const currentIndex = ref(fontSizes.indexOf(16));
+// ✅ 공용 폰트 composable 사용
+const { init, get, set } = useFontSize();
 
-// 폰트 크기 적용 함수
-function applyFontSize(size) {
-  document.documentElement.style.fontSize = `${size}px`;
-}
+// px 리스트와 현재 인덱스
+const fontSizes = [10, 12, 14, 16, 18, 20];
+const currentIndex = ref(3); // 16px 가정
 
 onMounted(() => {
-  // 초기값 적용
-  applyFontSize(fontSizes[currentIndex.value]);
+  init(); // 로컬스토리지 값 적용
+  // 현재 px → 인덱스 동기화
+  const cur = get();
+  const idx = fontSizes.indexOf(cur);
+  currentIndex.value = idx >= 0 ? idx : fontSizes.indexOf(16);
 });
 
-// 키우기
 function increaseFont() {
   if (currentIndex.value < fontSizes.length - 1) {
     currentIndex.value++;
-    applyFontSize(fontSizes[currentIndex.value]);
+    set(fontSizes[currentIndex.value]); // 전역 저장 + 적용
   }
 }
-
-// 줄이기
 function decreaseFont() {
   if (currentIndex.value > 0) {
     currentIndex.value--;
-    applyFontSize(fontSizes[currentIndex.value]);
+    set(fontSizes[currentIndex.value]); // 전역 저장 + 적용
   }
 }
 
-// 상단이동
 function scrollToTop() {
-  window.scrollTo({
-    top: 0,
-    behavior: 'smooth',
-  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>

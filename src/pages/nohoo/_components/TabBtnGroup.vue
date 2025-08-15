@@ -1,6 +1,6 @@
 <template>
   <div
-    class="border-b-surface-200 fixed top-[calc(64px)] left-1/2 z-20 box-border w-full max-w-150 -translate-x-1/2 border-b bg-white px-5 pt-4"
+    class="border-b-surface-200 fixed top-[calc(64px)] left-1/2 z-20 box-border w-full max-w-[600px] -translate-x-1/2 border-b bg-white px-5 pt-4"
   >
     <div class="scrollbar-hide flex overflow-x-auto">
       <div class="flex gap-2">
