@@ -10,9 +10,9 @@
         :key="i"
         class="flex w-32 flex-col items-center justify-between"
       >
-        <div class="bg-primary-100 h-20 w-20 rounded-full"></div>
-        <div class="bg-primary-100 mt-1 mb-2 h-6 w-24 rounded"></div>
-        <div class="bg-primary-100 h-8 w-20 rounded"></div>
+        <div class="bg-silver h-20 w-20 rounded-full"></div>
+        <div class="bg-silver mt-1 mb-2 h-6 w-24 rounded"></div>
+        <div class="bg-silver h-8 w-20 rounded"></div>
       </div>
     </div>
   </div>

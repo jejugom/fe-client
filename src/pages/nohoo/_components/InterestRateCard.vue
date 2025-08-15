@@ -65,6 +65,11 @@ const chartOptions = computed(() => ({
     type: 'line',
     zoom: { enabled: false },
     toolbar: { show: false },
+    animations: {
+      enabled: false,
+      animateGradually: { enabled: false },
+      dynamicAnimation: { enabled: false },
+    },
   },
   stroke: {
     curve: 'stepline',

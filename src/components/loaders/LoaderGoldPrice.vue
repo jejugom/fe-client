@@ -1,10 +1,12 @@
 <template>
-  <div class="card-design shimmer rounded-lg p-4">
-    <div class="bg-silver mb-4 h-8 w-3/4 rounded"></div>
-    <div class="flex items-center justify-between">
-      <div class="bg-silver mb-2 h-6 w-1/2 rounded"></div>
-      <div class="bg-silver h-10 w-24 rounded"></div>
+  <div
+    class="card-design shimmer flex flex-col gap-2 bg-gray-200 p-0 pt-4 pr-4"
+  >
+    <div class="ml-4 flex items-center justify-between">
+      <div class="bg-silver h-7 w-2/5 rounded"></div>
+      <div class="bg-silver h-6 w-1/4 rounded"></div>
     </div>
+    <div class="bg-silver m-4 mt-2 h-60 w-full rounded"></div>
   </div>
 </template>
 
