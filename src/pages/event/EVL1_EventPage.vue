@@ -280,6 +280,7 @@ async function onConfirmYes() {
     // 요구사항: 확인 시 스토어 초기화 → API 호출
     rewardStore.resetToday();
     await postEventData();
+    window.location.reload();
     // 필요하면 토스트/알럿 추가 가능
   } catch (e) {
     console.error('보상 적립 실패', e);
