@@ -64,11 +64,13 @@
       </div>
     </div>
 
-    <div v-if="nearestBranch" ref="nearestBranchSection">
+    <div v-if="authStore.isLogin" ref="nearestBranchSection">
       <div class="text-primary-500 mb-2 text-2xl font-bold"
         >가장 가까운 골든라이프</div
       >
+      <LoaderGoldenLife v-if="isBranchLoading" />
       <div
+        v-if="!isBranchLoading && nearestBranch"
         class="stroke-secondary bg-gold flex items-center justify-between rounded-lg p-4"
       >
         <div>
@@ -88,6 +90,12 @@
           label="찾아가기"
           @click="openMap(nearestBranch)"
         />
+      </div>
+      <div
+        v-if="!isBranchLoading && !nearestBranch && branchSearchAttempted"
+        class="card-design text-surface-400 text-center"
+      >
+        주변에 골든라이프 지점이 없습니다.
       </div>
     </div>
 
@@ -133,6 +141,7 @@ import { fetchHomeData, type HomeData } from '@/api/home';
 import IconCard from '@/components/cards/IconCard.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import TextBtn from '@/components/buttons/TextBtn.vue';
+import LoaderGoldenLife from '@/components/loaders/LoaderGoldenLife.vue';
 import Home1 from '@/assets/images/Home1.svg';
 import Home2 from '@/assets/images/Home2.svg';
 import Home3 from '@/assets/images/Home3.svg';
@@ -243,6 +252,8 @@ type Branch = {
 const myPos = ref<{ lat: number; lng: number } | null>(null);
 const nearestBranch = ref<Branch | null>(null);
 const nearestBranchSection = ref<HTMLElement | null>(null);
+const isBranchLoading = ref(false);
+const branchSearchAttempted = ref(false);
 let branchInitDone = false;
 
 /** 가장 가까운 지점 검색 */
@@ -279,6 +290,8 @@ async function searchNearestBranch() {
 /** 섹션이 실제 DOM에 올라오고, 뷰포트에 들어오면 1회만 실행 */
 async function runNearestBranchSearchOnce() {
   if (branchInitDone) return;
+  isBranchLoading.value = true;
+  branchSearchAttempted.value = false;
   try {
     const pos = await getCurrentPosition({
       enableHighAccuracy: true,
@@ -289,6 +302,9 @@ async function runNearestBranchSearchOnce() {
     branchInitDone = true;
   } catch (err) {
     console.error('위치 조회 실패', err);
+  } finally {
+    isBranchLoading.value = false;
+    branchSearchAttempted.value = true;
   }
 }
 
