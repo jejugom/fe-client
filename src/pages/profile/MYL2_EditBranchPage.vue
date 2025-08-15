@@ -1,6 +1,4 @@
 <template>
-  <!-- guno: featured from wina's branch select modal -->
-
   <!-- 현재 위치 표시 -->
   <div class="mb-4">
     <h2 class="text-primary-500 mb-2 text-2xl font-bold">
@@ -117,11 +115,12 @@ const markers = ref<kakao.maps.Marker[]>([]);
 const q = (v: unknown) =>
   Array.isArray(v) ? String(v[0] ?? '') : v != null ? String(v) : '';
 
-const normalizeBranchName = (name: string) =>
-  name
+function normalizeBranchName(name: string) {
+  return name
     .replace(/KB국민은행\s*/g, '')
     .replace(/점/g, '')
     .trim();
+}
 
 /* ---------- 검색/마커 ---------- */
 const paintMarkers = (list: Place[]) => {
@@ -191,14 +190,14 @@ const onAlertConfirm = () => {
   });
 };
 
-const handleSkip = () => {
+function handleSkip() {
   const from = q(route.query.from);
   router.push({
     name: from === 'profile' ? 'profile' : 'asset-signup-complete',
   });
-};
+}
 
-const handleComplete = async () => {
+async function handleComplete() {
   if (!selectedBranch.value) {
     errorAlertMessage.value = '지점을 선택해주세요.';
     showErrorAlert.value = true;
@@ -226,7 +225,7 @@ const handleComplete = async () => {
       '지점 설정 중 오류가 발생했습니다. 다시 시도해주세요.';
     showErrorAlert.value = true;
   }
-};
+}
 
 /* ---------- mount: 지도/초기검색 ---------- */
 onMounted(async () => {

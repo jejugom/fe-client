@@ -26,12 +26,12 @@ export const questionApi = {
       formData.append('text', text.trim());
     }
     
-    console.log('API 요청 데이터:', {
-      hasAudio: !!audioFile,
-      audioName: audioFile?.name,
-      audioSize: audioFile?.size,
-      text: text || '없음'
-    });
+    // console.log('API 요청 데이터:', {
+    //   hasAudio: !!audioFile,
+    //   audioName: audioFile?.name,
+    //   audioSize: audioFile?.size,
+    //   text: text || '없음'
+    // });
     
     try {
       const response = await api.post('/api/question/ask', formData, {
@@ -40,14 +40,14 @@ export const questionApi = {
         },
       });
       
-      console.log('API 응답 성공:', response.data);
+      // console.log('API 응답 성공:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('API 요청 실패:', error);
+      // console.error('API 요청 실패:', error);
       
       // 백엔드에서 에러 응답을 보낸 경우
       if (error.response?.data) {
-        console.error('백엔드 에러 응답:', error.response.data);
+        // console.error('백엔드 에러 응답:', error.response.data);
         return error.response.data;
       }
       
@@ -65,15 +65,15 @@ export const questionApi = {
    * @returns Promise<QuestionResponse>
    */
   async askTextOnly(text: string): Promise<QuestionResponse> {
-    console.log('텍스트 전용 API 요청:', text);
+    // console.log('텍스트 전용 API 요청:', text);
     
     try {
       const response = await api.post('/api/question/text', { text });
       
-      console.log('텍스트 API 응답 성공:', response.data);
+      // console.log('텍스트 API 응답 성공:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('텍스트 API 요청 실패:', error);
+      // console.error('텍스트 API 요청 실패:', error);
       
       if (error.response?.data) {
         return error.response.data;
@@ -92,11 +92,11 @@ export const questionApi = {
    * @returns Promise<QuestionResponse>
    */
   async askVoiceOnly(audioFile: File): Promise<QuestionResponse> {
-    console.log('음성 전용 API 요청:', {
-      name: audioFile.name,
-      size: audioFile.size,
-      type: audioFile.type
-    });
+    // console.log('음성 전용 API 요청:', {
+    //   name: audioFile.name,
+    //   size: audioFile.size,
+    //   type: audioFile.type
+    // });
     
     try {
       // FormData로 파일 전송
@@ -109,10 +109,10 @@ export const questionApi = {
         },
       });
       
-      console.log('음성 API 응답 성공:', response.data);
+      // console.log('음성 API 응답 성공:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('음성 API 요청 실패:', error);
+      // console.error('음성 API 요청 실패:', error);
       
       if (error.response?.data) {
         return error.response.data;

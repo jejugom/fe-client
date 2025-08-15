@@ -167,7 +167,7 @@ onMounted(async () => {
     try {
       homeData.value = await fetchHomeData();
     } catch (error) {
-      console.error('홈 데이터 요청 실패', error);
+      // console.error('홈 데이터 요청 실패', error);
       loadingStore.setError(true);
     } finally {
       loadingStore.stopLoading();
@@ -204,6 +204,7 @@ const serviceCards = [
   },
 ] as const;
 
+// 서비스 카드 클릭 핸들러
 const handlers: Record<string, () => void> = {
   goToNohoo: () => router.push({ name: 'nohoo' }),
   goToGift: () => router.push({ name: 'gift' }),

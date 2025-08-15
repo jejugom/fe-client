@@ -64,22 +64,22 @@ const alertMessage = ref('');
 const isSuccessAlert = ref(false);
 
 // 화면 표시용 포맷터
-const formatKoreanDate = (iso: string) => {
+function formatKoreanDate(iso: string) {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   if (!y || !m || !d) return iso;
   return `${y}년 ${m.padStart(2, '0')}월 ${d.padStart(2, '0')}일`;
-};
+}
 
-const onAlertConfirm = () => {
+function onAlertConfirm() {
   showAlert.value = false;
   if (isSuccessAlert.value) {
     isSuccessAlert.value = false; // Reset flag
     router.push({ name: 'profile' });
   }
-};
+}
 
-const fetchUserProfile = async () => {
+async function fetchUserProfile() {
   try {
     const userProfile = await profileApi.getUserProfile();
     email.value = userProfile.email ?? '';
@@ -87,13 +87,13 @@ const fetchUserProfile = async () => {
     userPhone.value = userProfile.userPhone ?? '';
     birth.value = userProfile.birth ?? ''; // 백엔드에서 YYYY-MM-DD로 내려오는 값
   } catch (error) {
-    console.error('프로필 조회 실패:', error);
+    // console.error('프로필 조회 실패:', error);
     alertMessage.value = '프로필 정보를 불러오는데 실패했습니다.';
     showAlert.value = true;
   }
-};
+}
 
-const updateProfile = async () => {
+async function updateProfile() {
   try {
     await profileApi.updateUserProfile({
       userName: userName.value,
@@ -104,12 +104,12 @@ const updateProfile = async () => {
     isSuccessAlert.value = true;
     showAlert.value = true;
   } catch (error) {
-    console.error('프로필 업데이트 실패:', error);
+    // console.error('프로필 업데이트 실패:', error);
     alertMessage.value = '프로필 정보 업데이트에 실패했습니다.';
     isSuccessAlert.value = false;
     showAlert.value = true;
   }
-};
+}
 
 onMounted(fetchUserProfile);
 </script>

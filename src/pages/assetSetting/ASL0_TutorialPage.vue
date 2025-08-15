@@ -81,12 +81,24 @@
         </div>
       </section>
       <UsageSteps />
-      <Btn
-        label="노후 설계 시작하기"
-        color="secondary"
-        size="large"
-        @click="handleStart"
-      />
+      <!-- 시작하기 버튼 -->
+      <div class="space-y-4">
+        <Btn
+          label="노후 설계 시작하기"
+          color="secondary"
+          size="large"
+          @click="handleStart"
+        />
+
+        <!-- 프로필에서 온 경우에만 돌아가기 버튼 표시 -->
+        <Btn
+          v-if="isFromProfile"
+          label="프로필로 돌아가기"
+          color="surface"
+          size="large"
+          @click="handleBackToProfile"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -102,6 +114,9 @@ import { useFontSize } from '@/utils/useFontSize';
 import FontSize from './_components/FontSize.vue';
 
 const router = useRouter();
+const route = useRoute();
+
+const isFromProfile = computed(() => route.query.from === 'profile');
 
 // ⬇️ 기존 import 아래에 추가
 import {
@@ -196,6 +211,16 @@ onMounted(() => {
 const handleStart = () => {
   if (dirty) setFont(previewPx.value);
   router.push({ name: 'asset-start' });
+  // console.log('시작하기 버튼 클릭됨');
+  const fromProfile = route.query.from === 'profile';
+  router.push({ 
+    name: 'asset-start',
+    query: fromProfile ? { from: 'profile' } : {}
+  });
+};
+
+const handleBackToProfile = () => {
+  router.push({ name: 'profile' });
 };
 
 // (선택) 라우터로 다른 페이지로 나갈 때도 변경이 남아 있으면 적용하고 나가고 싶다면:

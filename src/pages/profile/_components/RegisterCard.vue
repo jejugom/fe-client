@@ -40,14 +40,26 @@
 
     <!-- 제목 -->
     <div class="text-primary-300 mb-4 text-center text-2xl font-bold">
-      방문 시간 변경
+      방문 날짜/시간 변경
+    </div>
+
+    <!-- 안내 문구 -->
+    <div class="mb-4">
+      <p class="text-center text-sm text-gray-600">
+        방문지점을 바꾸고 싶으시다면
+      </p>
+      <p class="text-center text-sm text-gray-600">
+        예약 삭제 후 다시 예약해주세요!
+      </p>
     </div>
 
     <BookingTimeSelectModal
       ref="timeModalRef"
       :currentTime="booking.time"
+      :currentDate="booking.date"
+      :branchId="booking.branchId || parseInt(String(booking.bank_name), 10)"
       @close="showTimeModal = false"
-      @select="handleTimeSelect"
+      @select="handleDateTimeConfirm"
     />
   </Modal>
 
@@ -92,23 +104,21 @@ const emit = defineEmits<{
 }>();
 
 const showTimeModal = ref(false);
-const selectedTime = ref<string | null>(null);
 const timeModalRef = ref<InstanceType<typeof BookingTimeSelectModal> | null>(
   null
 );
 const showDeleteConfirmModal = ref(false);
 const showAlert = ref(false);
 const alertMessage = ref('');
-const alertTitle = ref('');
 const isSuccessAlert = ref(false);
 
-const onAlertConfirm = () => {
+function onAlertConfirm() {
   showAlert.value = false;
   if (isSuccessAlert.value) {
     emit('updated');
     isSuccessAlert.value = false; // reset
   }
-};
+}
 
 const formattedDate = computed(() => {
   const dateObj = new Date(`${props.booking.date}T${props.booking.time}`);
@@ -145,21 +155,21 @@ const displayBankName = computed(() => {
   return props.booking.bank_name || '지점 정보 없음';
 });
 
+/**
+ * 상품 이름 표시 (코드를 이름으로 변환)
+ */
 const displayProductName = computed(() => {
-  // 1. 먼저 finPrdtCode 필드가 있는지 확인
   if (props.booking.finPrdtCode) {
     return getProductNameByCodeWrapper(props.booking.finPrdtCode);
   }
 
-  // 2. prdt_name이 상품 코드 형태인 경우 변환
   if (typeof props.booking.prdt_name === 'string') {
-    // 실제 DB 패턴에 맞는 상품 코드 검사
     const codePatterns = [
-      /^[0-9A-Z]{4}$/, // 펀드 코드 (예: 1A81, 2A43)
-      /^DP\d+$/, // 예적금 코드 (예: DP01000029)
-      /^LN\d+$/, // 대출 코드 (예: LN200300000002)
-      /^C\d+$/, // 투자상품 코드 (예: C016622)
-      /^(gift|inheritance)$/, // 특수 상품
+      /^[0-9A-Z]{4}$/,
+      /^DP\d+$/,
+      /^LN\d+$/,
+      /^C\d+$/,
+      /^(gift|inheritance)$/,
     ];
 
     const isProductCode = codePatterns.some((pattern) =>
@@ -170,50 +180,48 @@ const displayProductName = computed(() => {
     }
   }
 
-  // 3. 이미 상품명인 경우 그대로 사용
   return props.booking.prdt_name || '상품 정보 없음';
 });
 
-// 시간 선택 처리
-const handleTimeSelect = (time: string) => {
-  console.log('시간 선택됨:', time);
-  selectedTime.value = time;
-};
+/**
+ * 날짜/시간 변경 제출 (모달 내부 검증 후 실행)
+ */
+function submitTimeChange() {
+  timeModalRef.value?.submitSelection();
+}
 
-// 시간 변경 제출
-const submitTimeChange = async () => {
-  if (!selectedTime.value) {
-    alertTitle.value = '알림';
-    alertMessage.value = '시간을 변경해주세요!';
-    showAlert.value = true;
-    return;
-  }
-
+/**
+ * 날짜/시간 변경 API 호출 (모달 검증 후 실행)
+ */
+async function handleDateTimeConfirm(payload: { date: string; time: string }) {
   try {
     await mypageApi.updateBooking(props.booking.id, {
-      date: props.booking.date,
-      time: selectedTime.value,
+      date: payload.date,
+      time: payload.time,
     });
 
     showTimeModal.value = false;
-    selectedTime.value = null;
-
-    alertMessage.value = '예약 시간이 성공적으로 변경되었습니다.';
+    alertMessage.value = '예약 날짜/시간이 성공적으로 변경되었습니다.';
     isSuccessAlert.value = true;
     showAlert.value = true;
   } catch (error) {
-    console.error('예약 시간 변경 실패:', error);
-    alertMessage.value = '예약 시간 변경 중 오류가 발생했습니다.';
+    // console.error('예약 날짜/시간 변경 실패:', error);
+    alertMessage.value = '예약 날짜/시간 변경 중 오류가 발생했습니다.';
     showAlert.value = true;
   }
-};
+}
 
-// 예약 삭제 처리
-const handleBookingDelete = () => {
+/**
+ * 예약 삭제 확인 모달 표시
+ */
+function handleBookingDelete() {
   showDeleteConfirmModal.value = true;
-};
+}
 
-const confirmBookingDelete = async () => {
+/**
+ * 예약 삭제 API 호출
+ */
+async function confirmBookingDelete() {
   showDeleteConfirmModal.value = false;
   try {
     await mypageApi.deleteBooking(props.booking.id);
@@ -223,9 +231,9 @@ const confirmBookingDelete = async () => {
     isSuccessAlert.value = true;
     showAlert.value = true;
   } catch (error) {
-    console.error('예약 삭제 실패:', error);
+    // console.error('예약 삭제 실패:', error);
     alertMessage.value = '예약 삭제 중 오류가 발생했습니다.';
     showAlert.value = true;
   }
-};
+}
 </script>
