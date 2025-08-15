@@ -185,9 +185,6 @@
         class="custom-shadow border-surface-200 relative overflow-hidden rounded-lg border bg-red-100 p-4"
       >
         <div class="flex items-start">
-          <div class="mt-1 mr-3">
-            <img :src="Error" alt="Error Icon" class="h-5 w-5" />
-          </div>
           <div>
             <h4 class="mb-1 text-lg font-semibold text-red-500">참고사항</h4>
             <p class="leading-relaxed text-red-500">

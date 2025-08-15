@@ -6,39 +6,80 @@
     <!-- 매일매일 -->
     <div class="space-y-4">
       <div class="text-primary-500 text-2xl font-bold"
-        >매일매일 노후도락 PLAY</div
+        >오늘의 노후도락 PLAY</div
       >
-      <EventCard
-        class="max-h-20"
-        color="primary"
-        v-for="(c, i) in card"
-        :key="i"
-        :title="c.title"
-        :content1="c.content1"
-        :content2="c.content2"
-        @click="handlers[c.onClick]"
-        :src="c.src"
-      />
-    </div>
+      <p class="text-primary-500 text-base"
+        >매일매일 작지만 소중한 습관,<br />노후도락과 함께 3가지 활동을 실천하고
+        작은 선물도 받아보세요.</p
+      >
+      <!-- 챌린지 현황 / 보상 -->
+      <div class="space-y-4">
+        <ChallengeState :points="todayPoint">
+          <Btn
+            :color="rewardStore.allCompleted ? 'primary' : 'surface'"
+            :disabled="!rewardStore.allCompleted"
+            :label="
+              rewardStore.allCompleted
+                ? '포인트리로 전환하기'
+                : '오늘의 노후도락 PLAY를 완료해 주세요'
+            "
+            size="large"
+            @click="onClickClaim"
+          />
+        </ChallengeState>
+      </div>
 
-    <!-- 챌린지 현황 / 보상 -->
-    <div class="space-y-4">
-      <div class="text-primary-500 text-2xl font-bold"
-        >오늘의 노후도락 PLAY 현황</div
-      >
-      <ChallengeState :points="todayPoint">
-        <Btn
-          :color="rewardStore.allCompleted ? 'primary' : 'surface'"
-          :disabled="!rewardStore.allCompleted"
-          :label="
-            rewardStore.allCompleted
-              ? '포인트리로 전환하기'
-              : '오늘의 노후도락 PLAY를 완료해 주세요'
-          "
-          size="large"
-          @click="onClickClaim"
-        />
-      </ChallengeState>
+      <!-- 이벤트 카드 캐러셀 -->
+      <div class="relative overflow-hidden">
+        <!-- 캐러셀 컨테이너 -->
+        <div
+          class="flex transition-transform duration-300 ease-out"
+          :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
+          @touchstart="onTouchStart"
+          @touchmove="onTouchMove"
+          @touchend="onTouchEnd"
+        >
+          <div v-for="(c, i) in card" :key="i" class="w-full flex-shrink-0">
+            <EventCard
+              class="mx-2 h-24"
+              color="primary"
+              :title="c.title"
+              :content1="c.content1"
+              :content2="c.content2"
+              @click="handlers[c.onClick]"
+              :src="c.src"
+            />
+          </div>
+        </div>
+
+        <!-- 인디케이터 -->
+        <div class="mt-4 flex justify-center space-x-2">
+          <button
+            v-for="(_, i) in card"
+            :key="i"
+            class="h-2 w-2 rounded-full transition-colors duration-200"
+            :class="currentIndex === i ? 'bg-primary-500' : 'bg-surface-300'"
+            @click="goToSlide(i)"
+          />
+        </div>
+
+        <!-- 좌우 네비게이션 버튼 -->
+        <button
+          v-if="card.length > 1"
+          class="text-primary-500 absolute top-1/2 left-2 -translate-y-1/2 transform rounded-full bg-white p-3 font-bold opacity-75 shadow-md transition-colors duration-200"
+          @click="prevSlide"
+        >
+          ‹
+        </button>
+
+        <button
+          v-if="card.length > 1"
+          class="text-primary-500 absolute top-1/2 right-2 -translate-y-1/2 transform rounded-full bg-white p-3 font-bold opacity-75 shadow-md transition-colors duration-200"
+          @click="nextSlide"
+        >
+          ›
+        </button>
+      </div>
     </div>
 
     <!-- 오늘의 금융시장 -->
@@ -107,6 +148,12 @@ const showMore = ref(false);
 const showConfirm = ref(false);
 const toggleShowMore = () => (showMore.value = !showMore.value);
 
+// 캐러셀 관련 상태
+const currentIndex = ref(0);
+const touchStartX = ref(0);
+const touchEndX = ref(0);
+const isDragging = ref(false);
+
 // 서버 데이터 상태
 const newsList = ref<
   Array<{
@@ -130,14 +177,17 @@ onMounted(async () => {
     newsList.value = [];
     todayPoint.value = null;
   }
+
+  // 자동 슬라이드 (옵션)
+  startAutoSlide();
 });
 
 // 카드 목록/핸들러 동일
 const card = [
   {
     title: '금융 지식 퀴즈',
-    content1: '매주 달라지는 퀴즈로 두뇌도 깨우고, 리워드도 받아가세요!',
-    content2: '누구나 쉽게 풀 수 있는 퀴즈로 일상 속 금융을 익혀보아요.',
+    content1: '매일 달라지는 퀴즈로 두뇌를 깨워보세요!',
+    content2: '누구나 쉽게 풀 수 있는 퀴즈로 금융을 익혀보아요.',
     onClick: 'goToQuiz',
     src: Quiz,
   },
@@ -150,7 +200,7 @@ const card = [
   },
   {
     title: '공원 방문 챌린지',
-    content1: '근처 공원에 들러 걷기만 해도 건강과 리워드가 함께 찾아옵니다.',
+    content1: '근처 공원에 들러 걷기만 해도 건강해져요.',
     content2: '오늘의 작은 발걸음이 내일의 활력으로 이어집니다.',
     onClick: 'goToParkChallenge',
     src: Park,
@@ -160,6 +210,58 @@ const handlers: Record<string, () => void> = {
   goToQuiz: () => router.push({ name: 'event-quiz' }),
   goToNumberGame: () => router.push({ name: 'event-number' }),
   goToParkChallenge: () => router.push({ name: 'event-park' }),
+};
+
+// 캐러셀 메서드
+const nextSlide = () => {
+  currentIndex.value = (currentIndex.value + 1) % card.length;
+};
+
+const prevSlide = () => {
+  currentIndex.value =
+    currentIndex.value === 0 ? card.length - 1 : currentIndex.value - 1;
+};
+
+const goToSlide = (index: number) => {
+  currentIndex.value = index;
+};
+
+// 터치 이벤트 처리
+const onTouchStart = (e: TouchEvent) => {
+  touchStartX.value = e.touches[0].clientX;
+  isDragging.value = true;
+};
+
+const onTouchMove = (e: TouchEvent) => {
+  if (!isDragging.value) return;
+  e.preventDefault(); // 스크롤 방지
+};
+
+const onTouchEnd = (e: TouchEvent) => {
+  if (!isDragging.value) return;
+
+  touchEndX.value = e.changedTouches[0].clientX;
+  const deltaX = touchStartX.value - touchEndX.value;
+  const minSwipeDistance = 50; // 최소 스와이프 거리
+
+  if (Math.abs(deltaX) > minSwipeDistance) {
+    if (deltaX > 0) {
+      // 왼쪽으로 스와이프 (다음 슬라이드)
+      nextSlide();
+    } else if (deltaX < 0) {
+      // 오른쪽으로 스와이프 (이전 슬라이드)
+      prevSlide();
+    }
+  }
+
+  isDragging.value = false;
+};
+
+// 자동 슬라이드 (옵션)
+const startAutoSlide = () => {
+  setInterval(() => {
+    nextSlide(); // 무한 순환으로 변경
+  }, 5000); // 5초마다 자동 슬라이드
 };
 
 // 카테고리 0만
