@@ -8,22 +8,32 @@
     상담을 권장합니다.</p
   >
   <Btn
+    class="mb-4"
     color="secondary"
     :label="isMobile ? '결과 공유하기 (PDF)' : '결과 PDF 다운로드'"
     size="large"
     @click="handleShareOrDownload"
   />
-  <div class="mt-16">
+
+  <div class="mt-4">
     <p class="text-primary-500 mb-2 text-center font-semibold">
       궁금한 점이 생기셨다면,<br />
       은행에서 자세히 알려드릴게요
     </p>
 
     <Btn
+      class="mb-4"
       color="primary"
       label="은행 방문 예약하기"
       size="large"
       @click="goToRegister"
+    />
+
+    <Btn
+      color="primary"
+      label="증여설계 메인으로 돌아가기"
+      size="large"
+      @click="goToMain"
     />
   </div>
 
@@ -66,6 +76,9 @@ const goToRegister = () => {
     name: 'register',
     params: { id: 'gift' },
   });
+};
+const goToMain = () => {
+  router.push({ name: 'gift' });
 };
 
 const shareResult = async () => {

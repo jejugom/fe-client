@@ -174,8 +174,6 @@ import type {
   TaxSavingStrategy,
 } from '@/types/gift/simulation';
 
-import ChartIcon from '@/assets/icons/Charts.svg';
-
 const apexchart = VueApexCharts;
 const simulationStore = useSimulationStore();
 const router = useRouter();
