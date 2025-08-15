@@ -36,7 +36,7 @@
           <p
             ><span
               :class="{
-                'text-gold text-lg font-semibold': displayScore > '50',
+                'text-gold text-lg font-semibold': Number(displayScore) > 50,
               }"
               >{{ displayScore }} </span
             >%</p

@@ -1,5 +1,5 @@
 <template>
-  <div class="card-design shimmer rounded-lg p-4">
+  <div class="bg-gold shimmer rounded-lg p-4">
     <div class="bg-silver mb-4 h-8 w-3/4 rounded"></div>
     <div class="flex items-center justify-between">
       <div class="bg-silver mb-2 h-6 w-1/2 rounded"></div>
