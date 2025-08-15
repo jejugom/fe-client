@@ -100,8 +100,7 @@
 
 <script setup lang="ts">
 import { watch } from 'vue';
-import GlassBtn from '@/components/buttons/GlassBtn.vue';
-import { type Quiz } from '@/pages/event/quizData';
+import { type Quiz } from '@/types/event/quiz.d';
 import Btn from '@/components/buttons/Btn.vue';
 
 const props = defineProps<{

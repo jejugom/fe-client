@@ -1,16 +1,13 @@
 <template>
   <div ref="rootRef">
-    <!-- TODO: 고정위치이다보니까, 영역 침범이 일어나서 수정 필요 -->
-    <!-- fixed 가 아닌, 아래에 붙는 형식으로 수정 -->
-    <!-- 마지막 문제일 때 지점 설정 안내 텍스트 -->
-    <!-- TODO: 프로필에서 넘어온 경우에는 설명 필요없음 -->
+    <!-- 마지막 문제일 때 지점 설정 안내 텍스트 표시 -->
     <p
       v-if="isLastQuestion"
       class="text-primary-500 mb-2 text-center font-semibold"
     >
       다음으로 나의 지점 설정을 도와드릴게요.
     </p>
-    <!-- 이전/다음 버튼 -->
+    <!-- 퀴즈 네비게이션 버튼 -->
     <BtnSet
       :label1="currentQuestionIndex > 0 ? '이전으로' : ''"
       @click1="handlePrevQuestion"
@@ -48,12 +45,12 @@ defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 // 이전 질문 이동
-const handlePrevQuestion = () => {
+function handlePrevQuestion() {
   emit('prev-question');
-};
+}
 
 // 다음 질문 이동
-const handleNextQuestion = () => {
+function handleNextQuestion() {
   emit('next-question');
-};
+}
 </script>

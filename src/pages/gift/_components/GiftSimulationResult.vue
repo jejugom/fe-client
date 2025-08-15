@@ -18,7 +18,7 @@
               {{ formatCurrency(totalGiftTax) }}
             </p>
             <div class="text-primary-500 mt-4 mb-4 flex items-center">
-              어떻게 계산되었는지 궁금하신가요? 🤔
+              어떻게 계산되었는지 궁금하신가요?
             </div>
             <Btn
               color="surface"
@@ -110,12 +110,7 @@
               class="text-primary-500 flex h-64 items-center justify-center"
             >
               <div class="text-center">
-                <img
-                  :src="ChartIcon"
-                  alt="Chart Icon"
-                  class="mx-auto h-12 w-12"
-                />
-                <p class="mt-2">차트 데이터를 불러오는 중...</p>
+                <p class="mt-2">차트 데이터가 없어요.</p>
               </div>
             </div>
           </div>
@@ -178,8 +173,6 @@ import type {
   SimulationRequestDto,
   TaxSavingStrategy,
 } from '@/types/gift/simulation';
-
-import ChartIcon from '@/assets/icons/Charts.svg';
 
 const apexchart = VueApexCharts;
 const simulationStore = useSimulationStore();

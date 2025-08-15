@@ -42,7 +42,11 @@ const props = defineProps<{
 const reward = useRewardStore();
 
 const items = computed(() => [
-  { id: 'quiz', label: '금융지식\nOX 퀴즈', done: reward.isCompleted('quiz') },
+  {
+    id: 'quiz',
+    label: '금융지식\n퀴즈 챌린지',
+    done: reward.isCompleted('quiz'),
+  },
   {
     id: 'park',
     label: '근처 공원\n방문 챌린지',
@@ -50,7 +54,7 @@ const items = computed(() => [
   },
   {
     id: 'number',
-    label: '두뇌 자극\n클릭 챌린지',
+    label: '숫자 빨리\n누르기 챌린지',
     done: reward.isCompleted('number'),
   },
 ]);
