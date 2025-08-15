@@ -83,13 +83,6 @@
       <UsageSteps />
       <!-- 시작하기 버튼 -->
       <div class="space-y-4">
-        <Btn
-          label="노후 설계 시작하기"
-          color="secondary"
-          size="large"
-          @click="handleStart"
-        />
-
         <!-- 프로필에서 온 경우에만 돌아가기 버튼 표시 -->
         <Btn
           v-if="isFromProfile"
@@ -98,14 +91,21 @@
           size="large"
           @click="handleBackToProfile"
         />
+        <Btn
+          v-else
+          label="노후 설계 시작하기"
+          color="secondary"
+          size="large"
+          @click="handleStart"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter, onBeforeRouteLeave } from 'vue-router';
+import { ref, onMounted, computed } from 'vue';
+import { useRouter, onBeforeRouteLeave, useRoute } from 'vue-router';
 import TutorialHeader from './_components/TutorialHeader.vue';
 import ServiceIntro from './_components/ServiceIntro.vue';
 import UsageSteps from './_components/UsageSteps.vue';
@@ -213,9 +213,9 @@ const handleStart = () => {
   router.push({ name: 'asset-start' });
   // console.log('시작하기 버튼 클릭됨');
   const fromProfile = route.query.from === 'profile';
-  router.push({ 
+  router.push({
     name: 'asset-start',
-    query: fromProfile ? { from: 'profile' } : {}
+    query: fromProfile ? { from: 'profile' } : {},
   });
 };
 

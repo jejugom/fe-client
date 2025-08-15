@@ -26,5 +26,5 @@ function get() {
 }
 
 export function useFontSize() {
-  return { init, set, get, apply };
+  return { init, set, get, apply, DEFAULT_PX, KEY };
 }
