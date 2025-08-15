@@ -177,9 +177,6 @@ onMounted(async () => {
     newsList.value = [];
     todayPoint.value = null;
   }
-
-  // 자동 슬라이드 (옵션)
-  startAutoSlide();
 });
 
 // 카드 목록/핸들러 동일
