@@ -150,7 +150,7 @@ export const useAuthStore = defineStore('auth', () => {
     const auth = sessionStorage.getItem('auth');
     if (auth != null) {
       state.value = JSON.parse(auth);
-      console.log('Auth state loaded:', state.value);
+      // console.log('Auth state loaded:', state.value);
     }
   };
 

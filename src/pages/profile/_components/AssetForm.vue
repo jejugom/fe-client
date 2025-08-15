@@ -78,8 +78,7 @@
         금액을 입력하세요
       </label>
       <div class="relative w-full">
-        <!--guno: type="number" 로 구현하면 스피너(오른쪽 토글)가 발생하여 사용성에 문제있음 -->
-        <!-- 문자열로 관리하여 스피너 발생 방지 -->
+        <!-- 숫자 입력 시 스피너 제거를 위해 text 타입 사용 -->
         <InputBox
           id="assetAmount"
           placeholder="금액을 입력하세요"
@@ -94,7 +93,7 @@
         <span
           class="text-surface-500 pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 transform text-base"
         >
-          만원
+          원
         </span>
       </div>
       <p class="mt-1 w-68 text-right text-base text-blue-300">
@@ -141,33 +140,56 @@ const emit = defineEmits<{
 const categoryOptions = Object.values(ASSET_CATEGORY_MAP);
 
 // 자산 데이터 업데이트
-const updateAsset = (field: keyof Asset, value: string) => {
+function updateAsset(field: keyof Asset, value: string) {
   const updatedAsset = { ...props.asset, [field]: value };
   emit('update:asset', updatedAsset);
-};
+}
 
 // 포커스 이벤트 핸들러
-const handleFocus = (fieldName: string) => {
+function handleFocus(fieldName: string) {
   emit('focus', fieldName);
-};
+}
 
-const handleBlur = (fieldName: string) => {
+function handleBlur(fieldName: string) {
   emit('blur', fieldName);
-};
+}
 
 // 금액 포맷팅 함수
-const formatAmount = (amountInManwon: string) => {
-  if (amountInManwon === '' || isNaN(Number(amountInManwon))) {
+function formatAmount(amount: string) {
+  if (amount === '' || isNaN(Number(amount))) {
     return '0원';
   }
-  const amount = Number(amountInManwon);
-  if (amount >= 10000) {
-    const eok = Math.floor(amount / 10000);
-    const manwon = amount % 10000;
-    return `${eok.toLocaleString()}억 ${manwon > 0 ? manwon.toLocaleString() + '만원' : ''}`;
+  const num = Number(amount);
+  
+  // 1조 단위부터 표시 (1000억 단위 까지는 억으로 표시)
+  if (num >= 1000000000000) {
+    const jo = Math.floor(num / 1000000000000);
+    const remainder = num % 1000000000000;
+    const eok = Math.floor(remainder / 100000000);
+    const man = Math.floor((remainder % 100000000) / 10000);
+    const won = remainder % 10000;
+    
+    let result = `${jo.toLocaleString()}조`;
+    if (eok > 0) result += ` ${eok.toLocaleString()}억`;
+    if (man > 0) result += ` ${man.toLocaleString()}만`;
+    if (won > 0) result += ` ${won.toLocaleString()}원`;
+    else result += '원';
+    return result;
   }
-  return `${amount.toLocaleString()}만원`;
-};
+  
+  // 1000억 이하: 억, 만, 원 단위로 표시
+  const eok = Math.floor(num / 100000000);
+  const man = Math.floor((num % 100000000) / 10000);
+  const won = num % 10000;
+
+  let result = '';
+  if (eok > 0) result += `${eok.toLocaleString()}억 `;
+  if (man > 0) result += `${man.toLocaleString()}만 `;
+  if (won > 0 || result === '') result += `${won.toLocaleString()}원`;
+  else result += '원';
+
+  return result.trim();
+}
 
 // 입력 필드 클래스 결정
 const getInputClass = computed(() => {

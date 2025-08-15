@@ -56,7 +56,7 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-const selectAnswer = (index: number) => {
+function selectAnswer(index: number) {
   emit('select-answer', index);
-};
+}
 </script>

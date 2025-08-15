@@ -1,4 +1,3 @@
-<!-- 투자성향질문 -->
 <template>
   <h1 class="text-primary-500 mb-2 text-2xl font-bold"
     >자산 관리, 어떻게 시작할까요?</h1
@@ -99,15 +98,15 @@ const isAnswerSelected = computed(() => {
 });
 
 // 이전 질문 이동
-const handlePrevQuestion = async () => {
+async function handlePrevQuestion() {
   if (currentQuestionIndex.value > 0) {
     currentQuestionIndex.value--;
     await scrollToTop();
   }
-};
+}
 
 // 다음 질문 이동
-const handleNextQuestion = async () => {
+async function handleNextQuestion() {
   const questionNumber = `q${currentQuestionIndex.value + 1}`;
   const currentAnswer = selectedAnswers.value[currentQuestionIndex.value];
 
@@ -121,7 +120,7 @@ const handleNextQuestion = async () => {
 
   // 마지막 질문인 경우
   if (isLastQuestion.value) {
-    console.log('최종 답변:', finalAnswers.value);
+    // console.log('최종 답변:', finalAnswers.value);
 
     loadingStore.startLoading();
     try {
@@ -135,7 +134,7 @@ const handleNextQuestion = async () => {
       };
 
       const response = await preferencesApi.submit(preferencesData);
-      console.log('투자성향 제출 성공:', response);
+      // console.log('투자성향 제출 성공:', response);
 
       if (isFromProfile.value) {
         router.push({ name: 'profile' });
@@ -144,7 +143,7 @@ const handleNextQuestion = async () => {
         router.push({ name: 'edit-branch' });
       }
     } catch (error) {
-      console.error('투자성향 제출 실패:', error);
+      // console.error('투자성향 제출 실패:', error);
       alertMessage.value =
         '투자성향 저장 중 오류가 발생했습니다. 다시 시도해주세요.';
       showAlert.value = true;
@@ -158,31 +157,31 @@ const handleNextQuestion = async () => {
     currentQuestionIndex.value++;
     await scrollToTop();
   }
-};
+}
 
 // 자동 스크롤 로직
 const navigationRef = ref<any>(null);
-const scrollToTop = async () => {
+async function scrollToTop() {
   await nextTick();
   window.scrollTo({
     top: 0,
     behavior: 'smooth',
   });
-};
+}
 
-const scrollToNavigation = async () => {
+async function scrollToNavigation() {
   await nextTick();
   const target = navigationRef.value?.rootRef;
   if (target?.scrollIntoView) {
     target.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-};
+}
 
 // 답변 선택 시 현재 질문 인덱스에 해당하는 배열 값 업데이트
-const selectAnswer = (index: number) => {
+function selectAnswer(index: number) {
   const newAnswers = [...selectedAnswers.value];
   newAnswers[currentQuestionIndex.value] = index;
   selectedAnswers.value = newAnswers;
   scrollToNavigation();
-};
+}
 </script>

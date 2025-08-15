@@ -76,9 +76,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue';
+import { ref, reactive, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import LoginForm from './_components/LoginForm.vue';
 import { codefApi } from '@/api/asset/codef';
@@ -138,16 +137,21 @@ const isFormFilled = computed(
 );
 
 // 건너뛰기 버튼 처리
-const handleSkip = () => {
-  router.push({ name: 'asset-custom-quiz' });
-};
+function handleSkip() {
+  const fromProfile = route.query.from === 'profile';
+  if (fromProfile) {
+    router.push({ name: 'profile' });
+  } else {
+    router.push({ name: 'asset-custom-quiz' });
+  }
+}
 
 // Enter 키 이벤트 처리
-const handleKeyPress = (event: KeyboardEvent) => {
+function handleKeyPress(event: KeyboardEvent) {
   if (event.key === 'Enter' && isFormFilled.value) {
     handleAssetSync();
   }
-};
+}
 
 // 컴포넌트 마운트 시 Enter 키 이벤트 등록
 onMounted(() => {
@@ -166,7 +170,7 @@ function openKbFindUrl() {
   window.open(KB_FIND_URL, '_blank');
 }
 
-const handleAssetSync = async () => {
+async function handleAssetSync() {
   if (!isFormFilled.value) {
     openConfirm({
       title: '',
@@ -176,7 +180,7 @@ const handleAssetSync = async () => {
       onLeft: () => {
         confirm.open = false;
       },
-      // 새 탭 이동이 안전. 앱을 떠나도 괜찮다면 location.href = KB_FIND_URL 사용
+      // ID/PW 찾기 버튼 클릭 시 국민은행 페이지를 새 탭에서 열기
       onRight: openKbFindUrl,
     });
     return;
@@ -202,7 +206,7 @@ const handleAssetSync = async () => {
     // CODEF API 호출
     const response = await codefApi.connect(requestData);
 
-    console.log('자산 연동 성공:', response);
+    // console.log('자산 연동 성공:', response);
 
     // 현재 route의 쿼리 파라미터 확인
     const isFromProfile = route.query.from === 'profile';
@@ -212,10 +216,10 @@ const handleAssetSync = async () => {
       router.push({ name: 'profile' });
     } else {
       // 회원가입 과정인 경우 -> 다음 스텝으로 이동
-      router.push({ name: 'asset-custom-quiz' });
+      router.push({ name: 'asset-custom-start' });
     }
   } catch (error: any) {
-    console.error('자산 연동 실패:', error);
+    // console.error('자산 연동 실패:', error);
     const detail = error?.response?.data?.detail as string;
 
     if (detail && detail.includes('아이디/비밀번호')) {
@@ -246,5 +250,5 @@ const handleAssetSync = async () => {
   } finally {
     loadingStore.stopLoading();
   }
-};
+}
 </script>

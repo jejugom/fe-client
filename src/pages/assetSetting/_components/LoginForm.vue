@@ -42,10 +42,10 @@ const emit = defineEmits<{
   'update:credentials': [credentials: Credentials];
 }>();
 
-const updateCredentials = (field: keyof Credentials, value: string) => {
+function updateCredentials(field: keyof Credentials, value: string) {
   emit('update:credentials', {
     ...props.credentials,
     [field]: value,
   });
-};
+}
 </script>
