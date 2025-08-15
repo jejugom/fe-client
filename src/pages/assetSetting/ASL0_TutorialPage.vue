@@ -112,23 +112,7 @@ import {
   formatDistance,
   openMap,
 } from '@/utils/kakaoMap';
-import { ref as vueRef } from 'vue'; // (이미 ref를 쓰고 있으면 생략)
 import Question from '@/components/question/Question.vue';
-
-// ⬇️ “핵심 기능” 상태
-const quickQuestion = ref('');
-const fontScale = ref(1.0);
-const incFont = () =>
-  (fontScale.value = Math.min(1.6, Number((fontScale.value + 0.1).toFixed(2))));
-const decFont = () =>
-  (fontScale.value = Math.max(0.8, Number((fontScale.value - 0.1).toFixed(2))));
-
-// “무엇이든 물어보세요” 이동 (라우트 이름 맞게 수정하세요)
-const goAsk = () => {
-  // 입력값을 쿼리로 넘기고 싶다면:
-  // router.push({ name: 'ask', query: { q: quickQuestion.value } });
-  router.push({ name: 'ask' }); // ← 프로젝트 라우터에 맞게 조정
-};
 
 // ⬇️ “가장 가까운 지점” 상태/타입
 type Branch = {
@@ -207,25 +191,6 @@ onMounted(() => {
   initFont(); // 전역 적용(기존 저장값) 먼저 불러옴
   previewPx.value = getFont(); // 미리보기 초기값 = 현재 전역값
 });
-
-const previewInc = () => {
-  previewPx.value = Math.min(20, previewPx.value + 1);
-  dirty = true;
-};
-const previewDec = () => {
-  previewPx.value = Math.max(10, previewPx.value - 1);
-  dirty = true;
-};
-const resetPreview = () => {
-  previewPx.value = DEFAULT_PX;
-  dirty = true;
-};
-
-// "이 크기로 설정" 눌렀을 때만 전역 반영
-const applyPreviewToGlobal = () => {
-  setFont(previewPx.value); // 로컬스토리지 저장 + 전역 적용
-  dirty = false; // 더 이상 변경분 없음
-};
 
 // “노후 설계 시작하기” 누를 때도, 변경이 남아 있으면 적용 후 이동
 const handleStart = () => {
