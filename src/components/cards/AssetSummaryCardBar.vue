@@ -82,7 +82,11 @@ const chartOptions = computed(() => ({
     stacked: true,
     stackType: '100%', // 백분율 스택
     toolbar: { show: false },
-    animations: { enabled: true },
+    animations: {
+      enabled: false,
+      animateGradually: { enabled: false },
+      dynamicAnimation: { enabled: false },
+    },
   },
   plotOptions: {
     bar: {

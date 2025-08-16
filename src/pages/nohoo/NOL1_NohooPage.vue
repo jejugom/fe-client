@@ -20,11 +20,8 @@
         class="flex items-center justify-end gap-2"
       >
         <SelectBox size="small" v-model="sortOption" class="w-40">
+          <option v-if="selectedTab === '맞춤'" value="score">적합도순</option>
           <option value="name">상품명순</option>
-
-          <option v-if="selectedTab === '맞춤'" value="score"
-            >맞춤점수순</option
-          >
 
           <!-- 예금 / 적금 -->
           <template v-if="selectedTab === '예금' || selectedTab === '적금'">
@@ -140,7 +137,7 @@ const data = ref<ParsedApiResponse | null>(null);
 const selectedTab = ref<
   '맞춤' | '금' | '예금' | '적금' | '펀드' | '주택담보' | '신탁'
 >('맞춤');
-const sortOption = ref<string>('name');
+const sortOption = ref<string>('score');
 const news = ref<News[]>([]);
 
 /* 탭 <-> 코드 */
@@ -454,7 +451,7 @@ function buildLocalListFor(tab: string): any[] {
 
       const tags: string[] = [];
       if (risk) tags.push(`위험등급 ${risk}`);
-      return { ...p, maxRate: maxReturn, tags };
+      return { ...p, maxRate: maxReturn, tags, riskGrade: Number(risk || 0) };
     });
   }
   if (tab === '신탁') {

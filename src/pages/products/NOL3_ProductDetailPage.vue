@@ -1,7 +1,11 @@
 <template>
   <div class="flex flex-col gap-8">
     <!-- 상단 대표 정보 -->
-    <DetailImg :items="topInfos" v-if="topInfos.length" />
+    <LoaderDetailImg v-if="loadingStore.isLoading" />
+    <DetailImg
+      :items="topInfos"
+      v-if="!loadingStore.isLoading && topInfos.length"
+    />
 
     <!-- 추천 이유 -->
     <div class="card-design flex flex-col gap-4">
@@ -32,7 +36,7 @@
           <p
             ><span
               :class="{
-                'text-gold text-lg font-semibold': displayScore > '50',
+                'text-gold text-lg font-semibold': Number(displayScore) > 50,
               }"
               >{{ displayScore }} </span
             >%</p
@@ -339,6 +343,7 @@ import Btn from '@/components/buttons/Btn.vue';
 import { useRegisterStore } from '@/stores/register';
 import { useLoadingStore } from '@/stores/loading';
 import Question from '@/components/question/Question.vue';
+import LoaderDetailImg from '@/components/loaders/LoaderDetailImg.vue';
 
 const route = useRoute();
 const router = useRouter();

@@ -1,5 +1,6 @@
 <template>
-  <div class="card-design flex flex-col gap-2 p-0 pt-4 pr-4">
+  <LoaderGoldPrice v-if="isLoading" />
+  <div v-else class="card-design flex flex-col gap-2 p-0 pt-4 pr-4">
     <div class="ml-4 flex items-center justify-between font-semibold">
       <span class="text-lg">
         {{ Math.round(currentPrice).toLocaleString() }}
@@ -21,7 +22,9 @@ import { ref, onMounted, computed } from 'vue';
 import { fetchGoldPrice } from '@/api/nohoo/gold';
 import type { GoldPrice } from '@/types/nohoo/gold';
 import { fetchExchangeRate } from '@/api/nohoo/exchange';
+import LoaderGoldPrice from '@/components/loaders/LoaderGoldPrice.vue';
 
+const isLoading = ref(true);
 const goldPrices = ref<GoldPrice[]>([]);
 const exchangeRate = ref(1); // 기본값: USD 그대로
 const tozDon = 3.75 / 31.1035; // 1 온스 = 31.1035g, 1 온스 = 3.75돈
@@ -52,6 +55,8 @@ onMounted(async () => {
     exchangeRate.value = rate;
   } catch (e) {
     console.error('시세 로딩 실패:', e);
+  } finally {
+    isLoading.value = false;
   }
 });
 
@@ -121,6 +126,11 @@ const chartOptions = computed(() => ({
     type: 'line',
     zoom: { enabled: false },
     toolbar: { show: false },
+    animations: {
+      enabled: false,
+      animateGradually: { enabled: false },
+      dynamicAnimation: { enabled: false },
+    },
   },
   stroke: {
     width: 3,
