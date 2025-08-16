@@ -1,21 +1,5 @@
 import api from '@/api';
-
-// 지점 정보 타입
-export interface BranchInfo {
-  branchName: string;
-  branchPhone: string;
-  addressName: string;
-  roadAddressName: string;
-  x: string;
-  y: string;
-  distance: string;
-  branchId: number; // 추가된 필드
-}
-
-// 지점 설정 요청 데이터 타입 (백엔드 DTO와 일치)
-export interface BranchRequest {
-  branchId: number;
-}
+import type { BranchInfo, BranchRequest } from '@/types/user/branch';
 
 // 지점 관리 API 함수들
 export const branchApi = {
