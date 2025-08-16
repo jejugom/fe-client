@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative left-1/2 mt-[-1.125rem] w-screen max-w-150 -translate-x-1/2"
+    class="relative left-1/2 mt-[-1.125rem] w-screen max-w-[600px] -translate-x-1/2"
   >
     <div class="bg-white px-4 py-8">
       <h2 class="text-primary-500 mb-4 text-center text-2xl font-bold"

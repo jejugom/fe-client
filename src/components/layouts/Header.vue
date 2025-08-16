@@ -27,7 +27,7 @@ import Logo from '@/assets/logos/typo.svg';
 const router = useRouter();
 const route = useRoute();
 
-const goBack = () => {
+function goBack() {
   // 완료 페이지에서는 무조건 홈으로
   if (route.name === 'register-complete') {
     router.push({ name: 'home' });
@@ -42,7 +42,7 @@ const goBack = () => {
   } else {
     router.push({ name: 'home' });
   }
-};
+}
 
 const showBackBtn = computed(() => {
   return !['home', 'not-found', 'fail', 'loading'].includes(
@@ -51,12 +51,13 @@ const showBackBtn = computed(() => {
 });
 
 // 브라우저/앱 하드웨어 뒤로가기 대응
-const onPopState = () => {
+function onPopState() {
   if (route.name === 'register-complete') {
     router.replace({ name: 'home' });
   }
-};
+}
 
+// 페이지 진입
 onMounted(() => {
   // 완료 페이지에서 뒤로가기로 직전 폼이 보이는 것을 막기
   if (route.name === 'register-complete') {
@@ -65,6 +66,7 @@ onMounted(() => {
   window.addEventListener('popstate', onPopState);
 });
 
+// 페이지 이탈
 onUnmounted(() => {
   window.removeEventListener('popstate', onPopState);
 });

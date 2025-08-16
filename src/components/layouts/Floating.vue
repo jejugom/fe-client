@@ -40,7 +40,7 @@ const route = useRoute();
 const HIDDEN = new Set(['event-quiz', 'event-number', 'event-park']);
 const showFab = computed(() => !HIDDEN.has(route.name ?? ''));
 
-// ✅ 공용 폰트 composable 사용
+// 공용 폰트 composable 사용
 const { init, get, set } = useFontSize();
 
 // px 리스트와 현재 인덱스
@@ -55,12 +55,15 @@ onMounted(() => {
   currentIndex.value = idx >= 0 ? idx : fontSizes.indexOf(16);
 });
 
+// 글자 크기 키우기
 function increaseFont() {
   if (currentIndex.value < fontSizes.length - 1) {
     currentIndex.value++;
     set(fontSizes[currentIndex.value]); // 전역 저장 + 적용
   }
 }
+
+// 글자 크기 줄이기
 function decreaseFont() {
   if (currentIndex.value > 0) {
     currentIndex.value--;
@@ -68,6 +71,7 @@ function decreaseFont() {
   }
 }
 
+// 위로 가기
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }

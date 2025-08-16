@@ -195,7 +195,8 @@ import { ref, onUnmounted, computed } from 'vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import Alert from '@/components/modals/Alert.vue';
 import Btn from '@/components/buttons/Btn.vue';
-import { questionApi, type QuestionResponse } from '@/api/question/question';
+import { questionApi } from '@/api/question/question';
+import type { QuestionResponse } from '@/types/question/question';
 import { useLoadingStore } from '@/stores/loading';
 
 type QuestionStep = 'initial' | 'methodSelect' | 'textInput' | 'voiceInput';
@@ -243,22 +244,22 @@ const stepTitle = computed(() => {
 });
 
 // 1단계 → 2단계 → 3단계 흐름
-const startQuestion = () => {
+function startQuestion() {
   currentStep.value = 'methodSelect';
-};
+}
 
 // 텍스트 입력 선택
-const selectTextInput = () => {
+function selectTextInput() {
   currentStep.value = 'textInput';
-};
+}
 
 // 음성 입력 선택
-const selectVoiceInput = () => {
+function selectVoiceInput() {
   currentStep.value = 'voiceInput';
-};
+}
 
 // 초기 상태로 리셋
-const resetToInitial = () => {
+function resetToInitial() {
   if (isRecording.value) {
     stopRecording();
   }
@@ -266,19 +267,19 @@ const resetToInitial = () => {
   questionText.value = '';
   audioBlob.value = null;
   isProcessing.value = false;
-};
+}
 
 // 음성 녹음 토글
-const toggleRecording = async () => {
+async function toggleRecording() {
   if (!isRecording.value) {
     await startRecording();
   } else {
     stopRecording();
   }
-};
+}
 
 // 음성 녹음 시작
-const startRecording = async () => {
+async function startRecording() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream, {
@@ -313,13 +314,13 @@ const startRecording = async () => {
       recordingTime.value++;
     }, 1000);
   } catch (error) {
-    console.error('음성 녹음 시작 실패:', error);
+    // console.error('음성 녹음 시작 실패:', error);
     showErrorAlert('마이크 접근 권한이 필요합니다.');
   }
-};
+}
 
 // 음성 녹음 중지
-const stopRecording = () => {
+function stopRecording() {
   if (mediaRecorder && isRecording.value) {
     isRecording.value = false;
     mediaRecorder.stop();
@@ -329,10 +330,10 @@ const stopRecording = () => {
       recordingTimer = null;
     }
   }
-};
+}
 
 // 텍스트 질문 제출
-const submitTextQuestion = async () => {
+async function submitTextQuestion() {
   if (!questionText.value.trim() || isProcessing.value) {
     return;
   }
@@ -341,22 +342,22 @@ const submitTextQuestion = async () => {
     isProcessing.value = true;
     loadingStore.startLoading();
 
-    console.log('텍스트 질문 전송 시작...');
+    // console.log('텍스트 질문 전송 시작...');
 
     const response: QuestionResponse = await questionApi.askTextOnly(
       questionText.value
     );
 
-    console.log('=== 텍스트 질문 응답 ===');
-    console.log('상태:', response.status);
-    console.log('메시지:', response.message);
+    // console.log('=== 텍스트 질문 응답 ===');
+    // console.log('상태:', response.status);
+    // console.log('메시지:', response.message);
     if (response.processedText) {
-      console.log('입력 텍스트:', response.processedText);
+      // console.log('입력 텍스트:', response.processedText);
     }
     if (response.aiResponse) {
-      console.log('AI 응답:', response.aiResponse);
+      // console.log('AI 응답:', response.aiResponse);
     }
-    console.log('===================');
+    // console.log('===================');
 
     if (response.status === 'SUCCESS') {
       questionText.value = '';
@@ -371,10 +372,10 @@ const submitTextQuestion = async () => {
     loadingStore.stopLoading();
     isProcessing.value = false;
   }
-};
+}
 
 // 음성 질문 제출
-const submitVoiceQuestion = async () => {
+async function submitVoiceQuestion() {
   if (!audioBlob.value) {
     return;
   }
@@ -389,21 +390,21 @@ const submitVoiceQuestion = async () => {
       type: audioBlob.value.type,
     });
 
-    console.log('음성 질문 전송 시작...');
+    // console.log('음성 질문 전송 시작...');
 
     const response: QuestionResponse =
       await questionApi.askVoiceOnly(audioFile);
 
-    console.log('=== 음성 질문 응답 ===');
-    console.log('상태:', response.status);
-    console.log('메시지:', response.message);
+    // console.log('=== 음성 질문 응답 ===');
+    // console.log('상태:', response.status);
+    // console.log('메시지:', response.message);
     if (response.processedText) {
-      console.log('Clova 처리된 텍스트:', response.processedText);
+      // console.log('Clova 처리된 텍스트:', response.processedText);
     }
     if (response.aiResponse) {
-      console.log('AI 응답:', response.aiResponse);
+      // console.log('AI 응답:', response.aiResponse);
     }
-    console.log('===================');
+    // console.log('===================');
 
     if (response.status === 'SUCCESS') {
       audioBlob.value = null;
@@ -412,16 +413,16 @@ const submitVoiceQuestion = async () => {
       showErrorAlert(response.message);
     }
   } catch (error) {
-    console.error('음성 질문 전송 실패:', error);
+    // console.error('음성 질문 전송 실패:', error);
     showErrorAlert('음성 질문 전송에 실패했습니다. 다시 시도해주세요.');
   } finally {
     loadingStore.stopLoading();
     isProcessing.value = false;
   }
-};
+}
 
 // 타이핑 애니메이션 함수
-const startTypingAnimation = (text: string) => {
+function startTypingAnimation(text: string) {
   displayedText.value = '';
   isTyping.value = true;
 
@@ -445,18 +446,19 @@ const startTypingAnimation = (text: string) => {
   };
 
   typeChar();
-};
+}
 
-const stopTypingAnimation = () => {
+// 타이핑 애니메이션 중지 함수
+function stopTypingAnimation() {
   if (typingTimer) {
     clearTimeout(typingTimer);
     typingTimer = null;
   }
   isTyping.value = false;
-};
+}
 
 // Alert 모달 제어 함수들
-const showSuccessAlert = (response: QuestionResponse) => {
+function showSuccessAlert(response: QuestionResponse) {
   currentResponse.value = response;
   alertTitle.value = '💡 설명 완료!';
   showAlert.value = true;
@@ -465,16 +467,18 @@ const showSuccessAlert = (response: QuestionResponse) => {
   if (response.aiResponse) {
     startTypingAnimation(response.aiResponse);
   }
-};
+}
 
-const showErrorAlert = (message: string) => {
+// 오류 알림 함수
+function showErrorAlert(message: string) {
   currentResponse.value = null;
   alertTitle.value = '문제가 발생했어요.';
   alertContent.value = message;
   showAlert.value = true;
-};
+}
 
-const closeAlert = () => {
+// 알림 닫기 함수
+function closeAlert() {
   stopTypingAnimation();
   displayedText.value = '';
   showAlert.value = false;
@@ -482,8 +486,9 @@ const closeAlert = () => {
   alertContent.value = '';
   currentResponse.value = null;
   resetToInitial();
-};
+}
 
+// 페이지 이탈: cleanup
 onUnmounted(() => {
   if (recordingTimer) {
     clearInterval(recordingTimer);

@@ -71,7 +71,7 @@
 
   <div
     v-if="mode === 'inheritance'"
-    class="flex w-full max-w-150 flex-col space-y-2"
+    class="flex w-full max-w-[600px] flex-col space-y-2"
   >
     <Btn
       color="primary"
@@ -86,7 +86,7 @@
       @click="goToResult"
     />
   </div>
-  <div v-else class="w-full max-w-150">
+  <div v-else class="w-full max-w-[600px]">
     <Btn
       color="primary"
       label="세액 및 절세 전략 확인하기"
@@ -403,7 +403,11 @@ const prepareInheritanceData = () => {
     estimatedTax: 0,
   }));
 
-  return { distributedAssets: distributed, recipientSummaries, totalGiftTax: 0 };
+  return {
+    distributedAssets: distributed,
+    recipientSummaries,
+    totalGiftTax: 0,
+  };
 };
 
 const setInheritanceStoreData = () => {

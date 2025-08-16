@@ -12,7 +12,7 @@
         <Transition>
           <div
             v-if="showResultModal"
-            class="relative mx-4 mb-4 w-full max-w-150 rounded-3xl bg-white p-8"
+            class="relative mx-4 mb-4 w-full max-w-[600px] rounded-3xl bg-white p-8"
           >
             <!-- 핸들바 -->
             <div

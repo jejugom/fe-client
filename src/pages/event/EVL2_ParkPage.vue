@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-secondary-100 relative left-1/2 mt-[-1.125rem] w-screen max-w-150 -translate-x-1/2 pb-16"
+    class="bg-secondary-100 relative left-1/2 mt-[-1.125rem] w-screen max-w-[600px] -translate-x-1/2 pb-16"
   >
     <div class="space-y-8 p-4">
       <!-- 제목 -->
