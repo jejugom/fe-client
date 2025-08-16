@@ -3,7 +3,7 @@ import type {
   Asset,
   Beneficiary,
   DistributedAsset,
-} from '@/types/gift/inheritance'; // 필요한 타입만 남겨둠
+} from '@/types/gift/inheritance';
 import type { PersistenceOptions } from 'pinia-plugin-persistedstate';
 
 export const useGiftStore = defineStore('gift', {
@@ -34,7 +34,8 @@ export const useGiftStore = defineStore('gift', {
     },
   },
 
-  persist: { // persist 속성에 타입 명시
+  persist: {
+    // persist 속성에 타입 명시
     storage: localStorage,
     key: 'gift-state',
     serializer: {

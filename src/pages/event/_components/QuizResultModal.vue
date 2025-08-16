@@ -124,7 +124,8 @@ watch(
   }
 );
 
-const handleConfirm = () => {
+// 확인 버튼 클릭 시
+function handleConfirm() {
   emit('confirm');
-};
+}
 </script>

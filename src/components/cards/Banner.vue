@@ -6,5 +6,5 @@
 </template>
 
 <script setup lang="ts">
-import Img from '@/assets/images/GoldBanner.webp';
+import Img from '@/assets/images/GoldBan.webp';
 </script>

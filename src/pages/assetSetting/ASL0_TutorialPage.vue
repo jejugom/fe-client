@@ -118,7 +118,6 @@ const route = useRoute();
 
 const isFromProfile = computed(() => route.query.from === 'profile');
 
-// ⬇️ 기존 import 아래에 추가
 import {
   loadKakaoMaps,
   createPlaces,
@@ -129,7 +128,6 @@ import {
 } from '@/utils/kakaoMap';
 import Question from '@/components/question/Question.vue';
 
-// ⬇️ “가장 가까운 지점” 상태/타입
 type Branch = {
   name: string;
   lat: number;
@@ -137,8 +135,8 @@ type Branch = {
   distance: number;
   placeUrl: string;
 };
-const myPos = ref<{ lat: number; lng: number } | null>(null);
-const nearestBranch = ref<Branch | null>(null);
+const myPos = ref<{ lat: number; lng: number } | null>(null); // 내 위치
+const nearestBranch = ref<Branch | null>(null); // 가장 가까운 지점
 
 // 현재 위치 가져오기
 async function getMyPosition() {
@@ -202,13 +200,14 @@ const {
 const previewPx = ref<number>(DEFAULT_PX);
 let dirty = false; // 사용자가 미리보기를 수정했는지 표시
 
+// 페이지 진입
 onMounted(() => {
   initFont(); // 전역 적용(기존 저장값) 먼저 불러옴
   previewPx.value = getFont(); // 미리보기 초기값 = 현재 전역값
 });
 
-// “노후 설계 시작하기” 누를 때도, 변경이 남아 있으면 적용 후 이동
-const handleStart = () => {
+// 변경이 남아 있으면 적용 후 이동
+function handleStart() {
   if (dirty) setFont(previewPx.value);
   router.push({ name: 'asset-start' });
   // console.log('시작하기 버튼 클릭됨');
@@ -217,13 +216,13 @@ const handleStart = () => {
     name: 'asset-start',
     query: fromProfile ? { from: 'profile' } : {},
   });
-};
+}
 
-const handleBackToProfile = () => {
+function handleBackToProfile() {
   router.push({ name: 'profile' });
-};
+}
 
-// (선택) 라우터로 다른 페이지로 나갈 때도 변경이 남아 있으면 적용하고 나가고 싶다면:
+// 라우터로 다른 페이지로 나갈 때도 변경이 남아 있으면 적용
 onBeforeRouteLeave(() => {
   if (dirty) setFont(previewPx.value);
 });

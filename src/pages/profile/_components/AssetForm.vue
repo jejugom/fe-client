@@ -11,7 +11,7 @@
       <SelectBox
         id="assetCategory"
         :model-value="asset.type"
-        @update:model-value="updateAsset('type', $event)"
+        @update:model-value="updateAsset('type', String($event))"
         size="medium"
         :class="getInputClass('type')"
         @focus="handleFocus('type')"
@@ -57,7 +57,7 @@
       <SelectBox
         id="companyType"
         :model-value="asset.companyType"
-        @update:model-value="updateAsset('companyType', $event)"
+        @update:model-value="updateAsset('companyType', String($event))"
         size="medium"
         :class="getInputClass('companyType')"
         @focus="handleFocus('companyType')"
@@ -160,7 +160,7 @@ function formatAmount(amount: string) {
     return '0원';
   }
   const num = Number(amount);
-  
+
   // 1조 단위부터 표시 (1000억 단위 까지는 억으로 표시)
   if (num >= 1000000000000) {
     const jo = Math.floor(num / 1000000000000);
@@ -168,7 +168,7 @@ function formatAmount(amount: string) {
     const eok = Math.floor(remainder / 100000000);
     const man = Math.floor((remainder % 100000000) / 10000);
     const won = remainder % 10000;
-    
+
     let result = `${jo.toLocaleString()}조`;
     if (eok > 0) result += ` ${eok.toLocaleString()}억`;
     if (man > 0) result += ` ${man.toLocaleString()}만`;
@@ -176,7 +176,7 @@ function formatAmount(amount: string) {
     else result += '원';
     return result;
   }
-  
+
   // 1000억 이하: 억, 만, 원 단위로 표시
   const eok = Math.floor(num / 100000000);
   const man = Math.floor((num % 100000000) / 10000);

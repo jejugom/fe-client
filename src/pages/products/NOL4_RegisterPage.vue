@@ -122,7 +122,6 @@ import {
   postBooking,
   smsApi,
 } from '@/api/products/register';
-import type { SmsData } from '@/types/products/register';
 import { useProductStore } from '@/stores/product';
 import Alert from '@/components/modals/Alert.vue';
 import Confirm from '@/components/modals/Confirm.vue';
@@ -132,9 +131,10 @@ const route = useRoute();
 const registerStore = useRegisterStore();
 const productStore = useProductStore();
 
-// 선택한 상품에 맞는 결과로 수정해야 함
+// 표시할 상품 정보
 const detailItems = computed(() => registerStore.topInfos);
 
+// 표시할 상품명
 const productName = computed({
   get: () => registerStore.productName,
   set: (val: string) => registerStore.setProductName(val),
@@ -161,14 +161,15 @@ const dateTimeModalRef = ref<InstanceType<typeof DateTimeSelectModal> | null>(
 const showAlert = ref(false);
 const alertTitle = ref<string | undefined>(undefined);
 const alertMessage = ref('');
-const openAlert = (message: string, title?: string) => {
+// 알럿 열기
+function openAlert(message: string, title?: string) {
   alertMessage.value = message;
   alertTitle.value = title;
   showAlert.value = true;
-};
-const closeAlert = () => {
+}
+function closeAlert() {
   showAlert.value = false;
-};
+}
 
 // 컨펌 상태
 const showConfirm = ref(false);
@@ -177,25 +178,26 @@ const confirmMessage = ref('');
 let confirmResolve: ((v: boolean) => void) | null = null;
 
 // 열기(프로미스 반환)
-const openConfirm = (message: string, title?: string) =>
-  new Promise<boolean>((resolve) => {
+function openConfirm(message: string, title?: string) {
+  return new Promise<boolean>((resolve) => {
     confirmMessage.value = message;
     confirmTitle.value = title;
     showConfirm.value = true;
     confirmResolve = resolve;
   });
+}
 
 // 버튼 핸들러
-const onConfirmNo = () => {
+function onConfirmNo() {
   showConfirm.value = false;
   confirmResolve?.(false);
   confirmResolve = null;
-};
-const onConfirmYes = () => {
+}
+function onConfirmYes() {
   showConfirm.value = false;
   confirmResolve?.(true);
   confirmResolve = null;
-};
+}
 
 // 날짜 & 시간 텍스트 변환
 const displayDateTime = computed(() => {
@@ -210,6 +212,7 @@ const displayDateTime = computed(() => {
   return `${year}년 ${month}월 ${day}일 ${ampm} ${hh}시 ${minute}분`;
 });
 
+// 폼 유효성 검사
 const isFormValid = computed(() => {
   return (
     productName.value &&
@@ -240,6 +243,7 @@ watch(
   { immediate: true }
 );
 
+// 컴포넌트가 마운트될 때 실행
 onMounted(async () => {
   try {
     const myBranch = await branchApi.getMyBranch();
@@ -269,7 +273,7 @@ onMounted(async () => {
 });
 
 // 파일 상단 스코프에 추가
-const handleDateTimeModal = async () => {
+async function handleDateTimeModal() {
   if (!registerStore.branchId) {
     openAlert('지점을 먼저 선택해주세요.', '안내');
     return;
@@ -286,7 +290,7 @@ const handleDateTimeModal = async () => {
       '예약 실패'
     );
   }
-};
+}
 
 const selectBranch = async () => {
   const selected = branchModalRef.value?.getSelectedBranch?.();
@@ -352,7 +356,7 @@ const selectBranch = async () => {
 };
 
 // 날짜·시간 선택 모달 열기(항상 최신 슬롯 fetch 후 오픈)
-const openDateTimeModal = async () => {
+async function openDateTimeModal() {
   if (!registerStore.branchId) {
     openAlert('지점을 먼저 선택해주세요.', '안내');
     return;
@@ -360,7 +364,7 @@ const openDateTimeModal = async () => {
   try {
     const res = await fetchReservedSlots(registerStore.branchId);
     registerStore.setReservedSlots(res?.reserved_slots ?? {});
-    console.log('예약 가능한 시간:', res?.reserved_slots);
+    // console.log('예약 가능한 시간:', res?.reserved_slots);
     showDateTimeModal.value = true;
   } catch (err) {
     console.error('예약 슬롯 조회 실패', err);
@@ -369,18 +373,18 @@ const openDateTimeModal = async () => {
       '예약 실패'
     );
   }
-};
+}
 
 // 날짜 시간 선택 처리
-const handleDateTimeSelect = (payload: { date: string; time: string }) => {
+function handleDateTimeSelect(payload: { date: string; time: string }) {
   selectedReservation.value = payload;
   registerStore.setDate(payload.date);
   registerStore.setTime(payload.time);
-};
+}
 
-const submitDateTime = () => {
+function submitDateTime() {
   dateTimeModalRef.value?.submitSelection();
-};
+}
 
 // 현재 예약 흐름: gift/inheritance면 gift, 아니면 nohoo
 const flow = computed<'gift' | 'nohoo'>(() => {
@@ -389,7 +393,7 @@ const flow = computed<'gift' | 'nohoo'>(() => {
 });
 
 // 예약 완료 처리
-const goToRegister = async () => {
+async function goToRegister() {
   if (!isFormValid.value) {
     openAlert('모든 값을 올바르게 입력해주세요.', '입력 오류');
     return;
@@ -453,7 +457,7 @@ const goToRegister = async () => {
       from: flow.value,
     },
   });
-};
+}
 
 // 페이지 이탈 방지 로직
 onBeforeRouteLeave((to) => {
@@ -479,18 +483,20 @@ onBeforeRouteLeave((to) => {
   });
 });
 
-const confirmNavigation = () => {
+// 페이지 이탈 확인
+function confirmNavigation() {
   showLeaveConfirmModal.value = false;
   registerStore.$reset(); // registerStore 초기화
   if (resolveNavigation) {
     resolveNavigation(true); // 페이지 이동 허용
   }
-};
+}
 
-const cancelNavigation = () => {
+// 페이지 이탈 취소
+function cancelNavigation() {
   showLeaveConfirmModal.value = false;
   if (resolveNavigation) {
     resolveNavigation(false); // 페이지 이동 취소
   }
-};
+}
 </script>

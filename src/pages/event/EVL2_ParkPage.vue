@@ -80,7 +80,7 @@
     <Confirm
       v-if="showConfirm"
       :title="confirmTitle"
-      leftLabel="야니오"
+      leftLabel="아니오"
       rightLabel="예"
       @click1="onConfirmNo"
       @click2="onConfirmYes"
@@ -120,31 +120,32 @@ type Park = {
 const router = useRouter();
 const rewardStore = useRewardStore();
 
-/* ---------- Confirm ---------- */
 const showConfirm = ref(false);
 const confirmTitle = ref<string>();
 const confirmMessage = ref('');
 let confirmResolve: ((v: boolean) => void) | null = null;
 
-const openConfirm = (message: string, title?: string) =>
-  new Promise<boolean>((resolve) => {
+function openConfirm(message: string, title?: string) {
+  return new Promise<boolean>((resolve) => {
     confirmMessage.value = message;
     confirmTitle.value = title;
     showConfirm.value = true;
     confirmResolve = resolve;
   });
-const onConfirmNo = () => {
+}
+
+function onConfirmNo() {
   showConfirm.value = false;
   confirmResolve?.(false);
   confirmResolve = null;
-};
+}
 const onConfirmYes = () => {
   showConfirm.value = false;
   confirmResolve?.(true);
   confirmResolve = null;
 };
 
-/* ---------- 상태 ---------- */
+// 상태
 const mapRef = ref<HTMLDivElement | null>(null);
 let map: kakao.maps.Map | null = null;
 let places: kakao.maps.services.Places | null = null;
@@ -162,26 +163,24 @@ const goalCount = 1;
 const checkedCount = computed(
   () => parks.value.filter((p) => p.checked).length
 );
-const progress = computed(() =>
-  parks.value.length
-    ? Math.min(100, Math.round((checkedCount.value / goalCount) * 100))
-    : 0
-);
 
-/* ---------- 로컬 스토리지 ---------- */
+// 로컬 스토리지
 const LS_KEY = 'park_challenge_checked_ids';
-const loadCheckedIds = () => {
+// 로컬 스토리지에서 체크된 ID 로드
+function loadCheckedIds() {
   try {
     return new Set<string>(JSON.parse(localStorage.getItem(LS_KEY) || '[]'));
   } catch {
     return new Set<string>();
   }
-};
-const saveCheckedIds = (ids: Set<string>) =>
+}
+// 로컬 스토리지에 체크된 ID 저장
+function saveCheckedIds(ids: Set<string>) {
   localStorage.setItem(LS_KEY, JSON.stringify([...ids]));
+}
 
-/* ---------- 유틸 ---------- */
-const haversine = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+// 유틸
+function haversine(lat1: number, lng1: number, lat2: number, lng2: number) {
   const R = 6371e3;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLng = ((lng2 - lng1) * Math.PI) / 180;
@@ -191,11 +190,12 @@ const haversine = (lat1: number, lng1: number, lat2: number, lng2: number) => {
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(a));
-};
-const formatDistance = (m: number) =>
-  m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toFixed(2)} km`;
+}
+function formatDistance(m: number) {
+  return m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toFixed(2)} km`;
+}
 
-/* ---------- 필터 ---------- */
+// 필터
 const ALLOW_GROUPS = new Set(['AT4', 'CT1', 'PO3']); // 관광명소/문화시설/공공기관 허용
 const DENY_GROUPS = new Set([
   'CS2',
@@ -214,7 +214,7 @@ const NAME_INCLUDE = /공원/i;
 const NAME_DENY =
   /(편의점|CU|GS25?|베드민턴장|운동장|화장실|놀이터|물놀이장|테니스장|축구장|야구장|탁구장|볼링장|헬스|스포츠센터|구의공원점|점$)/i;
 
-const isParkLike = (d: any) => {
+function isParkLike(d: any) {
   const group = d.category_group_code as string | undefined;
   const name = d.place_name as string;
   if (group) {
@@ -226,9 +226,9 @@ const isParkLike = (d: any) => {
   }
   if (NAME_DENY.test(name)) return false;
   return NAME_ALLOW.test(name) || NAME_INCLUDE.test(name);
-};
+}
 
-const normalizeToPark = (d: any): Park => {
+function normalizeToPark(d: any): Park {
   const lat = Number(d.y);
   const lng = Number(d.x);
   const dist = haversine(myPos.value!.lat, myPos.value!.lng, lat, lng);
@@ -240,12 +240,11 @@ const normalizeToPark = (d: any): Park => {
     distance: dist,
     checked: loadCheckedIds().has(String(d.id)),
   };
-};
+}
 
-/* ---------- 마커 ---------- */
+// 마커
 const clearMarkers = () => clearAllMarkers(markers);
 
-// (필요 시 원형 오버레이/인포윈도우까지 쓰려면 any 캐스팅)
 const makeMarker = (opts: {
   lat: number;
   lng: number;
@@ -256,10 +255,9 @@ const makeMarker = (opts: {
   if (!map) return;
   const { lat, lng, me, visited, title } = opts;
 
-  // 기본 마커(공통 유틸)
   const m = makeBasicMarker({ map, lat, lng });
 
-  // 색상 원형(타입 정의 외라 캐스팅)
+  // 색상 원형
   const kakaoAny = window.kakao as any;
   const pos = new kakaoAny.maps.LatLng(lat, lng);
   const color = me ? '#2563eb' : visited ? '#9ca3af' : '#10b981';
@@ -284,8 +282,8 @@ const makeMarker = (opts: {
   markers.push(m);
 };
 
-/* ---------- 지도 초기화 ---------- */
-const initMap = (center: { lat: number; lng: number }) => {
+// 지도 초기화
+function initMap(center: { lat: number; lng: number }) {
   if (!mapRef.value || !window.kakao?.maps) {
     errorMsg.value = '카카오 지도 스크립트가 로드되지 않았습니다.';
     return;
@@ -299,10 +297,10 @@ const initMap = (center: { lat: number; lng: number }) => {
   places = createPlaces(map);
 
   makeMarker({ lat: center.lat, lng: center.lng, me: true });
-};
+}
 
-/* ---------- 검색 ---------- */
-const applyParksAndMarkers = (list: Park[]) => {
+// 검색
+function applyParksAndMarkers(list: Park[]) {
   const arr = list
     .filter((p) => p.distance <= searchRadius)
     .sort((a, b) => a.distance - b.distance)
@@ -314,9 +312,9 @@ const applyParksAndMarkers = (list: Park[]) => {
     makeMarker({ lat: myPos.value.lat, lng: myPos.value.lng, me: true });
   for (const p of parks.value)
     makeMarker({ lat: p.lat, lng: p.lng, visited: p.checked, title: p.name });
-};
+}
 
-const searchParks = async () => {
+async function searchParks() {
   if (!places || !myPos.value) return;
   noticeMsg.value = '근처 공원을 검색 중…';
 
@@ -335,13 +333,12 @@ const searchParks = async () => {
             myPos.value!.lng
           ),
           radius: searchRadius,
-          // SortBy 타입이 d.ts에 없으므로 생략 (기본 거리 정렬)
         }
       );
     });
     list = res.filter(isParkLike).map(normalizeToPark);
   } catch {
-    // noop
+    errorMsg.value = '공원 검색 중 오류가 발생했습니다.';
   }
 
   // 2) 부족하면 키워드 ‘공원’ 폴백 (공통 유틸)
@@ -372,10 +369,10 @@ const searchParks = async () => {
     return;
   }
   applyParksAndMarkers(list);
-};
+}
 
-/* ---------- 위치 ---------- */
-const locateAndSearch = async () => {
+// 위치 조회 및 검색
+async function locateAndSearch() {
   errorMsg.value = '';
   try {
     const pos = await getCurrentPosition({
@@ -399,12 +396,15 @@ const locateAndSearch = async () => {
   } catch (err: any) {
     errorMsg.value = `위치 조회 실패: ${err?.message ?? '알 수 없는 오류'}`;
   }
-};
+}
 
+// 체크인 가능 여부
 function canCheckIn(p: Park) {
   if (!myPos.value) return false;
   return p.distance <= checkInRadius;
 }
+
+// 체크인
 async function checkIn(p: Park) {
   if (!canCheckIn(p)) return;
   const ids = loadCheckedIds();
@@ -415,24 +415,24 @@ async function checkIn(p: Park) {
   rewardStore.complete('park');
 
   const ok = await openConfirm(
-    '방문 인증이 완료되었습니다.\n생활편의 페이지로 돌아가겠습니까?',
-    '🎉 챌린지 완료'
+    '🎉 챌린지를 완료했습니다!\n생활편의 페이지로 돌아가겠습니까?',
+    '챌린지 완료'
   );
   if (ok) router.push({ name: 'event' });
 }
 
-/* ---------- 거리 재계산 + watch ---------- */
-const recalcDistances = () => {
+// 거리 재계산
+function recalcDistances() {
   if (!myPos.value) return;
   parks.value = parks.value.map((p) => ({
     ...p,
     distance: haversine(myPos.value!.lat, myPos.value!.lng, p.lat, p.lng),
   }));
-};
+}
 
 let watchId: number | null = null;
 
-/* ---------- lazy load: 지도가 화면에 들어올 때만 SDK 로드 ---------- */
+// 페이지 진입: lazy load
 onMounted(() => {
   if (!mapRef.value) return;
 

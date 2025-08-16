@@ -161,7 +161,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import VueApexCharts from 'vue3-apexcharts';
 import Btn from '@/components/buttons/Btn.vue';
@@ -170,7 +170,6 @@ import { formatCurrency } from '@/utils/format';
 import { useSimulationStore } from '@/stores/simulation';
 import type {
   RecipientTaxDetailDto,
-  SimulationRequestDto,
   TaxSavingStrategy,
 } from '@/types/gift/simulation';
 
@@ -178,14 +177,16 @@ const apexchart = VueApexCharts;
 const simulationStore = useSimulationStore();
 const router = useRouter();
 
-const goToTaxInfo = () => {
+// 세금 정보 페이지로 이동
+function goToTaxInfo() {
   router.push({ name: 'gift-taxinfo' });
-};
+}
 
-const totalGiftTax = computed(() => simulationStore.totalGiftTax);
-const recipientSummaries = computed(() => simulationStore.recipientSummaries);
-const taxSavingStrategies = computed(() => simulationStore.taxSavingStrategies);
+const totalGiftTax = computed(() => simulationStore.totalGiftTax); // 총 증여세
+const recipientSummaries = computed(() => simulationStore.recipientSummaries); // 수증자 요약 정보
+const taxSavingStrategies = computed(() => simulationStore.taxSavingStrategies); // 절세 전략 정보
 
+// 전략 추천 목록
 const displayStrategies = computed(() => {
   let globalIndex = 0;
   let lastCategory = '';
@@ -222,7 +223,7 @@ const displayStrategies = computed(() => {
   return result;
 });
 
-// 차트 데이터 로직을 수정합니다.
+// 차트 데이터 로직을 수정
 const chartSeries = computed(() => {
   // recipientSummaries.value가 존재하고 데이터가 있을 때만 map()을 실행
   if (!recipientSummaries.value || recipientSummaries.value.length === 0) {
@@ -244,8 +245,8 @@ const chartSeries = computed(() => {
   ];
 });
 
+// 차트 옵션을 설정
 const chartOptions = computed(() => {
-  // recipientSummaries.value가 존재하고 데이터가 있을 때만 map()을 실행
   if (!recipientSummaries.value || recipientSummaries.value.length === 0) {
     return {}; // 빈 객체를 반환하여 에러 방지
   }

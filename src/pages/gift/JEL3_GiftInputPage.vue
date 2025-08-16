@@ -252,21 +252,21 @@ watch(
 );
 
 // 수증자/상속인 추가 모달 열기
-const openRecipientModal = () => {
+function openRecipientModal() {
   newRecipient.value = { ...emptyRecipient };
   isEditing.value = false;
   isRecipientModalOpen.value = true;
-};
+}
 
 // 모달 닫기
-const cancelRecipientModal = () => {
+function cancelRecipientModal() {
   isRecipientModalOpen.value = false;
   isEditing.value = false;
   selectedRecipientId.value = null;
-};
+}
 
 // 수증자/상속인 저장/수정
-const handleRecipientConfirm = async (recipientData: RecipientRequestDto) => {
+async function handleRecipientConfirm(recipientData: RecipientRequestDto) {
   loadingStore.startLoading();
   try {
     if (isEditing.value && selectedRecipientId.value !== null) {
@@ -287,10 +287,10 @@ const handleRecipientConfirm = async (recipientData: RecipientRequestDto) => {
   } finally {
     loadingStore.stopLoading();
   }
-};
+}
 
 // 수증자/상속인 수정 모달 열기
-const editRecipient = (id: number) => {
+function editRecipient(id: number) {
   const recipient = recipients.value.find((r) => r.recipientId === id);
   if (recipient) {
     newRecipient.value = {
@@ -306,22 +306,22 @@ const editRecipient = (id: number) => {
     selectedRecipientId.value = id;
     isRecipientModalOpen.value = true;
   }
-};
+}
 
 // 삭제 확인 모달
 const recipientToDelete = ref<RecipientResponseDto | null>(null);
 
-const confirmDeleteRecipient = (id: number) => {
+function confirmDeleteRecipient(id: number) {
   const recipient = recipients.value.find((r) => r.recipientId === id);
   if (recipient) {
     recipientToDelete.value = recipient;
     selectedRecipientId.value = id;
     isDeleteModalOpen.value = true;
   }
-};
+}
 
 // 삭제
-const confirmDelete = async () => {
+async function confirmDelete() {
   if (selectedRecipientId.value !== null) {
     loadingStore.startLoading();
     try {
@@ -336,17 +336,17 @@ const confirmDelete = async () => {
       loadingStore.stopLoading();
     }
   }
-};
+}
 
 // 삭제 모달 닫기
-const cancelDelete = () => {
+function cancelDelete() {
   isDeleteModalOpen.value = false;
   recipientToDelete.value = null;
   selectedRecipientId.value = null;
-};
+}
 
 // 다음 단계로 이동
-const goToQuiz = () => {
+function goToQuiz() {
   // 스토어의 데이터를 초기화하여 JEL4에서 항상 새로운 데이터를 불러오도록 함
   if (props.mode === 'gift') {
     (giftStore as ReturnType<typeof useGiftStore>).setInitialData({
@@ -362,5 +362,5 @@ const goToQuiz = () => {
     );
   }
   router.push({ name: pageConfig.value.quizRouteName });
-};
+}
 </script>

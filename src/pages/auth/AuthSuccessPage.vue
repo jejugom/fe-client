@@ -131,5 +131,8 @@ onMounted(async () => {
   }
 });
 
-const goHome = () => router.push({ name: 'home' });
+// 홈페이지로 이동
+function goHome() {
+  router.push({ name: 'home' });
+}
 </script>

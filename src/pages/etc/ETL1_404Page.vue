@@ -22,7 +22,7 @@ import Btn from '@/components/buttons/Btn.vue';
 
 const router = useRouter();
 
-const onClick = () => {
+function onClick() {
   router.push({ name: 'home' });
-};
+}
 </script>

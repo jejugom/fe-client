@@ -74,9 +74,9 @@ router.beforeEach((to) => {
   if (!allowedRoutes.includes(to.name as string)) {
     const authResult = isAuthenticated(to);
     if (authResult === false) {
-      return false; // Cancel navigation if user cancels login prompt
+      return false; // 리다이렉트
     } else if (authResult) {
-      return authResult; // Redirect or allow (if true)
+      return authResult; // 리다이렉트
     }
   }
 });
