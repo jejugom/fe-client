@@ -1,5 +1,5 @@
 <template>
-  <div class="card-design mt-8 flex h-120 flex-col gap-8 px-8 py-8">
+  <div class="card-design mt-8 flex min-h-120 flex-col gap-8 px-8 py-8">
     <!-- 프로그레스바 -->
     <ProgressBar
       :currentQuestionIndex="currentQuestionIndex"

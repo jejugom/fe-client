@@ -48,18 +48,15 @@
     <!-- 퀴즈 완료 후 -->
     <div v-else class="pt-8 text-center">
       <div class="text-primary-500 mb-8">
-        <h2 class="text-primary-500 mb-8 text-3xl font-bold"
+        <h2 class="text-primary-500 mb-4 text-3xl font-bold"
           >오늘의 퀴즈가 모두 끝났어요!</h2
         >
-        <div class="text-primary-500 mb-2 text-6xl font-bold">
-          {{ score }} / {{ currentQuizzes.length }}
-        </div>
         <p class="text-xl">
           정답률: {{ Math.round((score / currentQuizzes.length) * 100) }}%
         </p>
       </div>
 
-      <div class="mx-auto mb-8 grid max-w-md grid-cols-2 gap-4">
+      <div class="mx-auto mb-16 grid max-w-md grid-cols-2 gap-4">
         <!-- 정답 개수 -->
         <div
           class="text-primary-500 card-design bg-primary-100 transform rounded-2xl p-4"
