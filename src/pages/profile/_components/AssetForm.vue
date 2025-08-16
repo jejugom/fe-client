@@ -43,6 +43,7 @@
         :class="getInputClass('name')"
         @focus="handleFocus('name')"
         @blur="handleBlur('name')"
+        maxlength="20"
       />
     </div>
 
