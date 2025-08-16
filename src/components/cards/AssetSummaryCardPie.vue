@@ -93,6 +93,11 @@ const chartOptions = computed(() => {
     chart: {
       type: 'donut',
       fontFamily: 'Pretendard-Regular, Noto Sans KR, sans-serif',
+      animations: {
+        enabled: false,
+        animateGradually: { enabled: false },
+        dynamicAnimation: { enabled: false },
+      },
     },
     labels: labels.value,
     colors: labels.value.map((_, idx) =>
