@@ -28,58 +28,58 @@
           />
         </ChallengeState>
       </div>
+    </div>
 
-      <!-- 이벤트 카드 캐러셀 -->
-      <div class="relative overflow-hidden">
-        <!-- 캐러셀 컨테이너 -->
-        <div
-          class="flex transition-transform duration-300 ease-out"
-          :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
-          @touchstart="onTouchStart"
-          @touchmove="onTouchMove"
-          @touchend="onTouchEnd"
-        >
-          <div v-for="(c, i) in card" :key="i" class="w-full flex-shrink-0">
-            <EventCard
-              class="mx-2 h-24"
-              color="primary"
-              :title="c.title"
-              :content1="c.content1"
-              :content2="c.content2"
-              @click="handlers[c.onClick]"
-              :src="c.src"
-            />
-          </div>
-        </div>
-
-        <!-- 인디케이터 -->
-        <div class="mt-4 flex justify-center space-x-2">
-          <button
-            v-for="(_, i) in card"
-            :key="i"
-            class="h-2 w-2 rounded-full transition-colors duration-200"
-            :class="currentIndex === i ? 'bg-primary-500' : 'bg-surface-300'"
-            @click="goToSlide(i)"
+    <!-- 이벤트 카드 캐러셀 -->
+    <div class="relative overflow-hidden">
+      <!-- 캐러셀 컨테이너 -->
+      <div
+        class="flex transition-transform duration-300 ease-out"
+        :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
+        @touchstart="onTouchStart"
+        @touchmove="onTouchMove"
+        @touchend="onTouchEnd"
+      >
+        <div v-for="(c, i) in card" :key="i" class="w-full flex-shrink-0">
+          <EventCard
+            class="mx-2 h-24"
+            color="primary"
+            :title="c.title"
+            :content1="c.content1"
+            :content2="c.content2"
+            @click="handlers[c.onClick]"
+            :src="c.src"
           />
         </div>
-
-        <!-- 좌우 네비게이션 버튼 -->
-        <button
-          v-if="card.length > 1"
-          class="text-primary-500 absolute top-1/2 left-2 -translate-y-1/2 transform rounded-full bg-white p-3 font-bold opacity-75 shadow-md transition-colors duration-200"
-          @click="prevSlide"
-        >
-          ‹
-        </button>
-
-        <button
-          v-if="card.length > 1"
-          class="text-primary-500 absolute top-1/2 right-2 -translate-y-1/2 transform rounded-full bg-white p-3 font-bold opacity-75 shadow-md transition-colors duration-200"
-          @click="nextSlide"
-        >
-          ›
-        </button>
       </div>
+
+      <!-- 인디케이터 -->
+      <div class="mt-4 flex justify-center space-x-2">
+        <button
+          v-for="(_, i) in card"
+          :key="i"
+          class="h-2 w-2 rounded-full transition-colors duration-200"
+          :class="currentIndex === i ? 'bg-primary-500' : 'bg-surface-300'"
+          @click="goToSlide(i)"
+        />
+      </div>
+
+      <!-- 좌우 네비게이션 버튼 -->
+      <button
+        v-if="card.length > 1"
+        class="text-primary-500 absolute top-1/2 left-2 -translate-y-1/2 transform rounded-full bg-white p-3 font-bold opacity-75 shadow-md transition-colors duration-200"
+        @click="prevSlide"
+      >
+        ‹
+      </button>
+
+      <button
+        v-if="card.length > 1"
+        class="text-primary-500 absolute top-1/2 right-2 -translate-y-1/2 transform rounded-full bg-white p-3 font-bold opacity-75 shadow-md transition-colors duration-200"
+        @click="nextSlide"
+      >
+        ›
+      </button>
     </div>
 
     <!-- 오늘의 금융시장 -->
@@ -140,9 +140,11 @@ import Park from '@/assets/images/ParkBanner.webp';
 import Confirm from '@/components/modals/Confirm.vue';
 import Question from '@/components/question/Question.vue';
 import EventCard from './_components/EventCard.vue';
+import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
 const rewardStore = useRewardStore();
+const loadingStore = useLoadingStore();
 
 const showMore = ref(false);
 const showConfirm = ref(false);
@@ -167,6 +169,7 @@ const newsList = ref<
 const todayPoint = ref<number | null>(null);
 
 onMounted(async () => {
+  loadingStore.startLoading();
   try {
     const result = await fetchEventData();
     // 여기! 배열만 따로 넣어야 함
@@ -176,10 +179,9 @@ onMounted(async () => {
     console.error('이벤트 데이터 로딩 실패', e);
     newsList.value = [];
     todayPoint.value = null;
+  } finally {
+    loadingStore.stopLoading();
   }
-
-  // 자동 슬라이드 (옵션)
-  startAutoSlide();
 });
 
 // 카드 목록/핸들러 동일
@@ -280,6 +282,7 @@ async function onConfirmYes() {
     // 요구사항: 확인 시 스토어 초기화 → API 호출
     rewardStore.resetToday();
     await postEventData();
+    window.location.reload();
     // 필요하면 토스트/알럿 추가 가능
   } catch (e) {
     console.error('보상 적립 실패', e);

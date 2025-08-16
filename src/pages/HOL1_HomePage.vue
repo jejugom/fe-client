@@ -6,14 +6,20 @@
           노후도락에 오신 것을 환영합니다!
         </div>
         <p class="text-surface-500">
-          카카오로 로그인해서 맞춤형 금융 서비스를 시작해보세요
+          간편 로그인으로 맞춤형 금융 서비스를 시작해보세요
         </p>
-        <div class="flex flex-col items-center justify-center gap-4">
+        <div class="flex items-center justify-center gap-4">
           <img
             :src="KakaoLoginBtn"
             alt="카카오 로그인"
             @click="() => authStore.startKakaoLogin()"
-            class="btn-pressed block max-h-20 w-auto"
+            class="btn-pressed block h-12 w-48 cursor-pointer object-contain"
+          />
+          <img
+            :src="NaverLoginBtn"
+            alt="네이버 로그인"
+            @click="showNaverAlert"
+            class="btn-pressed block h-12 w-48 cursor-pointer"
           />
         </div>
       </div>
@@ -64,11 +70,13 @@
       </div>
     </div>
 
-    <div v-if="nearestBranch" ref="nearestBranchSection">
+    <div v-if="authStore.isLogin" ref="nearestBranchSection">
       <div class="text-primary-500 mb-2 text-2xl font-bold"
         >가장 가까운 골든라이프</div
       >
+      <LoaderGoldenLife v-if="isBranchLoading" />
       <div
+        v-if="!isBranchLoading && nearestBranch"
         class="stroke-secondary bg-gold flex items-center justify-between rounded-lg p-4"
       >
         <div>
@@ -88,6 +96,12 @@
           label="찾아가기"
           @click="openMap(nearestBranch)"
         />
+      </div>
+      <div
+        v-if="!isBranchLoading && !nearestBranch && branchSearchAttempted"
+        class="card-design text-surface-400 text-center"
+      >
+        주변에 골든라이프 지점이 없습니다.
       </div>
     </div>
 
@@ -121,6 +135,11 @@
         </div>
       </div>
     </section>
+
+    <!-- 네이버 로그인 알림 모달 -->
+    <Alert v-if="showNaverModal" title="안내" @click="closeNaverAlert">
+      서비스 준비중입니다!
+    </Alert>
   </div>
 </template>
 
@@ -133,13 +152,19 @@ import { fetchHomeData, type HomeData } from '@/api/home';
 import IconCard from '@/components/cards/IconCard.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import TextBtn from '@/components/buttons/TextBtn.vue';
+
+import Alert from '@/components/modals/Alert.vue';
+
+import LoaderGoldenLife from '@/components/loaders/LoaderGoldenLife.vue';
+
 import Home1 from '@/assets/images/Home1.svg';
 import Home2 from '@/assets/images/Home2.svg';
 import Home3 from '@/assets/images/Home3.svg';
 import Home4 from '@/assets/images/Home4.svg';
 import Home5 from '@/assets/images/Home5.svg';
 import Home6 from '@/assets/images/Home6.svg';
-import KakaoLoginBtn from '@/assets/images/kakao_login_medium_wide.webp';
+import KakaoLoginBtn from '@/assets/images/kakao_login.png';
+import NaverLoginBtn from '@/assets/images/naver_login.png';
 
 // Kakao 지도 & 위치 유틸
 import {
@@ -160,6 +185,17 @@ const loadingStore = useLoadingStore();
 
 /** 홈 데이터 */
 const homeData = ref<HomeData | null>(null);
+
+/** 네이버 로그인 알림 모달 */
+const showNaverModal = ref(false);
+
+const showNaverAlert = () => {
+  showNaverModal.value = true;
+};
+
+const closeNaverAlert = () => {
+  showNaverModal.value = false;
+};
 
 onMounted(async () => {
   if (authStore.isLogin) {
@@ -243,6 +279,8 @@ type Branch = {
 const myPos = ref<{ lat: number; lng: number } | null>(null);
 const nearestBranch = ref<Branch | null>(null);
 const nearestBranchSection = ref<HTMLElement | null>(null);
+const isBranchLoading = ref(false);
+const branchSearchAttempted = ref(false);
 let branchInitDone = false;
 
 /** 가장 가까운 지점 검색 */
@@ -279,6 +317,8 @@ async function searchNearestBranch() {
 /** 섹션이 실제 DOM에 올라오고, 뷰포트에 들어오면 1회만 실행 */
 async function runNearestBranchSearchOnce() {
   if (branchInitDone) return;
+  isBranchLoading.value = true;
+  branchSearchAttempted.value = false;
   try {
     const pos = await getCurrentPosition({
       enableHighAccuracy: true,
@@ -289,6 +329,9 @@ async function runNearestBranchSearchOnce() {
     branchInitDone = true;
   } catch (err) {
     console.error('위치 조회 실패', err);
+  } finally {
+    isBranchLoading.value = false;
+    branchSearchAttempted.value = true;
   }
 }
 

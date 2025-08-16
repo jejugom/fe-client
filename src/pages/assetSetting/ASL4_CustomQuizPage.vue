@@ -172,8 +172,13 @@ async function scrollToTop() {
 async function scrollToNavigation() {
   await nextTick();
   const target = navigationRef.value?.rootRef;
-  if (target?.scrollIntoView) {
-    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (target) {
+    const targetTop = window.scrollY + target.getBoundingClientRect().bottom;
+    const offset = 560; // 560px of space above the navigation
+    window.scrollTo({
+      top: targetTop - offset,
+      behavior: 'smooth',
+    });
   }
 }
 

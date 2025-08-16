@@ -80,8 +80,8 @@
     <Confirm
       v-if="showConfirm"
       :title="confirmTitle"
-      leftLabel="계속있기"
-      rightLabel="돌아가기"
+      leftLabel="야니오"
+      rightLabel="예"
       @click1="onConfirmNo"
       @click2="onConfirmYes"
     >
@@ -415,8 +415,8 @@ async function checkIn(p: Park) {
   rewardStore.complete('park');
 
   const ok = await openConfirm(
-    '🎉 챌린지를 완료했습니다!\n생활편의 페이지로 돌아가겠습니까?',
-    '챌린지 완료'
+    '방문 인증이 완료되었습니다.\n생활편의 페이지로 돌아가겠습니까?',
+    '🎉 챌린지 완료'
   );
   if (ok) router.push({ name: 'event' });
 }
