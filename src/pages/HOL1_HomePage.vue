@@ -167,16 +167,25 @@ const loadingStore = useLoadingStore();
 const homeData = ref<HomeData | null>(null);
 
 onMounted(async () => {
-  if (authStore.isLogin) {
-    loadingStore.startLoading();
-    try {
+  loadingStore.startLoading();
+  try {
+    // ✅ 1. 앱/페이지가 로드될 때, 스토어의 인증 확인 액션을 먼저 호출합니다.
+    // 이 함수 내부에서 /auth/profile API를 호출하고, 실패 시(401) 사일런트 리프레시가 트리거됩니다.
+    await authStore.checkAuthStatus();
+
+    // ✅ 2. 인증 확인이 끝난 후, 스토어의 isLogin 상태는 이제 100% 신뢰할 수 있습니다.
+    // 로그인 상태가 맞다면, 홈 화면에 필요한 데이터를 불러옵니다.
+    if (authStore.isLogin) {
       homeData.value = await fetchHomeData();
-    } catch (error) {
-      console.error('홈 데이터 요청 실패', error);
-      loadingStore.setError(true);
-    } finally {
-      loadingStore.stopLoading();
     }
+    // 로그인 상태가 아니라면, 아무것도 하지 않습니다. 템플릿은 자동으로 비로그인 UI를 보여줍니다.
+  } catch (error) {
+    // checkAuthStatus나 fetchHomeData에서 발생한 최종 에러를 처리합니다.
+    // (보통 인터셉터나 스토어 내부에서 이미 처리되었을 것입니다.)
+    console.error('홈 페이지 초기화 중 오류 발생:', error);
+    loadingStore.setError(true);
+  } finally {
+    loadingStore.stopLoading();
   }
 });
 
