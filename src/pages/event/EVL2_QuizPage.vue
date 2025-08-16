@@ -45,53 +45,6 @@
       </div>
     </div>
 
-    <!-- 퀴즈 완료 후 -->
-    <div v-else class="pt-8 text-center">
-      <div class="text-primary-500 mb-8">
-        <h2 class="text-primary-500 mb-4 text-3xl font-bold"
-          >오늘의 퀴즈가 모두 끝났어요!</h2
-        >
-        <p class="text-xl">
-          정답률: {{ Math.round((score / currentQuizzes.length) * 100) }}%
-        </p>
-      </div>
-
-      <div class="mx-auto mb-16 grid max-w-md grid-cols-2 gap-4">
-        <!-- 정답 개수 -->
-        <div
-          class="text-primary-500 card-design bg-primary-100 transform rounded-2xl p-4"
-        >
-          <div class="text-4xl font-semibold">{{ score }}</div>
-          <div class="text-lg">정답</div>
-        </div>
-        <!-- 오답 개수 -->
-        <div
-          class="text-primary-500 card-design transform rounded-2xl bg-red-100 p-4"
-        >
-          <div class="text-4xl font-semibold">{{
-            currentQuizzes.length - score
-          }}</div>
-          <div class="text-lg">오답</div>
-        </div>
-      </div>
-
-      <!-- 하단 버튼 -->
-      <div class="flex flex-col justify-center gap-4">
-        <GlassBtn
-          color="surface"
-          label="다시 도전하기"
-          size="large"
-          @click="restartQuiz"
-        />
-        <GlassBtn
-          color="surface"
-          label="다른 챌린지 하러가기"
-          size="large"
-          @click="goToEvent"
-        />
-      </div>
-    </div>
-
     <QuizResultModal
       :showResultModal="showResultModal"
       :isCorrect="isCorrect"
@@ -99,6 +52,17 @@
       :isLastQuestion="isLastQuestion"
       @confirm="handleModalConfirm"
     />
+
+    <Confirm
+      v-if="showConfirm"
+      :title="confirmTitle"
+      leftLabel="아니오"
+      rightLabel="예"
+      @click1="onConfirmNo"
+      @click2="onConfirmYes"
+    >
+      <p class="text-center whitespace-pre-line">{{ confirmMessage }}</p>
+    </Confirm>
   </div>
 </template>
 
@@ -111,13 +75,31 @@ import QuizResultModal from './_components/QuizResultModal.vue';
 import ProgressBar from '@/components/progressbar/ProgressBar.vue';
 import { useRewardStore } from '@/stores/reward';
 import { getQuiz } from '@/api/event/quiz';
+import Confirm from '@/components/modals/Confirm.vue';
 
 const router = useRouter();
 const rewardStore = useRewardStore();
 
-const emit = defineEmits<{
-  (e: 'quiz-finished'): void;
-}>();
+const emit = defineEmits<{ (e: 'quiz-finished'): void }>();
+
+/* ---------- Confirm ---------- */
+const showConfirm = ref(false);
+const confirmTitle = ref<string>();
+const confirmMessage = ref('');
+
+const openConfirm = (message: string, title?: string) => {
+  confirmMessage.value = message;
+  confirmTitle.value = title;
+  showConfirm.value = true;
+};
+const onConfirmNo = () => {
+  showConfirm.value = false;
+  restartQuiz();
+};
+const onConfirmYes = () => {
+  showConfirm.value = false;
+  goToEvent();
+};
 
 // 상태 관리
 const gameFinished = ref(false);
@@ -260,6 +242,15 @@ const finishQuiz = () => {
     isNewBest.value = true;
   }
   emit('quiz-finished');
+
+  const quizLength = currentQuizzes.value.length;
+  const accuracy =
+    quizLength > 0 ? Math.round((score.value / quizLength) * 100) : 0;
+  const message =
+    `정답: ${score.value}개, 오답: ${quizLength - score.value}개\n` +
+    `정답률: ${accuracy}%\n\n` +
+    `생활편의 페이지로 돌아가겠습니까?`;
+  openConfirm(message, '🎉 챌린지 완료');
 };
 
 const restartQuiz = () => {

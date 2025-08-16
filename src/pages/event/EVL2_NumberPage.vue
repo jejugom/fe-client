@@ -41,8 +41,8 @@
         :title="confirmTitle"
         leftLabel="아니오"
         rightLabel="예"
-        @click1="onConfirmNo"
-        @click2="onConfirmYes"
+        @click1="onConfirmYes"
+        @click2="onConfirmNo"
       >
         <p class="text-center whitespace-pre-line">{{ confirmMessage }}</p>
       </Confirm>
@@ -184,8 +184,8 @@ async function onFinish() {
   const msg =
     `기록: ${fmt(elapsedMs.value)}초\n` +
     `최고 기록: ${bestMs.value == null ? '-' : fmt(bestMs.value)}초\n\n` +
-    `다시 게임을 진행하시겠습니까?`;
-  const ok = await openConfirm(msg, '게임 완료');
+    `생활편의 페이지로 돌아가겠습니까?`;
+  const ok = await openConfirm(msg, '🎉 챌린지 완료');
 
   if (ok) {
     // 계속하기: 보드 리셋하고 대기 상태로
