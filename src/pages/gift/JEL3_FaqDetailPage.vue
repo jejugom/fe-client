@@ -63,7 +63,8 @@
 import { ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
-import { getFaqById, getFaqList, type Faq } from '@/api/gift/faq';
+import { getFaqById, getFaqList } from '@/api/gift/faq';
+import type { Faq } from '@/types/gift/faq';
 import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
@@ -75,7 +76,7 @@ const relatedFaqs = ref<Faq[]>([]);
 const allFaqs = ref<Faq[]>([]); // 전체 목록 캐싱
 
 // FAQ 상세 + 관련 질문 계산
-const fetchFaqDetail = async (id: number) => {
+async function fetchFaqDetail(id: number) {
   loadingStore.startLoading();
   try {
     // 1) 상세 조회
@@ -111,7 +112,7 @@ const fetchFaqDetail = async (id: number) => {
   } finally {
     loadingStore.stopLoading();
   }
-};
+}
 
 // 라우트 param 감시 (초기 실행 포함)
 watch(
@@ -122,9 +123,12 @@ watch(
   { immediate: true }
 );
 
-const goToFaqDetail = (id: number) =>
+function goToFaqDetail(id: number) {
   router.push({ name: 'gift-detail', params: { id } });
-const goToStart = () => router.push({ name: 'gift-start' });
+}
+function goToStart() {
+  router.push({ name: 'gift-start' });
+}
 </script>
 
 <style scoped>

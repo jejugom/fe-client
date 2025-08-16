@@ -60,6 +60,10 @@ const emit = defineEmits<{
   (e: 'click:delete'): void;
 }>();
 
-const onClick1 = () => emit('click:edit');
-const onClick2 = () => emit('click:delete');
+function onClick1() {
+  emit('click:edit');
+}
+function onClick2() {
+  emit('click:delete');
+}
 </script>

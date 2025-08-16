@@ -4,7 +4,7 @@
       <div class="text-lg">지금까지 모은 자산은 이렇게 구성되어 있어요</div>
       <div>총 {{ displayTotal.toLocaleString() }} 원</div>
     </div>
-
+    <!-- 바차트 -->
     <apexchart
       type="bar"
       height="120"
@@ -42,7 +42,7 @@ const hasData = computed(
   () => props.assetInfo.length > 0 && props.assetAmount > 0
 );
 
-// 총합 (prop.assetAmount가 신뢰 가능한 값이면 그걸 우선 사용)
+// 총액 계산 (assetAmount가 있으면 그 값, 없으면 assetInfo 합계)
 const calcTotal = computed(() => {
   const s = props.assetInfo?.reduce(
     (acc, cur) => acc + (Number(cur.amount) || 0),
@@ -65,7 +65,7 @@ const series = computed(() =>
     }))
 );
 
-// 색상 (최대 6개 예시)
+// 색상
 const colors = [
   '#4CAF50',
   '#9E9E9E',
@@ -75,6 +75,7 @@ const colors = [
   '#9C27B0',
 ];
 
+// 차트 옵션
 const chartOptions = computed(() => ({
   chart: {
     type: 'bar',
@@ -94,19 +95,16 @@ const chartOptions = computed(() => ({
       barHeight: '100%',
     },
   },
-  // 데이터 라벨은 %로 표기 (0%는 숨김)
   dataLabels: {
     enabled: true,
     formatter: (_val: number, opts: any) => {
-      // 100% 스택에서 퍼센트 직접 계산
       const w = opts.w;
       const sIdx = opts.seriesIndex;
-      const dIdx = opts.dataPointIndex; // 단일 바 → 보통 0
+      const dIdx = opts.dataPointIndex;
       const stackedTotals: number[] = w?.globals?.stackedSeriesTotals ?? [];
       const total = stackedTotals[dIdx] || 0;
       const value = w?.config?.series?.[sIdx]?.data?.[dIdx] ?? 0;
       const pct = total ? (value / total) * 100 : 0;
-      return pct < 3 ? '' : `${pct.toFixed(0)}%`; // 3% 미만은 숨김
     },
     style: {
       fontSize: '10px',

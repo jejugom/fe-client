@@ -38,26 +38,13 @@ import Btn from '@/components/buttons/Btn.vue';
 import Logo from '@/assets/logos/typo.svg';
 
 const router = useRouter();
-const userType = ref('안정적인 주식형 자산가');
 
 async function fetchUserType() {
   try {
-    // TODO: API 호출로 사용자 유형 가져오기
-    // [GET] /api/v1/preferences
-    //     {
-    // 	"segment" : "AB",
-    // 	"description":"당신은 안정적인 자산가"
-    // }
-    // userType.value = response.data.description;
   } catch (error) {
     // console.error('사용자 유형 조회 실패:', error);
   }
 }
-
-onMounted(() => {
-  // TODO: 실제 API 연동 시 주석 해제
-  // fetchUserType();
-});
 
 function goToHome() {
   router.push({ name: 'home' });

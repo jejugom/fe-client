@@ -14,7 +14,9 @@
     ]"
     v-bind="$attrs"
     @click="onClick"
-    ><slot>{{ label }}</slot></button
+  >
+    <!-- 내용 -->
+    <slot>{{ label }}</slot></button
   >
 </template>
 
@@ -32,7 +34,7 @@ const emit = defineEmits<{
   (e: 'click'): void;
 }>();
 
-const onClick = () => {
+function onClick() {
   emit('click');
-};
+}
 </script>

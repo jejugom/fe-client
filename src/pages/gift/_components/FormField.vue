@@ -22,6 +22,7 @@ interface Props {
   error?: string;
 }
 
+// 기본값 설정
 withDefaults(defineProps<Props>(), {
   description: '',
   error: '',

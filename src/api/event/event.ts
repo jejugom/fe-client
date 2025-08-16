@@ -1,22 +1,14 @@
 import api from '@/api';
+import type { Event } from '@/types/event/event';
 
-export interface Register {
-  news: {
-    category: number;
-    title: string;
-    summary: string;
-    link: string;
-    date: string;
-  };
-  point: number;
+// 이벤트 페이지 조회
+export async function fetchEventData() {
+  const res = await api.get(`/api/event`);
+  // console.log('Event data fetched:', res.data);
+  return res.data as Event;
 }
 
-export const fetchEventData = async () => {
-  const res = await api.get(`/api/event`);
-  console.log('Event data fetched:', res.data);
-  return res.data;
-};
-
-export const postEventData = async () => {
+// 포인트 추가
+export async function postEventData() {
   await api.post(`/api/event`);
-};
+}

@@ -33,11 +33,12 @@ import Btn from '@/components/buttons/Btn.vue';
 const router = useRouter();
 const route = useRoute();
 
+// 자산 관리 퀴즈 페이지로 이동
 function goToCustomQuiz() {
   const fromProfile = route.query.from === 'profile';
-  router.push({ 
+  router.push({
     name: 'asset-custom-quiz',
-    query: fromProfile ? { from: 'profile' } : {}
+    query: fromProfile ? { from: 'profile' } : {},
   });
 }
 </script>

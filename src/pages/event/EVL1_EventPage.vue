@@ -97,8 +97,9 @@
         />
       </div>
 
+      <!-- 뉴스 카드 -->
       <NewsCard v-if="filteredNews.length > 0" :newsItem="filteredNews[0]" />
-
+      <!--  뉴스 목록 -->
       <div v-if="showMore">
         <NewsCard
           v-for="(item, index) in filteredNews.slice(1)"
@@ -168,6 +169,7 @@ const newsList = ref<
 >([]);
 const todayPoint = ref<number | null>(null);
 
+// 터치 이벤트 처리
 onMounted(async () => {
   loadingStore.startLoading();
   try {
@@ -208,6 +210,8 @@ const card = [
     src: Park,
   },
 ];
+
+// 핸들러 맵
 const handlers: Record<string, () => void> = {
   goToQuiz: () => router.push({ name: 'event-quiz' }),
   goToNumberGame: () => router.push({ name: 'event-number' }),
@@ -215,31 +219,32 @@ const handlers: Record<string, () => void> = {
 };
 
 // 캐러셀 메서드
-const nextSlide = () => {
+function nextSlide() {
   currentIndex.value = (currentIndex.value + 1) % card.length;
-};
+}
 
-const prevSlide = () => {
+function prevSlide() {
   currentIndex.value =
     currentIndex.value === 0 ? card.length - 1 : currentIndex.value - 1;
-};
+}
 
-const goToSlide = (index: number) => {
+// 슬라이드 이동
+function goToSlide(index: number) {
   currentIndex.value = index;
-};
+}
 
 // 터치 이벤트 처리
-const onTouchStart = (e: TouchEvent) => {
+function onTouchStart(e: TouchEvent) {
   touchStartX.value = e.touches[0].clientX;
   isDragging.value = true;
-};
+}
 
-const onTouchMove = (e: TouchEvent) => {
+function onTouchMove(e: TouchEvent) {
   if (!isDragging.value) return;
   e.preventDefault(); // 스크롤 방지
-};
+}
 
-const onTouchEnd = (e: TouchEvent) => {
+function onTouchEnd(e: TouchEvent) {
   if (!isDragging.value) return;
 
   touchEndX.value = e.changedTouches[0].clientX;
@@ -257,25 +262,20 @@ const onTouchEnd = (e: TouchEvent) => {
   }
 
   isDragging.value = false;
-};
-
-// 자동 슬라이드 (옵션)
-const startAutoSlide = () => {
-  setInterval(() => {
-    nextSlide(); // 무한 순환으로 변경
-  }, 5000); // 5초마다 자동 슬라이드
-};
+}
 
 // 카테고리 0만
 const filteredNews = computed(() =>
   newsList.value.filter((n) => n.category === 0)
 );
 
+// 클릭 시 보상 요청
 function onClickClaim() {
   if (!rewardStore.allCompleted) return; // 방어
   showConfirm.value = true;
 }
 
+// 확인 버튼 클릭 시
 async function onConfirmYes() {
   showConfirm.value = false;
   try {
@@ -288,6 +288,8 @@ async function onConfirmYes() {
     console.error('보상 적립 실패', e);
   }
 }
+
+// 확인 버튼 클릭 시
 function onConfirmNo() {
   showConfirm.value = false; // 취소 시 아무 것도 안 함
 }

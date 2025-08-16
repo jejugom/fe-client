@@ -73,7 +73,7 @@ import Btn from '@/components/buttons/Btn.vue';
 import Confirm from '@/components/modals/Confirm.vue';
 import { useRewardStore } from '@/stores/reward';
 
-/** -------- 상태(간소화) -------- */
+//  타이머 관련
 const GRID = 3;
 const COUNT = GRID * GRID;
 
@@ -96,10 +96,9 @@ const bestMs = ref<number | null>(null);
 // 보상 스토어
 const rewardStore = useRewardStore();
 
-// Router
 const router = useRouter();
 
-/** -------- 유틸 -------- */
+// 배열 셔플
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -108,22 +107,28 @@ function shuffle<T>(arr: T[]): T[] {
   }
   return a;
 }
+
+// 최고 기록 로드
 function loadBest() {
   const raw = localStorage.getItem(bestKey);
   bestMs.value = raw ? Number(raw) : null;
 }
+
+// 최고 기록 저장
 function saveBest(ms: number) {
   if (bestMs.value === null || ms < bestMs.value) {
     bestMs.value = ms;
     localStorage.setItem(bestKey, String(ms));
   }
 }
+
+// 포맷
 function fmt(ms: number) {
   if (!ms || ms < 0) return '0.000';
   return (ms / 1000).toFixed(3);
 }
 
-/** -------- 타이머 -------- */
+// 타이머
 function tick() {
   if (!isRunning.value || finished.value) return;
   elapsedMs.value = performance.now() - startTs.value;
@@ -141,7 +146,7 @@ function stopTimer() {
   }
 }
 
-/** -------- 게임 -------- */
+// 보드 설정
 function setupBoard() {
   numbers.value = shuffle(Array.from({ length: COUNT }, (_, i) => i + 1));
   nextNumber.value = 1;
@@ -196,6 +201,7 @@ async function onFinish() {
   }
 }
 
+// 클릭 시 보상 요청
 function onCellClick(n: number) {
   if (!isRunning.value || finished.value) return;
   if (n !== nextNumber.value) return; // 오답 처리 없이 깔끔하게 무시
@@ -211,13 +217,10 @@ function onCellClick(n: number) {
   }
 }
 
-/** -------- 파생값 -------- */
+// 타이머 관련
 const timeText = computed(() => fmt(elapsedMs.value));
-const bestText = computed(() =>
-  bestMs.value == null ? null : fmt(bestMs.value)
-);
 
-/** -------- 셀 스타일(심플) -------- */
+// 셀 클래스
 function cellClass(n: number) {
   if (n === 0)
     return 'border-surface-200 bg-surface-100 text-surface-300 pointer-events-none';
@@ -226,12 +229,13 @@ function cellClass(n: number) {
   return 'border-surface-200 bg-white text-surface-700';
 }
 
-/** -------- Confirm 모달 핸들링 -------- */
+// Confirm 모달 핸들링
 const showConfirm = ref(false);
 const confirmTitle = ref<string | undefined>(undefined);
 const confirmMessage = ref('');
 let confirmResolve: ((v: boolean) => void) | null = null;
 
+// Confirm 모달 열기
 function openConfirm(message: string, title?: string) {
   return new Promise<boolean>((resolve) => {
     confirmMessage.value = message;
@@ -240,18 +244,21 @@ function openConfirm(message: string, title?: string) {
     confirmResolve = resolve;
   });
 }
+
+// 확인 버튼 클릭 시
 function onConfirmNo() {
   showConfirm.value = false;
   confirmResolve?.(false);
   confirmResolve = null;
 }
+// 확인 버튼 클릭 시
 function onConfirmYes() {
   showConfirm.value = false;
   confirmResolve?.(true);
   confirmResolve = null;
 }
 
-/** -------- 초기화 -------- */
+// 초기화
 loadBest();
 setupBoard();
 onBeforeUnmount(() => stopTimer());

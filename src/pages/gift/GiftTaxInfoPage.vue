@@ -199,7 +199,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import Error from '@/assets/icons/Error.svg';
-</script>

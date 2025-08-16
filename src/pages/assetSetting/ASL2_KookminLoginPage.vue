@@ -1,5 +1,4 @@
 <template>
-  <!-- 상단 안내 문구 (카드 밖) -->
   <div class="card-design py-8">
     <h1 class="text-primary-500 mb-8 text-center text-2xl font-bold">
       {{ authStore.userName }}님, 안녕하세요!
@@ -204,7 +203,7 @@ async function handleAssetSync() {
     };
 
     // CODEF API 호출
-    const response = await codefApi.connect(requestData);
+    await codefApi.connect(requestData);
 
     // console.log('자산 연동 성공:', response);
 

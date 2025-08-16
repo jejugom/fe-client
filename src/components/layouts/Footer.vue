@@ -2,52 +2,55 @@
   <footer
     class="bg-surface-400 relative left-1/2 w-screen max-w-[600px] -translate-x-1/2 px-6 py-8 text-sm text-white"
   >
-    <div class="grid gap-8 md:grid-cols-3">
-      <!-- 유틸리티 & 정책 -->
-      <div class="space-y-2">
-        <h3 class="font-semibold">정책</h3>
-        <ul class="space-y-1">
-          <li
-            ><span @click="openModal('private')" class="cursor-pointer"
-              >개인정보 처리방침</span
-            ></li
-          >
-          <li
-            ><span @click="openModal('financial')" class="cursor-pointer"
-              >이용약관</span
-            ></li
-          >
-          <li
-            ><span @click="openModal('copyright')" class="cursor-pointer"
-              >저작권 처리 방침</span
-            ></li
-          >
-        </ul>
-      </div>
-
-      <!-- 고객 서비스 -->
-      <div class="space-y-2">
-        <h3 class="font-semibold">고객 서비스</h3>
-        <ul class="space-y-1">
-          <li @click="router.push({ name: 'asset-tutorial' })">사용 가이드</li>
-          <li>
-            <a
-              href="https://github.com/jejugom"
-              target="_blank"
-              rel="noopener noreferrer"
-              class=""
+    <div class="flex flex-col gap-8">
+      <div class="grid gap-8 md:grid-cols-2">
+        <!-- 유틸리티 & 정책 -->
+        <div class="space-y-2">
+          <h3 class="font-semibold">정책</h3>
+          <ul class="space-y-1 text-xs">
+            <li
+              ><span @click="openModal('private')" class="cursor-pointer"
+                >개인정보 처리방침</span
+              ></li
             >
-              GitHub
-            </a>
-          </li>
-          <li>
-            <a href="tel:1588-9999" class=""> 전화: 1588-9999 (국민은행) </a>
-          </li>
-        </ul>
-      </div>
+            <li
+              ><span @click="openModal('financial')" class="cursor-pointer"
+                >이용약관</span
+              ></li
+            >
+            <li
+              ><span @click="openModal('copyright')" class="cursor-pointer"
+                >저작권 처리 방침</span
+              ></li
+            >
+          </ul>
+        </div>
 
+        <!-- 고객 서비스 -->
+        <div class="space-y-2">
+          <h3 class="font-semibold">고객 서비스</h3>
+          <ul class="space-y-1 text-xs">
+            <li @click="router.push({ name: 'asset-tutorial' })"
+              >사용 가이드</li
+            >
+            <li>
+              <a
+                href="https://github.com/jejugom"
+                target="_blank"
+                rel="noopener noreferrer"
+                class=""
+              >
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a href="tel:1588-9999" class=""> 전화: 1588-9999 (국민은행) </a>
+            </li>
+          </ul>
+        </div>
+      </div>
       <!-- 저작권 -->
-      <div class="flex flex-col justify-end text-xs">
+      <div class="text-surface-200 flex flex-col justify-end text-xs">
         <p
           >© 2025 노후도락(제주는 곰이 부리고.. 안녕하세요, 곰입니다). All
           rights reserved.</p
@@ -90,10 +93,11 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const isModalOpen = ref(false);
-const currentPolicyTitle = ref('');
-const currentPolicyContent = ref<{ title: string; content: string }[]>([]);
+const isModalOpen = ref(false); // 모달 열기 상태
+const currentPolicyTitle = ref(''); // 현재 정책 제목
+const currentPolicyContent = ref<{ title: string; content: string }[]>([]); // 현재 정책 내용
 
+// 모달 열기
 function openModal(policyType: 'private' | 'financial' | 'copyright') {
   isModalOpen.value = true;
   if (policyType === 'private') {

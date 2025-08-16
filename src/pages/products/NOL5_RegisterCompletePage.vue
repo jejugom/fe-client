@@ -69,15 +69,15 @@ function goBackToMain() {
   router.push({ name: backRouteName.value });
 }
 
+// 페이지 이탈 확인
 onMounted(async () => {
-  // URL 쿼리 파라미터에서 bookingId대신 bookingCode를 가져옵니다
   const code = route.query.bookingCode as string;
   if (!code) return;
 
   bookingCode.value = code;
   loadingStore.startLoading();
   try {
-    // API 호출 시 ID 대신 bookingCode를 사용
+    //   예약 상세 조회
     const result = await fetchReservedDetail(code);
     data.value = result;
   } catch (e) {
@@ -88,11 +88,13 @@ onMounted(async () => {
   }
 });
 
+// 예약 날짜 및 시간 포맷팅
 const formattedDateTime = computed(() => {
   if (!data.value) return '';
   return `${data.value.date.replace(/-/g, '/')} ${data.value.time}`;
 });
 
+// 예약 정보
 const infoRows = computed(() => {
   if (!data.value) return [];
   return [

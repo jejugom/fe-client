@@ -23,9 +23,10 @@
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 import SimulationGuide from '../gift/_components/SimulationGuide.vue';
-import { InheritGuideList } from '../gift/SimulationGuideData';
+import { InheritGuideList } from '../../data/simulationGuideData';
 const router = useRouter();
 
+// 상속인 정보 입력 페이지로 이동
 function goToInput() {
   router.push({ name: 'inheritance-input' });
 }

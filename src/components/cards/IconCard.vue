@@ -33,7 +33,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import ArrowIcon from '@/assets/icons/Arrow45.svg';
 import TextBtn from '../buttons/TextBtn.vue';
 
 defineOptions({ inheritAttrs: false });
@@ -47,7 +46,8 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'click'): void;
 }>();
-const onClick = () => {
+
+function onClick() {
   emit('click');
-};
+}
 </script>

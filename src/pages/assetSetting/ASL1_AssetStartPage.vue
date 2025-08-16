@@ -157,30 +157,31 @@ import { useRouter, useRoute } from 'vue-router';
 const router = useRouter();
 const route = useRoute();
 
-/* ---------------- state ---------------- */
-const isPrivateModalOpen = ref(false);
-const isFinModalOpen = ref(false);
+const isPrivateModalOpen = ref(false); // 개인정보 처리방침 모달
+const isFinModalOpen = ref(false); // 금융 거래 정보 처리방침 모달
 
-let agreePrivate = ref(false); // [필수] 개인정보
-let agreeFin = ref(false); // [필수] 금융거래
-let agreeMarketing = ref(false); // [선택]
+let agreePrivate = ref(false); // 개인정보
+let agreeFin = ref(false); // 금융거래
+let agreeMarketing = ref(false); // 마케팅
 
 const canProceed = computed(() => agreePrivate.value && agreeFin.value);
 
-/* ---------------- actions ---------------- */
+// 모달 열기
 function openPrivateModal() {
   isPrivateModalOpen.value = true;
 }
+// 금융 거래 정보 처리방침 모달 열기
 function openFinModal() {
   isFinModalOpen.value = true;
 }
 
+// 금융 거래 정보 처리방침 모달 열기
 function goNext() {
   if (!canProceed.value) return;
   const fromProfile = route.query.from === 'profile';
-  router.push({ 
+  router.push({
     name: 'asset-kookmin-login',
-    query: fromProfile ? { from: 'profile' } : {}
+    query: fromProfile ? { from: 'profile' } : {},
   });
 }
 </script>

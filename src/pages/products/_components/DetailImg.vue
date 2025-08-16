@@ -15,12 +15,13 @@
           :src="getIcon(item.label) ?? undefined"
           alt="icon"
           class="h-20 w-20"
+          loading="lazy"
         />
         <span
           class="text-surface-300 mt-1 mb-2 text-center text-base font-semibold"
           >{{ item.label }}</span
         >
-        <span class="font-point text-primary-500 text-center">
+        <span class="font-point text-surface-300 text-center text-lg">
           {{ item.value }}
         </span>
       </div>
@@ -29,39 +30,36 @@
 </template>
 
 <script setup lang="ts">
-import Icon1 from '@/assets/images/productFeats/Icon1.svg';
-import Icon2 from '@/assets/images/productFeats/Icon2.svg';
-import Icon3 from '@/assets/images/productFeats/Icon3.svg';
-import Icon4 from '@/assets/images/productFeats/Icon4.svg';
-import Icon5 from '@/assets/images/productFeats/Icon5.svg';
-import Icon6 from '@/assets/images/productFeats/Icon6.svg';
-import Icon7 from '@/assets/images/productFeats/Icon7.svg';
-import Icon8 from '@/assets/images/productFeats/Icon8.svg';
-import Icon9 from '@/assets/images/productFeats/Icon9.svg';
-import Icon10 from '@/assets/images/productFeats/Icon10.svg';
-import Icon11 from '@/assets/images/productFeats/Icon11.svg';
-import Icon12 from '@/assets/images/productFeats/Icon12.svg';
-import Icon13 from '@/assets/images/productFeats/Icon13.svg';
-
 defineProps<{
   items: { label: string; value: string }[];
 }>();
 
-// 라벨 기반 아이콘 반환 함수
-const getIcon = (label: string): string | null => {
-  if (label.includes('최고금리')) return Icon1;
-  if (label.includes('가입방법')) return Icon2;
-  if (label.includes('가입제한')) return Icon3;
-  if (label.includes('대출금리')) return Icon4;
-  if (label.includes('담보유형')) return Icon5;
-  if (label.includes('금리유형')) return Icon6;
-  if (label.includes('매매단위')) return Icon7;
-  if (label.includes('통화')) return Icon8;
-  if (label.includes('3개월 수익률')) return Icon9;
-  if (label.includes('위험등급')) return Icon10;
-  if (label.includes('총보수')) return Icon11;
-  if (label.includes('보호여부')) return Icon12;
-  if (label.includes('기준가')) return Icon13;
-  return null; // 기본값
+const iconMap: Record<string, string> = {
+  최고금리: 'Icon1.svg',
+  가입방법: 'Icon2.svg',
+  가입제한: 'Icon3.svg',
+  대출금리: 'Icon4.svg',
+  담보유형: 'Icon5.svg',
+  금리유형: 'Icon6.svg',
+  매매단위: 'Icon7.svg',
+  통화: 'Icon8.svg',
+  '3개월 수익률': 'Icon9.svg',
+  위험등급: 'Icon10.svg',
+  총보수: 'Icon11.svg',
+  보호여부: 'Icon12.svg',
+  기준가: 'Icon13.svg',
 };
+
+// 레이지 로딩
+function getIcon(label: string): string | null {
+  const keyword = Object.keys(iconMap).find((key) => label.includes(key));
+  if (keyword) {
+    const filename = iconMap[keyword];
+    return new URL(
+      `../../../assets/images/productFeats/${filename}`,
+      import.meta.url
+    ).href;
+  }
+  return null;
+}
 </script>

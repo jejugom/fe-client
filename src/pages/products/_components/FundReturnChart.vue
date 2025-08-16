@@ -38,7 +38,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { ApexOptions } from 'apexcharts';
 
 type TooltipCtx = {
   series: number[][];
@@ -61,8 +60,7 @@ const sorted = computed(() =>
 // 날짜 → ms
 const toX = (d: string) => new Date(d).getTime();
 
-// ---- 스케일 자동 판정 ----
-// 일일 절댓값 평균이 1.5 이상이면 퍼센트(예: 2.3 = 2.3%)일 확률이 큼
+// 일일 절댓값 평균이 1.5 이상이면 퍼센트
 const isPercent = computed(() => {
   const vals = sorted.value
     .map((d) => Math.abs(Number(d.returnRate)))
@@ -72,7 +70,7 @@ const isPercent = computed(() => {
   return avgAbs > 1.5;
 });
 
-// ---- 일일(%) 시리즈 (보여줄 때는 항상 %) ----
+// 일일(%) 시리즈 (보여줄 때는 항상 %)
 const dailySeries = computed<[number, number][]>(() =>
   sorted.value.map((d) => {
     const pct = isPercent.value
@@ -82,7 +80,6 @@ const dailySeries = computed<[number, number][]>(() =>
   })
 );
 
-// ---- 누적(%) 시리즈 : 로그 수익률 방식 ----
 // 누적 = exp(Σ ln(1+r)) - 1, r는 '소수' 단위여야 함
 const cumulativeSeries = computed<[number, number][]>(() => {
   let logSum = 0; // Σ ln(1+r)
@@ -96,7 +93,7 @@ const cumulativeSeries = computed<[number, number][]>(() => {
   });
 });
 
-// ---- y축 범위 계산 ----
+// y축 범위 계산
 const yDaily = computed(() => {
   const vals = dailySeries.value.map(([, v]) => v);
   if (!vals.length) return { min: -3, max: 3 };
@@ -121,7 +118,7 @@ const yCum = computed(() => {
   };
 });
 
-// ---- 뷰 모드 토글 ----
+// 뷰 모드 토글
 const mode = ref<'daily' | 'cumulative'>('daily');
 
 const palette = {
@@ -153,18 +150,19 @@ const series = computed(() => {
   ];
 });
 
+// 차트 옵션
 const options = computed<any>(() => {
   const isDaily = mode.value === 'daily';
   const strokeWidths = isDaily ? [0, 2] : [0, 3.5]; // 누적 모드에서 라인 더 두껍게
   const tickAmount = 6;
 
-  const fmt = (v: number | string) => {
-    const date = new Date(Number(v));
-    const yy = String(date.getFullYear()).slice(2);
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    return `${yy}.${mm}.${dd}`;
-  };
+  // const fmt = (v: number | string) => {
+  //   const date = new Date(Number(v));
+  //   const yy = String(date.getFullYear()).slice(2);
+  //   const mm = String(date.getMonth() + 1).padStart(2, '0');
+  //   const dd = String(date.getDate()).padStart(2, '0');
+  //   return `${yy}.${mm}.${dd}`;
+  // };
 
   const fmtMonthly = (v: number | string) => {
     const date = new Date(Number(v));

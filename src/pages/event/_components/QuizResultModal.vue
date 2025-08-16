@@ -12,7 +12,7 @@
         <Transition>
           <div
             v-if="showResultModal"
-            class="relative mx-4 mb-4 w-full max-w-150 rounded-3xl bg-white p-8"
+            class="relative mx-4 mb-4 w-full max-w-[600px] rounded-3xl bg-white p-8"
           >
             <!-- 핸들바 -->
             <div
@@ -124,7 +124,8 @@ watch(
   }
 );
 
-const handleConfirm = () => {
+// 확인 버튼 클릭 시
+function handleConfirm() {
   emit('confirm');
-};
+}
 </script>

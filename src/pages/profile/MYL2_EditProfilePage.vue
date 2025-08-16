@@ -71,6 +71,7 @@ function formatKoreanDate(iso: string) {
   return `${y}년 ${m.padStart(2, '0')}월 ${d.padStart(2, '0')}일`;
 }
 
+// 알럿 확인 버튼 클릭
 function onAlertConfirm() {
   showAlert.value = false;
   if (isSuccessAlert.value) {
@@ -79,6 +80,7 @@ function onAlertConfirm() {
   }
 }
 
+// 사용자 프로필 조회
 async function fetchUserProfile() {
   try {
     const userProfile = await profileApi.getUserProfile();
@@ -93,6 +95,7 @@ async function fetchUserProfile() {
   }
 }
 
+// 프로필 수정
 async function updateProfile() {
   try {
     await profileApi.updateUserProfile({

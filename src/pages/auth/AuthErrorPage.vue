@@ -73,16 +73,16 @@ const errorMessage = computed(() => {
  * 오류가 발생한 후 사용자가 다시 로그인을 시도할 때 호출됩니다.
  * auth store의 startKakaoLogin을 통해 카카오 인증 페이지로 리다이렉트합니다.
  */
-const retry = () => {
+function retry() {
   authStore.startKakaoLogin();
-};
+}
 
 /**
  * 홈페이지로 이동
  *
  * 로그인을 포기하고 홈페이지로 돌아갈 때 사용됩니다.
  */
-const goHome = () => {
+function goHome() {
   router.push({ name: 'home' });
-};
+}
 </script>

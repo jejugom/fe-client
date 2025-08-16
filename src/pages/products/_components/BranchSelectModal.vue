@@ -78,7 +78,8 @@ defineExpose({
   getSelectedBranch: () => selectedBranch.value,
 });
 
-const paintMarkers = (list: any[]) => {
+// 마커 그리기
+function paintMarkers(list: any[]) {
   clearMarkers(markers.value);
   const b = new kakao.maps.LatLngBounds();
 
@@ -105,9 +106,10 @@ const paintMarkers = (list: any[]) => {
   }
 
   if (list.length) map.value!.setBounds(b);
-};
+}
 
-const doSearch = async () => {
+// 검색
+async function doSearch() {
   if (!map.value || !ps.value) return;
   errorMessage.value = '';
   selectedBranch.value = '';
@@ -135,12 +137,15 @@ const doSearch = async () => {
   }
 
   paintMarkers(filtered);
-};
+}
 
 const debouncedSearch = debounce(doSearch, 350);
-const onSearchClick = () => debouncedSearch();
+function onSearchClick() {
+  debouncedSearch();
+}
 
-const searchInBounds = async () => {
+// 현 지도 범위 내 검색
+async function searchInBounds() {
   if (!map.value || !ps.value) return;
   errorMessage.value = '';
   selectedBranch.value = '';
@@ -159,8 +164,9 @@ const searchInBounds = async () => {
 
   paintMarkers(filtered);
   mapMoved.value = false;
-};
+}
 
+// 현 지도 범위 내 검색
 onMounted(async () => {
   if (!mapEl.value) return;
   await loadKakaoMaps();
@@ -176,9 +182,7 @@ onMounted(async () => {
       });
       lat = pos.coords.latitude;
       lng = pos.coords.longitude;
-    } catch {
-      // 위치 권한 실패 등: currentAddress 안내는 coord2Region로 커버
-    }
+    } catch {}
 
     map.value = createMap(mapEl.value!, {
       center: new kakao.maps.LatLng(lat, lng),

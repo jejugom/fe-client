@@ -66,9 +66,17 @@ import GiftStartCard from './_components/GiftStartCard.vue';
 
 const router = useRouter();
 
-const goToGiftStart = () => router.push({ name: 'gift-start' });
-const goToInheritanceStart = () => router.push({ name: 'inheritance-start' });
-const goToInheritanceProducts = () =>
+// 페이지 이동 함수
+function goToGiftStart() {
+  router.push({ name: 'gift-start' });
+}
+function goToInheritanceStart() {
+  router.push({ name: 'inheritance-start' });
+}
+function goToInheritanceProducts() {
   router.push({ name: 'nohoo', query: { tab: '신탁' } });
-const goToFAQ = () => router.push({ name: 'gift-faq' });
+}
+function goToFAQ() {
+  router.push({ name: 'gift-faq' });
+}
 </script>

@@ -21,11 +21,6 @@ const eventRoutes: RouteRecordRaw[] = [
     name: 'event-park',
     component: () => import('@/pages/event/EVL2_ParkPage.vue'),
   },
-  {
-    path: '/event/reward',
-    name: 'event-reward',
-    component: () => import('@/pages/event/EVL2_RewardPage.vue'),
-  },
 ];
 
 export default eventRoutes;

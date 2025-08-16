@@ -14,6 +14,6 @@ const imageMap: { [key: string]: string } = {
   etc: Etc,
 };
 
-export const getAssetImage = (categoryId: string): string => {
+export function getAssetImage(categoryId: string): string {
   return imageMap[categoryId] || Etc; // 일치하는 이미지가 없으면 '기타' 아이콘 반환
-};
+}

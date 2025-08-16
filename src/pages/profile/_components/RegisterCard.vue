@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { BookingItem } from '@/api/profile/profile';
+import type { BookingItem } from '@/types/profile/profile';
 
 import Modal from '@/components/modals/Modal.vue';
 import Alert from '@/components/modals/Alert.vue';

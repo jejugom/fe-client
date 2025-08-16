@@ -17,7 +17,6 @@
             <h3 class="font-semibold">{{ step.title }}</h3>
             <p class="text-surface-400">{{ step.description }}</p>
           </div>
-          <!-- <div class="text-2xl">{{ step.emoji }}</div> -->
         </div>
 
         <div

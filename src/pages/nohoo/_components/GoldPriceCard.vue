@@ -29,8 +29,6 @@ const goldPrices = ref<GoldPrice[]>([]);
 const exchangeRate = ref(1); // 기본값: USD 그대로
 const tozDon = 3.75 / 31.1035; // 1 온스 = 31.1035g, 1 온스 = 3.75돈
 
-// 데이터 불러오기
-
 onMounted(async () => {
   try {
     const [goldData, rate] = await Promise.all([
@@ -38,8 +36,8 @@ onMounted(async () => {
       fetchExchangeRate(),
     ]);
     // 실제로 어떤 데이터가 들어오는지 확인
-    console.log('Gold Data:', goldData);
-    console.log('Exchange Rate:', rate);
+    // console.log('Gold Data:', goldData);
+    // console.log('Exchange Rate:', rate);
 
     // 3개월 데이터 필터링
     const today = new Date();
@@ -61,19 +59,22 @@ onMounted(async () => {
 });
 
 // 변환 함수 (USD/toz → KRW/돈)
-const toDonKRW = (usdToz: number): number =>
-  usdToz * tozDon * exchangeRate.value;
+function toDonKRW(usdToz: number): number {
+  return usdToz * tozDon * exchangeRate.value;
+}
 
 // 최근 시세 비교용
 const latest = computed(() => goldPrices.value.at(-1));
 const previous = computed(() => goldPrices.value.at(-2));
 
+// 가격 차이
 const priceDiff = computed(() =>
   latest.value && previous.value
     ? toDonKRW(latest.value.price - previous.value.price)
     : 0
 );
 
+// 가격 변동률
 const priceRate = computed(() =>
   latest.value && previous.value
     ? (priceDiff.value / toDonKRW(previous.value.price)) * 100
@@ -85,14 +86,17 @@ const formattedDates = computed(() =>
   goldPrices.value.map((item) => new Date(item.date).toISOString())
 );
 
+// 가격 리스트
 const prices = computed(() =>
   goldPrices.value.map((item) => toDonKRW(item.price))
 );
 
+// 현재 가격
 const currentPrice = computed(() =>
   latest.value ? toDonKRW(latest.value.price) : 0
 );
 
+// 최대/최소 가격 인덱스
 const maxIndex = computed(() =>
   prices.value.indexOf(Math.max(...prices.value))
 );
@@ -196,8 +200,6 @@ const chartOptions = computed(() => ({
       formatter: (val: number) => Math.round(val).toLocaleString(),
     },
   },
-  grid: {
-    // padding: { top: 0, bottom: 0, left: 0, right: 0 },
-  },
+  grid: {},
 }));
 </script>

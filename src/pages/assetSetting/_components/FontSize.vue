@@ -34,7 +34,7 @@ import { ref, onMounted } from 'vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { useFontSize } from '@/utils/useFontSize';
 
-// 옵션(필요시 변경 가능)
+// 옵션
 const props = withDefaults(
   defineProps<{
     min?: number; // 허용 최소 px
@@ -67,26 +67,30 @@ onMounted(() => {
 });
 
 // 헬퍼
-const clamp = (n: number) => Math.min(props.max, Math.max(props.min, n));
-
+function clamp(n: number) {
+  return Math.min(props.max, Math.max(props.min, n));
+}
+// 미리보기 증가 함수
 function previewInc() {
   previewPx.value = clamp(previewPx.value + props.step);
   emit('changed', previewPx.value);
 }
+// 미리보기 감소 함수
 function previewDec() {
   previewPx.value = clamp(previewPx.value - props.step);
   emit('changed', previewPx.value);
 }
+// 미리보기 초기화 함수
 function resetPreview() {
   previewPx.value = DEFAULT_PX;
   emit('reset');
 }
-// ✅ “이 크기로 설정” — 전역 저장 + 즉시 적용
+// 폰트 크기 전역 적용 함수
 function applyPreviewToGlobal() {
   set(previewPx.value);
   emit('applied', previewPx.value);
 }
 
-// 외부에서 필요하면 미리보기 값을 읽게 노출 (선택)
+// 외부에서 필요하면 미리보기 값을 읽게 노출
 defineExpose({ previewPx });
 </script>

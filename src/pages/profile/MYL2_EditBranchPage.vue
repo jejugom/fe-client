@@ -96,7 +96,6 @@ import {
 const router = useRouter();
 const route = useRoute();
 
-/* ---------- state ---------- */
 const searchQuery = ref('');
 const currentAddress = ref('');
 const currentBranch = ref('');
@@ -111,7 +110,7 @@ const map = ref<kakao.maps.Map>();
 const ps = ref<kakao.maps.services.Places>();
 const markers = ref<kakao.maps.Marker[]>([]);
 
-/* ---------- helpers ---------- */
+//  지점 선택 이벤트
 const q = (v: unknown) =>
   Array.isArray(v) ? String(v[0] ?? '') : v != null ? String(v) : '';
 
@@ -122,8 +121,8 @@ function normalizeBranchName(name: string) {
     .trim();
 }
 
-/* ---------- 검색/마커 ---------- */
-const paintMarkers = (list: Place[]) => {
+//  마커 그리기
+function paintMarkers(list: Place[]) {
   if (!map.value) return;
   clearMarkers(markers.value);
 
@@ -152,9 +151,10 @@ const paintMarkers = (list: Place[]) => {
   }
 
   if (list.length) map.value.setBounds(bounds);
-};
+}
 
-const doSearch = async () => {
+//  검색
+async function doSearch() {
   if (!map.value || !ps.value) return;
 
   const keyword = searchQuery.value.trim();
@@ -176,12 +176,12 @@ const doSearch = async () => {
 
   showErrorAlert.value = false;
   paintMarkers(filtered);
-};
+}
 
 const debouncedSearch = debounce(doSearch, 300);
 const searchPlaces = () => debouncedSearch();
 
-/* ---------- 완료/스킵/알럿 ---------- */
+//  알럿 확인 버튼 클릭
 const onAlertConfirm = () => {
   showSuccessAlert.value = false;
   const from = q(route.query.from);
@@ -227,7 +227,7 @@ async function handleComplete() {
   }
 }
 
-/* ---------- mount: 지도/초기검색 ---------- */
+//  마운트 시 초기 데이터 로드
 onMounted(async () => {
   try {
     const myBranch = await branchApi.getMyBranch();
@@ -249,9 +249,7 @@ onMounted(async () => {
     });
     lat = pos.coords.latitude;
     lng = pos.coords.longitude;
-  } catch {
-    /* noop */
-  }
+  } catch {}
 
   map.value = createMap(document.getElementById('map') as HTMLElement, {
     center: new kakao.maps.LatLng(lat, lng),
@@ -270,7 +268,6 @@ onMounted(async () => {
 
   await doSearch();
 
-  // 지도를 드래그한 상태라면 버튼 없이도 즉시 재검색하고 싶다면:
   kakao.maps.event.addListener(map.value, 'dragend', () => {
     // 입력이 비어있을 때만 bounds 검색 자동 실행
     if (!searchQuery.value.trim()) debouncedSearch();

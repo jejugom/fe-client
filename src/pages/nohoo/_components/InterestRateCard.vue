@@ -41,14 +41,6 @@ const lineColor = computed(
       : 'oklch(0.5134 0.1603 255.67)' /* blue-300 */
 );
 
-// 데이터 series
-const tickPositions = computed(() => [
-  new Date('2022-01-01').getTime(),
-  new Date('2023-01-01').getTime(),
-  new Date('2024-01-01').getTime(),
-  new Date('2025-01-01').getTime(),
-]);
-
 const series = computed(() => [
   {
     name: '기준금리',
@@ -132,8 +124,6 @@ const chartOptions = computed(() => ({
   yaxis: {
     show: true,
   },
-  grid: {
-    // padding: { top: 0, bottom: 0, left: 0, right: 0 },
-  },
+  grid: {},
 }));
 </script>

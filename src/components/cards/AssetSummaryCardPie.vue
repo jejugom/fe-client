@@ -14,6 +14,7 @@
           로 가장 많아요
         </div>
       </div>
+      <!-- 파이차트 -->
       <apexchart
         type="donut"
         height="300"
@@ -46,11 +47,12 @@ const props = defineProps<{
   assetInfo: { category: string; amount: number }[];
 }>();
 
+// 데이터 유무
 const hasData = computed(
   () => props.assetInfo.length > 0 && props.assetAmount > 0
 );
-const labels = computed(() => props.assetInfo.map((item) => item.category));
-const series = computed(() => props.assetInfo.map((item) => item.amount));
+const labels = computed(() => props.assetInfo.map((item) => item.category)); // 카테고리 라벨
+const series = computed(() => props.assetInfo.map((item) => item.amount)); // 시리즈 데이터
 
 // 가장 비율 높은 항목 구하기
 const maxAsset = computed(() => {
@@ -68,6 +70,7 @@ const maxAsset = computed(() => {
   return { label, ratio };
 });
 
+// 포맷터
 const formatCurrencyKorean = (amount: number) => {
   if (amount === 0) return '0원';
 
@@ -83,6 +86,7 @@ const formatCurrencyKorean = (amount: number) => {
   }
 };
 
+// 차트 옵션
 const chartOptions = computed(() => {
   const maxIndex = series.value.reduce(
     (maxIdx, val, idx, arr) => (val > arr[maxIdx] ? idx : maxIdx),
@@ -131,7 +135,6 @@ const chartOptions = computed(() => {
           size: '70%',
           labels: {
             show: true,
-            // 중앙의 "이름" (현재 포커스된 조각의 라벨)
             name: {
               show: true,
               formatter: (_: string, opts: any) => {
@@ -139,12 +142,10 @@ const chartOptions = computed(() => {
                 return i != null ? labels.value[i] : '총자산';
               },
             },
-            // 중앙의 "값" (현재 포커스된 조각의 값)
             value: {
               show: true,
               formatter: (val: number) => formatCurrencyKorean(val),
             },
-            // 필요하면 중앙에 총합을 기본값으로 보여주기
             total: {
               show: true,
               label: '총자산',

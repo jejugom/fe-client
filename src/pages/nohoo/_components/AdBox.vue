@@ -58,13 +58,23 @@
 </template>
 
 <script setup lang="ts">
-import AssetSummaryCardBar from '@/components/cards/AssetSummaryCardBar.vue';
-import Banner from '@/components/cards/Banner.vue';
-import InterestRateCard from './InterestRateCard.vue';
-import GoldPriceCard from './GoldPriceCard.vue';
+import { defineAsyncComponent } from 'vue';
 import { useGraphStore } from '@/stores/interestRate';
 import type { News } from '@/types/nohoo/nohoo';
-import NewsCard from '@/components/cards/NewsCard.vue';
+
+const AssetSummaryCardBar = defineAsyncComponent(
+  () => import('@/components/cards/AssetSummaryCardBar.vue')
+);
+const Banner = defineAsyncComponent(
+  () => import('@/components/cards/Banner.vue')
+);
+const InterestRateCard = defineAsyncComponent(
+  () => import('./InterestRateCard.vue')
+);
+const GoldPriceCard = defineAsyncComponent(() => import('./GoldPriceCard.vue'));
+const NewsCard = defineAsyncComponent(
+  () => import('@/components/cards/NewsCard.vue')
+);
 
 const graphStore = useGraphStore();
 

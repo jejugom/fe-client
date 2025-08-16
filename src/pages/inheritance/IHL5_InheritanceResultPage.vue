@@ -59,7 +59,6 @@ import {
   computed,
   onMounted,
   ref,
-  nextTick,
   watch,
   type ComputedRef,
 } from 'vue';
@@ -70,8 +69,7 @@ import { useInheritanceStore } from '@/stores/inheritance';
 import { fetchWillTestator } from '@/api/gift/simulation';
 import type { TestatorInfo } from '@/types/gift/simulation';
 import InheritanceSimulationResult from './_components/InheritanceSimulationResult.vue';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { generateAndSharePdf } from '@/utils/pdf';
 import type { DistributedAsset } from '@/types/gift/inheritance';
 
 const router = useRouter();
@@ -93,88 +91,41 @@ const formattedDate = computed(() => {
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 });
 
-const goToRegister = () => {
+function goToRegister() {
   router.push({
     name: 'register',
     params: { id: 'inheritance' },
   });
-};
-const goToMain = () => {
+}
+function goToMain() {
   router.push({ name: 'gift' });
-};
+}
 
 const isMobile = ref(false);
 const showAlert = ref(false);
 const alertMessage = ref('');
 
-const checkDeviceType = () => {
+function checkDeviceType() {
   isMobile.value = /Mobi|Android/i.test(navigator.userAgent);
-};
+}
 
 const pdfRef = ref<HTMLElement | null>(null);
 
-const shareResult = async () => {
+// 결과 공유 또는 다운로드 핸들러
+async function handleShareOrDownload() {
   if (!pdfRef.value) return;
 
-  await nextTick();
-  await document.fonts.ready;
+  const result = await generateAndSharePdf({
+    element: pdfRef.value,
+    fileName: '유언장_결과.pdf',
+    shareTitle: '유언장 결과',
+    shareText: '유언장 결과를 PDF로 확인해보세요.',
+  });
 
-  try {
-    const canvas = await html2canvas(pdfRef.value, {
-      scale: 2,
-      useCORS: true,
-    });
-    const imgData = canvas.toDataURL('image/png');
-
-    const pdf = new jsPDF({
-      orientation: 'p',
-      unit: 'px',
-      format: [canvas.width, canvas.height],
-    });
-    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-
-    pdf.setTextColor(200);
-    pdf.setFontSize(20);
-    pdf.text('NoHudorak', canvas.width / 2, canvas.height / 2, {
-      align: 'center',
-      angle: 45,
-    });
-
-    const pdfBlob = pdf.output('blob');
-    const file = new File([pdfBlob], '유언장_결과.pdf', {
-      type: 'application/pdf',
-    });
-
-    if (isMobile.value && navigator.canShare?.({ files: [file] })) {
-      await navigator.share({
-        title: '유언장 결과',
-        text: '유언장 결과를 PDF로 확인해보세요.',
-        files: [file],
-      });
-    } else {
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(pdfBlob);
-      link.download = '유언장_결과.pdf';
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
-
-      alertMessage.value = isMobile.value
-        ? '공유 기능을 사용할 수 없어 PDF를 다운로드합니다.'
-        : '결과 PDF가 다운로드되었습니다.';
-      showAlert.value = true;
-    }
-  } catch (error) {
-    console.error('PDF 생성/공유 실패:', error);
-    alertMessage.value = '결과를 공유하거나 저장하는 데 실패했습니다.';
+  if (!result.success || result.message) {
+    alertMessage.value = result.message;
     showAlert.value = true;
   }
-};
-
-const handleShareOrDownload = () => {
-  shareResult();
 };
 
 onMounted(async () => {

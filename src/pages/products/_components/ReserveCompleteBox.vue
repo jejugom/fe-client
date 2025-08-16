@@ -16,7 +16,6 @@
 
 <script setup lang="ts">
 import Btn from '@/components/buttons/Btn.vue';
-import router from '@/router';
 
 defineProps<{
   primaryLabel: string;

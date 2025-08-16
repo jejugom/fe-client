@@ -218,7 +218,7 @@ import { getAssetImage } from '@/utils/assetImageMapper';
 import Btn from '@/components/buttons/Btn.vue';
 import Modal from '@/components/modals/Modal.vue';
 
-// --- 인터페이스 정의 ---
+// 인터페이스 정의
 interface Asset {
   id: string;
   name: string;
@@ -255,7 +255,6 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-// --- 상태 관리 ---
 const isExpanded = ref(false); // 확장 패널 열림/닫힘 상태
 const dropdownOpen = ref(false); // 수증자 선택 드롭다운 열림/닫힘 상태
 const showModal = ref(false); // 삭제 모달 표시 여부
@@ -271,17 +270,16 @@ watch(
   { deep: true }
 );
 
-// --- Computed 속성 ---
+// 분배 비율의 총합 계산
 const totalRatio = computed(() => {
-  // 분배 비율의 총합 계산
   return Object.values(tempAsset.distributionRatios || {}).reduce(
     (sum, ratio) => sum + (ratio || 0),
     0
   );
 });
 
+// '완료' 버튼 활성화 여부
 const isCompletable = computed(() => {
-  // '완료' 버튼 활성화 여부
   if (!isExpanded.value) return false;
   if (tempAsset.isMultipleBeneficiaries) {
     return totalRatio.value === 100;
@@ -289,8 +287,8 @@ const isCompletable = computed(() => {
   return !!tempAsset.beneficiary;
 });
 
+// 상단에 표시될 선택된 수증자 정보 텍스트
 const selectedBeneficiaryInfo = computed(() => {
-  // 상단에 표시될 선택된 수증자 정보 텍스트
   if (tempAsset.isMultipleBeneficiaries) {
     return '여러 명에게 분배';
   }
@@ -301,8 +299,8 @@ const selectedBeneficiaryInfo = computed(() => {
   return '';
 });
 
+// 드롭다운 버튼에 표시될 텍스트
 const dropdownText = computed(() => {
-  // 드롭다운 버튼에 표시될 텍스트
   if (tempAsset.isMultipleBeneficiaries) {
     return '여러 명에게 분배';
   }
@@ -312,44 +310,43 @@ const dropdownText = computed(() => {
   return '수증자를 선택하세요';
 });
 
-// --- 메소드 ---
-
-const togglePanel = () => {
+// 패널 토글
+function togglePanel() {
   // 패널 확장/축소 및 상태 백업
   if (!isExpanded.value) {
     backupState = JSON.parse(JSON.stringify(tempAsset));
   }
   isExpanded.value = !isExpanded.value;
   dropdownOpen.value = false;
-};
+}
 
-const toggleDropdown = () => {
-  // 드롭다운 열기/닫기
+// 드롭다운 열기/닫기
+function toggleDropdown() {
   dropdownOpen.value = !dropdownOpen.value;
-};
+}
 
-const showDeleteModal = () => {
-  // 삭제 모달 열기
+// 삭제 모달 열기
+function showDeleteModal() {
   showModal.value = true;
-};
+}
 
-const closeModal = () => {
-  // 모달 닫기
+// 모달 닫기
+function closeModal() {
   showModal.value = false;
-};
+}
 
-const confirmDelete = () => {
-  // 수증자 삭제 확정 및 상태 초기화
+// 수증자 삭제 확정 및 상태 초기화
+function confirmDelete() {
   tempAsset.beneficiary = null;
   tempAsset.isMultipleBeneficiaries = false;
   tempAsset.distributionRatios = {};
   tempAsset.selected = false;
   closeModal();
   emit('update-asset', tempAsset);
-};
+}
 
-const completeSelection = () => {
-  // 수증자 선택 완료
+// 수증자 선택 완료
+function completeSelection() {
   if (isCompletable.value) {
     isExpanded.value = false;
     dropdownOpen.value = false;
@@ -372,19 +369,19 @@ const completeSelection = () => {
     }
     emit('update-asset', tempAsset);
   }
-};
+}
 
-const cancelSelection = () => {
-  // 선택 취소 및 백업 상태로 복원
+// 선택 취소 및 백업 상태로 복원
+function cancelSelection() {
   isExpanded.value = false;
   dropdownOpen.value = false;
   if (backupState) {
     Object.assign(tempAsset, backupState);
   }
-};
+}
 
-const selectSingleBeneficiary = (beneficiary: Beneficiary) => {
-  // 단일 수증자 선택
+// 단일 수증자 선택
+function selectSingleBeneficiary(beneficiary: Beneficiary) {
   Object.assign(tempAsset, {
     beneficiary,
     isMultipleBeneficiaries: false,
@@ -392,10 +389,10 @@ const selectSingleBeneficiary = (beneficiary: Beneficiary) => {
     selected: true,
   });
   dropdownOpen.value = false;
-};
+}
 
-const selectMultipleBeneficiaries = () => {
-  // 여러 명에게 분배 옵션 선택
+// 여러 명에게 분배 옵션 선택
+function selectMultipleBeneficiaries() {
   const distributionRatios: { [key: string]: number } = {};
   props.beneficiaries.forEach((beneficiary) => {
     distributionRatios[beneficiary.id] = 0;
@@ -408,10 +405,10 @@ const selectMultipleBeneficiaries = () => {
     selected: true,
   });
   dropdownOpen.value = false;
-};
+}
 
-const updateDistributionRatio = (event: Event, beneficiaryId: string) => {
-  // 분배 비율 업데이트
+// 분배 비율 업데이트
+function updateDistributionRatio(event: Event, beneficiaryId: string) {
   const inputElement = event.target as HTMLInputElement;
   const value = parseFloat(inputElement.value);
   const newRatio = isNaN(value) ? 0 : Math.max(0, Math.min(100, value));
@@ -420,12 +417,12 @@ const updateDistributionRatio = (event: Event, beneficiaryId: string) => {
     tempAsset.distributionRatios = {};
   }
   tempAsset.distributionRatios[beneficiaryId] = newRatio;
-};
+}
 
-const calculateDistributionAmount = (beneficiaryId: string): number => {
-  // 비율에 따른 분배 금액 계산
+// 비율에 따른 분배 금액 계산
+function calculateDistributionAmount(beneficiaryId: string): number {
   if (!tempAsset.distributionRatios) return 0;
   const ratio = tempAsset.distributionRatios[beneficiaryId] || 0;
   return Math.floor((tempAsset.value * ratio) / 100);
-};
+}
 </script>

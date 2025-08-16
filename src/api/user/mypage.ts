@@ -1,37 +1,5 @@
 import api from '@/api';
-
-export interface AssetStatusItem {
-  assetCategoryCode: string;
-  amount: number;
-}
-
-export interface MyPageUserInfo {
-  email: string;
-  userName: string;
-  assetStatus: AssetStatusItem[];
-}
-
-export interface BookingInfo {
-  bookingId: string;
-  branchId: number;
-  finPrdtCode: string;
-  date: number; // timestamp
-  time: string;
-  docInfo: {
-    requiredDocuments: string[];
-  };
-}
-
-export interface MyPageResponse {
-  userInfo: MyPageUserInfo;
-  bookingInfo: BookingInfo[];
-  assetPercentile: number;
-}
-
-export interface BookingUpdateRequest {
-  date: string;
-  time: string;
-}
+import type { MyPageResponse, BookingUpdateRequest } from '@/types/user/mypage';
 
 // 마이페이지 관련 API 함수들
 export const mypageApi = {
@@ -49,7 +17,10 @@ export const mypageApi = {
    * @param bookingId 수정할 예약 ID
    * @param data 수정할 예약 정보
    */
-  async updateBooking(bookingId: string, data: BookingUpdateRequest): Promise<void> {
+  async updateBooking(
+    bookingId: string,
+    data: BookingUpdateRequest
+  ): Promise<void> {
     await api.patch(`/api/bookings/${bookingId}`, data);
   },
 

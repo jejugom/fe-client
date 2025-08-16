@@ -28,7 +28,7 @@ const emit = defineEmits<{
   (e: 'click'): void;
 }>();
 
-const onClick = () => {
+function onClick() {
   emit('click');
-};
+}
 </script>

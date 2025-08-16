@@ -42,6 +42,7 @@ const emit = defineEmits<{
   'update:credentials': [credentials: Credentials];
 }>();
 
+// 입력값 업데이트 함수
 function updateCredentials(field: keyof Credentials, value: string) {
   emit('update:credentials', {
     ...props.credentials,

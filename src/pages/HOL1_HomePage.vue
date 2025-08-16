@@ -148,7 +148,8 @@ import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
-import { fetchHomeData, type HomeData } from '@/api/home';
+import { fetchHomeData } from '@/api/home';
+import type { HomeData } from '@/types/home';
 import IconCard from '@/components/cards/IconCard.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import TextBtn from '@/components/buttons/TextBtn.vue';
@@ -178,25 +179,26 @@ import {
   whenInView,
 } from '@/utils/kakaoMap';
 
-/** Router & Stores */
+//  로그인 상태
 const router = useRouter();
 const authStore = useAuthStore();
 const loadingStore = useLoadingStore();
 
-/** 홈 데이터 */
+// 홈 데이터
 const homeData = ref<HomeData | null>(null);
 
-/** 네이버 로그인 알림 모달 */
+// 네이버 로그인 알림 모달
 const showNaverModal = ref(false);
 
-const showNaverAlert = () => {
+function showNaverAlert() {
   showNaverModal.value = true;
-};
+}
 
-const closeNaverAlert = () => {
+function closeNaverAlert() {
   showNaverModal.value = false;
-};
+}
 
+// 마운트 시 초기 데이터 로드
 onMounted(async () => {
   if (authStore.isLogin) {
     loadingStore.startLoading();
@@ -211,11 +213,11 @@ onMounted(async () => {
   }
 });
 
-/** 금액 포맷 */
+// 총 자산
 const totalAsset = computed(() => homeData.value?.userSummary.asset ?? 0);
 const formatCurrency = (value: number) => value.toLocaleString('ko-KR') + '원';
 
-/** 메인 카드 */
+// 서비스 카드
 const serviceCards = [
   {
     title: '노후준비',
@@ -247,18 +249,8 @@ const handlers: Record<string, () => void> = {
   goToEvent: () => router.push({ name: 'event' }),
 };
 
-/** 자산 수정 */
+// 자산 수정 페이지로 이동
 const goToEditAsset = () => router.push({ name: 'edit-asset' });
-
-/** 추천 슬라이드 */
-const slides = computed(() => {
-  if (!homeData.value) return [];
-  return homeData.value.recommandTop3.map((p) => ({
-    prod_name: p.fin_prdt_nm,
-    description: p.prdt_feature,
-    rate: p.intr_rate,
-  }));
-});
 
 /** 하단 특징 */
 const features = [
@@ -267,7 +259,7 @@ const features = [
   { keyword: '', suffix: '나한테', description: '딱 맞는 상품', src: Home6 },
 ];
 
-/** 가장 가까운 골든라이프 섹션 (로그인 시에만 표시 + 로드시 검색) */
+// 지점 정보
 type Branch = {
   name: string;
   lat: number;
@@ -283,7 +275,7 @@ const isBranchLoading = ref(false);
 const branchSearchAttempted = ref(false);
 let branchInitDone = false;
 
-/** 가장 가까운 지점 검색 */
+// 가장 가까운 지점 검색
 async function searchNearestBranch() {
   if (!myPos.value) return;
   try {
@@ -314,7 +306,7 @@ async function searchNearestBranch() {
   }
 }
 
-/** 섹션이 실제 DOM에 올라오고, 뷰포트에 들어오면 1회만 실행 */
+// 가장 가까운 지점 검색을 1회만 실행
 async function runNearestBranchSearchOnce() {
   if (branchInitDone) return;
   isBranchLoading.value = true;
@@ -335,7 +327,7 @@ async function runNearestBranchSearchOnce() {
   }
 }
 
-/** 로그인 여부를 감시해서 로그인된 순간에 섹션 초기화 */
+// 가장 가까운 지점 검색을 1회만 실행
 watch(
   () => authStore.isLogin,
   async (loggedIn) => {
@@ -352,7 +344,7 @@ watch(
   { immediate: true } // 이미 로그인 상태로 진입했을 때도 실행
 );
 
-/** 템플릿에서 사용할 것들 노출 */
+// 노출할 것들 정의
 defineExpose({
   KakaoLoginBtn,
   formatCurrency,
@@ -360,7 +352,6 @@ defineExpose({
   serviceCards,
   handlers,
   goToEditAsset,
-  slides,
   features,
   nearestBranch,
   nearestBranchSection,

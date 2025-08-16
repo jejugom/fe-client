@@ -77,7 +77,9 @@ const emit = defineEmits<{
   (e: 'click'): void;
 }>();
 
-const onClick = () => emit('click');
+function onClick() {
+  emit('click');
+}
 
 // content 쉼표 분리 (최대 2개)
 const contentList = computed(() => {
