@@ -20,7 +20,7 @@
 import { defineProps, defineEmits } from 'vue';
 import TabBtn from './TabBtn.vue';
 
-const props = defineProps<{
+defineProps<{
   tabs: string[];
   selectedTab: string;
 }>();
@@ -29,9 +29,9 @@ const emit = defineEmits<{
   (e: 'update:selectedTab', tab: string): void;
 }>();
 
-const selectTab = (tab: string) => {
+function selectTab(tab: string) {
   emit('update:selectedTab', tab);
-};
+}
 </script>
 
 <style scoped>

@@ -356,12 +356,14 @@ const score = ref<number | null | undefined>(null);
 const fundReturn = ref<{ recordDate: string; returnRate: number }[]>([]); // ★ 추가
 const isFund = computed(() => detail.value?.finPrdtCategory === '5'); // ★ 추가
 
+// 표시할 점수
 const displayScore = computed(() => {
   if (score.value === null || score.value === undefined) return 'N/A';
   if (score.value < 0) return '0'; // 음수는 0으로 처리
   return `${(score.value * 100).toFixed(1)}`;
 });
 
+// 페이지 진입
 onMounted(async () => {
   const id = route.params.id as string;
   if (!id) return;
@@ -407,13 +409,14 @@ onMounted(async () => {
   }
 });
 
-const goToRegister = () => {
+function goToRegister() {
   if (!detail.value) return;
   registerStore.setProductName(detail.value.finPrdtNm);
   registerStore.setTopInfos(topInfos.value);
   router.push({ name: 'register', params: { id: detail.value.finPrdtCd } });
-};
+}
 
+// 기타 유의사항
 const etcNoteList = computed<string[]>(() => {
   if (!detail.value?.etcNote) return [];
   return String(detail.value.etcNote)
@@ -423,6 +426,7 @@ const etcNoteList = computed<string[]>(() => {
     .filter((item) => item.length > 0);
 });
 
+// 담보대출
 const mtrtIntList = computed<string[]>(() => {
   if (!detail.value?.mtrtInt) return [];
   return String(detail.value.mtrtInt)
@@ -432,6 +436,7 @@ const mtrtIntList = computed<string[]>(() => {
     .filter((item) => item.length > 0);
 });
 
+// 특별조건
 const spclCndList = computed(() => {
   if (!detail.value?.spclCnd) return [];
   return String(detail.value.spclCnd)
@@ -483,6 +488,7 @@ const mortgageOptions = computed(() => {
   return [];
 });
 
+// 숫자 포맷팅
 function fmtNum(v: unknown, unit = ''): string {
   const n = Number(v);
   if (!Number.isFinite(n)) return '-';

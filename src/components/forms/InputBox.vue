@@ -34,6 +34,7 @@ defineEmits<{
 </script>
 
 <style scoped>
+/* 날짜 및 시간 입력 필드 스타일 초기화 */
 input[type='date'],
 input[type='time'] {
   -webkit-appearance: none;

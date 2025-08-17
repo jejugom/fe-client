@@ -15,10 +15,12 @@
   </select>
 </template>
 
-<script setup lang="ts" generic="T extends string | number | boolean">
+<script setup lang="ts">
 import { defineProps, defineEmits, withDefaults } from 'vue';
 
-const props = withDefaults(
+type T = string | number | boolean;
+
+withDefaults(
   defineProps<{
     modelValue?: T;
     size?: 'small' | 'medium' | 'large';
@@ -33,7 +35,7 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: T): void;
 }>();
 
-const handleChange = (event: Event) => {
+function handleChange(event: Event) {
   const target = event.target as HTMLSelectElement;
   let value: string | number | boolean = target.value;
 
@@ -48,5 +50,5 @@ const handleChange = (event: Event) => {
 
   // 변환된 값을 T 타입으로 캐스팅하여 emit
   emit('update:modelValue', value as T);
-};
+}
 </script>

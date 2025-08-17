@@ -71,7 +71,7 @@
 
   <div
     v-if="mode === 'inheritance'"
-    class="flex w-full max-w-150 flex-col space-y-2"
+    class="flex w-full max-w-[600px] flex-col space-y-2"
   >
     <Btn
       color="primary"
@@ -86,7 +86,7 @@
       @click="goToResult"
     />
   </div>
-  <div v-else class="w-full max-w-150">
+  <div v-else class="w-full max-w-[600px]">
     <Btn
       color="primary"
       label="세액 및 절세 전략 확인하기"
@@ -150,7 +150,8 @@ const beneficiaries = reactive<Beneficiary[]>([]);
 const showAlert = ref(false);
 const alertMessage = ref('');
 
-const loadAssetsAndBeneficiaries = async () => {
+// 자산 및 수혜자 로드
+async function loadAssetsAndBeneficiaries() {
   loadingStore.startLoading();
   try {
     const apiResponse = await fetchGiftPageData(props.mode);
@@ -201,9 +202,10 @@ const loadAssetsAndBeneficiaries = async () => {
   } finally {
     loadingStore.stopLoading();
   }
-};
+}
 
-const restoreStateFromStore = () => {
+// 자산 및 수혜자 상태 복원
+function restoreStateFromStore() {
   if (store.value.allAssets.size > 0 && store.value.beneficiaries.length > 0) {
     beneficiaries.splice(0, beneficiaries.length, ...store.value.beneficiaries);
     allAssets.clear();
@@ -211,8 +213,9 @@ const restoreStateFromStore = () => {
       allAssets.set(key, value);
     });
   }
-};
+}
 
+// 상태 복원
 onMounted(() => {
   if (store.value.allAssets.size > 0) {
     restoreStateFromStore();
@@ -221,7 +224,8 @@ onMounted(() => {
   }
 });
 
-const onAssetUpdate = (updatedAsset: Asset) => {
+// 자산 업데이트
+function onAssetUpdate(updatedAsset: Asset) {
   Array.from(allAssets.values()).forEach((assets) => {
     const index = assets.findIndex((a) => a.id === updatedAsset.id);
     if (index !== -1) {
@@ -229,9 +233,10 @@ const onAssetUpdate = (updatedAsset: Asset) => {
     }
   });
   store.value.setAllAssets(allAssets);
-};
+}
 
-const calculateTotalForBeneficiary = (beneficiaryId: string): number => {
+// 수혜자별 총액 계산
+function calculateTotalForBeneficiary(beneficiaryId: string): number {
   let total = 0;
   Array.from(allAssets.values())
     .flat()
@@ -246,9 +251,10 @@ const calculateTotalForBeneficiary = (beneficiaryId: string): number => {
       }
     });
   return total;
-};
+}
 
-const getAssetsForBeneficiary = (beneficiaryId: string) => {
+// 자산 목록 가져오기
+function getAssetsForBeneficiary(beneficiaryId: string) {
   const assets: (Asset & { stake?: number })[] = [];
   Array.from(allAssets.values())
     .flat()
@@ -273,16 +279,18 @@ const getAssetsForBeneficiary = (beneficiaryId: string) => {
       }
     });
   return assets;
-};
+}
 
-const calculateGrandTotal = (): number => {
+// 전체 자산 총액 계산
+function calculateGrandTotal(): number {
   return Array.from(allAssets.values())
     .flat()
     .filter((asset) => asset.selected)
     .reduce((sum, asset) => sum + asset.value, 0);
-};
+}
 
-const createSimulationRequest = (): SimulationRequestDto => {
+// 시뮬레이션 요청 생성
+function createSimulationRequest(): SimulationRequestDto {
   return {
     simulationList: beneficiaries
       .map((b) => {
@@ -341,10 +349,10 @@ const createSimulationRequest = (): SimulationRequestDto => {
       })
       .filter(Boolean) as RecipientGiftRequestDto[],
   };
-};
+}
 
 // 상속 데이터 준비 로직 추출
-const prepareInheritanceData = () => {
+function prepareInheritanceData() {
   const distributed: DistributedAsset[] = [];
   Array.from(allAssets.values())
     .flat()
@@ -403,22 +411,29 @@ const prepareInheritanceData = () => {
     estimatedTax: 0,
   }));
 
-  return { distributedAssets: distributed, recipientSummaries, totalGiftTax: 0 };
-};
+  return {
+    distributedAssets: distributed,
+    recipientSummaries,
+    totalGiftTax: 0,
+  };
+}
 
-const setInheritanceStoreData = () => {
+// 상속 데이터 설정
+function setInheritanceStoreData() {
   const inheritanceData = prepareInheritanceData();
   inheritanceStore.setInheritanceData(inheritanceData);
-};
+}
 
-const goToWillForm = () => {
+// 유언장 작성 페이지로 이동
+function goToWillForm() {
   setInheritanceStoreData();
   router.push({
     name: 'inheritance-will',
   });
-};
+}
 
-const goToResult = async () => {
+// 결과 페이지로 이동
+async function goToResult() {
   loadingStore.startLoading();
   try {
     if (props.mode === 'gift') {
@@ -440,5 +455,5 @@ const goToResult = async () => {
   } finally {
     loadingStore.stopLoading();
   }
-};
+}
 </script>

@@ -42,7 +42,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import Btn from '@/components/buttons/Btn.vue';
 import { useInheritanceStore } from '@/stores/inheritance';
 import BtnSet from '@/components/buttons/BtnSet.vue';
 
@@ -64,11 +63,11 @@ watch(
   { immediate: true }
 );
 
-const goBack = () => {
+function goBack() {
   router.go(-1);
-};
+}
 
-const saveAndGoToResult = () => {
+function saveAndGoToResult() {
   // 최종 유언 내용을 Store에 저장
   inheritanceStore.setAdditionalWillContent(localWillContent.value);
 
@@ -76,7 +75,7 @@ const saveAndGoToResult = () => {
   router.push({
     name: 'inheritance-result',
   });
-};
+}
 
 onMounted(() => {
   // 분배된 자산이 없는 경우 경고

@@ -1,5 +1,5 @@
 import { useAuthStore } from '@/stores/auth';
-export const isAuthenticated = (to: any) => {
+export function isAuthenticated(to: any) {
   const auth = useAuthStore();
   if (!auth.isLogin) {
     if (window.confirm('로그인이 필요한 서비스입니다. 로그인 하시겠습니까?')) {
@@ -9,5 +9,4 @@ export const isAuthenticated = (to: any) => {
     return false;
   }
   return true;
-};
-
+}
