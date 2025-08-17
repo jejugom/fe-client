@@ -22,11 +22,11 @@ import BtnSet from '@/components/buttons/BtnSet.vue';
 
 const router = useRouter();
 
-const goBack = () => {
+function goBack() {
   router.back();
-};
+}
 
-const goHome = () => {
+function goHome() {
   router.push({ name: 'home' });
-};
+}
 </script>

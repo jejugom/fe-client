@@ -123,7 +123,6 @@ import FormField from './FormField.vue';
 import type { RecipientRequestDto } from '@/types/gift/recipient';
 import { formatCurrency } from '@/utils/format';
 
-// Props & Emits
 interface Props {
   recipient?: RecipientRequestDto | null;
   isEditing?: boolean;
@@ -226,7 +225,7 @@ const validationRules: {
 };
 
 // 제출 처리 함수
-const handleSubmit = () => {
+function handleSubmit() {
   const missingFields = Object.keys(validationRules)
     .map((field) => validationRules[field](formData.value))
     .filter((result): result is string => typeof result === 'string');
@@ -238,5 +237,5 @@ const handleSubmit = () => {
   }
 
   emit('confirm', formData.value);
-};
+}
 </script>

@@ -73,7 +73,7 @@ const tabs = [
   },
 ];
 
-const isActive = (name: string) => {
+function isActive(name: string) {
   const currentName = route.name as string | undefined;
   const params = route.params ?? {};
   const query = route.query ?? {};
@@ -140,5 +140,5 @@ const isActive = (name: string) => {
 
   // 그 외 일반 페이지는 name 매핑으로 판단
   return !!nameMap[name]?.includes(currentName ?? '');
-};
+}
 </script>

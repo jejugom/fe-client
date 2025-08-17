@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative left-1/2 w-screen max-w-150 -translate-x-1/2 overflow-hidden"
+    class="relative left-1/2 w-screen max-w-[600px] -translate-x-1/2 overflow-hidden"
   >
     <div
       class="flex w-full transition-transform duration-300 ease-in-out"
@@ -37,14 +37,16 @@ const props = defineProps<{
   items: any[];
 }>();
 
-const currentIndex = ref(0);
+const currentIndex = ref(0); // 현재 슬라이드 인덱스
 
-const nextSlide = () => {
+// 다음 슬라이드로 이동
+function nextSlide() {
   currentIndex.value = (currentIndex.value + 1) % props.items.length;
-};
+}
 
-const prevSlide = () => {
+// 이전 슬라이드로 이동
+function prevSlide() {
   currentIndex.value =
     (currentIndex.value - 1 + props.items.length) % props.items.length;
-};
+}
 </script>

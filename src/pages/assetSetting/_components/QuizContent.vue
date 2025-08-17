@@ -53,9 +53,10 @@ interface Emits {
   (e: 'select-answer', index: number): void;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+// 답변 선택 함수
 function selectAnswer(index: number) {
   emit('select-answer', index);
 }

@@ -82,24 +82,24 @@ const rewardStore = useRewardStore();
 
 const emit = defineEmits<{ (e: 'quiz-finished'): void }>();
 
-/* ---------- Confirm ---------- */
+// confirm
 const showConfirm = ref(false);
 const confirmTitle = ref<string>();
 const confirmMessage = ref('');
 
-const openConfirm = (message: string, title?: string) => {
+function openConfirm(message: string, title?: string) {
   confirmMessage.value = message;
   confirmTitle.value = title;
   showConfirm.value = true;
-};
-const onConfirmNo = () => {
+}
+function onConfirmNo() {
   showConfirm.value = false;
   restartQuiz();
-};
-const onConfirmYes = () => {
+}
+function onConfirmYes() {
   showConfirm.value = false;
   goToEvent();
-};
+}
 
 // 상태 관리
 const gameFinished = ref(false);
@@ -123,8 +123,8 @@ const isLastQuestion = computed(
   () => currentQuestionIndex.value === currentQuizzes.value.length - 1
 );
 
-// 함수들
-const getChoiceClass = (index: number) => {
+// 선택지 클래스
+function getChoiceClass(index: number) {
   if (!answered.value) {
     // 아직 정답 제출 전, 단순 선택
     return selectedAnswer.value === index
@@ -147,9 +147,9 @@ const getChoiceClass = (index: number) => {
 
   // 나머지 보기 (선택도 안했고, 정답도 아님)
   return 'card-design bg-surface-100';
-};
+}
 
-const startQuiz = async () => {
+async function startQuiz() {
   // 1. 오늘 날짜를 가져온다
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
   const cachedQuizzes = sessionStorage.getItem('dailyQuiz');
@@ -176,10 +176,10 @@ const startQuiz = async () => {
   score.value = 0;
   gameFinished.value = false;
   isNewBest.value = false;
-};
+}
 
 // api로 퀴즈를 요청하고, 오늘 날짜와 함께 ssessionStorage에 저장
-const fetchAndCacheQuizzes = async () => {
+async function fetchAndCacheQuizzes() {
   try {
     const quizzes = await getQuiz(); // 실제 api 호출
     currentQuizzes.value = quizzes;
@@ -191,26 +191,25 @@ const fetchAndCacheQuizzes = async () => {
     );
   } catch (error) {
     console.error('퀴즈 데이터 로딩 실패:', error);
-    // TODO: 사용자에게 에러 메시지를 보여주는 로직 추가
   }
-};
+}
 
-const selectAnswer = (index: number) => {
+function selectAnswer(index: number) {
   if (answered.value) return;
   selectedAnswer.value = index;
-};
+}
 
-const submitAnswer = () => {
+function submitAnswer() {
   answered.value = true;
   if (isCorrect.value) {
     score.value++;
   }
   // 바텀시트 표시
   showResultModal.value = true;
-};
+}
 
 // 버튼 클릭 시 다음 문제로 진행
-const handleModalConfirm = () => {
+function handleModalConfirm() {
   showResultModal.value = false;
 
   // 약간의 딜레이 후 다음 단계로 진행
@@ -221,15 +220,17 @@ const handleModalConfirm = () => {
       nextQuestion();
     }
   }, 300);
-};
+}
 
-const nextQuestion = () => {
+// 다음 문제로 진행
+function nextQuestion() {
   currentQuestionIndex.value++;
   selectedAnswer.value = null;
   answered.value = false;
-};
+}
 
-const finishQuiz = () => {
+// 퀴즈 종료
+function finishQuiz() {
   gameFinished.value = true;
   rewardStore.complete('quiz');
 
@@ -251,16 +252,19 @@ const finishQuiz = () => {
     `정답률: ${accuracy}%\n\n` +
     `생활편의 페이지로 돌아가겠습니까?`;
   openConfirm(message, '🎉 챌린지 완료');
-};
+}
 
-const restartQuiz = () => {
+// 퀴즈 재시작
+function restartQuiz() {
   startQuiz();
-};
+}
 
-const goToEvent = () => {
+// 이벤트 페이지로 이동
+function goToEvent() {
   router.push('/event');
-};
+}
 
+// 컴포넌트가 마운트될 때 퀴즈 시작
 onMounted(() => {
   startQuiz();
   const savedBest = parseInt(

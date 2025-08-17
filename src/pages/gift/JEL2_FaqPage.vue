@@ -66,7 +66,8 @@ import Btn from '@/components/buttons/Btn.vue';
 import InputBox from '@/components/forms/InputBox.vue';
 import FaqCard from './_components/FaqCard.vue';
 import FaqTab from './_components/FaqTab.vue';
-import { getFaqList, type Faq } from '@/api/gift/faq';
+import { getFaqList } from '@/api/gift/faq';
+import type { Faq } from '@/types/gift/faq';
 import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
@@ -78,21 +79,21 @@ const submittedSearchQuery = ref('');
 const activeTab = ref<'all' | '상속' | '증여'>('all');
 
 // 탭 토글
-const toggleTab = (tab: '상속' | '증여') => {
+function toggleTab(tab: '상속' | '증여') {
   activeTab.value = activeTab.value === tab ? 'all' : tab;
-};
+}
 
 // 검색 실행
-const handleSearch = () => {
+function handleSearch() {
   submittedSearchQuery.value = searchQuery.value;
-};
+}
 
 // 필터 초기화
-const resetFilters = () => {
+function resetFilters() {
   searchQuery.value = '';
   submittedSearchQuery.value = '';
   activeTab.value = 'all';
-};
+}
 
 // 필터링된 FAQ 목록 (computed 사용)
 const filteredFaqs = computed(() => {
@@ -113,9 +114,9 @@ const filteredFaqs = computed(() => {
 });
 
 // 상세 페이지 이동
-const goToFaqDetail = (faqId: number) => {
+function goToFaqDetail(faqId: number) {
   router.push({ name: 'gift-detail', params: { id: faqId } });
-};
+}
 
 // 초기 데이터 로딩
 onMounted(async () => {

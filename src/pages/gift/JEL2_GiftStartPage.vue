@@ -24,10 +24,11 @@
 import { useRouter } from 'vue-router';
 import Btn from '@/components/buttons/Btn.vue';
 import SimulationGuide from './_components/SimulationGuide.vue';
-import { GiftGuideList } from './SimulationGuideData';
+import { GiftGuideList } from '@/data/simulationGuideData';
 
 const router = useRouter();
 
+// 수증자 정보 입력 페이지로 이동
 function goToInput() {
   router.push({ name: 'gift-input' });
 }

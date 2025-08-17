@@ -38,5 +38,3 @@ defineEmits<{
   (e: 'select', value: string): void;
 }>();
 </script>
-
-<style scoped></style>

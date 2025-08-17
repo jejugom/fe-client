@@ -33,7 +33,7 @@
   --font-regular: 'Pretendard-Regular';
   --font-semibold: 'Pretendard-SemiBold';
   --font-bold: 'Pretendard-Bold';
-  --font-point: 'TTHakgyoansimYeohaengR';
+  --font-point: 'Ghanachocolate';
 
   --shadow-xs: 0 1px 2px var(--color-surface-200);
 }
@@ -165,9 +165,14 @@
   font-weight: 400;
   font-display: swap;
 }
-@font-face {
+/* @font-face {
   font-family: 'TTHakgyoansimYeohaengR';
   src: url('./styles/fonts/hakgyoansim/HakgyoansimMulgyeolR.ttf')
     format('truetype');
+  font-display: swap;
+} */
+@font-face {
+  font-family: 'Ghanachocolate';
+  src: url('./styles/fonts/chocolate/Ghanachocolate.ttf') format('truetype');
   font-display: swap;
 }

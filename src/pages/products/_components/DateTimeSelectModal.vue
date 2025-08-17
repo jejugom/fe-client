@@ -102,8 +102,10 @@ const businessHours = [
   '15:30',
 ];
 
+// 예약된 슬롯
 const reservedSlots = computed(() => registerStore.reservedSlots);
 
+// 예약 가능한 시간
 const availableTimes = computed(() => {
   if (!selectedDate.value) return [];
   const dateStr = formattedDate(selectedDate.value);
@@ -121,6 +123,7 @@ const availableTimes = computed(() => {
   });
 });
 
+// 예약 가능한 시간
 const calendarAttributes = computed(() => [
   {
     key: 'today',
@@ -140,19 +143,22 @@ const calendarAttributes = computed(() => [
   },
 ]);
 
-const onDayClick = (day: any) => {
+// 날짜 선택
+function onDayClick(day: any) {
   selectedDate.value = day.date;
   selectedTime.value = null;
-};
+}
 
-const formattedDate = (date: Date) => {
+// 날짜 포맷팅
+function formattedDate(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
-};
+}
 
-const submitSelection = async () => {
+// 예약 선택
+async function submitSelection() {
   if (!selectedDate.value || !selectedTime.value) {
     openAlert('날짜와 시각을 모두 선택해주세요!', '입력 안내');
     return;
@@ -170,7 +176,7 @@ const submitSelection = async () => {
 
   emit('select', { date: selected, time });
   emit('close');
-};
+}
 
 defineExpose({ submitSelection });
 </script>

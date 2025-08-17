@@ -56,9 +56,11 @@ const emit = defineEmits<{
   (e: 'click2'): void;
 }>();
 
+// 페이지 진입
 onMounted(() => {
   document.body.style.overflow = 'hidden';
 });
+// 페이지 이탈
 onUnmounted(() => {
   document.body.style.overflow = '';
 });

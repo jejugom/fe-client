@@ -93,9 +93,7 @@ import Btn from '@/components/buttons/Btn.vue';
 import MultiBtnCard from '@/components/cards/MultiBtnCard.vue';
 import AssetForm from './_components/AssetForm.vue';
 import {
-  assetsApiResponse,
   transformApiResponseToAssets,
-  transformAssetsToApiRequest,
   ASSET_CATEGORY_MAP,
   CATEGORY_NAME_TO_CODE,
   assetsApi,
@@ -360,7 +358,9 @@ async function loadAssets() {
     assets.value = transformApiResponseToAssets(apiResponse);
   } catch (error) {
     // console.error('자산 조회 실패:', error);
-    assets.value = transformApiResponseToAssets(assetsApiResponse);
+    assets.value = []; // API 실패 시 빈 배열로 초기화
+    alertMessage.value = '자산 정보를 불러오는 데 실패했습니다. 다시 시도해주세요.';
+    showAlert.value = true;
   }
 }
 
