@@ -13,13 +13,15 @@
             :src="KakaoLoginBtn"
             alt="카카오 로그인"
             @click="() => authStore.startKakaoLogin()"
-            class="btn-pressed block h-12 w-48 cursor-pointer object-contain"
+            class="btn-pressed block cursor-pointer object-contain"
+            style="height: 40px; width: 180px"
           />
           <img
             :src="NaverLoginBtn"
             alt="네이버 로그인"
             @click="showNaverAlert"
-            class="btn-pressed block h-12 w-48 cursor-pointer"
+            class="btn-pressed block cursor-pointer"
+            style="height: 40px; width: 180px"
           />
         </div>
       </div>

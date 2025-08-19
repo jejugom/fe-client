@@ -79,7 +79,7 @@
 
   <!-- 일반 알림 모달 -->
   <Alert v-if="showAlert" @click="showAlert = false">
-    <p>{{ alertMessage }}</p>
+    <p v-html="alertMessage" class="whitespace-pre-line"></p>
   </Alert>
 </template>
 
@@ -98,8 +98,10 @@ import {
   CATEGORY_NAME_TO_CODE,
   assetsApi,
 } from '@/api/profile/editAsset';
+import { useLoadingStore } from '@/stores/loading';
 
 const router = useRouter();
+const loadingStore = useLoadingStore();
 
 const modalTitle = ref('자산 정보 등록 및 수정');
 const isModalOpen = ref(false);
@@ -172,15 +174,11 @@ const categoryOptions = Object.values(ASSET_CATEGORY_MAP);
 
 // 금액을 억/만/원 단위로 포맷팅하는 함수
 function formatAmount(amount) {
-  if (
-    amount === null ||
-    amount === '' ||
-    isNaN(amount)
-  ) {
+  if (amount === null || amount === '' || isNaN(amount)) {
     return '0원';
   }
   const num = Number(amount);
-  
+
   // 1조 단위부터 표시 (1000억 단위 까지는 억으로 표시)
   if (num >= 1000000000000) {
     const jo = Math.floor(num / 1000000000000);
@@ -188,7 +186,7 @@ function formatAmount(amount) {
     const eok = Math.floor(remainder / 100000000);
     const man = Math.floor((remainder % 100000000) / 10000);
     const won = remainder % 10000;
-    
+
     let result = `${jo.toLocaleString()}조`;
     if (eok > 0) result += ` ${eok.toLocaleString()}억`;
     if (man > 0) result += ` ${man.toLocaleString()}만`;
@@ -196,7 +194,7 @@ function formatAmount(amount) {
     else result += '원';
     return result;
   }
-  
+
   // 1000억 이하: 억, 만, 원 단위로 표시
   const eok = Math.floor(num / 100000000);
   const man = Math.floor((num % 100000000) / 10000);
@@ -281,9 +279,15 @@ function closeModal() {
 }
 
 async function saveNewAsset() {
+  // 이미 로딩 중인 경우 중복 실행 방지
+  if (loadingStore.isLoading) {
+    return;
+  }
+
   resetValidationState();
 
   const missingFields = [];
+  const formatErrors = [];
 
   if (!newAsset.value.type) {
     validationErrors.value.type = true;
@@ -305,8 +309,35 @@ async function saveNewAsset() {
     missingFields.push('사업체 종류');
   }
 
+  // 형식 검증 (자산 이름이 있는 경우에만)
+  if (newAsset.value.name) {
+    if (newAsset.value.name.length > 20) {
+      validationErrors.value.name = true;
+      formatErrors.push('자산 이름은 20자 이하로 입력하세요');
+    }
+
+    // 허용할 문자만 정의한 정규표현식 (한글, 영문, 숫자, 공백)
+    const allowedCharsRegex = /^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9\s]+$/;
+
+    if (!allowedCharsRegex.test(newAsset.value.name)) {
+      validationErrors.value.name = true;
+      formatErrors.push(
+        '자산 이름에는 한글, 영문, 숫자, 공백만 사용할 수 있습니다'
+      );
+    }
+  }
+
+  // 에러 메시지 구성
+  const errorMessages = [];
   if (missingFields.length > 0) {
-    alertMessage.value = `다음 항목을 입력해주세요: ${missingFields.join(', ')}`;
+    errorMessages.push(`다음 항목을 입력해주세요: ${missingFields.join(', ')}`);
+  }
+  if (formatErrors.length > 0) {
+    errorMessages.push(`다음 항목을 확인해주세요: ${formatErrors.join(', ')}`);
+  }
+
+  if (errorMessages.length > 0) {
+    alertMessage.value = errorMessages.join('<br>');
     showAlert.value = true;
     return;
   }
@@ -316,6 +347,7 @@ async function saveNewAsset() {
     amount: Number(newAsset.value.amount),
   };
 
+  loadingStore.startLoading();
   try {
     let successMessage = '';
     if (newAsset.value.id) {
@@ -345,6 +377,8 @@ async function saveNewAsset() {
     // console.error('자산 저장 실패:', error);
     alertMessage.value = '자산 저장 중 오류가 발생했습니다. 다시 시도해주세요.';
     showAlert.value = true;
+  } finally {
+    loadingStore.stopLoading();
   }
 }
 
@@ -359,7 +393,8 @@ async function loadAssets() {
   } catch (error) {
     // console.error('자산 조회 실패:', error);
     assets.value = []; // API 실패 시 빈 배열로 초기화
-    alertMessage.value = '자산 정보를 불러오는 데 실패했습니다. 다시 시도해주세요.';
+    alertMessage.value =
+      '자산 정보를 불러오는 데 실패했습니다. 다시 시도해주세요.';
     showAlert.value = true;
   }
 }
