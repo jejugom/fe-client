@@ -81,7 +81,9 @@ export const useAuthStore = defineStore('auth', () => {
    */
   const checkAuthStatus = async () => {
     try {
-      const response = await api.get('/auth/profile');
+      const response = await api.get('/auth/profile', {
+        _suppressErrorAlert: true,
+      });
       const userProfile = response.data;
       if (userProfile && userProfile.email) {
         setKakaoLoginData(userProfile.email, userProfile.displayName, false);
