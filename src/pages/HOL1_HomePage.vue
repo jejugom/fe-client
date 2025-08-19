@@ -139,7 +139,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed, watch } from 'vue'; // onMounted 대신 watch를 import
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useLoadingStore } from '@/stores/loading';
@@ -147,7 +147,6 @@ import Top3Products from '@/components/cards/Top3ProductsCard.vue';
 import Btn from '@/components/buttons/Btn.vue';
 import { fetchHomeData, type HomeData } from '@/api/home';
 import IconCard from '@/components/cards/IconCard.vue';
-import AdBanner from '@/assets/images/AdBanner.png';
 import Home1 from '@/assets/images/Home1.svg';
 import Home2 from '@/assets/images/Home2.svg';
 import Home3 from '@/assets/images/Home3.svg';
@@ -166,27 +165,36 @@ const loadingStore = useLoadingStore();
 
 const homeData = ref<HomeData | null>(null);
 
-onMounted(async () => {
+/**
+ * 로그인 상태일 때 홈 페이지 데이터를 불러오는 함수
+ */
+const loadHomePageData = async () => {
   loadingStore.startLoading();
   try {
-    // 1. 먼저 인증 상태를 확인하고, 토큰 갱신이 필요하다면 이 과정까지 모두 완료될 때까지 기다립니다.
-    // 이 함수가 최종 인증 상태를 반환하도록 설계해야 합니다.
-    await authStore.checkAuthStatus();
-
-    // 2. 이제 `authStore.isLogin` 상태는 100% 신뢰할 수 있습니다.
-    // 로그인 상태가 맞는지 확인한 후, 필요한 데이터를 불러옵니다.
-    if (authStore.isLogin) {
-      homeData.value = await fetchHomeData();
-    }
-    // 로그인 상태가 아니라면 비로그인 UI가 표시되므로 아무것도 할 필요 없습니다.
+    homeData.value = await fetchHomeData();
   } catch (error) {
-    console.error('홈 페이지 초기화 중 오류 발생:', error);
-    // 오류 발생 시 로딩 상태를 '에러'로 설정할 수 있습니다.
+    console.error('홈 페이지 데이터 로딩 중 오류 발생:', error);
+    homeData.value = null; // 실패 시 데이터를 확실하게 비웁니다.
     loadingStore.setError(true);
   } finally {
     loadingStore.stopLoading();
   }
-});
+};
+
+// [리팩토링] onMounted 대신 watch를 사용하여 인증 상태 변화에 반응합니다.
+watch(
+  () => authStore.isLogin,
+  (isLoggedIn) => {
+    if (isLoggedIn) {
+      // 로그인 상태가 되면 데이터를 불러옵니다.
+      loadHomePageData();
+    } else {
+      // 로그아웃 상태가 되면 데이터를 즉시 초기화합니다.
+      homeData.value = null;
+    }
+  },
+  { immediate: true } // immediate: true 옵션으로 컴포넌트가 로드될 때 즉시 실행하여 onMounted와 동일한 효과를 냅니다.
+);
 
 /** 사용자 총 자산 - 로그인된 경우에만 실제 데이터 사용, 비로그인 시 0 */
 const totalAsset = computed(() => homeData.value?.userSummary.asset ?? 0);

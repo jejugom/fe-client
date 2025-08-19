@@ -71,8 +71,8 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (error) {
       console.error('로그아웃 API 호출 중 오류 발생:', error);
     } finally {
+      // 이 함수의 유일한 책임은 상태를 리셋하는 것입니다.
       state.value = { ...initState };
-      router.push({ name: 'home' });
     }
   };
 

@@ -207,10 +207,9 @@ const handleMenuClick = (menuId) => {
   }
 };
 
-const handleLogout = () => {
-  // auth store의 로그아웃 함수 호출
-  authStore.logout();
-  // 홈페이지로 리다이렉트
+const handleLogout = async () => {
+  await authStore.logout(); // 상태가 초기화될 때까지 기다립니다.
+  // 이제 상태가 정리되었으므로, 내비게이션을 수행합니다.
   router.push({ name: 'home' });
 };
 
