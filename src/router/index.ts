@@ -63,22 +63,23 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-  const allowedRoutes = [
-    'home',
-    'fail',
-    'loading',
-    'not-found',
-    'auth-success',
-    'auth-error',
-  ];
-  if (!allowedRoutes.includes(to.name as string)) {
+  // 인증이 필요한 페이지인지 확인
+  const requiresAuth = to.meta.requiresAuth;
+
+  // 인증이 필요한 페이지일 경우에 isAuthenticated 함수를 호출
+  if (requiresAuth) {
     const authResult = isAuthenticated(to);
-    if (authResult === false) {
-      return false; // 리다이렉트
-    } else if (authResult) {
-      return authResult; // 리다이렉트
+    // isAuthenticated 함수가 false를 반환하면 리다이렉트를 처리
+    if (!authResult) {
+      return false;
+    }
+    // 리다이렉트 객체를 반환
+    if (authResult !== true) {
+      return authResult;
     }
   }
+  // 그 외 모든 경우(인증이 필요 없거나, 인증이 성공했거나)는 정상적으로 다음 단계로 진행
+  return true;
 });
 
 export default router;
