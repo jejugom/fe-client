@@ -98,7 +98,7 @@
   <!-- 우리 모달: Modal(껍데기) + FilterForm(폼만) -->
   <Modal
     v-if="isFilterOpen"
-    title="나에게 찾는 상품은?"
+    title="나에게 맞는 상품 찾기"
     leftLabel="초기화"
     rightLabel="적용"
     @click1="handleReset"

@@ -189,7 +189,6 @@ const taxSavingStrategies = computed(() => simulationStore.taxSavingStrategies);
 // 전략 추천 목록
 const displayStrategies = computed(() => {
   let globalIndex = 0;
-  let lastCategory = '';
   type DisplayItem =
     | {
         isHeader: true;
@@ -205,21 +204,29 @@ const displayStrategies = computed(() => {
       };
 
   const result: DisplayItem[] = [];
+  const strategiesByCategory = new Map<string, TaxSavingStrategy[]>();
 
   taxSavingStrategies.value.forEach((strategy) => {
-    if (strategy.ruleCategory !== lastCategory) {
-      result.push({
-        isHeader: true,
-        categoryName: strategy.ruleCategory,
-      });
-      lastCategory = strategy.ruleCategory;
+    if (!strategiesByCategory.has(strategy.ruleCategory)) {
+      strategiesByCategory.set(strategy.ruleCategory, []);
     }
+    strategiesByCategory.get(strategy.ruleCategory)!.push(strategy);
+  });
+
+  strategiesByCategory.forEach((strategies, categoryName) => {
     result.push({
-      isHeader: false,
-      strategy: strategy,
-      globalIndex: ++globalIndex,
+      isHeader: true,
+      categoryName: categoryName,
+    });
+    strategies.forEach((strategy) => {
+      result.push({
+        isHeader: false,
+        strategy: strategy,
+        globalIndex: ++globalIndex,
+      });
     });
   });
+
   return result;
 });
 

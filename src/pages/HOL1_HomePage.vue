@@ -74,7 +74,7 @@
 
     <div v-if="authStore.isLogin" ref="nearestBranchSection">
       <div class="text-primary-500 mb-2 text-2xl font-bold"
-        >가장 가까운 골든라이프</div
+        >가장 가까운 골든라이프 센터</div
       >
       <LoaderGoldenLife v-if="isBranchLoading" />
       <div
